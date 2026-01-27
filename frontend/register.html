@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Register Complaint - Digital Grievance Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0A2E5C;
+            --background: #F2F2F2;
+            --accent: #FF9933;
+            --success: #138808;
+            --error: #C62828;
+            --white: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', 'Noto Sans Devanagari', sans-serif;
+            background-color: var(--background);
+            color: #333;
+        }
+
+        .tricolor-strip {
+            height: 5px;
+            background: linear-gradient(to right, #FF9933 0%, #FF9933 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #138808 66.66%, #138808 100%);
+        }
+
+        .header-top {
+            background-color: var(--white);
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .emblem-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .emblem-icon {
+            font-size: 50px;
+            color: var(--primary);
+        }
+
+        .emblem-text h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .emblem-text p {
+            font-size: 14px;
+            color: #666;
+            margin: 0;
+        }
+
+        .navbar {
+            background-color: var(--primary);
+            padding: 0;
+        }
+
+        .navbar-nav .nav-link {
+            color: var(--white) !important;
+            padding: 15px 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--primary) 0%, #1a4d8f 100%);
+            color: var(--white);
+            padding: 40px 0;
+            margin-bottom: 40px;
+        }
+
+        .page-header h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .form-container {
+            background-color: var(--white);
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+            animation: slideUp 0.6s ease;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+        }
+
+        .form-section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .form-label {
+            font-weight: 500;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .required {
+            color: var(--error);
+        }
+
+        .form-control, .form-select {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(10, 46, 92, 0.15);
+        }
+
+        .invalid-feedback {
+            display: none;
+            color: var(--error);
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .form-control.is-invalid ~ .invalid-feedback {
+            display: block;
+        }
+
+        .btn-submit {
+            background-color: var(--accent);
+            border: none;
+            color: var(--white);
+            padding: 12px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover {
+            background-color: #e68a2e;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,153,51,0.4);
+        }
+
+        .btn-reset {
+            background-color: #6c757d;
+            border: none;
+            color: var(--white);
+            padding: 12px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-reset:hover {
+            background-color: #5a6268;
+        }
+
+        .success-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .success-content {
+            background-color: var(--white);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            animation: scaleIn 0.4s ease;
+        }
+
+        .success-icon {
+            font-size: 80px;
+            color: var(--success);
+            margin-bottom: 20px;
+            animation: checkmark 0.6s ease;
+        }
+
+        .success-content h3 {
+            color: var(--primary);
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 15px;
+        }
+
+        .complaint-id {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .footer {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 40px 0 20px;
+            margin-top: 40px;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.2);
+            padding-top: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scaleIn {
+            from {
+                transform: scale(0.8);
+                opacity: 0;
+            }
+            to {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        @keyframes checkmark {
+            0% {
+                transform: scale(0) rotate(-45deg);
+            }
+            50% {
+                transform: scale(1.2) rotate(0deg);
+            }
+            100% {
+                transform: scale(1) rotate(0deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .form-container {
+                padding: 20px;
+            }
+
+            .page-header h2 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="tricolor-strip"></div>
+
+    <header class="header-top">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-12">
+                    <div class="emblem-container">
+                        <div class="emblem-icon">
+                            <i class="fas fa-landmark"></i>
+                        </div>
+                        <div class="emblem-text">
+                            <h1>Digital Complaint & Grievance Redressal Platform</h1>
+                            <p>भारत सरकार | Government of India</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="register.html">Register Complaint</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="track.html">Track Status</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="departments.html">Departments</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="help.html">Help & FAQ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html">Officer Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <div class="container">
+            <h2><i class="fas fa-file-alt"></i> Register Your Complaint</h2>
+            <p>Please fill in the details below to submit your grievance</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="form-container">
+            <form id="complaintForm" novalidate>
+                <!-- Personal Information -->
+                <div class="form-section">
+                    <h4 class="form-section-title">Personal Information</h4>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Full Name <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="fullName" required>
+                            <div class="invalid-feedback">Please enter your full name</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Email Address <span class="required">*</span></label>
+                            <input type="email" class="form-control" id="email" required>
+                            <div class="invalid-feedback">Please enter a valid email address</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Mobile Number <span class="required">*</span></label>
+                            <input type="tel" class="form-control" id="mobile" pattern="[0-9]{10}" required>
+                            <div class="invalid-feedback">Please enter a valid 10-digit mobile number</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Aadhaar Number (Optional)</label>
+                            <input type="text" class="form-control" id="aadhaar" pattern="[0-9]{12}">
+                            <div class="invalid-feedback">Please enter a valid 12-digit Aadhaar number</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Address Information -->
+                <div class="form-section">
+                    <h4 class="form-section-title">Address Details</h4>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Complete Address <span class="required">*</span></label>
+                            <textarea class="form-control" id="address" rows="2" required></textarea>
+                            <div class="invalid-feedback">Please enter your complete address</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">State <span class="required">*</span></label>
+                            <select class="form-select" id="state" required>
+                                <option value="">Select State</option>
+                                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                                <option value="Bihar">Bihar</option>
+                                <option value="Delhi">Delhi</option>
+                                <option value="Gujarat">Gujarat</option>
+                                <option value="Karnataka">Karnataka</option>
+                                <option value="Maharashtra">Maharashtra</option>
+                                <option value="Punjab">Punjab</option>
+                                <option value="Rajasthan">Rajasthan</option>
+                                <option value="Tamil Nadu">Tamil Nadu</option>
+                                <option value="Uttar Pradesh">Uttar Pradesh</option>
+                                <option value="West Bengal">West Bengal</option>
+                            </select>
+                            <div class="invalid-feedback">Please select your state</div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">District <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="district" required>
+                            <div class="invalid-feedback">Please enter your district</div>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label">PIN Code <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="pincode" pattern="[0-9]{6}" required>
+                            <div class="invalid-feedback">Please enter a valid 6-digit PIN code</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Complaint Details -->
+                <div class="form-section">
+                    <h4 class="form-section-title">Complaint Details</h4>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Department <span class="required">*</span></label>
+                            <select class="form-select" id="department" required>
+                                <option value="">Select Department</option>
+                                <option value="Public Works">Public Works Department</option>
+                                <option value="Health">Health & Family Welfare</option>
+                                <option value="Education">Education Department</option>
+                                <option value="Police">Police Department</option>
+                                <option value="Revenue">Revenue Department</option>
+                                <option value="Electricity">Electricity Board</option>
+                                <option value="Water">Water Supply Department</option>
+                                <option value="Transport">Transport Department</option>
+                            </select>
+                            <div class="invalid-feedback">Please select a department</div>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Complaint Category <span class="required">*</span></label>
+                            <select class="form-select" id="category" required>
+                                <option value="">Select Category</option>
+                                <option value="Infrastructure">Infrastructure Issues</option>
+                                <option value="Service Delay">Service Delay</option>
+                                <option value="Corruption">Corruption/Misconduct</option>
+                                <option value="Document">Document/Certificate Issues</option>
+                                <option value="Financial">Financial Issues</option>
+                                <option value="Other">Other</option>
+                            </select>
+                            <div class="invalid-feedback">Please select a category</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Complaint Subject <span class="required">*</span></label>
+                            <input type="text" class="form-control" id="subject" required>
+                            <div class="invalid-feedback">Please enter complaint subject</div>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-12 mb-3">
+                            <label class="form-label">Detailed Description <span class="required">*</span></label>
+                            <textarea class="form-control" id="description" rows="6" required></textarea>
+                            <div class="invalid-feedback">Please provide detailed description (minimum 50 characters)</div>
+                            <small class="text-muted">Minimum 50 characters required</small>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Upload Supporting Documents (Optional)</label>
+                            <input type="file" class="form-control" id="documents" multiple>
+                            <small class="text-muted">Max 5 files (PDF, JPG, PNG) - 5MB each</small>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Priority Level <span class="required">*</span></label>
+                            <select class="form-select" id="priority" required>
+                                <option value="">Select Priority</option>
+                                <option value="Low">Low</option>
+                                <option value="Medium">Medium</option>
+                                <option value="High">High</option>
+                                <option value="Critical">Critical</option>
+                            </select>
+                            <div class="invalid-feedback">Please select priority level</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Declaration -->
+                <div class="form-section">
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="declaration" required>
+                        <label class="form-check-label" for="declaration">
+                            <strong>I hereby declare</strong> that the information provided above is true and correct to the best of my knowledge. I understand that providing false information may lead to legal action.
+                        </label>
+                        <div class="invalid-feedback">You must accept the declaration</div>
+                    </div>
+                </div>
+
+                <!-- Submit Buttons -->
+                <div class="text-center">
+                    <button type="submit" class="btn btn-submit me-2">
+                        <i class="fas fa-paper-plane"></i> Submit Complaint
+                    </button>
+                    <button type="reset" class="btn btn-reset">
+                        <i class="fas fa-redo"></i> Reset Form
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Success Modal -->
+    <div id="successModal" class="success-modal">
+        <div class="success-content">
+            <div class="success-icon">
+                <i class="fas fa-check-circle"></i>
+            </div>
+            <h3>Complaint Registered Successfully!</h3>
+            <p>Your complaint has been submitted and is now under review.</p>
+            <div class="complaint-id">
+                Complaint ID: <span id="generatedId"></span>
+            </div>
+            <p class="text-muted">Please save this ID for tracking your complaint status.</p>
+            <button class="btn btn-submit" onclick="closeModal()">
+                <i class="fas fa-home"></i> Go to Home
+            </button>
+            <button class="btn btn-reset ms-2" onclick="trackComplaint()">
+                <i class="fas fa-search"></i> Track Status
+            </button>
+        </div>
+    </div>
+
+    <div class="tricolor-strip"></div>
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 Government of India | Digital India Initiative | National Informatics Centre (NIC)</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Form Validation and Submission
+        document.getElementById('complaintForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Reset validation states
+            const form = e.target;
+            const inputs = form.querySelectorAll('input, select, textarea');
+            let isValid = true;
+
+            inputs.forEach(input => {
+                input.classList.remove('is-invalid');
+            });
+
+            // Validate Full Name
+            const fullName = document.getElementById('fullName');
+            if (fullName.value.trim().length < 3) {
+                fullName.classList.add('is-invalid');
+                isValid = false;
+            }
+
+            // Validate Email
+            const email = document.getElementById('email');
+            const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailPattern.test(email.value)) {
+                email.classList.add('is-invalid');
+                isValid = false;
+            }
+
+            // Validate Mobile
+            const mobile = document.getElementById('mobile');
+            if (!/^[0-9]{10}$/.test(mobile.value)) {
+                mobile.classList.add('is-invalid');
+                isValid = false;
+            }
+
+            // Validate Aadhaar (if provided)
+            const aadhaar = document.getElementById('aadhaar');
+            if (aadhaar.value && !/^[0-9]{12}$/.test(aadhaar.value)) {
+                aadhaar.classList.add('is-invalid');
+                isValid = false;
+            }
+
+            // Validate Address
+            const address = document.getElementById('address');
+            if (address.value.trim().length < 10) {
+                address.classList.add('is-invalid');
+                isValid = false;
+            }
+
+            // Validate State
+            const state = document.getElementById('state');
+            if (!state.value) {
+                state.classList.add('is-invalid');
+                isValid = false;
+            }
+
+            // Validate District
+            const district = document.getElementById('district');
+            if (district.value.trim().length < 2) {
+                district.classList.add('is-invalid');
+                isValid = false;
+            }
+
+            // Validate PIN Code
+            const pincode = document.getElementById('pincode');
+            if (!/^[0-9]{6}$/.test(pincode.value)) {
+                pincode.classList.add('is-invalid');
+                isValid = false;
+            }
+
+            // Validate Department
+            const department = document.getElementById('department');
+            if (!department.value) {
+                department.classList.add('is-invalid');
+                isValid = false;
+            }
+
+            // Validate Category
+            const category = document.getElementById('category');
+            if (!category.value) {
+                category.classList.add('is-invalid');
+                isValid = false;
+            }
+
+            // Validate Subject
+            const subject = document.getElementById('subject');
+            if (subject.value.trim().length < 5) {
+                subject.classList.add('is-invalid');
+                isValid = false;
+            }
+
+            // Validate Description
+            const description = document.getElementById('description');
+            if (description.value.trim().length < 50) {
+                description.classList.add('is-invalid');
+                isValid = false;
+            }
+
+            // Validate Priority
+            const priority = document.getElementById('priority');
+            if (!priority.value) {
+                priority.classList.add('is-invalid');
+                isValid = false;
+            }
+
+            // Validate Declaration
+            const declaration = document.getElementById('declaration');
+            if (!declaration.checked) {
+                declaration.classList.add('is-invalid');
+                isValid = false;
+            }
+
+            if (isValid) {
+                // Generate Complaint ID
+                const complaintId = 'CMP' + Date.now().toString().slice(-8);
+                document.getElementById('generatedId').textContent = complaintId;
+                
+                // Store in localStorage (simulating database)
+                const complaintData = {
+                    id: complaintId,
+                    name: fullName.value,
+                    email: email.value,
+                    mobile: mobile.value,
+                    department: department.value,
+                    category: category.value,
+                    subject: subject.value,
+                    description: description.value,
+                    priority: priority.value,
+                    status: 'Submitted',
+                    date: new Date().toISOString(),
+                    statusHistory: [
+                        { status: 'Submitted', date: new Date().toISOString(), description: 'Complaint submitted successfully' }
+                    ]
+                };
+                
+                // Store complaint
+                let complaints = JSON.parse(localStorage.getItem('complaints') || '[]');
+                complaints.push(complaintData);
+                localStorage.setItem('complaints', JSON.stringify(complaints));
+                
+                // Show success modal
+                document.getElementById('successModal').style.display = 'flex';
+                
+                // Reset form
+                form.reset();
+            } else {
+                // Scroll to first error
+                const firstError = form.querySelector('.is-invalid');
+                if (firstError) {
+                    firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        });
+
+        function closeModal() {
+            document.getElementById('successModal').style.display = 'none';
+            window.location.href = 'index.html';
+        }
+
+        function trackComplaint() {
+            window.location.href = 'track.html';
+        }
+
+        // Real-time validation feedback
+        document.querySelectorAll('input, select, textarea').forEach(input => {
+            input.addEventListener('blur', function() {
+                if (this.hasAttribute('required') && !this.value) {
+                    this.classList.add('is-invalid');
+                } else {
+                    this.classList.remove('is-invalid');
+                }
+            });
+
+            input.addEventListener('input', function() {
+                if (this.classList.contains('is-invalid') && this.value) {
+                    this.classList.remove('is-invalid');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

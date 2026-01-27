@@ -1,0 +1,584 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Departments Directory - Digital Grievance Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0A2E5C;
+            --background: #F2F2F2;
+            --accent: #FF9933;
+            --success: #138808;
+            --error: #C62828;
+            --white: #FFFFFF;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', 'Noto Sans Devanagari', sans-serif;
+            background-color: var(--background);
+            color: #333;
+        }
+
+        .tricolor-strip {
+            height: 5px;
+            background: linear-gradient(to right, #FF9933 0%, #FF9933 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #138808 66.66%, #138808 100%);
+        }
+
+        .header-top {
+            background-color: var(--white);
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .emblem-container {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .emblem-icon {
+            font-size: 50px;
+            color: var(--primary);
+        }
+
+        .emblem-text h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            margin: 0;
+        }
+
+        .emblem-text p {
+            font-size: 14px;
+            color: #666;
+            margin: 0;
+        }
+
+        .navbar {
+            background-color: var(--primary);
+            padding: 0;
+        }
+
+        .navbar-nav .nav-link {
+            color: var(--white) !important;
+            padding: 15px 20px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .navbar-nav .nav-link:hover {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .page-header {
+            background: linear-gradient(135deg, var(--primary) 0%, #1a4d8f 100%);
+            color: var(--white);
+            padding: 40px 0;
+            margin-bottom: 40px;
+        }
+
+        .page-header h2 {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .search-bar {
+            background-color: var(--white);
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .search-input {
+            border: 2px solid #ddd;
+            border-radius: 5px;
+            padding: 10px 15px;
+            font-size: 16px;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(10, 46, 92, 0.15);
+        }
+
+        .departments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 40px;
+        }
+
+        .department-card {
+            background-color: var(--white);
+            border-radius: 10px;
+            padding: 25px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+            animation: fadeIn 0.6s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .department-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 5px;
+            height: 100%;
+            background-color: var(--accent);
+            transition: width 0.3s ease;
+        }
+
+        .department-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+
+        .department-card:hover::before {
+            width: 100%;
+            opacity: 0.1;
+        }
+
+        .department-icon {
+            font-size: 40px;
+            color: var(--accent);
+            margin-bottom: 15px;
+        }
+
+        .department-name {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .department-head {
+            font-size: 14px;
+            color: #666;
+            margin-bottom: 15px;
+        }
+
+        .department-info {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .info-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+
+        .info-item i {
+            width: 20px;
+            color: var(--accent);
+            margin-right: 10px;
+        }
+
+        .contact-button {
+            background-color: var(--primary);
+            color: var(--white);
+            border: none;
+            padding: 8px 20px;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 15px;
+        }
+
+        .contact-button:hover {
+            background-color: #1a4d8f;
+            transform: translateY(-2px);
+        }
+
+        .stats-section {
+            background-color: var(--white);
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            text-align: center;
+        }
+
+        .stat-item {
+            padding: 20px;
+            background: linear-gradient(135deg, var(--primary) 0%, #1a4d8f 100%);
+            color: var(--white);
+            border-radius: 8px;
+        }
+
+        .stat-number {
+            font-size: 36px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+            display: none;
+        }
+
+        .footer {
+            background-color: var(--primary);
+            color: var(--white);
+            padding: 40px 0 20px;
+            margin-top: 40px;
+        }
+
+        .footer-bottom {
+            border-top: 1px solid rgba(255,255,255,0.2);
+            padding-top: 20px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .departments-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .page-header h2 {
+                font-size: 24px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="tricolor-strip"></div>
+
+    <header class="header-top">
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-md-12">
+                    <div class="emblem-container">
+                        <div class="emblem-icon">
+                            <i class="fas fa-landmark"></i>
+                        </div>
+                        <div class="emblem-text">
+                            <h1>Digital Complaint & Grievance Redressal Platform</h1>
+                            <p>भारत सरकार | Government of India</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mx-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="index.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="register.html">Register Complaint</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="track.html">Track Status</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="departments.html">Departments</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="help.html">Help & FAQ</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="login.html">Officer Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="page-header">
+        <div class="container">
+            <h2><i class="fas fa-building"></i> Government Departments Directory</h2>
+            <p>Contact information and details of all registered departments</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- Statistics Section -->
+        <div class="stats-section">
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-number">12</div>
+                    <div class="stat-label">Total Departments</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">156</div>
+                    <div class="stat-label">Officers Available</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">24/7</div>
+                    <div class="stat-label">Support Available</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-number">98%</div>
+                    <div class="stat-label">Response Rate</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search Bar -->
+        <div class="search-bar">
+            <input type="text" class="search-input" id="searchInput" placeholder="Search departments by name, head, or contact...">
+        </div>
+
+        <!-- Departments Grid -->
+        <div class="departments-grid" id="departmentsGrid">
+            <!-- Departments will be loaded here -->
+        </div>
+
+        <div class="no-results" id="noResults">
+            <i class="fas fa-search" style="font-size: 60px; color: #ccc; margin-bottom: 20px;"></i>
+            <h4>No Departments Found</h4>
+            <p>Try adjusting your search terms</p>
+        </div>
+    </div>
+
+    <div class="tricolor-strip"></div>
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-bottom">
+                <p>&copy; 2026 Government of India | Digital India Initiative | National Informatics Centre (NIC)</p>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const departments = [
+            {
+                name: 'Public Works Department',
+                icon: 'fa-road',
+                head: 'Shri Rajesh Kumar, IAS',
+                email: 'pwd@gov.in',
+                phone: '1800-111-2222',
+                address: 'PWD Bhawan, New Delhi',
+                workingHours: 'Mon-Fri: 9:00 AM - 6:00 PM'
+            },
+            {
+                name: 'Health & Family Welfare',
+                icon: 'fa-heartbeat',
+                head: 'Dr. Priya Sharma, IAS',
+                email: 'health@gov.in',
+                phone: '1800-111-3333',
+                address: 'Health Ministry, Nirman Bhawan',
+                workingHours: 'Mon-Sat: 8:00 AM - 8:00 PM'
+            },
+            {
+                name: 'Education Department',
+                icon: 'fa-graduation-cap',
+                head: 'Prof. Anil Verma',
+                email: 'education@gov.in',
+                phone: '1800-111-4444',
+                address: 'Shiksha Bhawan, Delhi',
+                workingHours: 'Mon-Fri: 9:00 AM - 5:00 PM'
+            },
+            {
+                name: 'Police Department',
+                icon: 'fa-shield-alt',
+                head: 'Shri Vikram Singh, IPS',
+                email: 'police@gov.in',
+                phone: '100 / 1800-111-5555',
+                address: 'Police Headquarters, State',
+                workingHours: '24/7 Emergency Services'
+            },
+            {
+                name: 'Revenue Department',
+                icon: 'fa-file-invoice-dollar',
+                head: 'Shri Ramesh Gupta, IAS',
+                email: 'revenue@gov.in',
+                phone: '1800-111-6666',
+                address: 'Revenue Bhawan, Civil Lines',
+                workingHours: 'Mon-Fri: 10:00 AM - 5:00 PM'
+            },
+            {
+                name: 'Electricity Board',
+                icon: 'fa-bolt',
+                head: 'Er. Suresh Reddy',
+                email: 'electricity@gov.in',
+                phone: '1800-111-7777',
+                address: 'Power House, Sector 12',
+                workingHours: '24/7 Complaint Centre'
+            },
+            {
+                name: 'Water Supply Department',
+                icon: 'fa-tint',
+                head: 'Er. Meena Patel',
+                email: 'water@gov.in',
+                phone: '1800-111-8888',
+                address: 'Jal Bhawan, City Centre',
+                workingHours: 'Mon-Sat: 8:00 AM - 6:00 PM'
+            },
+            {
+                name: 'Transport Department',
+                icon: 'fa-bus',
+                head: 'Shri Ashok Kumar, IAS',
+                email: 'transport@gov.in',
+                phone: '1800-111-9999',
+                address: 'Transport Nagar, Main Road',
+                workingHours: 'Mon-Fri: 9:00 AM - 5:00 PM'
+            },
+            {
+                name: 'Social Welfare Department',
+                icon: 'fa-hands-helping',
+                head: 'Smt. Kavita Devi, IAS',
+                email: 'socialwelfare@gov.in',
+                phone: '1800-222-1111',
+                address: 'Welfare Bhawan, Gandhi Nagar',
+                workingHours: 'Mon-Fri: 9:00 AM - 6:00 PM'
+            },
+            {
+                name: 'Agriculture Department',
+                icon: 'fa-leaf',
+                head: 'Dr. Mohan Singh',
+                email: 'agriculture@gov.in',
+                phone: '1800-222-2222',
+                address: 'Krishi Bhawan, Pusa Complex',
+                workingHours: 'Mon-Sat: 9:00 AM - 5:00 PM'
+            },
+            {
+                name: 'Housing & Urban Development',
+                icon: 'fa-city',
+                head: 'Shri Deepak Joshi, IAS',
+                email: 'housing@gov.in',
+                phone: '1800-222-3333',
+                address: 'Urban Development Office',
+                workingHours: 'Mon-Fri: 10:00 AM - 6:00 PM'
+            },
+            {
+                name: 'Labour & Employment',
+                icon: 'fa-briefcase',
+                head: 'Shri Vinod Sharma',
+                email: 'labour@gov.in',
+                phone: '1800-222-4444',
+                address: 'Shram Shakti Bhawan',
+                workingHours: 'Mon-Fri: 9:00 AM - 5:00 PM'
+            }
+        ];
+
+        function createDepartmentCard(dept, index) {
+            const delay = index * 0.1;
+            return `
+                <div class="department-card" style="animation-delay: ${delay}s;">
+                    <div class="department-icon">
+                        <i class="fas ${dept.icon}"></i>
+                    </div>
+                    <div class="department-name">${dept.name}</div>
+                    <div class="department-head">
+                        <i class="fas fa-user"></i> ${dept.head}
+                    </div>
+                    <div class="department-info">
+                        <div class="info-item">
+                            <i class="fas fa-envelope"></i>
+                            <span>${dept.email}</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-phone"></i>
+                            <span>${dept.phone}</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>${dept.address}</span>
+                        </div>
+                        <div class="info-item">
+                            <i class="fas fa-clock"></i>
+                            <span>${dept.workingHours}</span>
+                        </div>
+                    </div>
+                    <button class="contact-button" onclick="contactDepartment('${dept.name}')">
+                        <i class="fas fa-paper-plane"></i> Contact Department
+                    </button>
+                </div>
+            `;
+        }
+
+        function displayDepartments(depts) {
+            const grid = document.getElementById('departmentsGrid');
+            const noResults = document.getElementById('noResults');
+            
+            if (depts.length === 0) {
+                grid.innerHTML = '';
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+                grid.innerHTML = depts.map((dept, index) => createDepartmentCard(dept, index)).join('');
+            }
+        }
+
+        function searchDepartments(query) {
+            const filtered = departments.filter(dept => {
+                const searchText = query.toLowerCase();
+                return dept.name.toLowerCase().includes(searchText) ||
+                       dept.head.toLowerCase().includes(searchText) ||
+                       dept.email.toLowerCase().includes(searchText) ||
+                       dept.phone.includes(searchText);
+            });
+            displayDepartments(filtered);
+        }
+
+        function contactDepartment(name) {
+            alert(`Opening contact form for ${name}\n\nYou can:\n• Call the helpline\n• Send an email\n• Register a complaint`);
+        }
+
+        // Search functionality
+        document.getElementById('searchInput').addEventListener('input', function(e) {
+            searchDepartments(e.target.value);
+        });
+
+        // Initial load
+        displayDepartments(departments);
+    </script>
+</body>
+</html>
