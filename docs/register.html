@@ -157,12 +157,18 @@
             font-weight: 600;
             border-radius: 5px;
             transition: all 0.3s ease;
+            position: relative;
         }
 
-        .btn-submit:hover {
+        .btn-submit:hover:not(:disabled) {
             background-color: #e68a2e;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(255,153,51,0.4);
+        }
+
+        .btn-submit:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
         }
 
         .btn-reset {
@@ -178,6 +184,12 @@
 
         .btn-reset:hover {
             background-color: #5a6268;
+        }
+
+        .spinner-border-sm {
+            width: 1rem;
+            height: 1rem;
+            border-width: 0.15em;
         }
 
         .success-modal {
@@ -208,6 +220,12 @@
             color: var(--success);
             margin-bottom: 20px;
             animation: checkmark 0.6s ease;
+        }
+
+        .error-icon {
+            font-size: 80px;
+            color: var(--error);
+            margin-bottom: 20px;
         }
 
         .success-content h3 {
@@ -358,24 +376,24 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Full Name <span class="required">*</span></label>
-                            <input type="text" class="form-control" id="fullName" required>
+                            <input type="text" class="form-control" id="fullName" name="name" required>
                             <div class="invalid-feedback">Please enter your full name</div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Email Address <span class="required">*</span></label>
-                            <input type="email" class="form-control" id="email" required>
+                            <input type="email" class="form-control" id="email" name="email" required>
                             <div class="invalid-feedback">Please enter a valid email address</div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Mobile Number <span class="required">*</span></label>
-                            <input type="tel" class="form-control" id="mobile" pattern="[0-9]{10}" required>
+                            <input type="tel" class="form-control" id="mobile" name="mobile" pattern="[0-9]{10}" required>
                             <div class="invalid-feedback">Please enter a valid 10-digit mobile number</div>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Aadhaar Number (Optional)</label>
-                            <input type="text" class="form-control" id="aadhaar" pattern="[0-9]{12}">
+                            <input type="text" class="form-control" id="aadhaar" name="aadhaar" pattern="[0-9]{12}">
                             <div class="invalid-feedback">Please enter a valid 12-digit Aadhaar number</div>
                         </div>
                     </div>
@@ -387,14 +405,14 @@
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <label class="form-label">Complete Address <span class="required">*</span></label>
-                            <textarea class="form-control" id="address" rows="2" required></textarea>
+                            <textarea class="form-control" id="address" name="address" rows="2" required></textarea>
                             <div class="invalid-feedback">Please enter your complete address</div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-4 mb-3">
                             <label class="form-label">State <span class="required">*</span></label>
-                            <select class="form-select" id="state" required>
+                            <select class="form-select" id="state" name="state" required>
                                 <option value="">Select State</option>
                                 <option value="Andhra Pradesh">Andhra Pradesh</option>
                                 <option value="Bihar">Bihar</option>
@@ -412,12 +430,12 @@
                         </div>
                         <div class="col-md-4 mb-3">
                             <label class="form-label">District <span class="required">*</span></label>
-                            <input type="text" class="form-control" id="district" required>
+                            <input type="text" class="form-control" id="district" name="district" required>
                             <div class="invalid-feedback">Please enter your district</div>
                         </div>
                         <div class="col-md-4 mb-3">
                             <label class="form-label">PIN Code <span class="required">*</span></label>
-                            <input type="text" class="form-control" id="pincode" pattern="[0-9]{6}" required>
+                            <input type="text" class="form-control" id="pincode" name="pincode" pattern="[0-9]{6}" required>
                             <div class="invalid-feedback">Please enter a valid 6-digit PIN code</div>
                         </div>
                     </div>
@@ -429,7 +447,7 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Department <span class="required">*</span></label>
-                            <select class="form-select" id="department" required>
+                            <select class="form-select" id="department" name="department" required>
                                 <option value="">Select Department</option>
                                 <option value="Public Works">Public Works Department</option>
                                 <option value="Health">Health & Family Welfare</option>
@@ -444,7 +462,7 @@
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Complaint Category <span class="required">*</span></label>
-                            <select class="form-select" id="category" required>
+                            <select class="form-select" id="category" name="category" required>
                                 <option value="">Select Category</option>
                                 <option value="Infrastructure">Infrastructure Issues</option>
                                 <option value="Service Delay">Service Delay</option>
@@ -459,14 +477,14 @@
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <label class="form-label">Complaint Subject <span class="required">*</span></label>
-                            <input type="text" class="form-control" id="subject" required>
+                            <input type="text" class="form-control" id="subject" name="subject" required>
                             <div class="invalid-feedback">Please enter complaint subject</div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-md-12 mb-3">
                             <label class="form-label">Detailed Description <span class="required">*</span></label>
-                            <textarea class="form-control" id="description" rows="6" required></textarea>
+                            <textarea class="form-control" id="description" name="description" rows="6" required></textarea>
                             <div class="invalid-feedback">Please provide detailed description (minimum 50 characters)</div>
                             <small class="text-muted">Minimum 50 characters required</small>
                         </div>
@@ -474,12 +492,12 @@
                     <div class="row">
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Upload Supporting Documents (Optional)</label>
-                            <input type="file" class="form-control" id="documents" multiple>
+                            <input type="file" class="form-control" id="documents" name="documents" multiple>
                             <small class="text-muted">Max 5 files (PDF, JPG, PNG) - 5MB each</small>
                         </div>
                         <div class="col-md-6 mb-3">
                             <label class="form-label">Priority Level <span class="required">*</span></label>
-                            <select class="form-select" id="priority" required>
+                            <select class="form-select" id="priority" name="priority" required>
                                 <option value="">Select Priority</option>
                                 <option value="Low">Low</option>
                                 <option value="Medium">Medium</option>
@@ -504,7 +522,7 @@
 
                 <!-- Submit Buttons -->
                 <div class="text-center">
-                    <button type="submit" class="btn btn-submit me-2">
+                    <button type="submit" class="btn btn-submit me-2" id="submitBtn">
                         <i class="fas fa-paper-plane"></i> Submit Complaint
                     </button>
                     <button type="reset" class="btn btn-reset">
@@ -518,21 +536,23 @@
     <!-- Success Modal -->
     <div id="successModal" class="success-modal">
         <div class="success-content">
-            <div class="success-icon">
+            <div class="success-icon" id="modalIcon">
                 <i class="fas fa-check-circle"></i>
             </div>
-            <h3>Complaint Registered Successfully!</h3>
-            <p>Your complaint has been submitted and is now under review.</p>
-            <div class="complaint-id">
+            <h3 id="modalTitle">Complaint Registered Successfully!</h3>
+            <p id="modalMessage">Your complaint has been submitted and is now under review.</p>
+            <div class="complaint-id" id="complaintIdContainer" style="display: none;">
                 Complaint ID: <span id="generatedId"></span>
             </div>
-            <p class="text-muted">Please save this ID for tracking your complaint status.</p>
-            <button class="btn btn-submit" onclick="closeModal()">
-                <i class="fas fa-home"></i> Go to Home
-            </button>
-            <button class="btn btn-reset ms-2" onclick="trackComplaint()">
-                <i class="fas fa-search"></i> Track Status
-            </button>
+            <p class="text-muted" id="trackingMessage" style="display: none;">Please save this ID for tracking your complaint status.</p>
+            <div id="modalButtons">
+                <button class="btn btn-submit" onclick="closeModal()">
+                    <i class="fas fa-home"></i> Go to Home
+                </button>
+                <button class="btn btn-reset ms-2" onclick="trackComplaint()">
+                    <i class="fas fa-search"></i> Track Status
+                </button>
+            </div>
         </div>
     </div>
 
@@ -547,8 +567,11 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
+        // AWS API Configuration
+        const API_URL = 'https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/complaints';
+
         // Form Validation and Submission
-        document.getElementById('complaintForm').addEventListener('submit', function(e) {
+        document.getElementById('complaintForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             // Reset validation states
@@ -659,47 +682,120 @@
                 isValid = false;
             }
 
-            if (isValid) {
-                // Generate Complaint ID
-                const complaintId = 'CMP' + Date.now().toString().slice(-8);
-                document.getElementById('generatedId').textContent = complaintId;
-                
-                // Store in localStorage (simulating database)
-                const complaintData = {
-                    id: complaintId,
-                    name: fullName.value,
-                    email: email.value,
-                    mobile: mobile.value,
-                    department: department.value,
-                    category: category.value,
-                    subject: subject.value,
-                    description: description.value,
-                    priority: priority.value,
-                    status: 'Submitted',
-                    date: new Date().toISOString(),
-                    statusHistory: [
-                        { status: 'Submitted', date: new Date().toISOString(), description: 'Complaint submitted successfully' }
-                    ]
-                };
-                
-                // Store complaint
-                let complaints = JSON.parse(localStorage.getItem('complaints') || '[]');
-                complaints.push(complaintData);
-                localStorage.setItem('complaints', JSON.stringify(complaints));
-                
-                // Show success modal
-                document.getElementById('successModal').style.display = 'flex';
-                
-                // Reset form
-                form.reset();
-            } else {
+            if (!isValid) {
                 // Scroll to first error
                 const firstError = form.querySelector('.is-invalid');
                 if (firstError) {
                     firstError.scrollIntoView({ behavior: 'smooth', block: 'center' });
                 }
+                return;
+            }
+
+            // Prepare data for AWS API
+            const complaintData = {
+                name: fullName.value.trim(),
+                mobile: mobile.value.trim(),
+                email: email.value.trim(),
+                aadhaar: aadhaar.value.trim() || null,
+                address: address.value.trim(),
+                state: state.value,
+                district: district.value.trim(),
+                pincode: pincode.value.trim(),
+                department: department.value,
+                category: category.value,
+                subject: subject.value.trim(),
+                description: description.value.trim(),
+                priority: priority.value,
+                timestamp: new Date().toISOString()
+            };
+
+            // Disable submit button and show loading
+            const submitBtn = document.getElementById('submitBtn');
+            const originalBtnContent = submitBtn.innerHTML;
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Submitting...';
+
+            try {
+                // Submit to AWS API
+                const response = await fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(complaintData)
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+
+                const result = await response.json();
+                
+                // Show success modal
+                showSuccessModal(result.complaintId || result.id);
+                
+                // Reset form
+                form.reset();
+                
+            } catch (error) {
+                console.error('Error submitting complaint:', error);
+                showErrorModal(error.message);
+            } finally {
+                // Re-enable submit button
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalBtnContent;
             }
         });
+
+        function showSuccessModal(complaintId) {
+            const modal = document.getElementById('successModal');
+            const modalIcon = document.getElementById('modalIcon');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+            const complaintIdContainer = document.getElementById('complaintIdContainer');
+            const trackingMessage = document.getElementById('trackingMessage');
+            const generatedId = document.getElementById('generatedId');
+
+            // Set success styling
+            modalIcon.innerHTML = '<i class="fas fa-check-circle"></i>';
+            modalIcon.className = 'success-icon';
+            modalTitle.textContent = 'Complaint Registered Successfully!';
+            modalMessage.textContent = 'Your complaint has been submitted and is now under review.';
+            
+            // Show complaint ID
+            generatedId.textContent = complaintId;
+            complaintIdContainer.style.display = 'block';
+            trackingMessage.style.display = 'block';
+            
+            // Show modal
+            modal.style.display = 'flex';
+        }
+
+        function showErrorModal(errorMessage) {
+            const modal = document.getElementById('successModal');
+            const modalIcon = document.getElementById('modalIcon');
+            const modalTitle = document.getElementById('modalTitle');
+            const modalMessage = document.getElementById('modalMessage');
+            const complaintIdContainer = document.getElementById('complaintIdContainer');
+            const trackingMessage = document.getElementById('trackingMessage');
+
+            // Set error styling
+            modalIcon.innerHTML = '<i class="fas fa-times-circle"></i>';
+            modalIcon.className = 'error-icon';
+            modalTitle.textContent = 'Submission Failed';
+            modalMessage.textContent = 'We encountered an error while submitting your complaint. Please try again later.';
+            
+            if (errorMessage) {
+                modalMessage.textContent += ' Error: ' + errorMessage;
+            }
+            
+            // Hide complaint ID
+            complaintIdContainer.style.display = 'none';
+            trackingMessage.style.display = 'none';
+            
+            // Show modal
+            modal.style.display = 'flex';
+        }
 
         function closeModal() {
             document.getElementById('successModal').style.display = 'none';
