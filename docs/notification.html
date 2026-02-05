@@ -1,0 +1,651 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notifications - Digital Grievance Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0A2E5C;
+            --background: #F2F2F2;
+            --accent: #FF9933;
+            --success: #138808;
+            --error: #C62828;
+            --white: #FFFFFF;
+            --sidebar-width: 260px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', 'Noto Sans Devanagari', sans-serif;
+            background-color: var(--background);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .tricolor-strip {
+            height: 5px;
+            background: linear-gradient(to right, #FF9933 0%, #FF9933 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #138808 66.66%, #138808 100%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1001;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 5px;
+            bottom: 0;
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary) 0%, #1a4d8f 100%);
+            color: var(--white);
+            padding: 20px 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-header h4 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header p {
+            font-size: 12px;
+            opacity: 0.8;
+            margin: 0;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: var(--white);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .sidebar-menu a::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: var(--accent);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .sidebar-menu a.active::before {
+            transform: scaleY(1);
+        }
+
+        .sidebar-menu a i {
+            width: 25px;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        .user-profile {
+            padding: 20px;
+            margin-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .user-profile-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-info .name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .user-info .role {
+            font-size: 11px;
+            opacity: 0.7;
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 25px;
+            min-height: 100vh;
+            margin-top: 5px;
+        }
+
+        .top-bar {
+            background-color: var(--white);
+            padding: 20px 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .welcome-text h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .welcome-text p {
+            font-size: 14px;
+            color: #666;
+            margin: 0;
+        }
+
+        .top-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .btn-action {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary-action {
+            background-color: var(--accent);
+            color: var(--white);
+        }
+
+        .btn-primary-action:hover {
+            background-color: #e68a2e;
+        }
+
+        .btn-secondary-action {
+            background-color: var(--background);
+            color: var(--primary);
+        }
+
+        .btn-secondary-action:hover {
+            background-color: #e0e0e0;
+        }
+
+        .notifications-container {
+            background-color: var(--white);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .notification-filters {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 1px solid #ddd;
+            background-color: var(--white);
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active {
+            background-color: var(--primary);
+            color: var(--white);
+            border-color: var(--primary);
+        }
+
+        .notification-item {
+            display: flex;
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .notification-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .notification-item.unread {
+            background-color: #f0f8ff;
+        }
+
+        .notif-icon {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 18px;
+            color: var(--white);
+        }
+
+        .notif-icon.info { background-color: #0d6efd; }
+        .notif-icon.success { background-color: var(--success); }
+        .notif-icon.warning { background-color: #ffc107; }
+        .notif-icon.danger { background-color: var(--error); }
+
+        .notif-content {
+            flex: 1;
+        }
+
+        .notif-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 5px;
+        }
+
+        .notif-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .notif-time {
+            font-size: 11px;
+            color: #999;
+        }
+
+        .notif-message {
+            font-size: 13px;
+            color: #666;
+            margin-bottom: 8px;
+        }
+
+        .notif-actions {
+            display: flex;
+            gap: 10px;
+        }
+
+        .notif-btn {
+            padding: 5px 12px;
+            border: none;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .notif-btn.primary {
+            background-color: var(--primary);
+            color: var(--white);
+        }
+
+        .notif-btn.secondary {
+            background-color: var(--background);
+            color: var(--primary);
+        }
+
+        .unread-badge {
+            background-color: var(--error);
+            color: var(--white);
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-size: 11px;
+            font-weight: 700;
+            margin-left: 5px;
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .notification-filters {
+                flex-wrap: wrap;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="tricolor-strip"></div>
+
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h4><i class="fas fa-landmark"></i> Gov Portal</h4>
+            <p>Complaint Management System</p>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li>
+                <a href="dashboard.html">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="all-complaints.html">
+                    <i class="fas fa-file-alt"></i>
+                    <span>All Complaints</span>
+                </a>
+            </li>
+            <li>
+                <a href="pending.html">
+                    <i class="fas fa-clock"></i>
+                    <span>Pending</span>
+                </a>
+            </li>
+            <li>
+                <a href="resolved.html">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Resolved</span>
+                </a>
+            </li>
+            <li>
+                <a href="admin-departments.html">
+                    <i class="fas fa-building"></i>
+                    <span>Departments</span>
+                </a>
+            </li>
+            <li>
+                <a href="analytics.html">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Analytics</span>
+                </a>
+            </li>
+            <li>
+                <a href="notification.html" class="active">
+                    <i class="fas fa-bell"></i>
+                    <span>Notifications</span>
+                </a>
+            </li>
+            <li>
+                <a href="settings.html">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+            <li>
+                <a href="index.html" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="user-profile">
+            <div class="user-profile-content">
+                <div class="user-avatar">A</div>
+                <div class="user-info">
+                    <div class="name" id="userName">Admin User</div>
+                    <div class="role">System Administrator</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="top-bar">
+            <div class="welcome-text">
+                <h2>Notifications <span class="unread-badge" id="unreadCount">3</span></h2>
+                <p>Stay updated with system alerts and updates</p>
+            </div>
+            <div class="top-actions">
+                <button class="btn-action btn-secondary-action" onclick="markAllRead()">
+                    <i class="fas fa-check-double"></i> Mark All Read
+                </button>
+                <button class="btn-action btn-primary-action" onclick="clearAll()">
+                    <i class="fas fa-trash"></i> Clear All
+                </button>
+            </div>
+        </div>
+
+        <div class="notifications-container">
+            <div class="notification-filters">
+                <button class="filter-btn active" onclick="filterNotifications('all')">All</button>
+                <button class="filter-btn" onclick="filterNotifications('unread')">Unread</button>
+                <button class="filter-btn" onclick="filterNotifications('complaints')">Complaints</button>
+                <button class="filter-btn" onclick="filterNotifications('system')">System</button>
+                <button class="filter-btn" onclick="filterNotifications('urgent')">Urgent</button>
+            </div>
+
+            <div id="notificationsList">
+                <div class="notification-item unread" data-type="urgent">
+                    <div class="notif-icon danger">
+                        <i class="fas fa-exclamation-triangle"></i>
+                    </div>
+                    <div class="notif-content">
+                        <div class="notif-header">
+                            <div class="notif-title">Critical Complaint Requires Attention</div>
+                            <div class="notif-time">2 minutes ago</div>
+                        </div>
+                        <div class="notif-message">
+                            Complaint CMP23456789 marked as Critical priority by Health Department. Immediate action required.
+                        </div>
+                        <div class="notif-actions">
+                            <button class="notif-btn primary" onclick="viewComplaint('CMP23456789')">View Details</button>
+                            <button class="notif-btn secondary" onclick="dismissNotification(this)">Dismiss</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="notification-item unread" data-type="complaints">
+                    <div class="notif-icon info">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div class="notif-content">
+                        <div class="notif-header">
+                            <div class="notif-title">New Complaint Registered</div>
+                            <div class="notif-time">15 minutes ago</div>
+                        </div>
+                        <div class="notif-message">
+                            A new complaint has been submitted to Public Works department regarding road maintenance.
+                        </div>
+                        <div class="notif-actions">
+                            <button class="notif-btn primary" onclick="assignComplaint()">Assign Now</button>
+                            <button class="notif-btn secondary" onclick="dismissNotification(this)">Later</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="notification-item unread" data-type="complaints">
+                    <div class="notif-icon success">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="notif-content">
+                        <div class="notif-header">
+                            <div class="notif-title">Complaint Resolved Successfully</div>
+                            <div class="notif-time">1 hour ago</div>
+                        </div>
+                        <div class="notif-message">
+                            Complaint CMP12345678 has been marked as resolved by Public Works department.
+                        </div>
+                        <div class="notif-actions">
+                            <button class="notif-btn primary" onclick="viewComplaint('CMP12345678')">View Report</button>
+                            <button class="notif-btn secondary" onclick="dismissNotification(this)">Dismiss</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="notification-item" data-type="system">
+                    <div class="notif-icon warning">
+                        <i class="fas fa-server"></i>
+                    </div>
+                    <div class="notif-content">
+                        <div class="notif-header">
+                            <div class="notif-title">System Maintenance Scheduled</div>
+                            <div class="notif-time">3 hours ago</div>
+                        </div>
+                        <div class="notif-message">
+                            System maintenance is scheduled for tonight at 11:00 PM IST. Expected downtime: 2 hours.
+                        </div>
+                        <div class="notif-actions">
+                            <button class="notif-btn secondary" onclick="dismissNotification(this)">Acknowledge</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="notification-item" data-type="complaints">
+                    <div class="notif-icon info">
+                        <i class="fas fa-comment"></i>
+                    </div>
+                    <div class="notif-content">
+                        <div class="notif-header">
+                            <div class="notif-title">New Comment on Complaint</div>
+                            <div class="notif-time">5 hours ago</div>
+                        </div>
+                        <div class="notif-message">
+                            Department head added a comment to complaint CMP34567890. Review requested.
+                        </div>
+                        <div class="notif-actions">
+                            <button class="notif-btn primary" onclick="viewComplaint('CMP34567890')">View Comment</button>
+                            <button class="notif-btn secondary" onclick="dismissNotification(this)">Dismiss</button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="notification-item" data-type="system">
+                    <div class="notif-icon success">
+                        <i class="fas fa-database"></i>
+                    </div>
+                    <div class="notif-content">
+                        <div class="notif-header">
+                            <div class="notif-title">Database Backup Completed</div>
+                            <div class="notif-time">Yesterday</div>
+                        </div>
+                        <div class="notif-message">
+                            Automated database backup completed successfully. All data secured.
+                        </div>
+                        <div class="notif-actions">
+                            <button class="notif-btn secondary" onclick="dismissNotification(this)">Dismiss</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const loggedInUser = JSON.parse(sessionStorage.getItem('loggedInUser') || 'null');
+        if (!loggedInUser) {
+            window.location.href = 'login.html';
+        } else {
+            document.getElementById('userName').textContent = loggedInUser.name;
+            document.querySelector('.user-avatar').textContent = loggedInUser.name.charAt(0);
+        }
+
+        function filterNotifications(type) {
+            const buttons = document.querySelectorAll('.filter-btn');
+            buttons.forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const items = document.querySelectorAll('.notification-item');
+            items.forEach(item => {
+                if (type === 'all') {
+                    item.style.display = 'flex';
+                } else if (type === 'unread') {
+                    item.style.display = item.classList.contains('unread') ? 'flex' : 'none';
+                } else {
+                    item.style.display = item.dataset.type === type ? 'flex' : 'none';
+                }
+            });
+        }
+
+        function markAllRead() {
+            const unreadItems = document.querySelectorAll('.notification-item.unread');
+            unreadItems.forEach(item => item.classList.remove('unread'));
+            document.getElementById('unreadCount').textContent = '0';
+        }
+
+        function clearAll() {
+            if (confirm('Are you sure you want to clear all notifications?')) {
+                document.getElementById('notificationsList').innerHTML = '<p style="text-align: center; padding: 40px; color: #999;">No notifications</p>';
+                document.getElementById('unreadCount').textContent = '0';
+            }
+        }
+
+        function dismissNotification(btn) {
+            const item = btn.closest('.notification-item');
+            item.style.opacity = '0';
+            setTimeout(() => {
+                item.remove();
+                updateUnreadCount();
+            }, 300);
+        }
+
+        function updateUnreadCount() {
+            const unreadCount = document.querySelectorAll('.notification-item.unread').length;
+            document.getElementById('unreadCount').textContent = unreadCount;
+        }
+
+        function viewComplaint(id) {
+            alert(`Viewing complaint: ${id}\n\nThis would open the complaint details.`);
+        }
+
+        function assignComplaint() {
+            alert('Opening complaint assignment dialog...');
+        }
+
+        function logout() {
+            sessionStorage.removeItem('loggedInUser');
+        }
+    </script>
+</body>
+</html>

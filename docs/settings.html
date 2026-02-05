@@ -1,0 +1,787 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Digital Grievance Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #0A2E5C;
+            --background: #F2F2F2;
+            --accent: #FF9933;
+            --success: #138808;
+            --error: #C62828;
+            --white: #FFFFFF;
+            --sidebar-width: 260px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Roboto', 'Noto Sans Devanagari', sans-serif;
+            background-color: var(--background);
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .tricolor-strip {
+            height: 5px;
+            background: linear-gradient(to right, #FF9933 0%, #FF9933 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #138808 66.66%, #138808 100%);
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1001;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 5px;
+            bottom: 0;
+            width: var(--sidebar-width);
+            background: linear-gradient(180deg, var(--primary) 0%, #1a4d8f 100%);
+            color: var(--white);
+            padding: 20px 0;
+            transition: all 0.3s ease;
+            z-index: 1000;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 0 20px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+            margin-bottom: 20px;
+        }
+
+        .sidebar-header h4 {
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .sidebar-header p {
+            font-size: 12px;
+            opacity: 0.8;
+            margin: 0;
+        }
+
+        .sidebar-menu {
+            list-style: none;
+            padding: 0;
+        }
+
+        .sidebar-menu li {
+            margin-bottom: 5px;
+        }
+
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            padding: 12px 20px;
+            color: var(--white);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .sidebar-menu a::before {
+            content: '';
+            position: absolute;
+            left: 0;
+            top: 0;
+            bottom: 0;
+            width: 4px;
+            background-color: var(--accent);
+            transform: scaleY(0);
+            transition: transform 0.3s ease;
+        }
+
+        .sidebar-menu a:hover,
+        .sidebar-menu a.active {
+            background-color: rgba(255,255,255,0.1);
+        }
+
+        .sidebar-menu a.active::before {
+            transform: scaleY(1);
+        }
+
+        .sidebar-menu a i {
+            width: 25px;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        .user-profile {
+            padding: 20px;
+            margin-top: 20px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .user-profile-content {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--accent);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .user-info {
+            flex: 1;
+        }
+
+        .user-info .name {
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .user-info .role {
+            font-size: 11px;
+            opacity: 0.7;
+        }
+
+        .main-content {
+            margin-left: var(--sidebar-width);
+            padding: 25px;
+            min-height: 100vh;
+            margin-top: 5px;
+        }
+
+        .top-bar {
+            background-color: var(--white);
+            padding: 20px 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .welcome-text h2 {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .welcome-text p {
+            font-size: 14px;
+            color: #666;
+            margin: 0;
+        }
+
+        .settings-tabs {
+            background-color: var(--white);
+            padding: 0;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 25px;
+            display: flex;
+            overflow-x: auto;
+        }
+
+        .tab-btn {
+            padding: 15px 25px;
+            border: none;
+            background: none;
+            font-size: 14px;
+            font-weight: 600;
+            color: #666;
+            cursor: pointer;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .tab-btn.active {
+            color: var(--primary);
+            border-bottom-color: var(--accent);
+        }
+
+        .settings-section {
+            background-color: var(--white);
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: none;
+        }
+
+        .settings-section.active {
+            display: block;
+        }
+
+        .section-header {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .section-header h4 {
+            font-size: 18px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .section-header p {
+            font-size: 13px;
+            color: #666;
+            margin: 0;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 8px;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 10px 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            font-size: 14px;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        .toggle-switch {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .toggle-info h6 {
+            font-size: 14px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 3px;
+        }
+
+        .toggle-info p {
+            font-size: 12px;
+            color: #666;
+            margin: 0;
+        }
+
+        .switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 26px;
+        }
+
+        .switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: #ccc;
+            transition: 0.4s;
+            border-radius: 34px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 20px;
+            width: 20px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.4s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--success);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(24px);
+        }
+
+        .btn-save {
+            padding: 10px 30px;
+            background-color: var(--accent);
+            color: var(--white);
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-save:hover {
+            background-color: #e68a2e;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            padding: 10px 30px;
+            background-color: var(--error);
+            color: var(--white);
+            border: none;
+            border-radius: 5px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .btn-danger:hover {
+            background-color: #a71d2a;
+        }
+
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .settings-tabs {
+                flex-direction: column;
+            }
+
+            .tab-btn {
+                text-align: left;
+                border-left: 3px solid transparent;
+                border-bottom: none;
+            }
+
+            .tab-btn.active {
+                border-left-color: var(--accent);
+                border-bottom-color: transparent;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="tricolor-strip"></div>
+
+    <aside class="sidebar">
+        <div class="sidebar-header">
+            <h4><i class="fas fa-landmark"></i> Gov Portal</h4>
+            <p>Complaint Management System</p>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li>
+                <a href="dashboard.html">
+                    <i class="fas fa-th-large"></i>
+                    <span>Dashboard</span>
+                </a>
+            </li>
+            <li>
+                <a href="all-complaints.html">
+                    <i class="fas fa-file-alt"></i>
+                    <span>All Complaints</span>
+                </a>
+            </li>
+            <li>
+                <a href="pending.html">
+                    <i class="fas fa-clock"></i>
+                    <span>Pending</span>
+                </a>
+            </li>
+            <li>
+                <a href="resolved.html">
+                    <i class="fas fa-check-circle"></i>
+                    <span>Resolved</span>
+                </a>
+            </li>
+            <li>
+                <a href="admin-departments.html">
+                    <i class="fas fa-building"></i>
+                    <span>Departments</span>
+                </a>
+            </li>
+            <li>
+                <a href="analytics.html">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Analytics</span>
+                </a>
+            </li>
+            <li>
+                <a href="notification.html">
+                    <i class="fas fa-bell"></i>
+                    <span>Notifications</span>
+                </a>
+            </li>
+            <li>
+                <a href="settings.html" class="active">
+                    <i class="fas fa-cog"></i>
+                    <span>Settings</span>
+                </a>
+            </li>
+            <li>
+                <a href="index.html" onclick="logout()">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                </a>
+            </li>
+        </ul>
+
+        <div class="user-profile">
+            <div class="user-profile-content">
+                <div class="user-avatar">A</div>
+                <div class="user-info">
+                    <div class="name" id="userName">Admin User</div>
+                    <div class="role">System Administrator</div>
+                </div>
+            </div>
+        </div>
+    </aside>
+
+    <main class="main-content">
+        <div class="top-bar">
+            <div class="welcome-text">
+                <h2>Settings</h2>
+                <p>Configure system preferences and account settings</p>
+            </div>
+        </div>
+
+        <div class="settings-tabs">
+            <button class="tab-btn active" onclick="switchTab('profile')">
+                <i class="fas fa-user"></i> Profile
+            </button>
+            <button class="tab-btn" onclick="switchTab('notifications')">
+                <i class="fas fa-bell"></i> Notifications
+            </button>
+            <button class="tab-btn" onclick="switchTab('system')">
+                <i class="fas fa-cog"></i> System
+            </button>
+            <button class="tab-btn" onclick="switchTab('security')">
+                <i class="fas fa-shield-alt"></i> Security
+            </button>
+        </div>
+
+        <!-- Profile Settings -->
+        <div id="profile" class="settings-section active">
+            <div class="section-header">
+                <h4>Profile Settings</h4>
+                <p>Manage your personal information and preferences</p>
+            </div>
+
+            <div class="form-group">
+                <label>Full Name</label>
+                <input type="text" value="Admin User" placeholder="Enter your full name">
+            </div>
+
+            <div class="form-group">
+                <label>Email Address</label>
+                <input type="email" value="admin@govportal.in" placeholder="Enter email address">
+            </div>
+
+            <div class="form-group">
+                <label>Mobile Number</label>
+                <input type="tel" value="+91 98765 43210" placeholder="Enter mobile number">
+            </div>
+
+            <div class="form-group">
+                <label>Department</label>
+                <select>
+                    <option>System Administration</option>
+                    <option>Public Works</option>
+                    <option>Health</option>
+                    <option>Education</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Bio</label>
+                <textarea placeholder="Tell us about yourself...">System Administrator with 5+ years of experience managing government grievance portals.</textarea>
+            </div>
+
+            <button class="btn-save" onclick="saveSettings()">
+                <i class="fas fa-save"></i> Save Changes
+            </button>
+        </div>
+
+        <!-- Notification Settings -->
+        <div id="notifications" class="settings-section">
+            <div class="section-header">
+                <h4>Notification Preferences</h4>
+                <p>Choose how you want to be notified</p>
+            </div>
+
+            <div class="toggle-switch">
+                <div class="toggle-info">
+                    <h6>Email Notifications</h6>
+                    <p>Receive notifications via email</p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="toggle-switch">
+                <div class="toggle-info">
+                    <h6>SMS Alerts</h6>
+                    <p>Get text messages for urgent complaints</p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="toggle-switch">
+                <div class="toggle-info">
+                    <h6>Push Notifications</h6>
+                    <p>Browser push notifications</p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="toggle-switch">
+                <div class="toggle-info">
+                    <h6>New Complaint Alerts</h6>
+                    <p>Notify when new complaints are registered</p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="toggle-switch">
+                <div class="toggle-info">
+                    <h6>Weekly Summary</h6>
+                    <p>Receive weekly performance reports</p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <button class="btn-save" onclick="saveSettings()">
+                <i class="fas fa-save"></i> Save Preferences
+            </button>
+        </div>
+
+        <!-- System Settings -->
+        <div id="system" class="settings-section">
+            <div class="section-header">
+                <h4>System Configuration</h4>
+                <p>Configure global system settings</p>
+            </div>
+
+            <div class="form-group">
+                <label>Default Language</label>
+                <select>
+                    <option>English</option>
+                    <option>हिन्दी (Hindi)</option>
+                    <option>ਪੰਜਾਬੀ (Punjabi)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Time Zone</label>
+                <select>
+                    <option>Asia/Kolkata (IST)</option>
+                    <option>UTC</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Date Format</label>
+                <select>
+                    <option>DD/MM/YYYY</option>
+                    <option>MM/DD/YYYY</option>
+                    <option>YYYY-MM-DD</option>
+                </select>
+            </div>
+
+            <div class="toggle-switch">
+                <div class="toggle-info">
+                    <h6>Auto-assign Complaints</h6>
+                    <p>Automatically assign complaints to departments</p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="toggle-switch">
+                <div class="toggle-info">
+                    <h6>Public Complaint Tracking</h6>
+                    <p>Allow citizens to track their complaints</p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <button class="btn-save" onclick="saveSettings()">
+                <i class="fas fa-save"></i> Save Configuration
+            </button>
+        </div>
+
+        <!-- Security Settings -->
+        <div id="security" class="settings-section">
+            <div class="section-header">
+                <h4>Security Settings</h4>
+                <p>Manage your account security</p>
+            </div>
+
+            <div class="form-group">
+                <label>Current Password</label>
+                <input type="password" placeholder="Enter current password">
+            </div>
+
+            <div class="form-group">
+                <label>New Password</label>
+                <input type="password" placeholder="Enter new password">
+            </div>
+
+            <div class="form-group">
+                <label>Confirm New Password</label>
+                <input type="password" placeholder="Re-enter new password">
+            </div>
+
+            <button class="btn-save" onclick="changePassword()">
+                <i class="fas fa-key"></i> Change Password
+            </button>
+
+            <hr style="margin: 30px 0; border-color: #eee;">
+
+            <div class="toggle-switch">
+                <div class="toggle-info">
+                    <h6>Two-Factor Authentication</h6>
+                    <p>Add an extra layer of security to your account</p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox">
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <div class="toggle-switch">
+                <div class="toggle-info">
+                    <h6>Login Alerts</h6>
+                    <p>Get notified of new login attempts</p>
+                </div>
+                <label class="switch">
+                    <input type="checkbox" checked>
+                    <span class="slider"></span>
+                </label>
+            </div>
+
+            <hr style="margin: 30px 0; border-color: #eee;">
+
+            <div style="margin-top: 30px;">
+                <h5 style="color: var(--error); margin-bottom: 15px;">Danger Zone</h5>
+                <p style="font-size: 13px; color: #666; margin-bottom: 15px;">
+                    Once you delete your account, there is no going back. Please be certain.
+                </p>
+                <button class="btn-danger" onclick="deleteAccount()">
+                    <i class="fas fa-trash"></i> Delete Account
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        const loggedInUser = JSON.parse(sessionStorage.getItem('loggedInUser') || 'null');
+        if (!loggedInUser) {
+            window.location.href = 'login.html';
+        } else {
+            document.getElementById('userName').textContent = loggedInUser.name;
+            document.querySelector('.user-avatar').textContent = loggedInUser.name.charAt(0);
+        }
+
+        function switchTab(tabName) {
+            // Hide all sections
+            const sections = document.querySelectorAll('.settings-section');
+            sections.forEach(section => section.classList.remove('active'));
+
+            // Remove active class from all tabs
+            const tabs = document.querySelectorAll('.tab-btn');
+            tabs.forEach(tab => tab.classList.remove('active'));
+
+            // Show selected section and activate tab
+            document.getElementById(tabName).classList.add('active');
+            event.target.classList.add('active');
+        }
+
+        function saveSettings() {
+            alert('Settings saved successfully!');
+        }
+
+        function changePassword() {
+            alert('Password changed successfully!\n\nYou will be logged out and need to log in again.');
+        }
+
+        function deleteAccount() {
+            if (confirm('Are you absolutely sure you want to delete your account?\n\nThis action cannot be undone!')) {
+                alert('Account deletion initiated. Please check your email for verification.');
+            }
+        }
+
+        function logout() {
+            sessionStorage.removeItem('loggedInUser');
+        }
+    </script>
+</body>
+</html>
