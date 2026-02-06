@@ -132,6 +132,17 @@
             box-shadow: 0 5px 15px rgba(255,153,51,0.4);
         }
 
+        .btn-track:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading-spinner {
+            display: none;
+            margin-left: 10px;
+        }
+
         .result-container {
             display: none;
             background-color: var(--white);
@@ -486,21 +497,24 @@
                 <div class="row g-3">
                     <div class="col-md-5">
                         <label class="form-label">Complaint ID</label>
-                        <input type="text" class="form-control" id="complaintId" placeholder="e.g., CMP12345678" required>
+                        <input type="text" class="form-control" name="complaintId" id="complaintId" placeholder="e.g., CMP12345678" required>
                     </div>
                     <div class="col-md-5">
                         <label class="form-label">Mobile Number</label>
-                        <input type="tel" class="form-control" id="mobileNumber" placeholder="Enter 10-digit mobile" pattern="[0-9]{10}" required>
+                        <input type="tel" class="form-control" name="mobile" id="mobileNumber" placeholder="Enter 10-digit mobile" pattern="[0-9]{10}" required>
                     </div>
                     <div class="col-md-2 d-flex align-items-end">
-                        <button type="submit" class="btn btn-track w-100">
+                        <button type="submit" class="btn btn-track w-100" id="trackBtn">
                             <i class="fas fa-search"></i> Track
+                            <span class="loading-spinner">
+                                <i class="fas fa-spinner fa-spin"></i>
+                            </span>
                         </button>
                     </div>
                 </div>
             </form>
             <div id="errorMessage" class="error-message">
-                <i class="fas fa-exclamation-circle"></i> <strong>Error:</strong> Complaint not found. Please check your Complaint ID and Mobile Number.
+                <i class="fas fa-exclamation-circle"></i> <strong>Error:</strong> <span id="errorText">Complaint not found. Please check your Complaint ID and Mobile Number.</span>
             </div>
         </div>
 
@@ -589,60 +603,89 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        document.getElementById('trackForm').addEventListener('submit', function(e) {
+        // AWS API Integration
+        const API_URL = 'https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/complaints/status';
+
+        document.getElementById('trackForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
             const complaintId = document.getElementById('complaintId').value.trim();
             const mobile = document.getElementById('mobileNumber').value.trim();
             
-            // Hide previous results
+            // Hide previous results and errors
             document.getElementById('errorMessage').style.display = 'none';
             document.getElementById('resultContainer').style.display = 'none';
             
-            // Get complaints from localStorage
-            const complaints = JSON.parse(localStorage.getItem('complaints') || '[]');
+            // Show loading state
+            const trackBtn = document.getElementById('trackBtn');
+            const spinner = trackBtn.querySelector('.loading-spinner');
+            trackBtn.disabled = true;
+            spinner.style.display = 'inline-block';
             
-            // Find complaint
-            const complaint = complaints.find(c => 
-                c.id === complaintId && c.mobile === mobile
-            );
-            
-            if (complaint) {
-                displayComplaint(complaint);
-            } else {
+            try {
+                // Call AWS API
+                const url = `${API_URL}?complaintId=${encodeURIComponent(complaintId)}&mobile=${encodeURIComponent(mobile)}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                if (!response.ok) {
+                    // Show error message
+                    document.getElementById('errorText').textContent = data.error || 'Complaint not found. Please check your Complaint ID and Mobile Number.';
+                    document.getElementById('errorMessage').style.display = 'block';
+                } else {
+                    // Display complaint data
+                    displayComplaint(data);
+                }
+            } catch (error) {
+                console.error('Error fetching complaint:', error);
+                document.getElementById('errorText').textContent = 'Something went wrong. Please try again later.';
                 document.getElementById('errorMessage').style.display = 'block';
+            } finally {
+                // Hide loading state
+                trackBtn.disabled = false;
+                spinner.style.display = 'none';
             }
         });
 
-        function displayComplaint(complaint) {
+        function displayComplaint(data) {
             // Display basic info
-            document.getElementById('displayId').textContent = complaint.id;
-            document.getElementById('displaySubject').textContent = complaint.subject;
-            document.getElementById('displayName').textContent = complaint.name;
-            document.getElementById('displayEmail').textContent = complaint.email;
-            document.getElementById('displayMobile').textContent = complaint.mobile;
-            document.getElementById('displayDepartment').textContent = complaint.department;
-            document.getElementById('displayCategory').textContent = complaint.category;
-            document.getElementById('displayPriority').textContent = complaint.priority;
-            document.getElementById('displayDescription').textContent = complaint.description;
+            document.getElementById('displayId').textContent = data.complaintId || 'N/A';
+            document.getElementById('displaySubject').textContent = data.subject || 'No subject provided';
+            document.getElementById('displayName').textContent = data.name || 'N/A';
+            document.getElementById('displayEmail').textContent = data.email || 'N/A';
+            document.getElementById('displayMobile').textContent = data.mobile || 'N/A';
+            document.getElementById('displayDepartment').textContent = data.department || 'N/A';
+            document.getElementById('displayCategory').textContent = data.category || 'N/A';
+            document.getElementById('displayPriority').textContent = data.priority || 'Medium';
+            document.getElementById('displayDescription').textContent = data.description || 'No description available';
             
             // Format and display date
-            const date = new Date(complaint.date);
-            document.getElementById('displayDate').textContent = date.toLocaleDateString('en-IN', {
-                day: '2-digit',
-                month: 'short',
-                year: 'numeric'
-            });
+            if (data.createdAt) {
+                const date = new Date(data.createdAt);
+                document.getElementById('displayDate').textContent = date.toLocaleDateString('en-IN', {
+                    day: '2-digit',
+                    month: 'short',
+                    year: 'numeric'
+                });
+            } else {
+                document.getElementById('displayDate').textContent = 'N/A';
+            }
             
             // Display status with appropriate class
             const statusBadge = document.getElementById('displayStatus');
-            statusBadge.textContent = complaint.status;
-            statusBadge.className = 'status-badge status-' + complaint.status.toLowerCase().replace(' ', '-');
+            const status = data.status || 'Submitted';
+            statusBadge.textContent = status;
+            statusBadge.className = 'status-badge status-' + status.toLowerCase().replace(/\s+/g, '-');
             
             // Display timeline
-            displayTimeline(complaint.statusHistory || [
-                { status: 'Submitted', date: complaint.date, description: 'Complaint submitted successfully' }
-            ]);
+            const statusHistory = data.statusHistory || [
+                { 
+                    status: status, 
+                    date: data.createdAt || new Date().toISOString(), 
+                    description: 'Complaint submitted successfully' 
+                }
+            ];
+            displayTimeline(statusHistory);
             
             // Show result container
             document.getElementById('resultContainer').style.display = 'block';
@@ -654,7 +697,7 @@
             timeline.innerHTML = '';
             
             history.forEach((item, index) => {
-                const date = new Date(item.date);
+                const date = new Date(item.date || item.timestamp);
                 const formattedDate = date.toLocaleDateString('en-IN', {
                     day: '2-digit',
                     month: 'short',
@@ -674,7 +717,7 @@
                     <div class="timeline-content">
                         <div class="timeline-date">${formattedDate}</div>
                         <div class="timeline-status">${item.status}</div>
-                        <div class="timeline-description">${item.description}</div>
+                        <div class="timeline-description">${item.description || item.remarks || 'Status updated'}</div>
                     </div>
                 `;
                 
