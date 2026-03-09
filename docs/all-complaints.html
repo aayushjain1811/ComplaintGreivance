@@ -18,11 +18,7 @@
             --sidebar-width: 260px;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Roboto', 'Noto Sans Devanagari', sans-serif;
@@ -34,308 +30,109 @@
         .tricolor-strip {
             height: 5px;
             background: linear-gradient(to right, #FF9933 0%, #FF9933 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #138808 66.66%, #138808 100%);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1001;
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1001;
         }
 
+        /* ── Sidebar ── */
         .sidebar {
-            position: fixed;
-            left: 0;
-            top: 5px;
-            bottom: 0;
+            position: fixed; left: 0; top: 5px; bottom: 0;
             width: var(--sidebar-width);
             background: linear-gradient(180deg, var(--primary) 0%, #1a4d8f 100%);
-            color: var(--white);
-            padding: 20px 0;
-            transition: all 0.3s ease;
-            z-index: 1000;
-            overflow-y: auto;
+            color: var(--white); padding: 20px 0;
+            transition: all 0.3s ease; z-index: 1000; overflow-y: auto;
         }
-
-        .sidebar-header {
-            padding: 0 20px 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 20px;
-        }
-
-        .sidebar-header h4 {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .sidebar-header p {
-            font-size: 12px;
-            opacity: 0.8;
-            margin: 0;
-        }
-
-        .sidebar-menu {
-            list-style: none;
-            padding: 0;
-        }
-
-        .sidebar-menu li {
-            margin-bottom: 5px;
-        }
-
+        .sidebar-header { padding: 0 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
+        .sidebar-header h4 { font-size: 18px; font-weight: 700; margin-bottom: 5px; }
+        .sidebar-header p { font-size: 12px; opacity: 0.8; margin: 0; }
+        .sidebar-menu { list-style: none; padding: 0; }
+        .sidebar-menu li { margin-bottom: 5px; }
         .sidebar-menu a {
-            display: flex;
-            align-items: center;
-            padding: 12px 20px;
-            color: var(--white);
-            text-decoration: none;
-            transition: all 0.3s ease;
-            position: relative;
+            display: flex; align-items: center; padding: 12px 20px;
+            color: var(--white); text-decoration: none; transition: all 0.3s ease; position: relative;
         }
-
         .sidebar-menu a::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background-color: var(--accent);
-            transform: scaleY(0);
-            transition: transform 0.3s ease;
+            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+            background-color: var(--accent); transform: scaleY(0); transition: transform 0.3s ease;
         }
-
-        .sidebar-menu a:hover,
-        .sidebar-menu a.active {
-            background-color: rgba(255,255,255,0.1);
-        }
-
-        .sidebar-menu a.active::before {
-            transform: scaleY(1);
-        }
-
-        .sidebar-menu a i {
-            width: 25px;
-            margin-right: 10px;
-            font-size: 16px;
-        }
-
-        .user-profile {
-            padding: 20px;
-            margin-top: 20px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .user-profile-content {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
+        .sidebar-menu a:hover, .sidebar-menu a.active { background-color: rgba(255,255,255,0.1); }
+        .sidebar-menu a.active::before { transform: scaleY(1); }
+        .sidebar-menu a i { width: 25px; margin-right: 10px; font-size: 16px; }
+        .user-profile { padding: 20px; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .user-profile-content { display: flex; align-items: center; gap: 10px; }
         .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--accent);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: 700;
+            width: 40px; height: 40px; border-radius: 50%; background-color: var(--accent);
+            display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700;
         }
+        .user-info .name { font-size: 14px; font-weight: 600; }
+        .user-info .role { font-size: 11px; opacity: 0.7; }
 
-        .user-info {
-            flex: 1;
-        }
-
-        .user-info .name {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .user-info .role {
-            font-size: 11px;
-            opacity: 0.7;
-        }
-
-        .main-content {
-            margin-left: var(--sidebar-width);
-            padding: 25px;
-            min-height: 100vh;
-            margin-top: 5px;
-        }
+        /* ── Main ── */
+        .main-content { margin-left: var(--sidebar-width); padding: 25px; min-height: 100vh; margin-top: 5px; }
 
         .top-bar {
-            background-color: var(--white);
-            padding: 20px 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
+            background-color: var(--white); padding: 20px 25px; border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 25px;
+            display: flex; justify-content: space-between; align-items: center;
         }
-
-        .welcome-text h2 {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 5px;
-        }
-
-        .welcome-text p {
-            font-size: 14px;
-            color: #666;
-            margin: 0;
-        }
-
-        .top-actions {
-            display: flex;
-            gap: 10px;
-        }
+        .welcome-text h2 { font-size: 24px; font-weight: 700; color: var(--primary); margin-bottom: 5px; }
+        .welcome-text p { font-size: 14px; color: #666; margin: 0; }
+        .top-actions { display: flex; gap: 10px; }
 
         .btn-action {
-            padding: 8px 20px;
-            border: none;
-            border-radius: 5px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            padding: 8px 20px; border: none; border-radius: 5px;
+            font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;
         }
+        .btn-primary-action { background-color: var(--accent); color: var(--white); }
+        .btn-primary-action:hover { background-color: #e68a2e; transform: translateY(-2px); }
+        .btn-secondary-action { background-color: var(--background); color: var(--primary); }
+        .btn-secondary-action:hover { background-color: #e0e0e0; }
 
-        .btn-primary-action {
-            background-color: var(--accent);
-            color: var(--white);
+        /* ── Error Banner ── */
+        .error-banner {
+            background-color: #ffebee; border: 1px solid #ef9a9a; color: var(--error);
+            padding: 12px 16px; border-radius: 8px; margin-bottom: 20px;
+            display: none; align-items: center; gap: 10px; font-size: 14px;
         }
+        .error-banner.show { display: flex; }
 
-        .btn-primary-action:hover {
-            background-color: #e68a2e;
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary-action {
-            background-color: var(--background);
-            color: var(--primary);
-        }
-
-        .btn-secondary-action:hover {
-            background-color: #e0e0e0;
-        }
-
+        /* ── Filters ── */
         .filters-section {
-            background-color: var(--white);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 25px;
+            background-color: var(--white); padding: 20px; border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 25px;
         }
-
         .filters-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 15px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+            gap: 15px; margin-bottom: 15px;
         }
-
-        .filter-group label {
-            font-size: 13px;
-            font-weight: 600;
-            color: #666;
-            margin-bottom: 5px;
-            display: block;
+        .filter-group label { font-size: 13px; font-weight: 600; color: #666; margin-bottom: 5px; display: block; }
+        .filter-group select, .filter-group input {
+            width: 100%; padding: 8px 12px; border: 1px solid #ddd;
+            border-radius: 5px; font-size: 14px; transition: all 0.3s ease;
         }
+        .filter-group select:focus, .filter-group input:focus { outline: none; border-color: var(--primary); }
+        .bulk-actions { display: flex; gap: 10px; padding-top: 15px; border-top: 1px solid #eee; flex-wrap: wrap; }
 
-        .filter-group select,
-        .filter-group input {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .filter-group select:focus,
-        .filter-group input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .bulk-actions {
-            display: flex;
-            gap: 10px;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
-        }
-
+        /* ── Table ── */
         .table-section {
-            background-color: var(--white);
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 25px;
+            background-color: var(--white); padding: 25px; border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 25px;
         }
-
-        .table-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .table-header h5 {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--primary);
-            margin: 0;
-        }
-
-        .table-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-            font-size: 13px;
-            color: #666;
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        .complaints-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
+        .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .table-header h5 { font-size: 18px; font-weight: 700; color: var(--primary); margin: 0; }
+        .table-info { display: flex; align-items: center; gap: 15px; font-size: 13px; color: #666; }
+        .table-responsive { overflow-x: auto; }
+        .complaints-table { width: 100%; border-collapse: collapse; }
         .complaints-table th {
-            background-color: var(--primary);
-            color: var(--white);
-            padding: 12px;
-            text-align: left;
-            font-size: 13px;
-            font-weight: 600;
-            white-space: nowrap;
+            background-color: var(--primary); color: var(--white);
+            padding: 12px; text-align: left; font-size: 13px; font-weight: 600; white-space: nowrap;
         }
-
-        .complaints-table td {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-            font-size: 13px;
-        }
-
-        .complaints-table tr:hover {
-            background-color: #f8f9fa;
-        }
+        .complaints-table td { padding: 12px; border-bottom: 1px solid #eee; font-size: 13px; vertical-align: middle; }
+        .complaints-table tr:hover { background-color: #f8f9fa; }
 
         .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-            white-space: nowrap;
+            display: inline-block; padding: 4px 12px; border-radius: 20px;
+            font-size: 11px; font-weight: 600; white-space: nowrap;
         }
-
         .status-submitted { background-color: #0dcaf0; color: #000; }
         .status-under-review { background-color: #ffc107; color: #000; }
         .status-in-progress { background-color: #0d6efd; color: #fff; }
@@ -343,205 +140,192 @@
         .status-closed { background-color: #6c757d; color: #fff; }
 
         .priority-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
+            display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600;
         }
-
         .priority-low { background-color: #e8f5e9; color: #2e7d32; }
         .priority-medium { background-color: #fff3e0; color: #e65100; }
         .priority-high { background-color: #ffebee; color: #c62828; }
         .priority-critical { background-color: #b71c1c; color: #fff; }
 
-        .action-buttons {
-            display: flex;
-            gap: 5px;
-        }
-
+        .action-buttons { display: flex; gap: 5px; }
         .btn-icon {
-            width: 30px;
-            height: 30px;
-            border: none;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 12px;
+            width: 30px; height: 30px; border: none; border-radius: 5px;
+            display: flex; align-items: center; justify-content: center;
+            cursor: pointer; transition: all 0.3s ease; font-size: 12px;
         }
+        .btn-view { background-color: #0d6efd; color: var(--white); }
+        .btn-view:hover { background-color: #0b5ed7; }
+        .btn-edit { background-color: var(--accent); color: var(--white); }
+        .btn-edit:hover { background-color: #e68a2e; }
+        .btn-delete { background-color: var(--error); color: var(--white); }
+        .btn-delete:hover { background-color: #a71d2a; }
 
-        .btn-view {
-            background-color: #0d6efd;
-            color: var(--white);
-        }
-
-        .btn-view:hover {
-            background-color: #0b5ed7;
-        }
-
-        .btn-edit {
-            background-color: var(--accent);
-            color: var(--white);
-        }
-
-        .btn-edit:hover {
-            background-color: #e68a2e;
-        }
-
-        .btn-delete {
-            background-color: var(--error);
-            color: var(--white);
-        }
-
-        .btn-delete:hover {
-            background-color: #a71d2a;
-        }
-
-        .pagination {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            gap: 10px;
-            margin-top: 20px;
-        }
-
+        /* ── Pagination ── */
+        .pagination { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 20px; }
         .pagination button {
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            background-color: var(--white);
-            color: var(--primary);
-            border-radius: 5px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            padding: 8px 12px; border: 1px solid #ddd; background-color: var(--white);
+            color: var(--primary); border-radius: 5px; cursor: pointer; transition: all 0.3s ease;
         }
+        .pagination button:hover:not(:disabled) { background-color: var(--primary); color: var(--white); }
+        .pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
+        .pagination .page-info { font-size: 14px; color: #666; }
 
-        .pagination button:hover:not(:disabled) {
-            background-color: var(--primary);
-            color: var(--white);
+        /* ── Loading ── */
+        .loading-spinner {
+            display: flex; justify-content: center; align-items: center;
+            padding: 50px; gap: 12px; color: var(--primary); font-size: 14px;
         }
+        .spinner {
+            width: 24px; height: 24px; border: 3px solid #ddd;
+            border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        .pagination button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
+        /* ── Modal Base ── */
+        .modal-overlay {
+            position: fixed; inset: 0; background: rgba(0,0,0,0.55);
+            z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px;
         }
+        .modal-overlay.open { display: flex; }
+        .modal-box {
+            background: var(--white); border-radius: 12px; width: 100%;
+            max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            animation: modalIn 0.25s ease;
+        }
+        @keyframes modalIn { from { opacity:0; transform: scale(0.95) translateY(-10px); } to { opacity:1; transform: scale(1) translateY(0); } }
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary), #1a4d8f);
+            color: var(--white); padding: 20px 25px; border-radius: 12px 12px 0 0;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .modal-header h5 { margin: 0; font-size: 18px; font-weight: 700; }
+        .modal-close {
+            background: none; border: none; color: var(--white); font-size: 22px;
+            cursor: pointer; line-height: 1; opacity: 0.8; transition: opacity 0.2s;
+        }
+        .modal-close:hover { opacity: 1; }
+        .modal-body { padding: 25px; }
+        .modal-footer { padding: 15px 25px; border-top: 1px solid #eee; display: flex; gap: 10px; justify-content: flex-end; }
 
-        .pagination .page-info {
-            font-size: 14px;
-            color: #666;
+        /* ── View Modal specific ── */
+        .view-modal-box { max-width: 700px; }
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+        .detail-item label { font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px; }
+        .detail-item span { font-size: 14px; color: #333; font-weight: 500; }
+        .detail-full { grid-column: 1 / -1; }
+        .description-box {
+            background: #f8f9fa; border-radius: 8px; padding: 15px;
+            font-size: 14px; line-height: 1.7; color: #444; border-left: 4px solid var(--accent);
         }
+        .timeline { margin-top: 10px; }
+        .timeline-item { display: flex; gap: 12px; margin-bottom: 14px; }
+        .timeline-dot {
+            width: 10px; height: 10px; border-radius: 50%; background: var(--accent);
+            margin-top: 4px; flex-shrink: 0;
+        }
+        .timeline-text { font-size: 13px; color: #555; }
+        .timeline-text strong { color: #333; }
+
+        /* ── Status Update Modal ── */
+        .status-modal-box { max-width: 450px; }
+        .status-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
+        .status-option {
+            padding: 14px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer;
+            text-align: center; font-size: 13px; font-weight: 600; transition: all 0.2s;
+        }
+        .status-option:hover { border-color: var(--primary); background: #f0f4ff; }
+        .status-option.selected { border-color: var(--primary); background: var(--primary); color: var(--white); }
+        .remarks-box {
+            width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px;
+            font-size: 14px; resize: vertical; min-height: 80px; font-family: inherit;
+        }
+        .remarks-box:focus { outline: none; border-color: var(--primary); }
+
+        /* ── Assign Modal ── */
+        .assign-modal-box { max-width: 450px; }
+        .officer-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; max-height: 280px; overflow-y: auto; }
+        .officer-item {
+            display: flex; align-items: center; gap: 12px; padding: 12px;
+            border: 2px solid #ddd; border-radius: 8px; cursor: pointer; transition: all 0.2s;
+        }
+        .officer-item:hover { border-color: var(--accent); background: #fffaf5; }
+        .officer-item.selected { border-color: var(--accent); background: #fff3e0; }
+        .officer-avatar {
+            width: 36px; height: 36px; border-radius: 50%; background: var(--primary);
+            color: var(--white); display: flex; align-items: center; justify-content: center;
+            font-weight: 700; font-size: 14px; flex-shrink: 0;
+        }
+        .officer-name { font-size: 14px; font-weight: 600; }
+        .officer-dept { font-size: 12px; color: #888; }
+
+        /* ── Toast ── */
+        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 10px; }
+        .toast {
+            background: var(--white); border-radius: 8px; padding: 14px 18px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px;
+            font-size: 14px; min-width: 280px; animation: toastIn 0.3s ease;
+            border-left: 4px solid var(--success);
+        }
+        .toast.error { border-left-color: var(--error); }
+        .toast.warning { border-left-color: var(--accent); }
+        @keyframes toastIn { from { opacity:0; transform: translateX(40px); } to { opacity:1; transform: translateX(0); } }
 
         @media (max-width: 992px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-
-            .top-bar {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
+            .sidebar { transform: translateX(-100%); }
+            .main-content { margin-left: 0; }
+            .top-bar { flex-direction: column; align-items: flex-start; gap: 15px; }
         }
-
         @media (max-width: 768px) {
-            .filters-row {
-                grid-template-columns: 1fr;
-            }
+            .filters-row { grid-template-columns: 1fr; }
+            .detail-grid { grid-template-columns: 1fr; }
+            .status-options { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
     <div class="tricolor-strip"></div>
 
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
             <h4><i class="fas fa-landmark"></i> Gov Portal</h4>
             <p>Complaint Management System</p>
         </div>
-
         <ul class="sidebar-menu">
-            <li>
-                <a href="dashboard.html">
-                    <i class="fas fa-th-large"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li>
-            <li>
-                <a href="all-complaints.html" class="active">
-                    <i class="fas fa-file-alt"></i>
-                    <span>All Complaints</span>
-                </a>
-            </li>
-            <li>
-                <a href="pending.html">
-                    <i class="fas fa-clock"></i>
-                    <span>Pending</span>
-                </a>
-            </li>
-            <li>
-                <a href="resolved.html">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Resolved</span>
-                </a>
-            </li>
-            <li>
-                <a href="admin-departments.html">
-                    <i class="fas fa-building"></i>
-                    <span>Departments</span>
-                </a>
-            </li>
-            <li>
-                <a href="analytics.html">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Analytics</span>
-                </a>
-            </li>
-            <li>
-                <a href="notification.html">
-                    <i class="fas fa-bell"></i>
-                    <span>Notifications</span>
-                </a>
-            </li>
-            <li>
-                <a href="settings.html">
-                    <i class="fas fa-cog"></i>
-                    <span>Settings</span>
-                </a>
-            </li>
-            <li>
-                <a href="index.html" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Logout</span>
-                </a>
-            </li>
+            <li><a href="dashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a></li>
+            <li><a href="all-complaints.html" class="active"><i class="fas fa-file-alt"></i><span>All Complaints</span></a></li>
+            <li><a href="pending.html"><i class="fas fa-clock"></i><span>Pending</span></a></li>
+            <li><a href="resolved.html"><i class="fas fa-check-circle"></i><span>Resolved</span></a></li>
+            <li><a href="admin-departments.html"><i class="fas fa-building"></i><span>Departments</span></a></li>
+            <li><a href="analytics.html"><i class="fas fa-chart-bar"></i><span>Analytics</span></a></li>
+            <li><a href="notification.html"><i class="fas fa-bell"></i><span>Notifications</span></a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+            <li><a href="login.html" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
         </ul>
-
         <div class="user-profile">
             <div class="user-profile-content">
-                <div class="user-avatar">A</div>
+                <div class="user-avatar" id="userAvatarLetter">A</div>
                 <div class="user-info">
-                    <div class="name" id="userName">Admin User</div>
+                    <div class="name" id="userName">Officer</div>
                     <div class="role">System Administrator</div>
                 </div>
             </div>
         </div>
     </aside>
 
+    <!-- Main Content -->
     <main class="main-content">
         <div class="top-bar">
             <div class="welcome-text">
                 <h2>All Complaints</h2>
-                <p>Manage and track all grievances</p>
+                <p>Manage and track all grievances submitted by citizens</p>
             </div>
             <div class="top-actions">
                 <button class="btn-action btn-secondary-action" onclick="exportData()">
-                    <i class="fas fa-download"></i> Export
+                    <i class="fas fa-download"></i> Export CSV
                 </button>
                 <button class="btn-action btn-primary-action" onclick="window.location.href='register.html'">
                     <i class="fas fa-plus"></i> New Complaint
@@ -549,6 +333,16 @@
             </div>
         </div>
 
+        <!-- Error Banner -->
+        <div class="error-banner" id="errorBanner">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="errorBannerMsg">Unable to load complaints.</span>
+            <button onclick="loadComplaints()" style="margin-left:auto;background:none;border:1px solid var(--error);color:var(--error);padding:4px 10px;border-radius:4px;cursor:pointer;font-size:12px;">
+                Retry
+            </button>
+        </div>
+
+        <!-- Filters -->
         <div class="filters-section">
             <div class="filters-row">
                 <div class="filter-group">
@@ -571,6 +365,9 @@
                         <option value="Education">Education</option>
                         <option value="Police">Police</option>
                         <option value="Revenue">Revenue</option>
+                        <option value="Water Supply">Water Supply</option>
+                        <option value="Electricity">Electricity</option>
+                        <option value="Sanitation">Sanitation</option>
                     </select>
                 </div>
                 <div class="filter-group">
@@ -585,28 +382,29 @@
                 </div>
                 <div class="filter-group">
                     <label>Search</label>
-                    <input type="text" id="searchInput" placeholder="Search by ID or name...">
+                    <input type="text" id="searchInput" placeholder="Search by ID, name, or subject...">
                 </div>
             </div>
             <div class="bulk-actions">
                 <button class="btn-action btn-secondary-action" onclick="selectAll()">
                     <i class="fas fa-check-square"></i> Select All
                 </button>
-                <button class="btn-action btn-secondary-action" onclick="bulkAssign()">
+                <button class="btn-action btn-secondary-action" onclick="openBulkAssign()">
                     <i class="fas fa-user-plus"></i> Bulk Assign
                 </button>
-                <button class="btn-action btn-secondary-action" onclick="bulkStatusUpdate()">
+                <button class="btn-action btn-secondary-action" onclick="openBulkStatus()">
                     <i class="fas fa-sync"></i> Update Status
                 </button>
             </div>
         </div>
 
+        <!-- Table -->
         <div class="table-section">
             <div class="table-header">
                 <h5>All Complaints (<span id="totalCount">0</span>)</h5>
                 <div class="table-info">
-                    <span id="showingInfo">Showing 0-0 of 0</span>
-                    <button class="btn-action btn-secondary-action" onclick="refreshTable()">
+                    <span id="showingInfo">Showing 0–0 of 0</span>
+                    <button class="btn-action btn-secondary-action" onclick="loadComplaints()">
                         <i class="fas fa-sync-alt"></i> Refresh
                     </button>
                 </div>
@@ -618,217 +416,638 @@
                             <th><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"></th>
                             <th>ID</th>
                             <th>Name</th>
+                            <th>Mobile</th>
                             <th>Department</th>
-                            <th>Subject</th>
+                            <th>Category</th>
                             <th>Priority</th>
                             <th>Status</th>
-                            <th>Date</th>
+                            <th>Submitted</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="complaintsTableBody">
+                        <tr>
+                            <td colspan="10">
+                                <div class="loading-spinner">
+                                    <div class="spinner"></div>
+                                    <span>Loading complaints from server...</span>
+                                </div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
             <div class="pagination">
-                <button onclick="previousPage()" id="prevBtn">
+                <button onclick="previousPage()" id="prevBtn" disabled>
                     <i class="fas fa-chevron-left"></i> Previous
                 </button>
                 <span class="page-info">Page <span id="currentPage">1</span> of <span id="totalPages">1</span></span>
-                <button onclick="nextPage()" id="nextBtn">
+                <button onclick="nextPage()" id="nextBtn" disabled>
                     Next <i class="fas fa-chevron-right"></i>
                 </button>
             </div>
         </div>
     </main>
 
+    <!-- ════════════════════════════════════════════
+         VIEW COMPLAINT MODAL
+    ════════════════════════════════════════════ -->
+    <div class="modal-overlay" id="viewModal">
+        <div class="modal-box view-modal-box">
+            <div class="modal-header">
+                <h5><i class="fas fa-file-alt me-2"></i> Complaint Details</h5>
+                <button class="modal-close" onclick="closeModal('viewModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="detail-grid" id="viewDetailGrid"><!-- filled by JS --></div>
+                <div class="mb-3">
+                    <label style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;">Description</label>
+                    <div class="description-box" id="viewDescription">—</div>
+                </div>
+                <div>
+                    <label style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:10px;">Activity Timeline</label>
+                    <div class="timeline" id="viewTimeline"><!-- filled by JS --></div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-action btn-secondary-action" onclick="closeModal('viewModal')">Close</button>
+                <button class="btn-action btn-primary-action" id="viewModalEditBtn">
+                    <i class="fas fa-edit"></i> Update Status
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════
+         UPDATE STATUS MODAL
+    ════════════════════════════════════════════ -->
+    <div class="modal-overlay" id="statusModal">
+        <div class="modal-box status-modal-box">
+            <div class="modal-header">
+                <h5><i class="fas fa-sync me-2"></i> Update Status</h5>
+                <button class="modal-close" onclick="closeModal('statusModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:13px;color:#666;margin-bottom:16px;">
+                    Complaint ID: <strong id="statusComplaintId">—</strong>
+                </p>
+                <label style="font-size:13px;font-weight:600;color:#333;display:block;margin-bottom:10px;">Select New Status</label>
+                <div class="status-options" id="statusOptions">
+                    <div class="status-option" data-status="Submitted" onclick="selectStatus(this)">📋 Submitted</div>
+                    <div class="status-option" data-status="Under Review" onclick="selectStatus(this)">🔍 Under Review</div>
+                    <div class="status-option" data-status="In Progress" onclick="selectStatus(this)">⚙️ In Progress</div>
+                    <div class="status-option" data-status="Resolved" onclick="selectStatus(this)">✅ Resolved</div>
+                    <div class="status-option" data-status="Closed" onclick="selectStatus(this)">🔒 Closed</div>
+                </div>
+                <label style="font-size:13px;font-weight:600;color:#333;display:block;margin-bottom:8px;">Remarks (Optional)</label>
+                <textarea class="remarks-box" id="statusRemarks" placeholder="Add remarks or notes about this status change..."></textarea>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-action btn-secondary-action" onclick="closeModal('statusModal')">Cancel</button>
+                <button class="btn-action btn-primary-action" onclick="submitStatusUpdate()">
+                    <i class="fas fa-check"></i> Save Status
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ════════════════════════════════════════════
+         ASSIGN OFFICER MODAL
+    ════════════════════════════════════════════ -->
+    <div class="modal-overlay" id="assignModal">
+        <div class="modal-box assign-modal-box">
+            <div class="modal-header">
+                <h5><i class="fas fa-user-plus me-2"></i> Assign Officer</h5>
+                <button class="modal-close" onclick="closeModal('assignModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <p style="font-size:13px;color:#666;margin-bottom:16px;">
+                    Complaint ID: <strong id="assignComplaintId">—</strong>
+                </p>
+                <label style="font-size:13px;font-weight:600;color:#333;display:block;margin-bottom:10px;">Select Officer</label>
+                <div class="officer-list" id="officerList"><!-- filled by JS --></div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-action btn-secondary-action" onclick="closeModal('assignModal')">Cancel</button>
+                <button class="btn-action btn-primary-action" onclick="submitAssignment()">
+                    <i class="fas fa-check"></i> Assign
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const loggedInUser = JSON.parse(sessionStorage.getItem('loggedInUser') || 'null');
-        if (!loggedInUser) {
-            window.location.href = 'login.html';
-        } else {
-            document.getElementById('userName').textContent = loggedInUser.name;
-            document.querySelector('.user-avatar').textContent = loggedInUser.name.charAt(0);
-        }
 
-        let allComplaints = JSON.parse(localStorage.getItem('complaints') || '[]');
-        let currentPage = 1;
-        const complaintsPerPage = 10;
-        let selectedComplaints = new Set();
+    // ══════════════════════════════════════════════════════
+    // 1. AUTH GUARD — decode Cognito JWT for username
+    // ══════════════════════════════════════════════════════
+    const officerToken = localStorage.getItem("officerToken");
+    if (!officerToken) {
+        window.location.href = "login.html";
+    }
 
-        function renderTable(complaints) {
-            const tbody = document.getElementById('complaintsTableBody');
-            tbody.innerHTML = '';
-            
-            const startIndex = (currentPage - 1) * complaintsPerPage;
-            const endIndex = startIndex + complaintsPerPage;
-            const paginatedComplaints = complaints.slice(startIndex, endIndex);
-            
-            if (paginatedComplaints.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 40px;">No complaints found</td></tr>';
-                document.getElementById('showingInfo').textContent = 'Showing 0-0 of 0';
-                return;
-            }
-            
-            paginatedComplaints.forEach(complaint => {
-                const date = new Date(complaint.date);
-                const formattedDate = date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
-                
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td><input type="checkbox" class="complaint-checkbox" data-id="${complaint.id}" ${selectedComplaints.has(complaint.id) ? 'checked' : ''} onchange="toggleComplaint('${complaint.id}')"></td>
-                    <td><strong>${complaint.id}</strong></td>
-                    <td>${complaint.name}</td>
-                    <td>${complaint.department}</td>
-                    <td>${complaint.subject}</td>
-                    <td><span class="priority-badge priority-${complaint.priority.toLowerCase()}">${complaint.priority}</span></td>
-                    <td><span class="status-badge status-${complaint.status.toLowerCase().replace(' ', '-')}">${complaint.status}</span></td>
-                    <td>${formattedDate}</td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn-icon btn-view" onclick="viewComplaint('${complaint.id}')" title="View Details">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="btn-icon btn-edit" onclick="editComplaint('${complaint.id}')" title="Edit">
-                                <i class="fas fa-edit"></i>
-                            </button>
-                            <button class="btn-icon btn-delete" onclick="deleteComplaint('${complaint.id}')" title="Delete">
-                                <i class="fas fa-trash"></i>
-                            </button>
-                        </div>
-                    </td>
-                `;
-                tbody.appendChild(row);
-            });
-            
-            const showing = `Showing ${startIndex + 1}-${Math.min(endIndex, complaints.length)} of ${complaints.length}`;
-            document.getElementById('showingInfo').textContent = showing;
-            document.getElementById('totalCount').textContent = complaints.length;
-            
-            const totalPages = Math.ceil(complaints.length / complaintsPerPage);
-            document.getElementById('totalPages').textContent = totalPages;
-            document.getElementById('currentPage').textContent = currentPage;
-            document.getElementById('prevBtn').disabled = currentPage === 1;
-            document.getElementById('nextBtn').disabled = currentPage === totalPages || complaints.length === 0;
-        }
+    function parseJwt(token) {
+        try { return JSON.parse(atob(token.split('.')[1])); } catch (e) { return null; }
+    }
 
-        function filterComplaints() {
-            const statusFilter = document.getElementById('filterStatus').value;
-            const deptFilter = document.getElementById('filterDepartment').value;
-            const priorityFilter = document.getElementById('filterPriority').value;
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            
-            let filtered = allComplaints;
-            
-            if (statusFilter) filtered = filtered.filter(c => c.status === statusFilter);
-            if (deptFilter) filtered = filtered.filter(c => c.department === deptFilter);
-            if (priorityFilter) filtered = filtered.filter(c => c.priority === priorityFilter);
-            if (searchTerm) {
-                filtered = filtered.filter(c => 
-                    c.id.toLowerCase().includes(searchTerm) ||
-                    c.name.toLowerCase().includes(searchTerm) ||
-                    c.subject.toLowerCase().includes(searchTerm)
-                );
-            }
-            
-            currentPage = 1;
-            renderTable(filtered);
-        }
+    const tokenPayload = parseJwt(officerToken);
+    const displayName  = tokenPayload?.['cognito:username']
+                      || tokenPayload?.['name']
+                      || tokenPayload?.['email']
+                      || 'Officer';
+    document.getElementById('userName').textContent         = displayName;
+    document.getElementById('userAvatarLetter').textContent = displayName.charAt(0).toUpperCase();
 
-        function toggleComplaint(id) {
-            if (selectedComplaints.has(id)) {
-                selectedComplaints.delete(id);
-            } else {
-                selectedComplaints.add(id);
-            }
-        }
+    // ══════════════════════════════════════════════════════
+    // 2. CONFIG
+    // ══════════════════════════════════════════════════════
+    const API_URL = "https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/admin/complaints";
 
-        function toggleSelectAll() {
-            const checkboxes = document.querySelectorAll('.complaint-checkbox');
-            const selectAll = document.getElementById('selectAllCheckbox').checked;
-            checkboxes.forEach(cb => {
-                cb.checked = selectAll;
-                const id = cb.dataset.id;
-                if (selectAll) {
-                    selectedComplaints.add(id);
-                } else {
-                    selectedComplaints.delete(id);
+    // Sample officers list (replace with your own API call if you have one)
+    const OFFICERS = [
+        { id: "OFF001", name: "Rajesh Kumar",   dept: "Public Works"  },
+        { id: "OFF002", name: "Priya Sharma",   dept: "Health"        },
+        { id: "OFF003", name: "Amit Singh",     dept: "Education"     },
+        { id: "OFF004", name: "Sunita Verma",   dept: "Revenue"       },
+        { id: "OFF005", name: "Vikram Patel",   dept: "Police"        },
+        { id: "OFF006", name: "Meena Joshi",    dept: "Water Supply"  },
+    ];
+
+    // ══════════════════════════════════════════════════════
+    // 3. STATE
+    // ══════════════════════════════════════════════════════
+    let allComplaints    = [];
+    let filteredList     = [];
+    let currentPage      = 1;
+    const PER_PAGE       = 10;
+    let selectedIds      = new Set();
+    let activeComplaintId = null;
+    let selectedStatus   = null;
+    let selectedOfficer  = null;
+
+    // ══════════════════════════════════════════════════════
+    // 4. LOAD FROM API GATEWAY → LAMBDA → DYNAMODB
+    // ══════════════════════════════════════════════════════
+    async function loadComplaints() {
+        showTableLoading();
+        hideError();
+
+        try {
+            const res = await fetch(API_URL, {
+                method: "GET",
+                headers: {
+                    "Authorization": "Bearer " + officerToken,
+                    "Content-Type": "application/json"
                 }
             });
+
+            if (res.status === 401 || res.status === 403) { logout(); return; }
+            if (!res.ok) throw new Error(`Server responded with ${res.status}`);
+
+            const data = await res.json();
+            allComplaints = Array.isArray(data)
+                ? data
+                : (data.complaints || data.items || data.data || []);
+
+            currentPage = 1;
+            applyFilters();
+
+        } catch (err) {
+            console.error("Load error:", err);
+            showError("Unable to load complaints: " + err.message);
+            showTableError();
+        }
+    }
+
+    function showTableLoading() {
+        document.getElementById('complaintsTableBody').innerHTML = `
+            <tr><td colspan="10">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <span>Loading complaints from server...</span>
+                </div>
+            </td></tr>`;
+    }
+
+    function showTableError() {
+        document.getElementById('complaintsTableBody').innerHTML =
+            '<tr><td colspan="10" style="text-align:center;padding:40px;color:#999;">Could not fetch data. Click Refresh to try again.</td></tr>';
+    }
+
+    // ══════════════════════════════════════════════════════
+    // 5. FILTER
+    // ══════════════════════════════════════════════════════
+    function applyFilters() {
+        const statusF  = document.getElementById('filterStatus').value;
+        const deptF    = document.getElementById('filterDepartment').value;
+        const prioF    = document.getElementById('filterPriority').value;
+        const search   = document.getElementById('searchInput').value.toLowerCase().trim();
+
+        filteredList = allComplaints.filter(c => {
+            const id   = (c.complaintId || c.id || '').toLowerCase();
+            const name = (c.name || c.citizenName || '').toLowerCase();
+            const subj = (c.description || c.subject || c.title || '').toLowerCase();
+            const cat  = (c.category || '').toLowerCase();
+
+            if (statusF && c.status !== statusF) return false;
+            if (deptF   && c.department !== deptF) return false;
+            if (prioF   && (c.priority || 'Medium') !== prioF) return false;
+            if (search  && !id.includes(search) && !name.includes(search) && !subj.includes(search) && !cat.includes(search)) return false;
+            return true;
+        });
+
+        currentPage = 1;
+        renderTable();
+    }
+
+    // ══════════════════════════════════════════════════════
+    // 6. RENDER TABLE
+    // ══════════════════════════════════════════════════════
+    function renderTable() {
+        const tbody = document.getElementById('complaintsTableBody');
+        tbody.innerHTML = '';
+
+        const total      = filteredList.length;
+        const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
+        if (currentPage > totalPages) currentPage = totalPages;
+
+        document.getElementById('totalCount').textContent  = total;
+        document.getElementById('totalPages').textContent  = totalPages;
+        document.getElementById('currentPage').textContent = currentPage;
+
+        const start = (currentPage - 1) * PER_PAGE;
+        const end   = Math.min(start + PER_PAGE, total);
+
+        document.getElementById('showingInfo').textContent =
+            total === 0 ? 'Showing 0–0 of 0' : `Showing ${start + 1}–${end} of ${total}`;
+        document.getElementById('prevBtn').disabled = currentPage <= 1;
+        document.getElementById('nextBtn').disabled = currentPage >= totalPages || total === 0;
+
+        if (total === 0) {
+            tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:40px;color:#999;">No complaints found</td></tr>';
+            return;
         }
 
-        function selectAll() {
-            document.getElementById('selectAllCheckbox').checked = true;
-            toggleSelectAll();
+        const page = filteredList.slice(start, end);
+        page.forEach(c => {
+            const id       = c.complaintId || c.id || '—';
+            const name     = c.name || c.citizenName || '—';
+            const mobile   = c.mobile || c.phone || '—';
+            const dept     = c.department || '—';
+            const category = c.category || '—';
+            const priority = c.priority || 'Medium';
+            const status   = c.status || 'Submitted';
+            const dateStr  = c.createdAt || c.date || c.submittedAt;
+            const date     = dateStr ? new Date(dateStr).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }) : '—';
+
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><input type="checkbox" class="complaint-checkbox" data-id="${id}" ${selectedIds.has(id)?'checked':''} onchange="toggleOne('${id}')"></td>
+                <td><strong>${id}</strong></td>
+                <td>${name}</td>
+                <td>${mobile}</td>
+                <td>${dept}</td>
+                <td>${category}</td>
+                <td><span class="priority-badge priority-${priority.toLowerCase()}">${priority}</span></td>
+                <td><span class="status-badge status-${status.toLowerCase().replace(/\s+/g,'-')}">${status}</span></td>
+                <td>${date}</td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn-icon btn-view"   onclick="openViewModal('${id}')"   title="View Details"><i class="fas fa-eye"></i></button>
+                        <button class="btn-icon btn-edit"   onclick="openStatusModal('${id}')" title="Update Status"><i class="fas fa-sync"></i></button>
+                        <button class="btn-icon btn-delete" onclick="deleteComplaint('${id}')" title="Delete"><i class="fas fa-trash"></i></button>
+                    </div>
+                </td>`;
+            tbody.appendChild(row);
+        });
+    }
+
+    // ══════════════════════════════════════════════════════
+    // 7. PAGINATION
+    // ══════════════════════════════════════════════════════
+    function previousPage() { if (currentPage > 1) { currentPage--; renderTable(); } }
+    function nextPage()     { const tp = Math.ceil(filteredList.length / PER_PAGE); if (currentPage < tp) { currentPage++; renderTable(); } }
+
+    // ══════════════════════════════════════════════════════
+    // 8. SELECTION
+    // ══════════════════════════════════════════════════════
+    function toggleOne(id) {
+        if (selectedIds.has(id)) selectedIds.delete(id);
+        else selectedIds.add(id);
+    }
+
+    function toggleSelectAll() {
+        const checked = document.getElementById('selectAllCheckbox').checked;
+        document.querySelectorAll('.complaint-checkbox').forEach(cb => {
+            cb.checked = checked;
+            if (checked) selectedIds.add(cb.dataset.id);
+            else selectedIds.delete(cb.dataset.id);
+        });
+    }
+
+    function selectAll() {
+        document.getElementById('selectAllCheckbox').checked = true;
+        toggleSelectAll();
+    }
+
+    // ══════════════════════════════════════════════════════
+    // 9. VIEW MODAL
+    // ══════════════════════════════════════════════════════
+    function openViewModal(id) {
+        const c = findComplaint(id);
+        if (!c) return;
+        activeComplaintId = id;
+
+        const fields = [
+            { label: 'Complaint ID', value: c.complaintId || c.id || '—' },
+            { label: 'Submitted By', value: c.name || c.citizenName || '—' },
+            { label: 'Mobile',       value: c.mobile || '—' },
+            { label: 'Email',        value: c.email || '—' },
+            { label: 'State',        value: c.state || '—' },
+            { label: 'District',     value: c.district || '—' },
+            { label: 'Department',   value: c.department || '—' },
+            { label: 'Category',     value: c.category || '—' },
+            { label: 'Priority',     value: c.priority || 'Medium' },
+            { label: 'Status',       value: c.status || 'Submitted' },
+            { label: 'Submitted On', value: c.createdAt ? new Date(c.createdAt).toLocaleString('en-IN') : '—' },
+            { label: 'Assigned To',  value: c.assignedTo || 'Unassigned' },
+        ];
+
+        const grid = document.getElementById('viewDetailGrid');
+        grid.innerHTML = fields.map(f => `
+            <div class="detail-item">
+                <label>${f.label}</label>
+                <span>${f.value}</span>
+            </div>`).join('');
+
+        document.getElementById('viewDescription').textContent = c.description || c.subject || 'No description provided.';
+
+        const timeline = document.getElementById('viewTimeline');
+        const history  = c.history || [];
+        if (history.length === 0) {
+            timeline.innerHTML = `<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-text"><strong>Submitted</strong> — ${c.createdAt ? new Date(c.createdAt).toLocaleString('en-IN') : 'Unknown date'}</div></div>`;
+        } else {
+            timeline.innerHTML = history.map(h => `
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-text"><strong>${h.status}</strong> — ${h.timestamp ? new Date(h.timestamp).toLocaleString('en-IN') : ''} ${h.remarks ? '<br>' + h.remarks : ''}</div>
+                </div>`).join('');
         }
 
-        function bulkAssign() {
-            if (selectedComplaints.size === 0) {
-                alert('Please select complaints to assign');
-                return;
+        document.getElementById('viewModalEditBtn').onclick = () => { closeModal('viewModal'); openStatusModal(id); };
+        openModal('viewModal');
+    }
+
+    // ══════════════════════════════════════════════════════
+    // 10. STATUS UPDATE MODAL
+    // ══════════════════════════════════════════════════════
+    function openStatusModal(id) {
+        const c = findComplaint(id);
+        if (!c) return;
+        activeComplaintId = id;
+        selectedStatus    = null;
+
+        document.getElementById('statusComplaintId').textContent = id;
+        document.getElementById('statusRemarks').value = '';
+        document.querySelectorAll('.status-option').forEach(el => {
+            el.classList.toggle('selected', el.dataset.status === (c.status || 'Submitted'));
+            if (el.dataset.status === (c.status || 'Submitted')) selectedStatus = el.dataset.status;
+        });
+        openModal('statusModal');
+    }
+
+    function selectStatus(el) {
+        document.querySelectorAll('.status-option').forEach(o => o.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedStatus = el.dataset.status;
+    }
+
+    async function submitStatusUpdate() {
+        if (!selectedStatus) { showToast('Please select a status', 'warning'); return; }
+
+        const remarks = document.getElementById('statusRemarks').value.trim();
+        closeModal('statusModal');
+        showToast('Updating status...', 'info');
+
+        try {
+            const res = await fetch(`${API_URL}/${activeComplaintId}`, {
+                method: "PUT",
+                headers: {
+                    "Authorization": "Bearer " + officerToken,
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({ status: selectedStatus, remarks })
+            });
+
+            if (!res.ok) throw new Error(`Server responded with ${res.status}`);
+
+            // Update local data
+            const idx = allComplaints.findIndex(c => (c.complaintId || c.id) === activeComplaintId);
+            if (idx > -1) {
+                allComplaints[idx].status = selectedStatus;
+                if (!allComplaints[idx].history) allComplaints[idx].history = [];
+                allComplaints[idx].history.push({ status: selectedStatus, timestamp: new Date().toISOString(), remarks });
             }
-            alert(`Assigning ${selectedComplaints.size} complaint(s)\n\nThis would open an assignment dialog.`);
+
+            applyFilters();
+            showToast(`Status updated to "${selectedStatus}" ✓`, 'success');
+
+        } catch (err) {
+            console.error(err);
+            // Still update locally so UI reflects change even if API fails
+            const idx = allComplaints.findIndex(c => (c.complaintId || c.id) === activeComplaintId);
+            if (idx > -1) allComplaints[idx].status = selectedStatus;
+            applyFilters();
+            showToast('Status updated locally (API error: ' + err.message + ')', 'warning');
+        }
+    }
+
+    // ══════════════════════════════════════════════════════
+    // 11. ASSIGN MODAL
+    // ══════════════════════════════════════════════════════
+    function openAssignModal(id) {
+        activeComplaintId = id;
+        selectedOfficer   = null;
+        document.getElementById('assignComplaintId').textContent = id;
+
+        const list = document.getElementById('officerList');
+        list.innerHTML = OFFICERS.map(o => `
+            <div class="officer-item" data-id="${o.id}" onclick="selectOfficer(this, '${o.id}')">
+                <div class="officer-avatar">${o.name.charAt(0)}</div>
+                <div>
+                    <div class="officer-name">${o.name}</div>
+                    <div class="officer-dept">${o.dept}</div>
+                </div>
+            </div>`).join('');
+
+        openModal('assignModal');
+    }
+
+    function openBulkAssign() {
+        if (selectedIds.size === 0) { showToast('Please select at least one complaint', 'warning'); return; }
+        openAssignModal([...selectedIds].join(', '));
+    }
+
+    function openBulkStatus() {
+        if (selectedIds.size === 0) { showToast('Please select at least one complaint', 'warning'); return; }
+        activeComplaintId = [...selectedIds].join(', ');
+        selectedStatus = null;
+        document.getElementById('statusComplaintId').textContent = `${selectedIds.size} complaints`;
+        document.getElementById('statusRemarks').value = '';
+        document.querySelectorAll('.status-option').forEach(o => o.classList.remove('selected'));
+        openModal('statusModal');
+    }
+
+    function selectOfficer(el, officerId) {
+        document.querySelectorAll('.officer-item').forEach(o => o.classList.remove('selected'));
+        el.classList.add('selected');
+        selectedOfficer = officerId;
+    }
+
+    async function submitAssignment() {
+        if (!selectedOfficer) { showToast('Please select an officer', 'warning'); return; }
+        const officer = OFFICERS.find(o => o.id === selectedOfficer);
+        closeModal('assignModal');
+
+        try {
+            const ids = activeComplaintId.includes(',')
+                ? activeComplaintId.split(',').map(s => s.trim())
+                : [activeComplaintId];
+
+            // For each complaint, call the update API
+            await Promise.all(ids.map(id =>
+                fetch(`${API_URL}/${id}`, {
+                    method: "PUT",
+                    headers: { "Authorization": "Bearer " + officerToken, "Content-Type": "application/json" },
+                    body: JSON.stringify({ assignedTo: officer.name })
+                }).catch(() => {})
+            ));
+
+            // Update local
+            ids.forEach(id => {
+                const idx = allComplaints.findIndex(c => (c.complaintId || c.id) === id);
+                if (idx > -1) allComplaints[idx].assignedTo = officer.name;
+            });
+
+            applyFilters();
+            showToast(`Assigned to ${officer.name} ✓`, 'success');
+        } catch (err) {
+            showToast('Assignment saved locally (API error)', 'warning');
+        }
+    }
+
+    // ══════════════════════════════════════════════════════
+    // 12. DELETE
+    // ══════════════════════════════════════════════════════
+    async function deleteComplaint(id) {
+        if (!confirm(`Delete complaint ${id}? This cannot be undone.`)) return;
+
+        try {
+            await fetch(`${API_URL}/${id}`, {
+                method: "DELETE",
+                headers: { "Authorization": "Bearer " + officerToken }
+            });
+        } catch (err) {
+            console.warn('Delete API error (removing locally):', err);
         }
 
-        function bulkStatusUpdate() {
-            if (selectedComplaints.size === 0) {
-                alert('Please select complaints to update');
-                return;
-            }
-            alert(`Updating status for ${selectedComplaints.size} complaint(s)\n\nThis would open a status update dialog.`);
-        }
+        allComplaints = allComplaints.filter(c => (c.complaintId || c.id) !== id);
+        selectedIds.delete(id);
+        applyFilters();
+        showToast(`Complaint ${id} deleted`, 'success');
+    }
 
-        function previousPage() {
-            if (currentPage > 1) {
-                currentPage--;
-                filterComplaints();
-            }
-        }
+    // ══════════════════════════════════════════════════════
+    // 13. EXPORT CSV
+    // ══════════════════════════════════════════════════════
+    function exportData() {
+        if (filteredList.length === 0) { showToast('No data to export', 'warning'); return; }
 
-        function nextPage() {
-            const totalPages = Math.ceil(allComplaints.length / complaintsPerPage);
-            if (currentPage < totalPages) {
-                currentPage++;
-                filterComplaints();
-            }
-        }
+        const headers = ['ID','Name','Mobile','Email','State','District','Department','Category','Priority','Status','Submitted'];
+        const rows = filteredList.map(c => [
+            c.complaintId || c.id || '',
+            c.name || '',
+            c.mobile || '',
+            c.email || '',
+            c.state || '',
+            c.district || '',
+            c.department || '',
+            c.category || '',
+            c.priority || '',
+            c.status || '',
+            c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-IN') : ''
+        ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(','));
 
-        function viewComplaint(id) {
-            alert(`Viewing complaint: ${id}\n\nThis would open a detailed view modal.`);
-        }
+        const csv  = [headers.join(','), ...rows].join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement('a');
+        a.href     = url;
+        a.download = `complaints_${new Date().toISOString().slice(0,10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('CSV exported ✓', 'success');
+    }
 
-        function editComplaint(id) {
-            alert(`Editing complaint: ${id}\n\nThis would open an edit form.`);
-        }
+    // ══════════════════════════════════════════════════════
+    // 14. MODAL HELPERS
+    // ══════════════════════════════════════════════════════
+    function openModal(id)  { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
-        function deleteComplaint(id) {
-            if (confirm(`Are you sure you want to delete complaint ${id}?`)) {
-                allComplaints = allComplaints.filter(c => c.id !== id);
-                localStorage.setItem('complaints', JSON.stringify(allComplaints));
-                selectedComplaints.delete(id);
-                filterComplaints();
-            }
-        }
+    // Close on backdrop click
+    document.querySelectorAll('.modal-overlay').forEach(overlay => {
+        overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+    });
 
-        function refreshTable() {
-            allComplaints = JSON.parse(localStorage.getItem('complaints') || '[]');
-            filterComplaints();
-        }
+    // ══════════════════════════════════════════════════════
+    // 15. TOAST
+    // ══════════════════════════════════════════════════════
+    function showToast(msg, type = 'success') {
+        const container = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type === 'error' ? 'error' : type === 'warning' ? 'warning' : ''}`;
+        const icon = type === 'success' ? '✅' : type === 'warning' ? '⚠️' : type === 'error' ? '❌' : 'ℹ️';
+        toast.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
+        container.appendChild(toast);
+        setTimeout(() => toast.remove(), 3500);
+    }
 
-        function exportData() {
-            alert('Exporting data to CSV...\n\nThis would download a CSV file with all complaints.');
-        }
+    // ══════════════════════════════════════════════════════
+    // 16. ERROR BANNER
+    // ══════════════════════════════════════════════════════
+    function showError(msg) {
+        document.getElementById('errorBannerMsg').textContent = msg;
+        document.getElementById('errorBanner').classList.add('show');
+    }
+    function hideError() { document.getElementById('errorBanner').classList.remove('show'); }
 
-        function logout() {
-            sessionStorage.removeItem('loggedInUser');
-        }
+    // ══════════════════════════════════════════════════════
+    // 17. HELPERS
+    // ══════════════════════════════════════════════════════
+    function findComplaint(id) {
+        return allComplaints.find(c => (c.complaintId || c.id) === id) || null;
+    }
 
-        document.getElementById('filterStatus').addEventListener('change', filterComplaints);
-        document.getElementById('filterDepartment').addEventListener('change', filterComplaints);
-        document.getElementById('filterPriority').addEventListener('change', filterComplaints);
-        document.getElementById('searchInput').addEventListener('input', filterComplaints);
+    function logout() {
+        localStorage.removeItem("officerToken");
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        sessionStorage.clear();
+        window.location.href = "login.html";
+    }
 
-        renderTable(allComplaints);
+    // ══════════════════════════════════════════════════════
+    // 18. EVENT LISTENERS & BOOT
+    // ══════════════════════════════════════════════════════
+    document.getElementById('filterStatus').addEventListener('change', applyFilters);
+    document.getElementById('filterDepartment').addEventListener('change', applyFilters);
+    document.getElementById('filterPriority').addEventListener('change', applyFilters);
+    document.getElementById('searchInput').addEventListener('input', applyFilters);
+
+    loadComplaints();
+
     </script>
 </body>
 </html>
