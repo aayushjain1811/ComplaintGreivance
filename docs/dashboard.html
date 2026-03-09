@@ -460,6 +460,31 @@
             background-color: #a71d2a;
         }
 
+        /* Loading spinner */
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 40px;
+            gap: 12px;
+            color: var(--primary);
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .spinner {
+            width: 24px;
+            height: 24px;
+            border: 3px solid #ddd;
+            border-top-color: var(--primary);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
         @keyframes fadeIn {
             from {
                 opacity: 0;
@@ -469,6 +494,24 @@
                 opacity: 1;
                 transform: translateY(0);
             }
+        }
+
+        /* Error banner */
+        .error-banner {
+            background-color: #ffebee;
+            border: 1px solid #ef9a9a;
+            color: var(--error);
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            align-items: center;
+            gap: 10px;
+            font-size: 14px;
+        }
+
+        .error-banner.show {
+            display: flex;
         }
 
         /* Responsive */
@@ -572,7 +615,7 @@
 
         <div class="user-profile">
             <div class="user-profile-content">
-                <div class="user-avatar">A</div>
+                <div class="user-avatar" id="userAvatarLetter">A</div>
                 <div class="user-info">
                     <div class="name" id="userName">Admin User</div>
                     <div class="role">System Administrator</div>
@@ -599,12 +642,21 @@
             </div>
         </div>
 
+        <!-- Error Banner -->
+        <div class="error-banner" id="errorBanner">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="errorMessage">Unable to load complaints from server.</span>
+            <button onclick="loadComplaints()" style="margin-left:auto; background:none; border:1px solid var(--error); color:var(--error); padding:4px 10px; border-radius:4px; cursor:pointer; font-size:12px;">
+                Retry
+            </button>
+        </div>
+
         <!-- Stats Cards -->
         <div class="stats-grid">
             <div class="stat-card">
                 <div class="stat-header">
                     <div>
-                        <div class="stat-value" id="totalComplaints">0</div>
+                        <div class="stat-value" id="totalComplaints">—</div>
                         <div class="stat-label">Total Complaints</div>
                         <div class="stat-change positive">
                             <i class="fas fa-arrow-up"></i> 12% from last month
@@ -619,7 +671,7 @@
             <div class="stat-card">
                 <div class="stat-header">
                     <div>
-                        <div class="stat-value" id="pendingComplaints">0</div>
+                        <div class="stat-value" id="pendingComplaints">—</div>
                         <div class="stat-label">Pending</div>
                         <div class="stat-change negative">
                             <i class="fas fa-arrow-down"></i> 5% from last week
@@ -634,7 +686,7 @@
             <div class="stat-card">
                 <div class="stat-header">
                     <div>
-                        <div class="stat-value" id="resolvedComplaints">0</div>
+                        <div class="stat-value" id="resolvedComplaints">—</div>
                         <div class="stat-label">Resolved</div>
                         <div class="stat-change positive">
                             <i class="fas fa-arrow-up"></i> 18% from last month
@@ -649,7 +701,7 @@
             <div class="stat-card">
                 <div class="stat-header">
                     <div>
-                        <div class="stat-value" id="avgResolutionTime">0</div>
+                        <div class="stat-value" id="avgResolutionTime">48</div>
                         <div class="stat-label">Avg Resolution (hrs)</div>
                         <div class="stat-change positive">
                             <i class="fas fa-arrow-down"></i> 8% faster
@@ -708,7 +760,7 @@
         <div class="table-section">
             <div class="table-header">
                 <h5>Recent Complaints</h5>
-                <button class="btn-action btn-secondary-action" onclick="refreshTable()">
+                <button class="btn-action btn-secondary-action" onclick="loadComplaints()">
                     <i class="fas fa-sync-alt"></i> Refresh
                 </button>
             </div>
@@ -727,7 +779,14 @@
                         </tr>
                     </thead>
                     <tbody id="complaintsTableBody">
-                        <!-- Table rows will be inserted here -->
+                        <tr>
+                            <td colspan="8">
+                                <div class="loading-spinner">
+                                    <div class="spinner"></div>
+                                    <span>Loading complaints from server...</span>
+                                </div>
+                            </td>
+                        </tr>
                     </tbody>
                 </table>
             </div>
@@ -735,109 +794,145 @@
     </main>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Check if user is logged in
-        const loggedInUser = JSON.parse(sessionStorage.getItem('loggedInUser') || 'null');
-        if (!loggedInUser) {
-            window.location.href = 'login.html';
-        } else {
-            document.getElementById('userName').textContent = loggedInUser.name;
-            document.querySelector('.user-avatar').textContent = loggedInUser.name.charAt(0);
-        }
 
-        // Set current date
+    <script>
+
+function parseJwt(token) {
+    try {
+        return JSON.parse(atob(token.split('.')[1]));
+    } catch (e) {
+        return null;
+    }
+}
+
+const token = localStorage.getItem("officerToken");
+if (!token) {
+    window.location.href = 'login.html';
+}
+
+const tokenPayload = parseJwt(token);
+// Cognito stores username in 'cognito:username' field
+const displayName = tokenPayload?.['cognito:username'] 
+                 || tokenPayload?.['name'] 
+                 || tokenPayload?.['email'] 
+                 || 'Officer';
+
+document.getElementById('userName').textContent = displayName;
+document.getElementById('userAvatarLetter').textContent = displayName.charAt(0).toUpperCase()
+
+        // ── 3. Current date ────────────────────────────────────────────────────
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
         document.getElementById('currentDate').textContent = new Date().toLocaleDateString('en-IN', options);
 
-        // Load complaints from localStorage
-        let allComplaints = JSON.parse(localStorage.getItem('complaints') || '[]');
+        // ── 4. AWS API config ──────────────────────────────────────────────────
+        const API_URL = "https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/admin/complaints";
 
-        // Add some dummy data if none exists
-        if (allComplaints.length === 0) {
-            allComplaints = [
-                {
-                    id: 'CMP12345678',
-                    name: 'Rahul Sharma',
-                    email: 'rahul@example.com',
-                    mobile: '9876543210',
-                    department: 'Public Works',
-                    category: 'Infrastructure',
-                    subject: 'Road Repair Required',
-                    priority: 'High',
-                    status: 'In Progress',
-                    date: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString()
-                },
-                {
-                    id: 'CMP23456789',
-                    name: 'Priya Singh',
-                    email: 'priya@example.com',
-                    mobile: '9876543211',
-                    department: 'Health',
-                    category: 'Service Delay',
-                    subject: 'Medicine Shortage',
-                    priority: 'Critical',
-                    status: 'Under Review',
-                    date: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000).toISOString()
-                },
-                {
-                    id: 'CMP34567890',
-                    name: 'Amit Kumar',
-                    email: 'amit@example.com',
-                    mobile: '9876543212',
-                    department: 'Education',
-                    category: 'Document',
-                    subject: 'Certificate Not Issued',
-                    priority: 'Medium',
-                    status: 'Resolved',
-                    date: new Date(Date.now() - 5 * 24 * 60 * 60 * 1000).toISOString()
+        let allComplaints = [];
+
+        // ── 5. Fetch complaints from AWS (API Gateway → Lambda → DynamoDB) ─────
+        async function loadComplaints() {
+            // Show loading state
+            document.getElementById('complaintsTableBody').innerHTML = `
+                <tr>
+                    <td colspan="8">
+                        <div class="loading-spinner">
+                            <div class="spinner"></div>
+                            <span>Loading complaints from server...</span>
+                        </div>
+                    </td>
+                </tr>`;
+            hideError();
+
+            const officerToken = localStorage.getItem("officerToken");
+
+            try {
+                const res = await fetch(API_URL, {
+                    headers: {
+                        "Authorization": "Bearer " + officerToken,
+                        "Content-Type": "application/json"
+                    }
+                });
+
+                if (res.status === 401 || res.status === 403) {
+                    // Token expired or unauthorized → force re-login
+                    logout();
+                    return;
                 }
-            ];
+
+                if (!res.ok) {
+                    throw new Error(`Server responded with ${res.status}`);
+                }
+
+                const data = await res.json();
+
+                // API may return the array directly or wrapped in a key like { complaints: [] }
+                allComplaints = Array.isArray(data) ? data : (data.complaints || data.items || []);
+
+                updateStats();
+                filterComplaints();
+
+            } catch (err) {
+                console.error("Failed to load complaints:", err);
+                showError("Unable to load complaints from server. " + err.message);
+                document.getElementById('complaintsTableBody').innerHTML =
+                    '<tr><td colspan="8" style="text-align:center;padding:40px;color:#999;">Could not fetch data. Please retry.</td></tr>';
+            }
         }
 
-        // Update statistics
+        // ── 6. Update statistics ───────────────────────────────────────────────
         function updateStats() {
-            const total = allComplaints.length;
-            const pending = allComplaints.filter(c => c.status !== 'Resolved' && c.status !== 'Closed').length;
+            const total    = allComplaints.length;
+            const pending  = allComplaints.filter(c => c.status !== 'Resolved' && c.status !== 'Closed').length;
             const resolved = allComplaints.filter(c => c.status === 'Resolved').length;
-            
-            document.getElementById('totalComplaints').textContent = total;
-            document.getElementById('pendingComplaints').textContent = pending;
+
+            document.getElementById('totalComplaints').textContent    = total;
+            document.getElementById('pendingComplaints').textContent  = pending;
             document.getElementById('resolvedComplaints').textContent = resolved;
-            document.getElementById('avgResolutionTime').textContent = '48';
         }
 
-        // Render table
+        // ── 7. Render table ────────────────────────────────────────────────────
         function renderTable(complaints) {
             const tbody = document.getElementById('complaintsTableBody');
             tbody.innerHTML = '';
-            
+
             if (complaints.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="8" style="text-align: center; padding: 40px;">No complaints found</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="8" style="text-align:center;padding:40px;color:#999;">No complaints found</td></tr>';
                 return;
             }
-            
+
             complaints.forEach(complaint => {
-                const date = new Date(complaint.date);
-                const formattedDate = date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
-                
+                const date = new Date(complaint.date || complaint.createdAt || complaint.submittedAt);
+                const formattedDate = isNaN(date)
+                    ? '—'
+                    : date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+
+                const priority = complaint.priority || 'Medium';
+                const status   = complaint.status   || 'Submitted';
+
                 const row = document.createElement('tr');
                 row.innerHTML = `
-                    <td><strong>${complaint.id}</strong></td>
-                    <td>${complaint.name}</td>
-                    <td>${complaint.department}</td>
-                    <td>${complaint.subject}</td>
-                    <td><span class="priority-badge priority-${complaint.priority.toLowerCase()}">${complaint.priority}</span></td>
-                    <td><span class="status-badge status-${complaint.status.toLowerCase().replace(' ', '-')}">${complaint.status}</span></td>
+                    <td><strong>${complaint.id || complaint.complaintId || '—'}</strong></td>
+                    <td>${complaint.name || complaint.citizenName || '—'}</td>
+                    <td>${complaint.department || '—'}</td>
+                    <td>${complaint.subject || complaint.title || '—'}</td>
+                    <td><span class="priority-badge priority-${priority.toLowerCase()}">${priority}</span></td>
+                    <td><span class="status-badge status-${status.toLowerCase().replace(/\s+/g, '-')}">${status}</span></td>
                     <td>${formattedDate}</td>
                     <td>
                         <div class="action-buttons">
-                            <button class="btn-icon btn-view" onclick="viewComplaint('${complaint.id}')" title="View Details">
+                            <button class="btn-icon btn-view"
+                                onclick="viewComplaint('${complaint.id || complaint.complaintId}')"
+                                title="View Details">
                                 <i class="fas fa-eye"></i>
                             </button>
-                            <button class="btn-icon btn-edit" onclick="editComplaint('${complaint.id}')" title="Edit">
+                            <button class="btn-icon btn-edit"
+                                onclick="editComplaint('${complaint.id || complaint.complaintId}')"
+                                title="Edit">
                                 <i class="fas fa-edit"></i>
                             </button>
-                            <button class="btn-icon btn-delete" onclick="deleteComplaint('${complaint.id}')" title="Delete">
+                            <button class="btn-icon btn-delete"
+                                onclick="deleteComplaint('${complaint.id || complaint.complaintId}')"
+                                title="Delete">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </div>
@@ -847,39 +942,31 @@
             });
         }
 
-        // Filter complaints
+        // ── 8. Filter complaints ───────────────────────────────────────────────
         function filterComplaints() {
-            const statusFilter = document.getElementById('filterStatus').value;
-            const deptFilter = document.getElementById('filterDepartment').value;
+            const statusFilter   = document.getElementById('filterStatus').value;
+            const deptFilter     = document.getElementById('filterDepartment').value;
             const priorityFilter = document.getElementById('filterPriority').value;
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            
+            const searchTerm     = document.getElementById('searchInput').value.toLowerCase();
+
             let filtered = allComplaints;
-            
-            if (statusFilter) {
-                filtered = filtered.filter(c => c.status === statusFilter);
-            }
-            
-            if (deptFilter) {
-                filtered = filtered.filter(c => c.department === deptFilter);
-            }
-            
-            if (priorityFilter) {
-                filtered = filtered.filter(c => c.priority === priorityFilter);
-            }
-            
+
+            if (statusFilter)   filtered = filtered.filter(c => c.status === statusFilter);
+            if (deptFilter)     filtered = filtered.filter(c => c.department === deptFilter);
+            if (priorityFilter) filtered = filtered.filter(c => c.priority === priorityFilter);
+
             if (searchTerm) {
-                filtered = filtered.filter(c => 
-                    c.id.toLowerCase().includes(searchTerm) ||
-                    c.name.toLowerCase().includes(searchTerm) ||
-                    c.subject.toLowerCase().includes(searchTerm)
+                filtered = filtered.filter(c =>
+                    (c.id || c.complaintId || '').toLowerCase().includes(searchTerm) ||
+                    (c.name || c.citizenName || '').toLowerCase().includes(searchTerm) ||
+                    (c.subject || c.title || '').toLowerCase().includes(searchTerm)
                 );
             }
-            
+
             renderTable(filtered);
         }
 
-        // Action functions
+        // ── 9. Action functions ────────────────────────────────────────────────
         function viewComplaint(id) {
             alert(`Viewing complaint: ${id}\n\nThis would open a detailed view modal.`);
         }
@@ -890,32 +977,41 @@
 
         function deleteComplaint(id) {
             if (confirm(`Are you sure you want to delete complaint ${id}?`)) {
-                allComplaints = allComplaints.filter(c => c.id !== id);
-                localStorage.setItem('complaints', JSON.stringify(allComplaints));
+                allComplaints = allComplaints.filter(c => (c.id || c.complaintId) !== id);
                 updateStats();
                 filterComplaints();
+                // TODO: also call DELETE /admin/complaints/{id} on the backend
             }
         }
 
-        function refreshTable() {
-            allComplaints = JSON.parse(localStorage.getItem('complaints') || '[]');
-            updateStats();
-            filterComplaints();
-        }
-
+        // ── 10. Logout — clears ALL Cognito & session tokens ──────────────────
         function logout() {
-            sessionStorage.removeItem('loggedInUser');
+            localStorage.removeItem("officerToken");
+            localStorage.removeItem("accessToken");
+            localStorage.removeItem("refreshToken");
+            sessionStorage.clear();
+            window.location.href = "login.html";
         }
 
-        // Event listeners
+        // ── 11. Error helpers ──────────────────────────────────────────────────
+        function showError(msg) {
+            const banner = document.getElementById('errorBanner');
+            document.getElementById('errorMessage').textContent = msg;
+            banner.classList.add('show');
+        }
+
+        function hideError() {
+            document.getElementById('errorBanner').classList.remove('show');
+        }
+
+        // ── 12. Event listeners ────────────────────────────────────────────────
         document.getElementById('filterStatus').addEventListener('change', filterComplaints);
         document.getElementById('filterDepartment').addEventListener('change', filterComplaints);
         document.getElementById('filterPriority').addEventListener('change', filterComplaints);
         document.getElementById('searchInput').addEventListener('input', filterComplaints);
 
-        // Initial load
-        updateStats();
-        renderTable(allComplaints);
+        // ── 13. Boot: fetch from AWS ───────────────────────────────────────────
+        loadComplaints();
     </script>
 </body>
 </html>

@@ -411,8 +411,8 @@
     <script>
         // AWS Cognito Configuration
         const poolData = {
-            UserPoolId: "us-east-1_7dZopQKaU",
-            ClientId: "3dh248ulejpr4ru3a1t09feg72"
+            UserPoolId: "ap-south-1_GJ7rUyUuY",
+            ClientId: "1thh9cn56buk3lpubbu5m45orp"
         };
         const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 
@@ -572,13 +572,48 @@
                     showError(errorMsg);
                 },
 
-                newPasswordRequired: function(userAttributes, requiredAttributes) {
-                    setLoading(false);
-                    showWarning('You need to change your temporary password. Please contact administrator for assistance.');
-                    console.log('New password required', userAttributes, requiredAttributes);
-                    
-                    // You can implement a password change flow here if needed
-                }
+newPasswordRequired: function(userAttributes, requiredAttributes) {
+
+    setLoading(false);
+
+    // Remove attributes Cognito doesn't allow
+    delete userAttributes.email_verified;
+    delete userAttributes.phone_number_verified;
+
+    const newPassword = prompt("Enter your new password");
+
+    if(!newPassword){
+        showError("Password change cancelled.");
+        return;
+    }
+
+    // IMPORTANT: pass empty object if attributes already exist
+    cognitoUser.completeNewPasswordChallenge(
+        newPassword,
+        {},
+        {
+            onSuccess: function(result){
+
+                const idToken = result.getIdToken().getJwtToken();
+                const accessToken = result.getAccessToken().getJwtToken();
+
+                localStorage.setItem("officerToken", idToken);
+                localStorage.setItem("accessToken", accessToken);
+
+                showSuccess("Password updated successfully!");
+
+                setTimeout(()=>{
+                    window.location.href="dashboard.html";
+                },1500);
+            },
+
+            onFailure: function(err){
+                console.error(err);
+                showError(err.message || "Password update failed");
+            }
+        }
+    );
+}
             });
         });
 
