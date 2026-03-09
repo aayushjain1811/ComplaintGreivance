@@ -831,13 +831,13 @@
         showToast('Updating status...', 'info');
 
         try {
-            const res = await fetch(`${API_URL}/${activeComplaintId}`, {
+            const res = await fetch("https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/admin/update-status", {
                 method: "PUT",
                 headers: {
                     "Authorization": "Bearer " + officerToken,
                     "Content-Type": "application/json"
                 },
-                body: JSON.stringify({ status: selectedStatus, remarks })
+                body: JSON.stringify({ complaintId: activeId, status: selectedStatus })
             });
 
             if (!res.ok) throw new Error(`Server responded with ${res.status}`);
@@ -917,10 +917,10 @@
 
             // For each complaint, call the update API
             await Promise.all(ids.map(id =>
-                fetch(`${API_URL}/${id}`, {
+                fetch("https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/admin/update-status", {
                     method: "PUT",
                     headers: { "Authorization": "Bearer " + officerToken, "Content-Type": "application/json" },
-                    body: JSON.stringify({ assignedTo: officer.name })
+                    body: JSON.stringify({ complaintId: activeId, status: "Under Review" })
                 }).catch(() => {})
             ));
 

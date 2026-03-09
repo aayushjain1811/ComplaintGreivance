@@ -601,10 +601,10 @@
         closeModal('statusModal');
 
         try {
-            await fetch(`${API_URL}/${activeId}`, {
+            await fetch("https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/admin/update-status", {
                 method: "PUT",
                 headers: { "Authorization": "Bearer " + officerToken, "Content-Type": "application/json" },
-                body: JSON.stringify({ status: selectedStatus, remarks })
+                body: JSON.stringify({ complaintId: activeId, status: selectedStatus })
             });
         } catch (err) { console.warn('API error (updating locally):', err); }
 
@@ -659,10 +659,10 @@
         closeModal('assignModal');
 
         try {
-            await fetch(`${API_URL}/${activeId}`, {
+            await fetch("https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/admin/update-status", {
                 method: "PUT",
                 headers: { "Authorization": "Bearer " + officerToken, "Content-Type": "application/json" },
-                body: JSON.stringify({ assignedTo: officer.name, status: "Under Review" })
+                body: JSON.stringify({ complaintId: activeId, status: "Under Review" })
             });
         } catch (err) { console.warn('Assign API error (updating locally):', err); }
 
