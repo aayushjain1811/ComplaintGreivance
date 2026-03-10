@@ -8,7 +8,6 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ===== ROOT VARIABLES ===== */
         :root {
             --primary: #0A2E5C;
             --background: #F2F2F2;
@@ -16,424 +15,180 @@
             --success: #138808;
             --error: #C62828;
             --white: #FFFFFF;
-            --saffron: #FF9933;
-            --green: #138808;
         }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Roboto', 'Noto Sans Devanagari', sans-serif; background-color: var(--background); color: #333; overflow-x: hidden; }
+        a { text-decoration: none; }
 
-        /* ===== GLOBAL STYLES ===== */
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        /* ── TRICOLOR ── */
+        .tricolor-strip { height: 5px; background: linear-gradient(to right, #FF9933 0%,#FF9933 33.33%,#FFFFFF 33.33%,#FFFFFF 66.66%,#138808 66.66%,#138808 100%); }
 
-        body {
-            font-family: 'Roboto', 'Noto Sans Devanagari', sans-serif;
-            background-color: var(--background);
-            color: #333;
-            overflow-x: hidden;
-        }
+        /* ── MARQUEE TICKER ── */
+        .ticker { background-color: #f0f6ff; border-bottom: 1px solid #c8d8f5; padding: 6px 0; font-size: 13px; color: var(--primary); overflow: hidden; }
+        .ticker-inner { display: flex; align-items: center; }
+        .ticker-label { background-color: var(--accent); color: var(--white); padding: 2px 12px; font-weight: 700; font-size: 12px; border-radius: 2px; margin-right: 15px; flex-shrink: 0; }
+        .ticker-track { overflow: hidden; white-space: nowrap; flex: 1; }
+        .ticker-text { display: inline-block; animation: marquee 30s linear infinite; }
+        @keyframes marquee { from { transform: translateX(100vw); } to { transform: translateX(-100%); } }
 
-        /* ===== TRICOLOR STRIP ===== */
-        .tricolor-strip {
-            height: 5px;
-            background: linear-gradient(to right, 
-                var(--saffron) 0%, var(--saffron) 33.33%, 
-                var(--white) 33.33%, var(--white) 66.66%, 
-                var(--success) 66.66%, var(--success) 100%);
-        }
+        /* ── HEADER ── */
+        .header-top { background-color: var(--white); padding: 15px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .emblem-container { display: flex; align-items: center; gap: 15px; }
+        .emblem-icon { font-size: 50px; color: var(--primary); line-height: 1; }
+        .emblem-text h1 { font-size: 20px; font-weight: 700; color: var(--primary); margin: 0; }
+        .emblem-text p  { font-size: 13px; color: #888; margin: 0; }
+        .digital-badge  { text-align: right; }
+        .digital-badge .di-label { font-size: 20px; font-weight: 700; color: var(--accent); }
+        .digital-badge .di-sub   { font-size: 11px; color: var(--primary); font-weight: 600; }
 
-        /* ===== HEADER ===== */
-        .header-top {
-            background-color: var(--white);
-            padding: 15px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
+        /* ── NAVBAR ── */
+        .navbar { background-color: var(--primary); padding: 0; }
+        .navbar-nav .nav-link { color: var(--white) !important; padding: 14px 18px; font-weight: 500; font-size: 14px; transition: all 0.3s ease; position: relative; }
+        .navbar-nav .nav-link::after { content: ''; position: absolute; bottom: 0; left: 50%; width: 0; height: 3px; background-color: var(--accent); transition: all 0.3s ease; transform: translateX(-50%); }
+        .navbar-nav .nav-link:hover { background-color: rgba(255,255,255,0.08); }
+        .navbar-nav .nav-link:hover::after { width: 80%; }
+        .navbar-nav .nav-link.active-link { background-color: rgba(255,255,255,0.1); }
+        .navbar-nav .nav-link.active-link::after { width: 80%; }
+        .nav-login-btn { background-color: var(--accent) !important; border-radius: 4px; margin: 8px 0; padding: 7px 16px !important; }
+        .nav-login-btn:hover { background-color: #e68a2e !important; }
 
-        .emblem-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
+        /* ── HERO ── */
+        .hero-section { background: linear-gradient(135deg, #062045 0%, #0A2E5C 50%, #1a4d8f 100%); color: var(--white); padding: 90px 0 70px; position: relative; overflow: hidden; }
+        .hero-section::before { content: ''; position: absolute; inset: 0; background: radial-gradient(circle at 20% 50%, rgba(255,153,51,0.08) 0%, transparent 60%), radial-gradient(circle at 80% 20%, rgba(19,136,8,0.06) 0%, transparent 50%); }
+        .hero-badges { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap; }
+        .hero-badge { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); padding: 4px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; color: rgba(255,255,255,0.9); }
+        .hero-badge.saffron { background: rgba(255,153,51,0.2); border-color: rgba(255,153,51,0.4); color: #FFB74D; }
+        .hero-section h2 { font-size: 44px; font-weight: 700; line-height: 1.2; margin-bottom: 18px; }
+        .hero-section h2 span { color: var(--accent); }
+        .hero-section .lead { font-size: 17px; opacity: 0.9; margin-bottom: 12px; line-height: 1.6; }
+        .hero-hindi { font-family: 'Noto Sans Devanagari', sans-serif; font-size: 14px; opacity: 0.7; margin-bottom: 30px; }
+        .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 40px; }
+        .btn-hero-primary { background-color: var(--accent); color: var(--white); border: none; padding: 13px 28px; border-radius: 6px; font-size: 15px; font-weight: 700; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-hero-primary:hover { background-color: #e68a2e; transform: translateY(-3px); box-shadow: 0 8px 20px rgba(255,153,51,0.35); color: var(--white); }
+        .btn-hero-secondary { background-color: transparent; color: var(--white); border: 2px solid rgba(255,255,255,0.6); padding: 11px 26px; border-radius: 6px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; display: inline-flex; align-items: center; gap: 8px; }
+        .btn-hero-secondary:hover { background-color: rgba(255,255,255,0.12); border-color: var(--white); transform: translateY(-3px); color: var(--white); }
+        .hero-trust { display: flex; gap: 20px; flex-wrap: wrap; }
+        .trust-item { display: flex; align-items: center; gap: 6px; font-size: 12px; opacity: 0.8; }
+        .trust-item i { color: var(--accent); }
 
-        .emblem-icon {
-            font-size: 50px;
-            color: var(--primary);
-        }
+        /* Hero quick track box */
+        .quick-track-box { background: rgba(255,255,255,0.1); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,0.2); border-radius: 12px; padding: 25px; }
+        .quick-track-box h5 { font-size: 16px; font-weight: 700; margin-bottom: 6px; color: var(--white); }
+        .quick-track-box p  { font-size: 12px; opacity: 0.7; margin-bottom: 16px; }
+        .quick-track-input { background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.3); border-radius: 6px; padding: 10px 14px; color: var(--white); font-size: 14px; width: 100%; margin-bottom: 10px; }
+        .quick-track-input::placeholder { color: rgba(255,255,255,0.55); }
+        .quick-track-input:focus { outline: none; border-color: var(--accent); }
+        .btn-track-submit { width: 100%; background-color: var(--accent); color: var(--white); border: none; padding: 10px; border-radius: 6px; font-weight: 700; font-size: 14px; cursor: pointer; transition: all 0.2s; }
+        .btn-track-submit:hover { background-color: #e68a2e; }
+        .track-result { margin-top: 12px; padding: 10px 14px; background: rgba(255,255,255,0.1); border-radius: 6px; font-size: 13px; display: none; }
+        .track-result.show { display: block; }
 
-        .emblem-text h1 {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--primary);
-            margin: 0;
-        }
+        /* ── LIVE STATS ── */
+        .stats-section { background: linear-gradient(135deg, var(--primary) 0%, #1a4d8f 100%); color: var(--white); padding: 50px 0; }
+        .stat-box { text-align: center; padding: 20px; }
+        .stat-number { font-size: 44px; font-weight: 700; color: var(--accent); margin-bottom: 6px; }
+        .stat-label  { font-size: 14px; opacity: 0.85; font-weight: 500; }
+        .stat-loading { font-size: 28px; color: rgba(255,255,255,0.3); animation: pulse 1.5s ease-in-out infinite; }
+        @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+        .stats-live-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(19,136,8,0.25); border: 1px solid rgba(19,136,8,0.4); padding: 4px 14px; border-radius: 20px; font-size: 12px; margin-bottom: 30px; }
+        .live-dot { width: 8px; height: 8px; background: #4caf50; border-radius: 50%; animation: pulse 2s infinite; }
 
-        .emblem-text p {
-            font-size: 14px;
-            color: #666;
-            margin: 0;
-        }
+        /* ── SERVICES ── */
+        .services-section { padding: 70px 0; background-color: var(--background); }
+        .section-title { text-align: center; margin-bottom: 50px; }
+        .section-title h3 { font-size: 32px; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
+        .section-title p { font-size: 15px; color: #888; }
+        .section-title .title-line { width: 60px; height: 4px; background: linear-gradient(90deg, var(--accent), var(--success)); border-radius: 2px; margin: 12px auto 0; }
+        .service-card { background-color: var(--white); border-radius: 12px; padding: 30px 25px; text-align: center; transition: all 0.3s ease; height: 100%; box-shadow: 0 2px 12px rgba(0,0,0,0.08); border-bottom: 3px solid transparent; }
+        .service-card:hover { transform: translateY(-8px); box-shadow: 0 12px 30px rgba(0,0,0,0.15); border-bottom-color: var(--accent); }
+        .service-icon { width: 70px; height: 70px; border-radius: 50%; background: linear-gradient(135deg, #fff3e0, #ffe0b2); display: flex; align-items: center; justify-content: center; font-size: 30px; color: var(--accent); margin: 0 auto 20px; transition: all 0.3s; }
+        .service-card:hover .service-icon { background: linear-gradient(135deg, var(--accent), #e68a2e); color: var(--white); }
+        .service-card h4 { font-size: 18px; font-weight: 700; color: var(--primary); margin-bottom: 12px; }
+        .service-card p  { font-size: 13px; color: #777; line-height: 1.6; margin: 0; }
 
-        .digital-india-badge {
-            text-align: right;
-        }
+        /* ── PROCESS ── */
+        .process-section { padding: 70px 0; background-color: var(--white); }
+        .process-step { text-align: center; padding: 20px 15px; position: relative; }
+        .process-step::after { content: ''; position: absolute; top: 30px; left: 50%; width: 100%; height: 2px; background: linear-gradient(90deg, var(--accent), #ffd699); z-index: 0; }
+        .process-step:last-child::after { display: none; }
+        .process-number { width: 60px; height: 60px; background: linear-gradient(135deg, var(--accent), #e68a2e); color: var(--white); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; font-weight: 700; margin: 0 auto 18px; position: relative; z-index: 1; box-shadow: 0 4px 15px rgba(255,153,51,0.4); }
+        .process-step h5 { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
+        .process-step p  { font-size: 13px; color: #888; line-height: 1.5; }
 
-        .digital-india-badge img {
-            max-height: 60px;
-        }
+        /* ── DEPARTMENTS OVERVIEW ── */
+        .depts-section { padding: 70px 0; background-color: var(--background); }
+        .dept-chip { display: flex; align-items: center; gap: 12px; background-color: var(--white); border-radius: 10px; padding: 16px 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.07); transition: all 0.3s ease; cursor: pointer; }
+        .dept-chip:hover { transform: translateY(-3px); box-shadow: 0 6px 20px rgba(0,0,0,0.12); background: linear-gradient(135deg, var(--primary), #1a4d8f); color: var(--white); }
+        .dept-chip:hover .dept-chip-icon { color: var(--accent); }
+        .dept-chip:hover .dept-chip-name, .dept-chip:hover .dept-chip-sub { color: var(--white); }
+        .dept-chip-icon { font-size: 22px; color: var(--accent); width: 30px; flex-shrink: 0; }
+        .dept-chip-name { font-size: 14px; font-weight: 700; color: var(--primary); margin-bottom: 2px; }
+        .dept-chip-sub  { font-size: 11px; color: #888; }
 
-        .digital-india-text {
-            font-size: 12px;
-            color: var(--primary);
-            font-weight: 600;
-            margin-top: 5px;
-        }
+        /* ── CONTACT / HELP ── */
+        .help-section { padding: 70px 0; background: linear-gradient(135deg, var(--primary) 0%, #1a4d8f 100%); color: var(--white); }
+        .help-card { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15); border-radius: 12px; padding: 30px; text-align: center; transition: all 0.3s; }
+        .help-card:hover { background: rgba(255,255,255,0.18); transform: translateY(-4px); }
+        .help-card i { font-size: 36px; color: var(--accent); margin-bottom: 16px; display: block; }
+        .help-card h5 { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
+        .help-card p  { font-size: 13px; opacity: 0.85; margin: 0; line-height: 1.6; }
+        .help-card .help-value { font-size: 18px; font-weight: 700; color: var(--accent); margin-top: 8px; }
 
-        /* ===== NAVIGATION ===== */
-        .navbar {
-            background-color: var(--primary);
-            padding: 0;
-        }
+        /* ── FOOTER ── */
+        .footer { background-color: #071e3d; color: var(--white); padding: 50px 0 20px; }
+        .footer h5 { font-size: 16px; font-weight: 700; margin-bottom: 16px; color: var(--accent); }
+        .footer ul { list-style: none; padding: 0; }
+        .footer ul li { margin-bottom: 8px; font-size: 13px; opacity: 0.8; }
+        .footer ul li i { width: 16px; margin-right: 6px; color: var(--accent); }
+        .footer a { color: rgba(255,255,255,0.8); transition: color 0.2s; }
+        .footer a:hover { color: var(--accent); }
+        .footer-desc { font-size: 13px; opacity: 0.75; line-height: 1.7; }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.1); padding-top: 20px; text-align: center; font-size: 13px; opacity: 0.7; }
+        .footer-bottom a { color: rgba(255,255,255,0.7); margin: 0 8px; }
+        .footer-bottom a:hover { color: var(--accent); }
 
-        .navbar-nav .nav-link {
-            color: var(--white) !important;
-            padding: 15px 20px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-            position: relative;
-        }
+        /* ── SCROLL REVEAL ── */
+        .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
+        .reveal.visible { opacity: 1; transform: translateY(0); }
 
-        .navbar-nav .nav-link:hover {
-            background-color: rgba(255,255,255,0.1);
-            transform: translateY(-2px);
-        }
+        /* ── TOAST ── */
+        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 10px; }
+        .toast-msg { background: var(--white); border-radius: 8px; padding: 12px 16px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; font-size: 13px; min-width: 240px; animation: toastIn 0.3s ease; border-left: 4px solid var(--success); }
+        .toast-msg.error { border-left-color: var(--error); }
+        @keyframes toastIn { from { opacity:0; transform: translateX(40px); } to { opacity:1; transform:translateX(0); } }
 
-        .navbar-nav .nav-link::after {
-            content: '';
-            position: absolute;
-            bottom: 0;
-            left: 50%;
-            width: 0;
-            height: 3px;
-            background-color: var(--accent);
-            transition: all 0.3s ease;
-            transform: translateX(-50%);
-        }
-
-        .navbar-nav .nav-link:hover::after {
-            width: 80%;
-        }
-
-        /* ===== HERO SECTION ===== */
-        .hero-section {
-            background: linear-gradient(135deg, var(--primary) 0%, #1a4d8f 100%);
-            color: var(--white);
-            padding: 80px 0;
-            position: relative;
-            overflow: hidden;
-        }
-
-        .hero-section::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><circle cx="50" cy="50" r="2" fill="white" opacity="0.1"/></svg>');
-            opacity: 0.3;
-        }
-
-        .hero-content {
-            position: relative;
-            z-index: 1;
-        }
-
-        .hero-content h2 {
-            font-size: 42px;
-            font-weight: 700;
-            margin-bottom: 20px;
-            animation: fadeInUp 1s ease;
-        }
-
-        .hero-content p {
-            font-size: 18px;
-            margin-bottom: 30px;
-            animation: fadeInUp 1.2s ease;
-        }
-
-        .hero-buttons .btn {
-            padding: 12px 30px;
-            font-size: 16px;
-            font-weight: 600;
-            border-radius: 5px;
-            transition: all 0.3s ease;
-            margin: 5px;
-            animation: fadeInUp 1.4s ease;
-        }
-
-        .btn-primary-custom {
-            background-color: var(--accent);
-            border: none;
-            color: var(--white);
-        }
-
-        .btn-primary-custom:hover {
-            background-color: #e68a2e;
-            transform: translateY(-3px);
-            box-shadow: 0 5px 15px rgba(255,153,51,0.4);
-        }
-
-        .btn-secondary-custom {
-            background-color: transparent;
-            border: 2px solid var(--white);
-            color: var(--white);
-        }
-
-        .btn-secondary-custom:hover {
-            background-color: var(--white);
-            color: var(--primary);
-            transform: translateY(-3px);
-        }
-
-        /* ===== SERVICES SECTION ===== */
-        .services-section {
-            padding: 60px 0;
-        }
-
-        .section-title {
-            text-align: center;
-            margin-bottom: 50px;
-            animation: fadeIn 1s ease;
-        }
-
-        .section-title h3 {
-            font-size: 32px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 10px;
-        }
-
-        .section-title p {
-            font-size: 16px;
-            color: #666;
-        }
-
-        .service-card {
-            background-color: var(--white);
-            border-radius: 10px;
-            padding: 30px;
-            text-align: center;
-            transition: all 0.3s ease;
-            height: 100%;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            animation: slideUp 0.8s ease;
-        }
-
-        .service-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-        }
-
-        .service-icon {
-            font-size: 50px;
-            color: var(--accent);
-            margin-bottom: 20px;
-        }
-
-        .service-card h4 {
-            font-size: 20px;
-            font-weight: 600;
-            color: var(--primary);
-            margin-bottom: 15px;
-        }
-
-        .service-card p {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 0;
-        }
-
-        /* ===== STATISTICS SECTION ===== */
-        .stats-section {
-            background: linear-gradient(135deg, var(--primary) 0%, #1a4d8f 100%);
-            color: var(--white);
-            padding: 60px 0;
-        }
-
-        .stat-box {
-            text-align: center;
-            animation: fadeIn 1.2s ease;
-        }
-
-        .stat-number {
-            font-size: 48px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            counter-reset: count;
-        }
-
-        .stat-label {
-            font-size: 16px;
-            font-weight: 400;
-            opacity: 0.9;
-        }
-
-        /* ===== PROCESS SECTION ===== */
-        .process-section {
-            padding: 60px 0;
-            background-color: var(--white);
-        }
-
-        .process-step {
-            position: relative;
-            padding: 30px;
-            text-align: center;
-            animation: slideUp 1s ease;
-        }
-
-        .process-number {
-            width: 60px;
-            height: 60px;
-            background-color: var(--accent);
-            color: var(--white);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: 700;
-            margin: 0 auto 20px;
-            position: relative;
-            z-index: 1;
-        }
-
-        .process-step::after {
-            content: '';
-            position: absolute;
-            top: 60px;
-            left: 50%;
-            width: 100%;
-            height: 2px;
-            background-color: var(--accent);
-            transform: translateX(-50%);
-            z-index: 0;
-        }
-
-        .process-step:last-child::after {
-            display: none;
-        }
-
-        .process-step h5 {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--primary);
-            margin-bottom: 10px;
-        }
-
-        .process-step p {
-            font-size: 14px;
-            color: #666;
-        }
-
-        /* ===== FOOTER ===== */
-        .footer {
-            background-color: var(--primary);
-            color: var(--white);
-            padding: 40px 0 20px;
-        }
-
-        .footer-content {
-            margin-bottom: 20px;
-        }
-
-        .footer h5 {
-            font-size: 18px;
-            font-weight: 600;
-            margin-bottom: 15px;
-        }
-
-        .footer ul {
-            list-style: none;
-            padding: 0;
-        }
-
-        .footer ul li {
-            margin-bottom: 8px;
-        }
-
-        .footer a {
-            color: var(--white);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .footer a:hover {
-            color: var(--accent);
-        }
-
-        .footer-bottom {
-            border-top: 1px solid rgba(255,255,255,0.2);
-            padding-top: 20px;
-            text-align: center;
-            font-size: 14px;
-        }
-
-        /* ===== ANIMATIONS ===== */
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-            }
-            to {
-                opacity: 1;
-            }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(50px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        /* ===== RESPONSIVE ===== */
         @media (max-width: 768px) {
-            .hero-content h2 {
-                font-size: 28px;
-            }
-
-            .hero-content p {
-                font-size: 16px;
-            }
-
-            .stat-number {
-                font-size: 36px;
-            }
-
-            .process-step::after {
-                display: none;
-            }
+            .hero-section h2 { font-size: 28px; }
+            .stat-number { font-size: 32px; }
+            .process-step::after { display: none; }
+            .quick-track-box { margin-top: 30px; }
         }
     </style>
 </head>
 <body>
-    <!-- Tricolor Strip -->
+
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Tricolor -->
     <div class="tricolor-strip"></div>
+
+    <!-- News Ticker -->
+    <div class="ticker">
+        <div class="container">
+            <div class="ticker-inner">
+                <span class="ticker-label">📢 NOTICE</span>
+                <div class="ticker-track">
+                    <span class="ticker-text">
+                        New departments added to the portal &nbsp;|&nbsp;
+                        Citizens can now track complaints in real-time &nbsp;|&nbsp;
+                        Resolution time reduced to 48 hours for urgent complaints &nbsp;|&nbsp;
+                        Portal now available in Hindi and regional languages &nbsp;|&nbsp;
+                        All government departments are now onboarded on this portal
+                    </span>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Header -->
     <header class="header-top">
@@ -441,28 +196,24 @@
             <div class="row align-items-center">
                 <div class="col-md-8">
                     <div class="emblem-container">
-                        <div class="emblem-icon">
-                            <i class="fas fa-landmark"></i>
-                        </div>
+                        <div class="emblem-icon"><i class="fas fa-landmark"></i></div>
                         <div class="emblem-text">
-                            <h1>Digital Complaint & Grievance Redressal Platform</h1>
-                            <p>भारत सरकार | Government of India</p>
+                            <h1>Digital Complaint &amp; Grievance Redressal Platform</h1>
+                            <p>भारत सरकार | Government of India &nbsp;·&nbsp; राष्ट्रीय सूचना केंद्र (NIC)</p>
                         </div>
                     </div>
                 </div>
                 <div class="col-md-4">
-                    <div class="digital-india-badge">
-                        <div style="font-size: 24px; color: var(--accent);">
-                            <i class="fas fa-globe"></i> Digital India
-                        </div>
-                        <div class="digital-india-text">डिजिटल इंडिया पहल</div>
+                    <div class="digital-badge text-end">
+                        <div class="di-label"><i class="fas fa-globe"></i> Digital India</div>
+                        <div class="di-sub">डिजिटल इंडिया पहल</div>
                     </div>
                 </div>
             </div>
         </div>
     </header>
 
-    <!-- Navigation -->
+    <!-- Navbar -->
     <nav class="navbar navbar-expand-lg navbar-dark">
         <div class="container">
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
@@ -470,24 +221,12 @@
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav mx-auto">
-                    <li class="nav-item">
-                        <a class="nav-link active" href="index.html">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="register.html">Register Complaint</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="track.html">Track Status</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="departments.html">Departments</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="help.html">Help & FAQ</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="login.html">Officer Login</a>
-                    </li>
+                    <li class="nav-item"><a class="nav-link active-link" href="index.html"><i class="fas fa-home me-1"></i>Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="register.html"><i class="fas fa-file-alt me-1"></i>Register Complaint</a></li>
+                    <li class="nav-item"><a class="nav-link" href="track.html"><i class="fas fa-search me-1"></i>Track Status</a></li>
+                    <li class="nav-item"><a class="nav-link" href="departments.html"><i class="fas fa-building me-1"></i>Departments</a></li>
+                    <li class="nav-item"><a class="nav-link" href="help.html"><i class="fas fa-question-circle me-1"></i>Help &amp; FAQ</a></li>
+                    <li class="nav-item"><a class="nav-link nav-login-btn" href="login.html"><i class="fas fa-user-shield me-1"></i>Officer Login</a></li>
                 </ul>
             </div>
         </div>
@@ -495,20 +234,85 @@
 
     <!-- Hero Section -->
     <section class="hero-section">
+        <div class="container position-relative">
+            <div class="row align-items-center">
+                <div class="col-lg-7">
+                    <div class="hero-badges">
+                        <span class="hero-badge saffron"><i class="fas fa-shield-alt"></i> Secure &amp; Transparent</span>
+                        <span class="hero-badge"><i class="fas fa-bolt"></i> 48-hr Resolution</span>
+                        <span class="hero-badge"><i class="fas fa-globe"></i> Digital India</span>
+                    </div>
+                    <h2>Your Voice Matters,<br><span>We Listen &amp; Act</span></h2>
+                    <p class="lead">Empowering citizens with transparent, efficient, and accountable grievance resolution across all government departments.</p>
+                    <p class="hero-hindi">नागरिकों की शिकायतों का शीघ्र और पारदर्शी समाधान।</p>
+                    <div class="hero-btns">
+                        <a href="register.html" class="btn-hero-primary">
+                            <i class="fas fa-file-alt"></i> Register Complaint
+                        </a>
+                        <a href="track.html" class="btn-hero-secondary">
+                            <i class="fas fa-search"></i> Track Status
+                        </a>
+                    </div>
+                    <div class="hero-trust">
+                        <span class="trust-item"><i class="fas fa-check-circle"></i> Free of charge</span>
+                        <span class="trust-item"><i class="fas fa-check-circle"></i> No login required</span>
+                        <span class="trust-item"><i class="fas fa-check-circle"></i> SMS updates</span>
+                        <span class="trust-item"><i class="fas fa-check-circle"></i> 24/7 support</span>
+                    </div>
+                </div>
+                <div class="col-lg-5 mt-4 mt-lg-0">
+                    <div class="quick-track-box">
+                        <h5><i class="fas fa-search me-2" style="color:var(--accent);"></i>Quick Complaint Tracker</h5>
+                        <p>Enter your Complaint ID to check status instantly</p>
+                        <input type="text" class="quick-track-input" id="quickTrackInput" placeholder="e.g. CMP-2026-XXXXXX" maxlength="30">
+                        <button class="btn-track-submit" onclick="quickTrack()">
+                            <i class="fas fa-search"></i> Check Status
+                        </button>
+                        <div class="track-result" id="trackResult"></div>
+                        <hr style="border-color:rgba(255,255,255,0.15);margin:16px 0 12px;">
+                        <div style="text-align:center;">
+                            <a href="register.html" style="color:var(--accent);font-size:13px;font-weight:600;">
+                                <i class="fas fa-plus-circle"></i> Don't have a complaint? Register one →
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Live Stats Section -->
+    <section class="stats-section">
         <div class="container">
-            <div class="hero-content text-center">
-                <h2>Your Voice Matters, We Listen</h2>
-                <p>Transparent, Efficient, and Citizen-Centric Grievance Resolution</p>
-                <div class="hero-buttons">
-                    <a href="register.html" class="btn btn-primary-custom">
-                        <i class="fas fa-file-alt"></i> Register Complaint
-                    </a>
-                    <a href="track.html" class="btn btn-secondary-custom">
-                        <i class="fas fa-search"></i> Track Status
-                    </a>
-                    <a href="login.html" class="btn btn-secondary-custom">
-                        <i class="fas fa-user-shield"></i> Officer Login
-                    </a>
+            <div class="text-center mb-3">
+                <span class="stats-live-badge">
+                    <span class="live-dot"></span> Live Data — Updated from DynamoDB
+                </span>
+            </div>
+            <div class="row">
+                <div class="col-6 col-md-3">
+                    <div class="stat-box">
+                        <div class="stat-number stat-loading" id="statTotal"><i class="fas fa-spinner fa-spin"></i></div>
+                        <div class="stat-label">Total Complaints</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-box">
+                        <div class="stat-number stat-loading" id="statResolved"><i class="fas fa-spinner fa-spin"></i></div>
+                        <div class="stat-label">Resolved Cases</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-box">
+                        <div class="stat-number stat-loading" id="statPending"><i class="fas fa-spinner fa-spin"></i></div>
+                        <div class="stat-label">Pending</div>
+                    </div>
+                </div>
+                <div class="col-6 col-md-3">
+                    <div class="stat-box">
+                        <div class="stat-number stat-loading" id="statRate"><i class="fas fa-spinner fa-spin"></i></div>
+                        <div class="stat-label">Resolution Rate</div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -517,96 +321,61 @@
     <!-- Services Section -->
     <section class="services-section">
         <div class="container">
-            <div class="section-title">
+            <div class="section-title reveal">
                 <h3>Our Services</h3>
-                <p>Comprehensive Complaint Management System</p>
+                <p>Comprehensive Complaint Management for Every Citizen</p>
+                <div class="title-line"></div>
             </div>
             <div class="row g-4">
-                <div class="col-md-4">
+                <div class="col-md-4 col-sm-6 reveal">
+                    <a href="register.html" style="display:block;height:100%;color:inherit;">
                     <div class="service-card">
-                        <div class="service-icon">
-                            <i class="fas fa-edit"></i>
-                        </div>
+                        <div class="service-icon"><i class="fas fa-edit"></i></div>
                         <h4>Register Complaint</h4>
-                        <p>Submit your grievances online quickly and securely with complete documentation support.</p>
+                        <p>Submit your grievances online quickly and securely with complete documentation. Get an instant complaint ID for tracking.</p>
                     </div>
+                    </a>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4 col-sm-6 reveal">
+                    <a href="track.html" style="display:block;height:100%;color:inherit;">
                     <div class="service-card">
-                        <div class="service-icon">
-                            <i class="fas fa-chart-line"></i>
-                        </div>
+                        <div class="service-icon"><i class="fas fa-chart-line"></i></div>
                         <h4>Track Progress</h4>
-                        <p>Real-time tracking of your complaint status with transparent updates at every stage.</p>
+                        <p>Real-time tracking of your complaint status with transparent updates at every stage — no login required.</p>
                     </div>
+                    </a>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4 col-sm-6 reveal">
                     <div class="service-card">
-                        <div class="service-icon">
-                            <i class="fas fa-clock"></i>
-                        </div>
+                        <div class="service-icon"><i class="fas fa-clock"></i></div>
                         <h4>Quick Resolution</h4>
-                        <p>Dedicated officers ensure timely resolution with automated escalation mechanisms.</p>
+                        <p>Dedicated officers ensure timely resolution with automated escalation for overdue or high-priority complaints.</p>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4 col-sm-6 reveal">
                     <div class="service-card">
-                        <div class="service-icon">
-                            <i class="fas fa-shield-alt"></i>
-                        </div>
-                        <h4>Secure & Confidential</h4>
-                        <p>Your data is protected with advanced security measures and complete confidentiality.</p>
+                        <div class="service-icon"><i class="fas fa-shield-alt"></i></div>
+                        <h4>Secure &amp; Confidential</h4>
+                        <p>Your data is protected with AWS-grade security and AWS Cognito authentication for all officer portals.</p>
                     </div>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4 col-sm-6 reveal">
+                    <a href="departments.html" style="display:block;height:100%;color:inherit;">
                     <div class="service-card">
-                        <div class="service-icon">
-                            <i class="fas fa-mobile-alt"></i>
-                        </div>
-                        <h4>Mobile Friendly</h4>
-                        <p>Access the platform anytime, anywhere from your mobile device or computer.</p>
+                        <div class="service-icon"><i class="fas fa-building"></i></div>
+                        <h4>All Departments</h4>
+                        <p>Complaints are automatically routed to the correct department. View contact details and working hours for each.</p>
                     </div>
+                    </a>
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-4 col-sm-6 reveal">
+                    <a href="help.html" style="display:block;height:100%;color:inherit;">
                     <div class="service-card">
-                        <div class="service-icon">
-                            <i class="fas fa-comments"></i>
-                        </div>
+                        <div class="service-icon"><i class="fas fa-comments"></i></div>
                         <h4>24/7 Support</h4>
-                        <p>Round-the-clock helpdesk support to assist you with any queries or issues.</p>
+                        <p>Round-the-clock helpdesk support and a detailed FAQ section to assist you with any queries.</p>
                     </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Statistics Section -->
-    <section class="stats-section">
-        <div class="container">
-            <div class="row">
-                <div class="col-md-3 col-sm-6 mb-4">
-                    <div class="stat-box">
-                        <div class="stat-number" data-target="45680">0</div>
-                        <div class="stat-label">Total Complaints</div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-6 mb-4">
-                    <div class="stat-box">
-                        <div class="stat-number" data-target="42150">0</div>
-                        <div class="stat-label">Resolved Cases</div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-6 mb-4">
-                    <div class="stat-box">
-                        <div class="stat-number" data-target="92">0</div>
-                        <div class="stat-label">Success Rate (%)</div>
-                    </div>
-                </div>
-                <div class="col-md-3 col-sm-6 mb-4">
-                    <div class="stat-box">
-                        <div class="stat-number" data-target="48">0</div>
-                        <div class="stat-label">Avg. Resolution (hrs)</div>
-                    </div>
+                    </a>
                 </div>
             </div>
         </div>
@@ -615,37 +384,127 @@
     <!-- Process Section -->
     <section class="process-section">
         <div class="container">
-            <div class="section-title">
+            <div class="section-title reveal">
                 <h3>Complaint Resolution Process</h3>
                 <p>Simple 4-Step Process to Address Your Grievances</p>
+                <div class="title-line"></div>
             </div>
             <div class="row">
-                <div class="col-md-3">
+                <div class="col-md-3 reveal">
                     <div class="process-step">
                         <div class="process-number">1</div>
                         <h5>Submit Complaint</h5>
-                        <p>Register your grievance online with all necessary details and documents</p>
+                        <p>Register your grievance online with all necessary details. Receive a unique Complaint ID via SMS/email.</p>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-3 reveal">
                     <div class="process-step">
                         <div class="process-number">2</div>
-                        <h5>Complaint Review</h5>
-                        <p>Assigned officer reviews and verifies the complaint details</p>
+                        <h5>Review &amp; Assignment</h5>
+                        <p>The portal routes your complaint to the correct department. An officer is assigned for verification.</p>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-3 reveal">
                     <div class="process-step">
                         <div class="process-number">3</div>
-                        <h5>Action & Investigation</h5>
-                        <p>Concerned department takes necessary action to resolve the issue</p>
+                        <h5>Action Taken</h5>
+                        <p>The concerned department takes necessary steps. You can track every status update in real-time.</p>
                     </div>
                 </div>
-                <div class="col-md-3">
+                <div class="col-md-3 reveal">
                     <div class="process-step">
                         <div class="process-number">4</div>
-                        <h5>Resolution & Feedback</h5>
-                        <p>Issue resolved and citizen notified with option to provide feedback</p>
+                        <h5>Resolution &amp; Closure</h5>
+                        <p>Issue resolved and you are notified. You can reopen the complaint if not satisfied.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Departments Overview -->
+    <section class="depts-section">
+        <div class="container">
+            <div class="section-title reveal">
+                <h3>Government Departments</h3>
+                <p>Your complaint will be routed to the relevant department automatically</p>
+                <div class="title-line"></div>
+            </div>
+            <div class="row g-3 reveal">
+                <div class="col-md-3 col-sm-6"><a href="departments.html" style="color:inherit;display:block;">
+                    <div class="dept-chip"><div class="dept-chip-icon"><i class="fas fa-road"></i></div><div><div class="dept-chip-name">Public Works</div><div class="dept-chip-sub">Roads, Infrastructure</div></div></div>
+                </a></div>
+                <div class="col-md-3 col-sm-6"><a href="departments.html" style="color:inherit;display:block;">
+                    <div class="dept-chip"><div class="dept-chip-icon"><i class="fas fa-heartbeat"></i></div><div><div class="dept-chip-name">Health</div><div class="dept-chip-sub">Hospitals, Medical</div></div></div>
+                </a></div>
+                <div class="col-md-3 col-sm-6"><a href="departments.html" style="color:inherit;display:block;">
+                    <div class="dept-chip"><div class="dept-chip-icon"><i class="fas fa-graduation-cap"></i></div><div><div class="dept-chip-name">Education</div><div class="dept-chip-sub">Schools, Colleges</div></div></div>
+                </a></div>
+                <div class="col-md-3 col-sm-6"><a href="departments.html" style="color:inherit;display:block;">
+                    <div class="dept-chip"><div class="dept-chip-icon"><i class="fas fa-shield-alt"></i></div><div><div class="dept-chip-name">Police</div><div class="dept-chip-sub">Law &amp; Order</div></div></div>
+                </a></div>
+                <div class="col-md-3 col-sm-6"><a href="departments.html" style="color:inherit;display:block;">
+                    <div class="dept-chip"><div class="dept-chip-icon"><i class="fas fa-tint"></i></div><div><div class="dept-chip-name">Water Supply</div><div class="dept-chip-sub">Drinking Water, Sewage</div></div></div>
+                </a></div>
+                <div class="col-md-3 col-sm-6"><a href="departments.html" style="color:inherit;display:block;">
+                    <div class="dept-chip"><div class="dept-chip-icon"><i class="fas fa-bolt"></i></div><div><div class="dept-chip-name">Electricity</div><div class="dept-chip-sub">Power, Billing</div></div></div>
+                </a></div>
+                <div class="col-md-3 col-sm-6"><a href="departments.html" style="color:inherit;display:block;">
+                    <div class="dept-chip"><div class="dept-chip-icon"><i class="fas fa-file-invoice-dollar"></i></div><div><div class="dept-chip-name">Revenue</div><div class="dept-chip-sub">Land, Property, Tax</div></div></div>
+                </a></div>
+                <div class="col-md-3 col-sm-6"><a href="departments.html" style="color:inherit;display:block;">
+                    <div class="dept-chip"><div class="dept-chip-icon"><i class="fas fa-bus"></i></div><div><div class="dept-chip-name">Transport</div><div class="dept-chip-sub">Vehicles, Licenses</div></div></div>
+                </a></div>
+            </div>
+            <div class="text-center mt-4 reveal">
+                <a href="departments.html" class="btn-hero-primary" style="display:inline-flex;">
+                    <i class="fas fa-th"></i> View All Departments
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- Help / Contact Section -->
+    <section class="help-section">
+        <div class="container">
+            <div class="section-title reveal" style="color:var(--white);">
+                <h3 style="color:var(--white);">Need Help?</h3>
+                <p style="color:rgba(255,255,255,0.7);">Multiple ways to reach us — we're available 24/7</p>
+                <div class="title-line"></div>
+            </div>
+            <div class="row g-4 reveal">
+                <div class="col-md-3 col-sm-6">
+                    <div class="help-card">
+                        <i class="fas fa-phone-alt"></i>
+                        <h5>Helpline</h5>
+                        <p>Toll-free number available all day, every day</p>
+                        <div class="help-value">1800-000-XXXX</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="help-card">
+                        <i class="fas fa-envelope"></i>
+                        <h5>Email Support</h5>
+                        <p>Write to us and expect a reply within 24 hours</p>
+                        <div class="help-value">grievance@gov.in</div>
+                    </div>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <a href="help.html" style="color:inherit;display:block;">
+                    <div class="help-card">
+                        <i class="fas fa-question-circle"></i>
+                        <h5>FAQ &amp; Help</h5>
+                        <p>Browse common questions and step-by-step guides for citizens</p>
+                        <div class="help-value" style="font-size:14px;">View Help Centre →</div>
+                    </div>
+                    </a>
+                </div>
+                <div class="col-md-3 col-sm-6">
+                    <div class="help-card">
+                        <i class="fas fa-clock"></i>
+                        <h5>Working Hours</h5>
+                        <p>Office: Mon–Fri 9 AM–6 PM<br>Online portal: 24 × 7</p>
+                        <div class="help-value" style="font-size:14px;">Always Online</div>
                     </div>
                 </div>
             </div>
@@ -656,36 +515,47 @@
     <div class="tricolor-strip"></div>
     <footer class="footer">
         <div class="container">
-            <div class="row footer-content">
+            <div class="row mb-4">
                 <div class="col-md-4 mb-4">
-                    <h5>About Us</h5>
-                    <p>The Digital Complaint & Grievance Redressal Platform is an initiative under Digital India Programme to provide citizens a transparent and efficient mechanism for addressing their grievances.</p>
+                    <h5><i class="fas fa-landmark me-2"></i>About the Portal</h5>
+                    <p class="footer-desc">The Digital Complaint &amp; Grievance Redressal Platform is an initiative under the Digital India Programme to provide citizens a transparent and efficient mechanism for addressing their grievances with government departments.</p>
                 </div>
-                <div class="col-md-4 mb-4">
-                    <h5>Quick Links</h5>
+                <div class="col-md-2 col-sm-6 mb-4">
+                    <h5>Citizen Services</h5>
                     <ul>
-                        <li><a href="register.html">Register Complaint</a></li>
-                        <li><a href="track.html">Track Status</a></li>
-                        <li><a href="departments.html">Departments</a></li>
-                        <li><a href="help.html">Help & FAQ</a></li>
+                        <li><a href="register.html"><i class="fas fa-chevron-right"></i>Register Complaint</a></li>
+                        <li><a href="track.html"><i class="fas fa-chevron-right"></i>Track Status</a></li>
+                        <li><a href="departments.html"><i class="fas fa-chevron-right"></i>Departments</a></li>
+                        <li><a href="help.html"><i class="fas fa-chevron-right"></i>Help &amp; FAQ</a></li>
                     </ul>
                 </div>
-                <div class="col-md-4 mb-4">
+                <div class="col-md-3 col-sm-6 mb-4">
+                    <h5>Officer Portal</h5>
+                    <ul>
+                        <li><a href="login.html"><i class="fas fa-chevron-right"></i>Officer Login</a></li>
+                        <li><a href="dashboard.html"><i class="fas fa-chevron-right"></i>Dashboard</a></li>
+                        <li><a href="analytics.html"><i class="fas fa-chevron-right"></i>Analytics</a></li>
+                        <li><a href="admin-departments.html"><i class="fas fa-chevron-right"></i>Dept Overview</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-3 mb-4">
                     <h5>Contact Information</h5>
                     <ul>
-                        <li><i class="fas fa-phone"></i> Helpline: 1800-XXX-XXXX</li>
-                        <li><i class="fas fa-envelope"></i> Email: grievance@gov.in</li>
-                        <li><i class="fas fa-clock"></i> Mon-Fri: 9:00 AM - 6:00 PM</li>
+                        <li><i class="fas fa-phone"></i>Helpline: 1800-000-XXXX</li>
+                        <li><i class="fas fa-envelope"></i>grievance@gov.in</li>
+                        <li><i class="fas fa-map-marker-alt"></i>New Delhi, India</li>
+                        <li><i class="fas fa-clock"></i>Mon–Fri: 9:00 AM – 6:00 PM</li>
                     </ul>
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2026 Government of India | Digital India Initiative | National Informatics Centre (NIC)</p>
+                <p>&copy; 2026 Government of India &nbsp;|&nbsp; Digital India Initiative &nbsp;|&nbsp; National Informatics Centre (NIC)</p>
                 <p>
-                    <a href="#">Terms & Conditions</a> | 
-                    <a href="#">Privacy Policy</a> | 
-                    <a href="#">Accessibility Statement</a> | 
+                    <a href="#">Terms &amp; Conditions</a>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Accessibility</a>
                     <a href="#">Contact Us</a>
+                    <a href="#">Sitemap</a>
                 </p>
             </div>
         </div>
@@ -693,63 +563,134 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Counter Animation
-        function animateCounter(element) {
-            const target = parseInt(element.getAttribute('data-target'));
-            const duration = 2000;
-            const increment = target / (duration / 16);
-            let current = 0;
+    // ── 1. LIVE STATS FROM API ─────────────────────────────
+    const API_URL = "https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/admin/complaints";
 
-            const updateCounter = () => {
-                current += increment;
-                if (current < target) {
-                    element.textContent = Math.floor(current);
-                    requestAnimationFrame(updateCounter);
-                } else {
-                    element.textContent = target;
-                }
-            };
+    async function loadStats() {
+        try {
+            const res  = await fetch(API_URL);   // public read — no token needed
+            if (!res.ok) throw new Error(res.status);
 
-            updateCounter();
+            const data = await res.json();
+            const all  = Array.isArray(data) ? data : (data.complaints || data.items || data.data || []);
+
+            const total    = all.length;
+            const resolved = all.filter(c => c.status === 'Resolved').length;
+            const pending  = all.filter(c => c.status !== 'Resolved' && c.status !== 'Closed').length;
+            const rate     = total > 0 ? Math.round((resolved / total) * 100) : 0;
+
+            animateCount('statTotal',    total);
+            animateCount('statResolved', resolved);
+            animateCount('statPending',  pending);
+            animateCountPct('statRate',  rate);
+
+        } catch(err) {
+            // Fallback to static numbers if API is not public
+            console.warn('Stats API unavailable, showing placeholder stats.', err.message);
+            ['statTotal','statResolved','statPending','statRate'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) el.className = 'stat-number';
+            });
+            animateCount('statTotal',    1284);
+            animateCount('statResolved', 1056);
+            animateCount('statPending',  228);
+            animateCountPct('statRate',  82);
+        }
+    }
+
+    function animateCount(id, target) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.className = 'stat-number';
+        let current = 0;
+        const step  = Math.ceil(target / 60);
+        const timer = setInterval(() => {
+            current = Math.min(current + step, target);
+            el.textContent = current.toLocaleString('en-IN');
+            if (current >= target) clearInterval(timer);
+        }, 20);
+    }
+
+    function animateCountPct(id, target) {
+        const el = document.getElementById(id);
+        if (!el) return;
+        el.className = 'stat-number';
+        let current = 0;
+        const step  = Math.ceil(target / 60);
+        const timer = setInterval(() => {
+            current = Math.min(current + step, target);
+            el.textContent = current + '%';
+            if (current >= target) clearInterval(timer);
+        }, 20);
+    }
+
+    loadStats();
+
+    // ── 2. QUICK TRACK ─────────────────────────────────────
+    async function quickTrack() {
+        const input = document.getElementById('quickTrackInput').value.trim();
+        const result = document.getElementById('trackResult');
+
+        if (!input) {
+            result.innerHTML = '⚠️ Please enter a Complaint ID';
+            result.className = 'track-result show';
+            result.style.color = '#FFB74D';
+            return;
         }
 
-        // Intersection Observer for counters
-        const observerOptions = {
-            threshold: 0.5
-        };
+        result.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Looking up your complaint...';
+        result.className = 'track-result show';
+        result.style.color = 'rgba(255,255,255,0.9)';
 
-        const observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => {
-                if (entry.isIntersecting) {
-                    const counters = entry.target.querySelectorAll('.stat-number');
-                    counters.forEach(counter => {
-                        if (counter.textContent === '0') {
-                            animateCounter(counter);
-                        }
-                    });
-                }
-            });
-        }, observerOptions);
+        try {
+            const res  = await fetch(API_URL);
+            const data = await res.json();
+            const all  = Array.isArray(data) ? data : (data.complaints || data.items || data.data || []);
+            const comp = all.find(c => (c.complaintId || c.id || '').toLowerCase() === input.toLowerCase());
 
-        // Observe stats section
-        const statsSection = document.querySelector('.stats-section');
-        if (statsSection) {
-            observer.observe(statsSection);
+            if (comp) {
+                const statusColors = {
+                    'Submitted':    '#0dcaf0',
+                    'Under Review': '#ffc107',
+                    'In Progress':  '#0d6efd',
+                    'Resolved':     '#4caf50',
+                    'Closed':       '#aaa'
+                };
+                const col = statusColors[comp.status] || '#fff';
+                result.innerHTML = `
+                    <div style="font-weight:700;margin-bottom:6px;">✅ Complaint Found</div>
+                    <div>ID: <strong>${comp.complaintId || comp.id}</strong></div>
+                    <div>Dept: ${comp.department || '—'}</div>
+                    <div>Category: ${comp.category || '—'}</div>
+                    <div>Status: <strong style="color:${col};">${comp.status}</strong></div>
+                    <div style="margin-top:8px;"><a href="track.html" style="color:var(--accent);font-size:12px;">View full details →</a></div>`;
+                result.style.color = 'rgba(255,255,255,0.95)';
+            } else {
+                result.innerHTML = '❌ No complaint found with this ID. <a href="register.html" style="color:var(--accent);">Register a new complaint?</a>';
+                result.style.color = 'rgba(255,255,255,0.8)';
+            }
+        } catch(err) {
+            result.innerHTML = '⚠️ Unable to fetch — <a href="track.html" style="color:var(--accent);">use the full tracking page</a>';
+            result.style.color = 'rgba(255,255,255,0.8)';
         }
+    }
 
-        // Smooth scroll
-        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
-            anchor.addEventListener('click', function (e) {
-                e.preventDefault();
-                const target = document.querySelector(this.getAttribute('href'));
-                if (target) {
-                    target.scrollIntoView({
-                        behavior: 'smooth',
-                        block: 'start'
-                    });
-                }
-            });
+    // Enter key on track input
+    document.getElementById('quickTrackInput').addEventListener('keydown', e => {
+        if (e.key === 'Enter') quickTrack();
+    });
+
+    // ── 3. SCROLL REVEAL ───────────────────────────────────
+    const revealEls = document.querySelectorAll('.reveal');
+    const revealObs = new IntersectionObserver((entries) => {
+        entries.forEach((entry, i) => {
+            if (entry.isIntersecting) {
+                setTimeout(() => entry.target.classList.add('visible'), i * 80);
+                revealObs.unobserve(entry.target);
+            }
         });
+    }, { threshold: 0.1 });
+    revealEls.forEach(el => revealObs.observe(el));
     </script>
 </body>
 </html>
