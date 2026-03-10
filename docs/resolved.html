@@ -17,522 +17,169 @@
             --white: #FFFFFF;
             --sidebar-width: 260px;
         }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Roboto', 'Noto Sans Devanagari', sans-serif; background-color: var(--background); color: #333; overflow-x: hidden; }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        .tricolor-strip { height: 5px; background: linear-gradient(to right, #FF9933 0%, #FF9933 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #138808 66.66%, #138808 100%); position: fixed; top: 0; left: 0; right: 0; z-index: 1001; }
 
-        body {
-            font-family: 'Roboto', 'Noto Sans Devanagari', sans-serif;
-            background-color: var(--background);
-            color: #333;
-            overflow-x: hidden;
-        }
+        /* Sidebar */
+        .sidebar { position: fixed; left: 0; top: 5px; bottom: 0; width: var(--sidebar-width); background: linear-gradient(180deg, var(--primary) 0%, #1a4d8f 100%); color: var(--white); padding: 20px 0; z-index: 1000; overflow-y: auto; }
+        .sidebar-header { padding: 0 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
+        .sidebar-header h4 { font-size: 18px; font-weight: 700; margin-bottom: 5px; }
+        .sidebar-header p { font-size: 12px; opacity: 0.8; margin: 0; }
+        .sidebar-menu { list-style: none; padding: 0; }
+        .sidebar-menu li { margin-bottom: 5px; }
+        .sidebar-menu a { display: flex; align-items: center; padding: 12px 20px; color: var(--white); text-decoration: none; transition: all 0.3s ease; position: relative; }
+        .sidebar-menu a::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background-color: var(--accent); transform: scaleY(0); transition: transform 0.3s ease; }
+        .sidebar-menu a:hover, .sidebar-menu a.active { background-color: rgba(255,255,255,0.1); }
+        .sidebar-menu a.active::before { transform: scaleY(1); }
+        .sidebar-menu a i { width: 25px; margin-right: 10px; font-size: 16px; }
+        .user-profile { padding: 20px; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
+        .user-profile-content { display: flex; align-items: center; gap: 10px; }
+        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background-color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; }
+        .user-info .name { font-size: 14px; font-weight: 600; }
+        .user-info .role { font-size: 11px; opacity: 0.7; }
 
-        .tricolor-strip {
-            height: 5px;
-            background: linear-gradient(to right, #FF9933 0%, #FF9933 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #138808 66.66%, #138808 100%);
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            z-index: 1001;
-        }
+        /* Main */
+        .main-content { margin-left: var(--sidebar-width); padding: 25px; min-height: 100vh; margin-top: 5px; }
+        .top-bar { background-color: var(--white); padding: 20px 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
+        .welcome-text h2 { font-size: 24px; font-weight: 700; color: var(--primary); margin-bottom: 5px; }
+        .welcome-text p { font-size: 14px; color: #666; margin: 0; }
+        .top-actions { display: flex; gap: 10px; }
+        .btn-action { padding: 8px 20px; border: none; border-radius: 5px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
+        .btn-primary-action { background-color: var(--accent); color: var(--white); }
+        .btn-primary-action:hover { background-color: #e68a2e; transform: translateY(-2px); }
+        .btn-secondary-action { background-color: var(--background); color: var(--primary); }
+        .btn-secondary-action:hover { background-color: #e0e0e0; }
 
-        .sidebar {
-            position: fixed;
-            left: 0;
-            top: 5px;
-            bottom: 0;
-            width: var(--sidebar-width);
-            background: linear-gradient(180deg, var(--primary) 0%, #1a4d8f 100%);
-            color: var(--white);
-            padding: 20px 0;
-            transition: all 0.3s ease;
-            z-index: 1000;
-            overflow-y: auto;
-        }
+        /* Error Banner */
+        .error-banner { background-color: #ffebee; border: 1px solid #ef9a9a; color: var(--error); padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; display: none; align-items: center; gap: 10px; font-size: 14px; }
+        .error-banner.show { display: flex; }
 
-        .sidebar-header {
-            padding: 0 20px 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 20px;
-        }
-
-        .sidebar-header h4 {
-            font-size: 18px;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .sidebar-header p {
-            font-size: 12px;
-            opacity: 0.8;
-            margin: 0;
-        }
-
-        .sidebar-menu {
-            list-style: none;
-            padding: 0;
-        }
-
-        .sidebar-menu li {
-            margin-bottom: 5px;
-        }
-
-        .sidebar-menu a {
-            display: flex;
-            align-items: center;
-            padding: 12px 20px;
-            color: var(--white);
-            text-decoration: none;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .sidebar-menu a::before {
-            content: '';
-            position: absolute;
-            left: 0;
-            top: 0;
-            bottom: 0;
-            width: 4px;
-            background-color: var(--accent);
-            transform: scaleY(0);
-            transition: transform 0.3s ease;
-        }
-
-        .sidebar-menu a:hover,
-        .sidebar-menu a.active {
-            background-color: rgba(255,255,255,0.1);
-        }
-
-        .sidebar-menu a.active::before {
-            transform: scaleY(1);
-        }
-
-        .sidebar-menu a i {
-            width: 25px;
-            margin-right: 10px;
-            font-size: 16px;
-        }
-
-        .user-profile {
-            padding: 20px;
-            margin-top: 20px;
-            border-top: 1px solid rgba(255,255,255,0.1);
-        }
-
-        .user-profile-content {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--accent);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 18px;
-            font-weight: 700;
-        }
-
-        .user-info {
-            flex: 1;
-        }
-
-        .user-info .name {
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .user-info .role {
-            font-size: 11px;
-            opacity: 0.7;
-        }
-
-        .main-content {
-            margin-left: var(--sidebar-width);
-            padding: 25px;
-            min-height: 100vh;
-            margin-top: 5px;
-        }
-
-        .top-bar {
-            background-color: var(--white);
-            padding: 20px 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 25px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .welcome-text h2 {
-            font-size: 24px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 5px;
-        }
-
-        .welcome-text p {
-            font-size: 14px;
-            color: #666;
-            margin: 0;
-        }
-
-        .top-actions {
-            display: flex;
-            gap: 10px;
-        }
-
-        .btn-action {
-            padding: 8px 20px;
-            border: none;
-            border-radius: 5px;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .btn-primary-action {
-            background-color: var(--accent);
-            color: var(--white);
-        }
-
-        .btn-primary-action:hover {
-            background-color: #e68a2e;
-            transform: translateY(-2px);
-        }
-
-        .btn-secondary-action {
-            background-color: var(--background);
-            color: var(--primary);
-        }
-
-        .btn-secondary-action:hover {
-            background-color: #e0e0e0;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
-            gap: 20px;
-            margin-bottom: 25px;
-        }
-
-        .stat-card {
-            background-color: var(--white);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-        }
-
-        .stat-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 5px 20px rgba(0,0,0,0.15);
-        }
-
-        .stat-icon {
-            width: 45px;
-            height: 45px;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            color: var(--white);
-            margin-bottom: 10px;
-        }
-
-        .stat-icon.green { background-color: var(--success); }
-        .stat-icon.blue { background-color: #0d6efd; }
+        /* Stats */
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; margin-bottom: 25px; }
+        .stat-card { background-color: var(--white); padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); transition: all 0.3s ease; }
+        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 5px 20px rgba(0,0,0,0.15); }
+        .stat-icon { width: 45px; height: 45px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--white); margin-bottom: 10px; }
+        .stat-icon.green  { background-color: var(--success); }
+        .stat-icon.blue   { background-color: #0d6efd; }
         .stat-icon.orange { background-color: var(--accent); }
+        .stat-icon.gray   { background-color: #6c757d; }
+        .stat-value { font-size: 28px; font-weight: 700; color: var(--primary); margin-bottom: 5px; }
+        .stat-label { font-size: 13px; color: #666; }
 
-        .stat-value {
-            font-size: 28px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 5px;
-        }
+        /* Filters */
+        .filters-section { background-color: var(--white); padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 25px; }
+        .filters-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; }
+        .filter-group label { font-size: 13px; font-weight: 600; color: #666; margin-bottom: 5px; display: block; }
+        .filter-group select, .filter-group input { width: 100%; padding: 8px 12px; border: 1px solid #ddd; border-radius: 5px; font-size: 14px; transition: all 0.3s ease; }
+        .filter-group select:focus, .filter-group input:focus { outline: none; border-color: var(--primary); }
 
-        .stat-label {
-            font-size: 13px;
-            color: #666;
-        }
+        /* Table */
+        .table-section { background-color: var(--white); padding: 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 25px; }
+        .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .table-header h5 { font-size: 18px; font-weight: 700; color: var(--primary); margin: 0; }
+        .table-responsive { overflow-x: auto; }
+        .complaints-table { width: 100%; border-collapse: collapse; }
+        .complaints-table th { background-color: var(--primary); color: var(--white); padding: 12px; text-align: left; font-size: 13px; font-weight: 600; white-space: nowrap; }
+        .complaints-table td { padding: 12px; border-bottom: 1px solid #eee; font-size: 13px; vertical-align: middle; }
+        .complaints-table tr:hover { background-color: #f8f9fa; }
 
-        .filters-section {
-            background-color: var(--white);
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 25px;
-        }
-
-        .filters-row {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-        }
-
-        .filter-group label {
-            font-size: 13px;
-            font-weight: 600;
-            color: #666;
-            margin-bottom: 5px;
-            display: block;
-        }
-
-        .filter-group select,
-        .filter-group input {
-            width: 100%;
-            padding: 8px 12px;
-            border: 1px solid #ddd;
-            border-radius: 5px;
-            font-size: 14px;
-            transition: all 0.3s ease;
-        }
-
-        .filter-group select:focus,
-        .filter-group input:focus {
-            outline: none;
-            border-color: var(--primary);
-        }
-
-        .table-section {
-            background-color: var(--white);
-            padding: 25px;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 25px;
-        }
-
-        .table-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-
-        .table-header h5 {
-            font-size: 18px;
-            font-weight: 700;
-            color: var(--primary);
-            margin: 0;
-        }
-
-        .table-responsive {
-            overflow-x: auto;
-        }
-
-        .complaints-table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .complaints-table th {
-            background-color: var(--primary);
-            color: var(--white);
-            padding: 12px;
-            text-align: left;
-            font-size: 13px;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-
-        .complaints-table td {
-            padding: 12px;
-            border-bottom: 1px solid #eee;
-            font-size: 13px;
-        }
-
-        .complaints-table tr:hover {
-            background-color: #f8f9fa;
-        }
-
-        .status-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-            white-space: nowrap;
-        }
-
+        .status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
         .status-resolved { background-color: var(--success); color: #fff; }
-        .status-closed { background-color: #6c757d; color: #fff; }
+        .status-closed   { background-color: #6c757d; color: #fff; }
 
-        .priority-badge {
-            display: inline-block;
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-        }
-
-        .priority-low { background-color: #e8f5e9; color: #2e7d32; }
-        .priority-medium { background-color: #fff3e0; color: #e65100; }
-        .priority-high { background-color: #ffebee; color: #c62828; }
+        .priority-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+        .priority-low      { background-color: #e8f5e9; color: #2e7d32; }
+        .priority-medium   { background-color: #fff3e0; color: #e65100; }
+        .priority-high     { background-color: #ffebee; color: #c62828; }
         .priority-critical { background-color: #b71c1c; color: #fff; }
 
-        .action-buttons {
-            display: flex;
-            gap: 5px;
-        }
+        .resolution-time      { font-size: 12px; color: #666; font-weight: 500; }
+        .resolution-time.fast { color: var(--success); font-weight: 700; }
+        .resolution-time.slow { color: var(--error); font-weight: 600; }
 
-        .btn-icon {
-            width: 30px;
-            height: 30px;
-            border: none;
-            border-radius: 5px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.3s ease;
-            font-size: 12px;
-        }
+        .action-buttons { display: flex; gap: 5px; }
+        .btn-icon { width: 30px; height: 30px; border: none; border-radius: 5px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.3s ease; font-size: 12px; }
+        .btn-view     { background-color: #0d6efd; color: var(--white); }
+        .btn-view:hover { background-color: #0b5ed7; }
+        .btn-download { background-color: var(--success); color: var(--white); }
+        .btn-download:hover { background-color: #0f6806; }
+        .btn-reopen   { background-color: var(--accent); color: var(--white); }
+        .btn-reopen:hover { background-color: #e68a2e; }
 
-        .btn-view {
-            background-color: #0d6efd;
-            color: var(--white);
-        }
+        /* Loading */
+        .loading-spinner { display: flex; justify-content: center; align-items: center; padding: 50px; gap: 12px; color: var(--primary); font-size: 14px; }
+        .spinner { width: 24px; height: 24px; border: 3px solid #ddd; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        .btn-view:hover {
-            background-color: #0b5ed7;
-        }
+        /* Modal */
+        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .modal-overlay.open { display: flex; }
+        .modal-box { background: var(--white); border-radius: 12px; width: 100%; max-width: 700px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: modalIn 0.25s ease; }
+        @keyframes modalIn { from { opacity:0; transform: scale(0.95) translateY(-10px); } to { opacity:1; transform:scale(1) translateY(0); } }
+        .modal-header { background: linear-gradient(135deg, var(--success), #1a8a1a); color: var(--white); padding: 20px 25px; border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center; }
+        .modal-header h5 { margin: 0; font-size: 18px; font-weight: 700; }
+        .modal-close { background: none; border: none; color: var(--white); font-size: 22px; cursor: pointer; opacity: 0.8; transition: opacity 0.2s; }
+        .modal-close:hover { opacity: 1; }
+        .modal-body { padding: 25px; }
+        .modal-footer { padding: 15px 25px; border-top: 1px solid #eee; display: flex; gap: 10px; justify-content: flex-end; }
 
-        .btn-download {
-            background-color: var(--success);
-            color: var(--white);
-        }
+        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+        .detail-item label { font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px; }
+        .detail-item span { font-size: 14px; color: #333; font-weight: 500; }
+        .description-box { background: #f8f9fa; border-radius: 8px; padding: 15px; font-size: 14px; line-height: 1.7; color: #444; border-left: 4px solid var(--success); }
 
-        .btn-download:hover {
-            background-color: #0f6806;
-        }
+        /* Resolution banner inside modal */
+        .resolution-banner { background: linear-gradient(135deg, #e8f5e9, #c8e6c9); border-radius: 8px; padding: 15px 20px; display: flex; align-items: center; gap: 12px; margin-bottom: 20px; }
+        .resolution-banner i { font-size: 28px; color: var(--success); }
+        .resolution-banner .res-title { font-size: 14px; font-weight: 700; color: #2e7d32; }
+        .resolution-banner .res-sub { font-size: 12px; color: #555; margin-top: 2px; }
 
-        .btn-archive {
-            background-color: #6c757d;
-            color: var(--white);
-        }
+        /* Toast */
+        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 10px; }
+        .toast { background: var(--white); border-radius: 8px; padding: 14px 18px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; font-size: 14px; min-width: 280px; animation: toastIn 0.3s ease; border-left: 4px solid var(--success); }
+        .toast.error   { border-left-color: var(--error); }
+        .toast.warning { border-left-color: var(--accent); }
+        @keyframes toastIn { from { opacity:0; transform: translateX(40px); } to { opacity:1; transform:translateX(0); } }
 
-        .btn-archive:hover {
-            background-color: #5a6268;
-        }
-
-        .resolution-time {
-            font-size: 11px;
-            color: #666;
-        }
-
-        .resolution-time.fast {
-            color: var(--success);
-            font-weight: 600;
-        }
-
-        @media (max-width: 992px) {
-            .sidebar {
-                transform: translateX(-100%);
-            }
-
-            .main-content {
-                margin-left: 0;
-            }
-
-            .top-bar {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-        }
+        @media (max-width: 992px) { .sidebar { transform: translateX(-100%); } .main-content { margin-left: 0; } .top-bar { flex-direction: column; align-items: flex-start; gap: 15px; } }
+        @media (max-width: 768px) { .filters-row { grid-template-columns: 1fr; } .detail-grid { grid-template-columns: 1fr; } }
     </style>
 </head>
 <body>
     <div class="tricolor-strip"></div>
+    <div class="toast-container" id="toastContainer"></div>
 
+    <!-- Sidebar -->
     <aside class="sidebar">
         <div class="sidebar-header">
             <h4><i class="fas fa-landmark"></i> Gov Portal</h4>
             <p>Complaint Management System</p>
         </div>
-
         <ul class="sidebar-menu">
-            <li>
-                <a href="dashboard.html">
-                    <i class="fas fa-th-large"></i>
-                    <span>Dashboard</span>
-                </a>
-            </li>
-            <li>
-                <a href="all-complaints.html">
-                    <i class="fas fa-file-alt"></i>
-                    <span>All Complaints</span>
-                </a>
-            </li>
-            <li>
-                <a href="pending.html">
-                    <i class="fas fa-clock"></i>
-                    <span>Pending</span>
-                </a>
-            </li>
-            <li>
-                <a href="resolved.html" class="active">
-                    <i class="fas fa-check-circle"></i>
-                    <span>Resolved</span>
-                </a>
-            </li>
-            <li>
-                <a href="admin-departments.html">
-                    <i class="fas fa-building"></i>
-                    <span>Departments</span>
-                </a>
-            </li>
-            <li>
-                <a href="analytics.html">
-                    <i class="fas fa-chart-bar"></i>
-                    <span>Analytics</span>
-                </a>
-            </li>
-            <li>
-                <a href="notification.html">
-                    <i class="fas fa-bell"></i>
-                    <span>Notifications</span>
-                </a>
-            </li>
-            <li>
-                <a href="settings.html">
-                    <i class="fas fa-cog"></i>
-                    <span>Settings</span>
-                </a>
-            </li>
-            <li>
-                <a href="index.html" onclick="logout()">
-                    <i class="fas fa-sign-out-alt"></i>
-                    <span>Logout</span>
-                </a>
-            </li>
+            <li><a href="dashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a></li>
+            <li><a href="all-complaints.html"><i class="fas fa-file-alt"></i><span>All Complaints</span></a></li>
+            <li><a href="pending.html"><i class="fas fa-clock"></i><span>Pending</span></a></li>
+            <li><a href="resolved.html" class="active"><i class="fas fa-check-circle"></i><span>Resolved</span></a></li>
+            <li><a href="admin-departments.html"><i class="fas fa-building"></i><span>Departments</span></a></li>
+            <li><a href="analytics.html"><i class="fas fa-chart-bar"></i><span>Analytics</span></a></li>
+            <li><a href="notification.html"><i class="fas fa-bell"></i><span>Notifications</span></a></li>
+            <li><a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+            <li><a href="login.html" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
         </ul>
-
         <div class="user-profile">
             <div class="user-profile-content">
-                <div class="user-avatar">A</div>
+                <div class="user-avatar" id="userAvatarLetter">A</div>
                 <div class="user-info">
-                    <div class="name" id="userName">Admin User</div>
+                    <div class="name" id="userName">Officer</div>
                     <div class="role">System Administrator</div>
                 </div>
             </div>
         </div>
     </aside>
 
+    <!-- Main -->
     <main class="main-content">
         <div class="top-bar">
             <div class="welcome-text">
@@ -540,41 +187,47 @@
                 <p>Successfully completed grievances</p>
             </div>
             <div class="top-actions">
-                <button class="btn-action btn-secondary-action" onclick="generateReport()">
-                    <i class="fas fa-file-pdf"></i> Generate Report
+                <button class="btn-action btn-secondary-action" onclick="exportCSV()">
+                    <i class="fas fa-download"></i> Export CSV
                 </button>
-                <button class="btn-action btn-primary-action" onclick="window.location.href='register.html'">
-                    <i class="fas fa-plus"></i> New Complaint
+                <button class="btn-action btn-primary-action" onclick="loadComplaints()">
+                    <i class="fas fa-sync-alt"></i> Refresh
                 </button>
             </div>
         </div>
 
+        <!-- Error Banner -->
+        <div class="error-banner" id="errorBanner">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="errorBannerMsg">Unable to load complaints.</span>
+            <button onclick="loadComplaints()" style="margin-left:auto;background:none;border:1px solid var(--error);color:var(--error);padding:4px 10px;border-radius:4px;cursor:pointer;font-size:12px;">Retry</button>
+        </div>
+
+        <!-- Stats -->
         <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-icon green">
-                    <i class="fas fa-check-circle"></i>
-                </div>
-                <div class="stat-value" id="totalResolved">0</div>
+                <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
+                <div class="stat-value" id="totalResolved">—</div>
                 <div class="stat-label">Total Resolved</div>
             </div>
-
             <div class="stat-card">
-                <div class="stat-icon blue">
-                    <i class="fas fa-calendar-week"></i>
-                </div>
-                <div class="stat-value" id="thisWeek">0</div>
-                <div class="stat-label">This Week</div>
+                <div class="stat-icon gray"><i class="fas fa-archive"></i></div>
+                <div class="stat-value" id="totalClosed">—</div>
+                <div class="stat-label">Closed</div>
             </div>
-
             <div class="stat-card">
-                <div class="stat-icon orange">
-                    <i class="fas fa-clock"></i>
-                </div>
-                <div class="stat-value" id="avgTime">0h</div>
-                <div class="stat-label">Avg Resolution Time</div>
+                <div class="stat-icon blue"><i class="fas fa-calendar-week"></i></div>
+                <div class="stat-value" id="thisWeekCount">—</div>
+                <div class="stat-label">Resolved This Week</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon orange"><i class="fas fa-clock"></i></div>
+                <div class="stat-value" id="avgResolutionDays">—</div>
+                <div class="stat-label">Avg Resolution Days</div>
             </div>
         </div>
 
+        <!-- Filters -->
         <div class="filters-section">
             <div class="filters-row">
                 <div class="filter-group">
@@ -586,6 +239,9 @@
                         <option value="Education">Education</option>
                         <option value="Police">Police</option>
                         <option value="Revenue">Revenue</option>
+                        <option value="Water Supply">Water Supply</option>
+                        <option value="Electricity">Electricity</option>
+                        <option value="Sanitation">Sanitation</option>
                     </select>
                 </div>
                 <div class="filter-group">
@@ -596,6 +252,14 @@
                         <option value="Medium">Medium</option>
                         <option value="High">High</option>
                         <option value="Critical">Critical</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label>Status</label>
+                    <select id="filterStatus">
+                        <option value="">Resolved + Closed</option>
+                        <option value="Resolved">Resolved Only</option>
+                        <option value="Closed">Closed Only</option>
                     </select>
                 </div>
                 <div class="filter-group">
@@ -610,17 +274,15 @@
                 </div>
                 <div class="filter-group">
                     <label>Search</label>
-                    <input type="text" id="searchInput" placeholder="Search by ID or name...">
+                    <input type="text" id="searchInput" placeholder="Search by ID, name, category...">
                 </div>
             </div>
         </div>
 
+        <!-- Table -->
         <div class="table-section">
             <div class="table-header">
                 <h5>Resolved Complaints (<span id="totalCount">0</span>)</h5>
-                <button class="btn-action btn-secondary-action" onclick="refreshTable()">
-                    <i class="fas fa-sync-alt"></i> Refresh
-                </button>
             </div>
             <div class="table-responsive">
                 <table class="complaints-table">
@@ -628,178 +290,374 @@
                         <tr>
                             <th>ID</th>
                             <th>Name</th>
+                            <th>Mobile</th>
                             <th>Department</th>
-                            <th>Subject</th>
+                            <th>Category</th>
                             <th>Priority</th>
                             <th>Status</th>
-                            <th>Resolved Date</th>
+                            <th>Submitted</th>
                             <th>Resolution Time</th>
                             <th>Actions</th>
                         </tr>
                     </thead>
                     <tbody id="complaintsTableBody">
+                        <tr><td colspan="10"><div class="loading-spinner"><div class="spinner"></div><span>Loading resolved complaints...</span></div></td></tr>
                     </tbody>
                 </table>
             </div>
         </div>
     </main>
 
+    <!-- VIEW MODAL -->
+    <div class="modal-overlay" id="viewModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h5><i class="fas fa-check-circle me-2"></i> Resolved Complaint Details</h5>
+                <button class="modal-close" onclick="closeModal('viewModal')">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Resolution banner -->
+                <div class="resolution-banner">
+                    <i class="fas fa-check-circle"></i>
+                    <div>
+                        <div class="res-title" id="modalResTitle">Complaint Resolved</div>
+                        <div class="res-sub" id="modalResSub">Resolved successfully</div>
+                    </div>
+                </div>
+                <div class="detail-grid" id="viewDetailGrid"></div>
+                <div>
+                    <label style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;">Description</label>
+                    <div class="description-box" id="viewDescription">—</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="btn-action btn-secondary-action" onclick="closeModal('viewModal')">Close</button>
+                <button class="btn-action btn-primary-action" id="reopenBtn" style="background:#FF9933;">
+                    <i class="fas fa-undo"></i> Reopen Complaint
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const loggedInUser = JSON.parse(sessionStorage.getItem('loggedInUser') || 'null');
-        if (!loggedInUser) {
-            window.location.href = 'login.html';
-        } else {
-            document.getElementById('userName').textContent = loggedInUser.name;
-            document.querySelector('.user-avatar').textContent = loggedInUser.name.charAt(0);
-        }
 
-        let allComplaints = JSON.parse(localStorage.getItem('complaints') || '[]');
-        let resolvedComplaints = allComplaints.filter(c => 
-            c.status === 'Resolved' || c.status === 'Closed'
-        );
+    // ── 1. AUTH GUARD ──────────────────────────────────────
+    const officerToken = localStorage.getItem("officerToken");
+    if (!officerToken) window.location.href = "login.html";
 
-        function updateStats() {
-            const total = resolvedComplaints.length;
-            
-            const now = new Date();
-            const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-            const thisWeek = resolvedComplaints.filter(c => new Date(c.date) >= weekAgo).length;
-            
-            // Calculate average resolution time (mock data for now)
-            const avgHours = 48;
+    function parseJwt(token) {
+        try { return JSON.parse(atob(token.split('.')[1])); } catch(e) { return null; }
+    }
+    const payload     = parseJwt(officerToken);
+    const displayName = payload?.['cognito:username'] || payload?.['name'] || payload?.['email'] || 'Officer';
+    document.getElementById('userName').textContent         = displayName;
+    document.getElementById('userAvatarLetter').textContent = displayName.charAt(0).toUpperCase();
 
-            document.getElementById('totalResolved').textContent = total;
-            document.getElementById('thisWeek').textContent = thisWeek;
-            document.getElementById('avgTime').textContent = avgHours + 'h';
-        }
+    // ── 2. CONFIG ──────────────────────────────────────────
+    const API_URL        = "https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/admin/complaints";
+    const UPDATE_STATUS_URL = "https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/admin/update-status";
 
-        function getResolutionTime(date) {
-            // Mock resolution time calculation
-            const hours = Math.floor(Math.random() * 120) + 12;
-            if (hours < 48) return { text: `${hours}h`, fast: true };
-            const days = Math.floor(hours / 24);
-            return { text: `${days}d`, fast: false };
-        }
+    // ── 3. STATE ───────────────────────────────────────────
+    let resolvedComplaints = [];
+    let filteredList       = [];
+    let activeId           = null;
 
-        function renderTable(complaints) {
-            const tbody = document.getElementById('complaintsTableBody');
-            tbody.innerHTML = '';
-            
-            if (complaints.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align: center; padding: 40px;">No resolved complaints found</td></tr>';
-                document.getElementById('totalCount').textContent = '0';
-                return;
-            }
-            
-            complaints.forEach(complaint => {
-                const date = new Date(complaint.date);
-                const formattedDate = date.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
-                const resolutionTime = getResolutionTime(complaint.date);
-                
-                const row = document.createElement('tr');
-                row.innerHTML = `
-                    <td><strong>${complaint.id}</strong></td>
-                    <td>${complaint.name}</td>
-                    <td>${complaint.department}</td>
-                    <td>${complaint.subject}</td>
-                    <td><span class="priority-badge priority-${complaint.priority.toLowerCase()}">${complaint.priority}</span></td>
-                    <td><span class="status-badge status-${complaint.status.toLowerCase().replace(' ', '-')}">${complaint.status}</span></td>
-                    <td>${formattedDate}</td>
-                    <td><span class="resolution-time ${resolutionTime.fast ? 'fast' : ''}">${resolutionTime.text}</span></td>
-                    <td>
-                        <div class="action-buttons">
-                            <button class="btn-icon btn-view" onclick="viewComplaint('${complaint.id}')" title="View Details">
-                                <i class="fas fa-eye"></i>
-                            </button>
-                            <button class="btn-icon btn-download" onclick="downloadReport('${complaint.id}')" title="Download Report">
-                                <i class="fas fa-download"></i>
-                            </button>
-                            <button class="btn-icon btn-archive" onclick="archiveComplaint('${complaint.id}')" title="Archive">
-                                <i class="fas fa-archive"></i>
-                            </button>
-                        </div>
-                    </td>
-                `;
-                tbody.appendChild(row);
+    // ── 4. LOAD FROM API ───────────────────────────────────
+    async function loadComplaints() {
+        document.getElementById('complaintsTableBody').innerHTML =
+            '<tr><td colspan="10"><div class="loading-spinner"><div class="spinner"></div><span>Loading resolved complaints...</span></div></td></tr>';
+        hideError();
+
+        try {
+            const res = await fetch(API_URL, {
+                headers: { "Authorization": "Bearer " + officerToken, "Content-Type": "application/json" }
             });
-            
-            document.getElementById('totalCount').textContent = complaints.length;
-        }
 
-        function filterComplaints() {
-            const deptFilter = document.getElementById('filterDepartment').value;
-            const priorityFilter = document.getElementById('filterPriority').value;
-            const periodFilter = document.getElementById('filterPeriod').value;
-            const searchTerm = document.getElementById('searchInput').value.toLowerCase();
-            
-            let filtered = resolvedComplaints;
-            
-            if (deptFilter) filtered = filtered.filter(c => c.department === deptFilter);
-            if (priorityFilter) filtered = filtered.filter(c => c.priority === priorityFilter);
-            
-            if (periodFilter) {
-                const now = new Date();
-                filtered = filtered.filter(c => {
-                    const complaintDate = new Date(c.date);
-                    const diffDays = Math.ceil((now - complaintDate) / (1000 * 60 * 60 * 24));
-                    
-                    if (periodFilter === 'today') return diffDays === 0;
-                    if (periodFilter === 'week') return diffDays <= 7;
-                    if (periodFilter === 'month') return diffDays <= 30;
-                    if (periodFilter === 'quarter') return diffDays <= 90;
-                    return true;
-                });
-            }
-            
-            if (searchTerm) {
-                filtered = filtered.filter(c => 
-                    c.id.toLowerCase().includes(searchTerm) ||
-                    c.name.toLowerCase().includes(searchTerm) ||
-                    c.subject.toLowerCase().includes(searchTerm)
-                );
-            }
-            
-            renderTable(filtered);
-        }
+            if (res.status === 401 || res.status === 403) { logout(); return; }
+            if (!res.ok) throw new Error(`Server responded with ${res.status}`);
 
-        function viewComplaint(id) {
-            alert(`Viewing complaint: ${id}\n\nThis would open a detailed view modal with resolution details.`);
-        }
+            const data = await res.json();
+            const all  = Array.isArray(data) ? data : (data.complaints || data.items || data.data || []);
 
-        function downloadReport(id) {
-            alert(`Downloading resolution report for: ${id}\n\nThis would download a PDF report.`);
-        }
-
-        function archiveComplaint(id) {
-            if (confirm(`Archive complaint ${id}?`)) {
-                alert('Complaint archived successfully!');
-            }
-        }
-
-        function generateReport() {
-            alert('Generating comprehensive resolution report...\n\nThis would create a detailed PDF report of all resolved complaints.');
-        }
-
-        function refreshTable() {
-            allComplaints = JSON.parse(localStorage.getItem('complaints') || '[]');
-            resolvedComplaints = allComplaints.filter(c => 
-                c.status === 'Resolved' || c.status === 'Closed'
+            // ✅ Filter: only Resolved or Closed
+            resolvedComplaints = all.filter(c =>
+                c.status === "Resolved" || c.status === "Closed"
             );
+
             updateStats();
-            filterComplaints();
+            applyFilters();
+
+        } catch (err) {
+            console.error(err);
+            showError("Unable to load complaints: " + err.message);
+            document.getElementById('complaintsTableBody').innerHTML =
+                '<tr><td colspan="10" style="text-align:center;padding:40px;color:#999;">Could not fetch data. Click Retry.</td></tr>';
+        }
+    }
+
+    // ── 5. STATS ───────────────────────────────────────────
+    function updateStats() {
+        const now     = Date.now();
+        const weekAgo = now - 7 * 86400000;
+
+        const totalResolved = resolvedComplaints.filter(c => c.status === 'Resolved').length;
+        const totalClosed   = resolvedComplaints.filter(c => c.status === 'Closed').length;
+        const thisWeek      = resolvedComplaints.filter(c => new Date(c.createdAt || c.date || 0).getTime() >= weekAgo).length;
+
+        // Average resolution days: difference between createdAt and resolvedAt (if available), else show —
+        const withDates = resolvedComplaints.filter(c => c.createdAt && c.resolvedAt);
+        const avgDays   = withDates.length > 0
+            ? Math.round(withDates.reduce((sum, c) => {
+                return sum + (new Date(c.resolvedAt) - new Date(c.createdAt)) / 86400000;
+              }, 0) / withDates.length)
+            : '—';
+
+        document.getElementById('totalResolved').textContent   = totalResolved;
+        document.getElementById('totalClosed').textContent     = totalClosed;
+        document.getElementById('thisWeekCount').textContent   = thisWeek;
+        document.getElementById('avgResolutionDays').textContent = avgDays === '—' ? '—' : avgDays + 'd';
+    }
+
+    // ── 6. FILTERS ─────────────────────────────────────────
+    function applyFilters() {
+        const dept   = document.getElementById('filterDepartment').value;
+        const prio   = document.getElementById('filterPriority').value;
+        const status = document.getElementById('filterStatus').value;
+        const period = document.getElementById('filterPeriod').value;
+        const search = document.getElementById('searchInput').value.toLowerCase().trim();
+        const now    = Date.now();
+
+        filteredList = resolvedComplaints.filter(c => {
+            if (dept   && c.department !== dept) return false;
+            if (prio   && (c.priority || 'Medium') !== prio) return false;
+            if (status && c.status !== status) return false;
+
+            if (period) {
+                const d    = new Date(c.createdAt || c.date || 0).getTime();
+                const days = (now - d) / 86400000;
+                if (period === 'today'   && days > 1)  return false;
+                if (period === 'week'    && days > 7)  return false;
+                if (period === 'month'   && days > 30) return false;
+                if (period === 'quarter' && days > 90) return false;
+            }
+
+            if (search) {
+                const id  = (c.complaintId || c.id || '').toLowerCase();
+                const nm  = (c.name || '').toLowerCase();
+                const cat = (c.category || '').toLowerCase();
+                if (!id.includes(search) && !nm.includes(search) && !cat.includes(search)) return false;
+            }
+
+            return true;
+        });
+
+        renderTable();
+    }
+
+    // ── 7. RESOLUTION TIME LABEL ───────────────────────────
+    function resolutionLabel(c) {
+        if (!c.createdAt || !c.resolvedAt) return { text: '—', cls: '' };
+        const days = (new Date(c.resolvedAt) - new Date(c.createdAt)) / 86400000;
+        if (days < 1)  return { text: `${Math.round(days * 24)}h`, cls: 'fast' };
+        if (days <= 3) return { text: `${Math.round(days)}d`,      cls: 'fast' };
+        if (days <= 7) return { text: `${Math.round(days)}d`,      cls: '' };
+        return              { text: `${Math.round(days)}d`,         cls: 'slow' };
+    }
+
+    // ── 8. RENDER ──────────────────────────────────────────
+    function renderTable() {
+        const tbody = document.getElementById('complaintsTableBody');
+        tbody.innerHTML = '';
+        document.getElementById('totalCount').textContent = filteredList.length;
+
+        if (filteredList.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:40px;color:#999;">No resolved complaints found</td></tr>';
+            return;
         }
 
-        function logout() {
-            sessionStorage.removeItem('loggedInUser');
-        }
+        filteredList.forEach(c => {
+            const id       = c.complaintId || c.id || '—';
+            const priority = c.priority || 'Medium';
+            const status   = c.status || 'Resolved';
+            const dateStr  = c.createdAt || c.date;
+            const dateDisp = dateStr ? new Date(dateStr).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }) : '—';
+            const res      = resolutionLabel(c);
 
-        document.getElementById('filterDepartment').addEventListener('change', filterComplaints);
-        document.getElementById('filterPriority').addEventListener('change', filterComplaints);
-        document.getElementById('filterPeriod').addEventListener('change', filterComplaints);
-        document.getElementById('searchInput').addEventListener('input', filterComplaints);
+            const row = document.createElement('tr');
+            row.innerHTML = `
+                <td><strong>${id}</strong></td>
+                <td>${c.name || '—'}</td>
+                <td>${c.mobile || '—'}</td>
+                <td>${c.department || '—'}</td>
+                <td>${c.category || '—'}</td>
+                <td><span class="priority-badge priority-${priority.toLowerCase()}">${priority}</span></td>
+                <td><span class="status-badge status-${status.toLowerCase()}">${status}</span></td>
+                <td>${dateDisp}</td>
+                <td><span class="resolution-time ${res.cls}">${res.text}</span></td>
+                <td>
+                    <div class="action-buttons">
+                        <button class="btn-icon btn-view"     onclick="openViewModal('${id}')"    title="View Details"><i class="fas fa-eye"></i></button>
+                        <button class="btn-icon btn-download" onclick="downloadReport('${id}')"   title="Download Report"><i class="fas fa-download"></i></button>
+                        <button class="btn-icon btn-reopen"   onclick="reopenComplaint('${id}')"  title="Reopen"><i class="fas fa-undo"></i></button>
+                    </div>
+                </td>`;
+            tbody.appendChild(row);
+        });
+    }
 
+    // ── 9. VIEW MODAL ──────────────────────────────────────
+    function openViewModal(id) {
+        const c = findComplaint(id);
+        if (!c) return;
+        activeId = id;
+
+        const fields = [
+            { label: 'Complaint ID', value: c.complaintId || c.id || '—' },
+            { label: 'Submitted By', value: c.name || '—' },
+            { label: 'Mobile',       value: c.mobile || '—' },
+            { label: 'Email',        value: c.email || '—' },
+            { label: 'State',        value: c.state || '—' },
+            { label: 'District',     value: c.district || '—' },
+            { label: 'Department',   value: c.department || '—' },
+            { label: 'Category',     value: c.category || '—' },
+            { label: 'Priority',     value: c.priority || 'Medium' },
+            { label: 'Final Status', value: c.status || 'Resolved' },
+            { label: 'Submitted On', value: c.createdAt  ? new Date(c.createdAt).toLocaleString('en-IN') : '—' },
+            { label: 'Resolved On',  value: c.resolvedAt ? new Date(c.resolvedAt).toLocaleString('en-IN') : '—' },
+        ];
+
+        document.getElementById('viewDetailGrid').innerHTML = fields.map(f =>
+            `<div class="detail-item"><label>${f.label}</label><span>${f.value}</span></div>`
+        ).join('');
+        document.getElementById('viewDescription').textContent = c.description || c.subject || 'No description provided.';
+
+        const res = resolutionLabel(c);
+        document.getElementById('modalResTitle').textContent = `Status: ${c.status}`;
+        document.getElementById('modalResSub').textContent   = res.text !== '—'
+            ? `Resolved in ${res.text}`
+            : 'Resolution time not available';
+
+        document.getElementById('reopenBtn').onclick = () => { closeModal('viewModal'); reopenComplaint(id); };
+        openModal('viewModal');
+    }
+
+    // ── 10. REOPEN ─────────────────────────────────────────
+    async function reopenComplaint(id) {
+        if (!confirm(`Reopen complaint ${id} and set status to "In Progress"?`)) return;
+
+        try {
+            await fetch(UPDATE_STATUS_URL, {
+                method: "PUT",
+                headers: { "Authorization": "Bearer " + officerToken, "Content-Type": "application/json" },
+                body: JSON.stringify({ complaintId: id, status: "In Progress" })
+            });
+        } catch (err) { console.warn('Reopen API error (updating locally):', err); }
+
+        resolvedComplaints = resolvedComplaints.filter(c => (c.complaintId || c.id) !== id);
         updateStats();
-        renderTable(resolvedComplaints);
+        applyFilters();
+        showToast(`Complaint ${id} reopened and set to In Progress ✓`, 'warning');
+    }
+
+    // ── 11. DOWNLOAD REPORT ────────────────────────────────
+    function downloadReport(id) {
+        const c = findComplaint(id);
+        if (!c) return;
+
+        const lines = [
+            `GRIEVANCE RESOLUTION REPORT`,
+            `Generated: ${new Date().toLocaleString('en-IN')}`,
+            ``,
+            `Complaint ID : ${c.complaintId || c.id || '—'}`,
+            `Name         : ${c.name || '—'}`,
+            `Mobile       : ${c.mobile || '—'}`,
+            `Email        : ${c.email || '—'}`,
+            `Department   : ${c.department || '—'}`,
+            `Category     : ${c.category || '—'}`,
+            `Priority     : ${c.priority || '—'}`,
+            `Status       : ${c.status || '—'}`,
+            `Submitted On : ${c.createdAt ? new Date(c.createdAt).toLocaleString('en-IN') : '—'}`,
+            `Resolved On  : ${c.resolvedAt ? new Date(c.resolvedAt).toLocaleString('en-IN') : '—'}`,
+            ``,
+            `DESCRIPTION`,
+            `${c.description || c.subject || 'No description.'}`,
+        ];
+
+        const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement('a');
+        a.href     = url;
+        a.download = `report_${id}.txt`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('Report downloaded ✓', 'success');
+    }
+
+    // ── 12. EXPORT CSV ─────────────────────────────────────
+    function exportCSV() {
+        if (filteredList.length === 0) { showToast('No data to export', 'warning'); return; }
+
+        const headers = ['ID','Name','Mobile','Email','State','District','Department','Category','Priority','Status','Submitted','Resolved'];
+        const rows = filteredList.map(c => [
+            c.complaintId || c.id || '',
+            c.name || '', c.mobile || '', c.email || '',
+            c.state || '', c.district || '', c.department || '',
+            c.category || '', c.priority || '', c.status || '',
+            c.createdAt  ? new Date(c.createdAt).toLocaleDateString('en-IN')  : '',
+            c.resolvedAt ? new Date(c.resolvedAt).toLocaleDateString('en-IN') : '',
+        ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(','));
+
+        const csv  = [headers.join(','), ...rows].join('\n');
+        const blob = new Blob([csv], { type: 'text/csv' });
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement('a');
+        a.href     = url;
+        a.download = `resolved_complaints_${new Date().toISOString().slice(0,10)}.csv`;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast('CSV exported ✓', 'success');
+    }
+
+    // ── 13. HELPERS ────────────────────────────────────────
+    function findComplaint(id) {
+        return resolvedComplaints.find(c => (c.complaintId || c.id) === id) || null;
+    }
+    function openModal(id)  { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    document.querySelectorAll('.modal-overlay').forEach(o => {
+        o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
+    });
+
+    function showToast(msg, type = 'success') {
+        const c     = document.getElementById('toastContainer');
+        const toast = document.createElement('div');
+        toast.className = `toast ${type === 'error' ? 'error' : type === 'warning' ? 'warning' : ''}`;
+        const icon = type === 'success' ? '✅' : type === 'warning' ? '⚠️' : '❌';
+        toast.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
+        c.appendChild(toast);
+        setTimeout(() => toast.remove(), 3500);
+    }
+
+    function showError(msg) { document.getElementById('errorBannerMsg').textContent = msg; document.getElementById('errorBanner').classList.add('show'); }
+    function hideError()    { document.getElementById('errorBanner').classList.remove('show'); }
+
+    function logout() {
+        localStorage.removeItem("officerToken");
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+        sessionStorage.clear();
+        window.location.href = "login.html";
+    }
+
+    // ── 14. EVENT LISTENERS & BOOT ─────────────────────────
+    document.getElementById('filterDepartment').addEventListener('change', applyFilters);
+    document.getElementById('filterPriority').addEventListener('change', applyFilters);
+    document.getElementById('filterStatus').addEventListener('change', applyFilters);
+    document.getElementById('filterPeriod').addEventListener('change', applyFilters);
+    document.getElementById('searchInput').addEventListener('input', applyFilters);
+
+    loadComplaints();
     </script>
 </body>
 </html>
