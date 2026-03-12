@@ -5,677 +5,719 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Register Complaint - Digital Grievance Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --primary: #0A2E5C;
-            --primary-light: #1a4d8f;
-            --bg: #F0F2F5;
+            --background: #F2F2F2;
             --accent: #FF9933;
-            --accent-h: #e68a2e;
             --success: #138808;
             --error: #C62828;
-            --white: #fff;
-            --border: #dde1e7;
-            --muted: #6c757d;
+            --white: #FFFFFF;
         }
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family:'Inter','Noto Sans Devanagari',sans-serif; background:var(--bg); color:#1a1a2e; }
 
-        .tricolor { height:5px; background:linear-gradient(to right,#FF9933 33.33%,#fff 33.33% 66.66%,#138808 66.66%); }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
-        .header-top { background:var(--white); padding:14px 0; box-shadow:0 2px 12px rgba(0,0,0,.08); }
-        .emblem-container { display:flex; align-items:center; gap:14px; }
-        .emblem-icon { font-size:46px; color:var(--primary); }
-        .emblem-text h1 { font-size:19px; font-weight:700; color:var(--primary); margin:0; }
-        .emblem-text p  { font-size:13px; color:var(--muted); margin:0; }
-
-        .navbar { background:var(--primary); padding:0; }
-        .navbar-nav .nav-link { color:#fff!important; padding:14px 18px; font-size:14px; font-weight:500; transition:background .2s; }
-        .navbar-nav .nav-link:hover,.navbar-nav .nav-link.active { background:rgba(255,255,255,.12); }
-
-        .page-header { background:linear-gradient(135deg,var(--primary),var(--primary-light)); color:#fff; padding:36px 0; margin-bottom:32px; }
-        .page-header h2 { font-size:28px; font-weight:700; margin-bottom:6px; }
-        .page-header p  { font-size:14px; opacity:.85; margin:0; }
-
-        .form-container { background:var(--white); border-radius:12px; padding:36px 40px; box-shadow:0 2px 20px rgba(0,0,0,.08); margin-bottom:40px; animation:slideUp .5s ease; }
-        .form-section { margin-bottom:28px; }
-        .form-section-title { font-size:16px; font-weight:600; color:var(--primary); margin-bottom:18px; padding-bottom:10px; border-bottom:2px solid var(--accent); display:flex; align-items:center; gap:8px; }
-        .form-section-title i { color:var(--accent); }
-        .form-label { font-size:13px; font-weight:600; color:#444; margin-bottom:6px; display:block; }
-        .required { color:var(--error); }
-
-        /* ── Searchable Select ── */
-        .sel-wrap { position:relative; }
-        .sel-display {
-            width:100%; padding:10px 38px 10px 14px; border:1px solid var(--border); border-radius:6px;
-            font-size:14px; background:var(--white); cursor:pointer; transition:border-color .2s,box-shadow .2s;
-            appearance:none; -webkit-appearance:none; color:#1a1a2e;
+        body {
+            font-family: 'Roboto', 'Noto Sans Devanagari', sans-serif;
+            background-color: var(--background);
+            color: #333;
         }
-        .sel-display::placeholder { color:#aaa; }
-        .sel-display:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(10,46,92,.1); }
-        .sel-display.is-invalid { border-color:var(--error); }
-        .sel-chevron { position:absolute; right:12px; top:50%; transform:translateY(-50%); color:var(--muted); pointer-events:none; font-size:11px; transition:transform .2s; }
-        .sel-wrap.open .sel-chevron { transform:translateY(-50%) rotate(180deg); }
 
-        .sel-dropdown { position:absolute; top:calc(100% + 4px); left:0; right:0; z-index:1000; background:var(--white); border:1px solid var(--border); border-radius:8px; box-shadow:0 8px 24px rgba(0,0,0,.12); display:none; overflow:hidden; }
-        .sel-wrap.open .sel-dropdown { display:block; }
-        .sel-search-box { padding:8px; border-bottom:1px solid var(--border); }
-        .sel-search-box input { width:100%; padding:7px 12px; border:1px solid var(--border); border-radius:5px; font-size:13px; outline:none; }
-        .sel-search-box input:focus { border-color:var(--primary); }
-        .sel-options { max-height:220px; overflow-y:auto; }
-        .sel-option { padding:9px 14px; font-size:13px; cursor:pointer; transition:background .15s; border-bottom:1px solid #f5f5f5; }
-        .sel-option:hover { background:#f0f4ff; }
-        .sel-option.selected { background:#e8f0fe; color:var(--primary); font-weight:600; }
-        .sel-option.no-results { color:var(--muted); cursor:default; font-style:italic; }
+        .tricolor-strip {
+            height: 5px;
+            background: linear-gradient(to right, #FF9933 0%, #FF9933 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #138808 66.66%, #138808 100%);
+        }
 
-        /* regular inputs */
-        .form-control { border:1px solid var(--border); border-radius:6px; padding:10px 14px; font-size:14px; transition:border-color .2s,box-shadow .2s; }
-        .form-control:focus { border-color:var(--primary); outline:none; box-shadow:0 0 0 3px rgba(10,46,92,.1); }
-        .form-control.is-invalid { border-color:var(--error); }
-        .invalid-feedback { display:none; color:var(--error); font-size:12px; margin-top:4px; }
-        .is-invalid ~ .invalid-feedback,
-        .is-invalid + .invalid-feedback { display:block; }
+        .header-top {
+            background-color: var(--white);
+            padding: 15px 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
 
-        /* PIN hint */
-        .pin-hint { font-size:12px; margin-top:4px; display:none; }
-        .pin-hint.ok  { color:var(--success); display:block; }
-        .pin-hint.bad { color:var(--error);   display:block; }
+        .emblem-container { display: flex; align-items: center; gap: 15px; }
+        .emblem-icon { font-size: 50px; color: var(--primary); }
+        .emblem-text h1 { font-size: 20px; font-weight: 700; color: var(--primary); margin: 0; }
+        .emblem-text p { font-size: 14px; color: #666; margin: 0; }
 
-        /* AI suggest */
-        .ai-wrap { margin-top:10px; }
-        .suggest-loading { display:none; align-items:center; gap:8px; font-size:12px; color:var(--muted); }
-        .suggest-loading.on { display:flex; }
-        .suggest-badge { display:none; background:linear-gradient(135deg,#eef4ff,#eafaf0); border:1px solid #c3d9ff; border-left:4px solid var(--primary); border-radius:8px; padding:12px 14px; animation:fadeIn .35s ease; }
-        .suggest-badge.on { display:block; }
-        .suggest-hdr { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
-        .suggest-title { font-size:13px; font-weight:600; color:var(--primary); }
-        .suggest-close { background:none; border:none; cursor:pointer; color:var(--muted); font-size:14px; padding:0; }
-        .chips { display:flex; flex-wrap:wrap; gap:6px; }
-        .chip { padding:3px 11px; border-radius:20px; font-size:11px; font-weight:500; color:#fff; }
-        .chip-dept { background:var(--primary); }
-        .chip-cat  { background:#1a8f3c; }
-        .chip-Low      { background:#2e7d32; }
-        .chip-Medium   { background:#e65100; }
-        .chip-High     { background:#c62828; }
-        .chip-Critical { background:#7b1fa2; }
+        .navbar { background-color: var(--primary); padding: 0; }
+        .navbar-nav .nav-link { color: var(--white) !important; padding: 15px 20px; font-weight: 500; transition: all 0.3s ease; }
+        .navbar-nav .nav-link:hover { background-color: rgba(255,255,255,0.1); }
 
-        .auto-filled { animation:glow 1.8s ease; }
-        @keyframes glow { 0%{background:#fff8e1;border-color:var(--accent)} 100%{background:var(--white);border-color:var(--border)} }
+        .page-header {
+            background: linear-gradient(135deg, var(--primary) 0%, #1a4d8f 100%);
+            color: var(--white);
+            padding: 40px 0;
+            margin-bottom: 40px;
+        }
+        .page-header h2 { font-size: 32px; font-weight: 700; margin-bottom: 10px; }
 
-        /* buttons */
-        .btn-submit { background:var(--accent); border:none; color:#fff; padding:12px 40px; font-size:15px; font-weight:600; border-radius:6px; transition:all .25s; cursor:pointer; }
-        .btn-submit:hover:not(:disabled) { background:var(--accent-h); transform:translateY(-2px); box-shadow:0 6px 18px rgba(255,153,51,.38); }
-        .btn-submit:disabled { opacity:.6; cursor:not-allowed; }
-        .btn-reset { background:#6c757d; border:none; color:#fff; padding:12px 40px; font-size:15px; font-weight:600; border-radius:6px; transition:all .25s; cursor:pointer; }
-        .btn-reset:hover { background:#5a6268; }
+        .form-container {
+            background-color: var(--white);
+            border-radius: 10px;
+            padding: 40px;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
+            margin-bottom: 40px;
+            animation: slideUp 0.6s ease;
+        }
 
-        /* modal */
-        .modal-overlay { display:none; position:fixed; inset:0; background:rgba(0,0,0,.65); z-index:9999; justify-content:center; align-items:center; animation:fadeIn .3s ease; }
-        .modal-box { background:var(--white); border-radius:16px; padding:40px; text-align:center; max-width:480px; width:90%; animation:scaleIn .35s ease; }
-        .modal-icon-ok  { font-size:72px; color:var(--success); margin-bottom:16px; }
-        .modal-icon-err { font-size:72px; color:var(--error);   margin-bottom:16px; }
-        .modal-box h3 { color:var(--primary); font-size:22px; font-weight:700; margin-bottom:12px; }
-        .cid-box { background:#f4f6fa; padding:14px; border-radius:8px; margin:18px 0; font-size:18px; font-weight:700; color:var(--primary); }
+        .form-section { margin-bottom: 30px; }
 
-        footer.foot { background:var(--primary); color:#fff; padding:30px 0 18px; }
-        .foot-bottom { border-top:1px solid rgba(255,255,255,.15); padding-top:16px; text-align:center; font-size:13px; }
+        .form-section-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary);
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
+        }
 
-        @keyframes slideUp { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
-        @keyframes fadeIn  { from{opacity:0} to{opacity:1} }
-        @keyframes scaleIn { from{transform:scale(.85);opacity:0} to{transform:scale(1);opacity:1} }
-        .spinner-sm { width:1rem; height:1rem; border-width:.15em; }
-        @media(max-width:768px){ .form-container{padding:20px 16px} .page-header h2{font-size:22px} }
+        .form-label { font-weight: 500; color: #333; margin-bottom: 8px; }
+        .required { color: var(--error); }
+
+        .form-control, .form-select {
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            padding: 10px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            border-color: var(--primary);
+            box-shadow: 0 0 0 0.2rem rgba(10, 46, 92, 0.15);
+        }
+
+        .invalid-feedback { display: none; color: var(--error); font-size: 14px; margin-top: 5px; }
+        .form-control.is-invalid ~ .invalid-feedback,
+        .form-select.is-invalid ~ .invalid-feedback { display: block; }
+
+        /* Auto-detection card */
+        .auto-detect-card {
+            background: linear-gradient(135deg, #f0f7ff 0%, #e8f4e8 100%);
+            border: 1px solid #b8d4f0;
+            border-radius: 10px;
+            padding: 18px 22px;
+            margin-top: 12px;
+            display: none;
+            animation: fadeInDown 0.4s ease;
+        }
+
+        .auto-detect-card.show { display: block; }
+
+        .auto-detect-card .label {
+            font-size: 12px;
+            font-weight: 600;
+            color: #555;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 10px;
+        }
+
+        .auto-detect-card .tags { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+
+        .auto-detect-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 5px 12px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 500;
+        }
+
+        .tag-department { background: #e3f0ff; color: #0A2E5C; border: 1px solid #b3d4ff; }
+        .tag-category   { background: #fff3e0; color: #b85c00; border: 1px solid #ffd699; }
+
+        .tag-priority-critical { background: #fde8e8; color: #b00020; border: 1px solid #f5b8b8; font-weight: 700; }
+        .tag-priority-high     { background: #fff0e0; color: #b84800; border: 1px solid #f5c890; }
+        .tag-priority-medium   { background: #e8f0ff; color: #1a4d9e; border: 1px solid #aac4f5; }
+        .tag-priority-low      { background: #e8f8e8; color: #186018; border: 1px solid #a0d8a0; }
+
+        .auto-detect-card .note {
+            font-size: 12px;
+            color: #666;
+            margin-top: 8px;
+        }
+
+        .analyzing-indicator {
+            display: none;
+            align-items: center;
+            gap: 8px;
+            color: #0A2E5C;
+            font-size: 13px;
+            margin-top: 8px;
+        }
+        .analyzing-indicator.show { display: flex; }
+
+        .dot-pulse {
+            position: relative;
+            width: 8px; height: 8px;
+            border-radius: 50%;
+            background: var(--primary);
+            animation: dotPulse 1.5s infinite;
+        }
+
+        .btn-submit {
+            background-color: var(--accent);
+            border: none;
+            color: var(--white);
+            padding: 12px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-submit:hover:not(:disabled) {
+            background-color: #e68a2e;
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(255,153,51,0.4);
+        }
+
+        .btn-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .btn-reset {
+            background-color: #6c757d;
+            border: none;
+            color: var(--white);
+            padding: 12px 40px;
+            font-size: 16px;
+            font-weight: 600;
+            border-radius: 5px;
+            transition: all 0.3s ease;
+        }
+
+        .btn-reset:hover { background-color: #5a6268; }
+
+        .success-modal {
+            display: none;
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-color: rgba(0,0,0,0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .success-content {
+            background-color: var(--white);
+            border-radius: 15px;
+            padding: 40px;
+            text-align: center;
+            max-width: 500px;
+            animation: scaleIn 0.4s ease;
+        }
+
+        .success-icon { font-size: 80px; color: var(--success); margin-bottom: 20px; }
+        .error-icon   { font-size: 80px; color: var(--error);   margin-bottom: 20px; }
+
+        .success-content h3 { color: var(--primary); font-size: 24px; font-weight: 700; margin-bottom: 15px; }
+
+        .complaint-id {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--primary);
+        }
+
+        .footer { background-color: var(--primary); color: var(--white); padding: 40px 0 20px; margin-top: 40px; }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px; text-align: center; font-size: 14px; }
+
+        @keyframes slideUp { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes fadeIn  { from { opacity:0; } to { opacity:1; } }
+        @keyframes fadeInDown { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes scaleIn { from { transform:scale(0.8); opacity:0; } to { transform:scale(1); opacity:1; } }
+        @keyframes dotPulse { 0%,100% { opacity:1; transform:scale(1); } 50% { opacity:0.3; transform:scale(0.6); } }
+
+        @media (max-width: 768px) {
+            .form-container { padding: 20px; }
+            .page-header h2 { font-size: 24px; }
+        }
     </style>
 </head>
 <body>
-<div class="tricolor"></div>
+
+<div class="tricolor-strip"></div>
 
 <header class="header-top">
-  <div class="container">
-    <div class="emblem-container">
-      <div class="emblem-icon"><i class="fas fa-landmark"></i></div>
-      <div class="emblem-text">
-        <h1>Digital Complaint &amp; Grievance Redressal Platform</h1>
-        <p>भारत सरकार | Government of India</p>
-      </div>
+    <div class="container">
+        <div class="emblem-container">
+            <div class="emblem-icon"><i class="fas fa-landmark"></i></div>
+            <div class="emblem-text">
+                <h1>Digital Complaint &amp; Grievance Redressal Platform</h1>
+                <p>भारत सरकार | Government of India</p>
+            </div>
+        </div>
     </div>
-  </div>
 </header>
 
 <nav class="navbar navbar-expand-lg navbar-dark">
-  <div class="container">
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav"><span class="navbar-toggler-icon"></span></button>
-    <div class="collapse navbar-collapse" id="nav">
-      <ul class="navbar-nav mx-auto">
-        <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-        <li class="nav-item"><a class="nav-link active" href="register.html">Register Complaint</a></li>
-        <li class="nav-item"><a class="nav-link" href="track.html">Track Status</a></li>
-        <li class="nav-item"><a class="nav-link" href="departments.html">Departments</a></li>
-        <li class="nav-item"><a class="nav-link" href="help.html">Help &amp; FAQ</a></li>
-        <li class="nav-item"><a class="nav-link" href="login.html">Officer Login</a></li>
-      </ul>
+    <div class="container">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                <li class="nav-item"><a class="nav-link active" href="register.html">Register Complaint</a></li>
+                <li class="nav-item"><a class="nav-link" href="track.html">Track Status</a></li>
+                <li class="nav-item"><a class="nav-link" href="departments.html">Departments</a></li>
+                <li class="nav-item"><a class="nav-link" href="help.html">Help &amp; FAQ</a></li>
+                <li class="nav-item"><a class="nav-link" href="login.html">Officer Login</a></li>
+            </ul>
+        </div>
     </div>
-  </div>
 </nav>
 
 <div class="page-header">
-  <div class="container">
-    <h2><i class="fas fa-file-alt me-2"></i>Register Your Complaint</h2>
-    <p>Fill in the details below. Fields marked <span style="color:#FF9933">*</span> are required. Department, category &amp; priority are suggested automatically.</p>
-  </div>
+    <div class="container">
+        <h2><i class="fas fa-file-alt"></i> Register Your Complaint</h2>
+        <p>Please fill in the details below to submit your grievance</p>
+    </div>
 </div>
 
 <div class="container">
-<div class="form-container">
-<form id="cForm" novalidate>
+    <div class="form-container">
+        <form id="complaintForm" novalidate>
 
-  <!-- Personal -->
-  <div class="form-section">
-    <h4 class="form-section-title"><i class="fas fa-user"></i> Personal Information</h4>
-    <div class="row g-3">
-      <div class="col-md-6">
-        <label class="form-label">Full Name <span class="required">*</span></label>
-        <input class="form-control" id="fullName" placeholder="Enter your full name">
-        <div class="invalid-feedback">Please enter your full name (min 3 characters)</div>
-      </div>
-      <div class="col-md-6">
-        <label class="form-label">Email Address <span class="required">*</span></label>
-        <input type="email" class="form-control" id="email" placeholder="yourname@example.com">
-        <div class="invalid-feedback">Please enter a valid email address</div>
-      </div>
-      <div class="col-md-6">
-        <label class="form-label">Mobile Number <span class="required">*</span></label>
-        <input class="form-control" id="mobile" placeholder="10-digit mobile number" maxlength="10">
-        <div class="invalid-feedback">Please enter a valid 10-digit mobile number</div>
-      </div>
-      <div class="col-md-6">
-        <label class="form-label">Aadhaar Number <small class="text-muted fw-normal">(Optional)</small></label>
-        <input class="form-control" id="aadhaar" placeholder="12-digit Aadhaar number" maxlength="12">
-        <div class="invalid-feedback">Please enter a valid 12-digit Aadhaar number</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Address -->
-  <div class="form-section">
-    <h4 class="form-section-title"><i class="fas fa-map-marker-alt"></i> Address Details</h4>
-    <div class="row g-3">
-      <div class="col-12">
-        <label class="form-label">Complete Address <span class="required">*</span></label>
-        <textarea class="form-control" id="address" rows="2" placeholder="House/Flat No., Street, Colony, Locality"></textarea>
-        <div class="invalid-feedback">Please enter your complete address</div>
-      </div>
-
-      <div class="col-md-4">
-        <label class="form-label">State <span class="required">*</span></label>
-        <div class="sel-wrap" id="stateWrap">
-          <input class="sel-display" id="stateDisp" placeholder="Select State" readonly>
-          <i class="fas fa-chevron-down sel-chevron"></i>
-          <input type="hidden" id="state">
-          <div class="sel-dropdown" id="stateDrop">
-            <div class="sel-search-box"><input id="stateQ" placeholder="🔍 Search state…"></div>
-            <div class="sel-options" id="stateOpts"></div>
-          </div>
-          <div class="invalid-feedback" id="stateErr">Please select your state</div>
-        </div>
-      </div>
-
-      <div class="col-md-4">
-        <label class="form-label">District <span class="required">*</span></label>
-        <div class="sel-wrap" id="distWrap">
-          <input class="sel-display" id="distDisp" placeholder="Select District" readonly>
-          <i class="fas fa-chevron-down sel-chevron"></i>
-          <input type="hidden" id="district">
-          <div class="sel-dropdown" id="distDrop">
-            <div class="sel-search-box"><input id="distQ" placeholder="🔍 Search district…"></div>
-            <div class="sel-options" id="distOpts"></div>
-          </div>
-          <div class="invalid-feedback" id="distErr">Please select your district</div>
-        </div>
-      </div>
-
-      <div class="col-md-4">
-        <label class="form-label">PIN Code <span class="required">*</span></label>
-        <input class="form-control" id="pincode" placeholder="6-digit PIN code" maxlength="6">
-        <div class="pin-hint" id="pinHint"></div>
-        <div class="invalid-feedback">Please enter a valid 6-digit PIN code</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Complaint -->
-  <div class="form-section">
-    <h4 class="form-section-title"><i class="fas fa-clipboard-list"></i> Complaint Details</h4>
-    <div class="row g-3">
-
-      <div class="col-12">
-        <label class="form-label">Detailed Description <span class="required">*</span></label>
-        <textarea class="form-control" id="description" rows="6"
-          placeholder="Describe your complaint in detail (minimum 50 characters). Department, category &amp; priority will be suggested automatically after you finish typing…"></textarea>
-        <div class="invalid-feedback">Please provide a detailed description (minimum 50 characters)</div>
-        <small class="text-muted d-block mt-1">
-          <i class="fas fa-magic me-1" style="color:var(--accent)"></i>
-          Department, Category &amp; Priority are auto-suggested — you can still change them manually.
-        </small>
-        <div class="ai-wrap">
-          <div class="suggest-loading" id="sLoad">
-            <span class="spinner-border spinner-sm text-secondary"></span>
-            <span>Analysing your complaint…</span>
-          </div>
-          <div class="suggest-badge" id="sBadge">
-            <div class="suggest-hdr">
-              <span class="suggest-title"><i class="fas fa-robot me-1" style="color:var(--accent)"></i>Smart Suggestion Applied</span>
-              <button type="button" class="suggest-close" onclick="document.getElementById('sBadge').classList.remove('on')"><i class="fas fa-times"></i></button>
+            <!-- Personal Information -->
+            <div class="form-section">
+                <h4 class="form-section-title">Personal Information</h4>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Full Name <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="fullName" name="name" required>
+                        <div class="invalid-feedback">Please enter your full name</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Email Address <span class="required">*</span></label>
+                        <input type="email" class="form-control" id="email" name="email" required>
+                        <div class="invalid-feedback">Please enter a valid email address</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Mobile Number <span class="required">*</span></label>
+                        <input type="tel" class="form-control" id="mobile" name="mobile" pattern="[0-9]{10}" required>
+                        <div class="invalid-feedback">Please enter a valid 10-digit mobile number</div>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Aadhaar Number (Optional)</label>
+                        <input type="text" class="form-control" id="aadhaar" name="aadhaar" pattern="[0-9]{12}">
+                        <div class="invalid-feedback">Please enter a valid 12-digit Aadhaar number</div>
+                    </div>
+                </div>
             </div>
-            <div class="chips" id="sChips"></div>
-          </div>
-        </div>
-      </div>
 
-      <!-- Department -->
-      <div class="col-md-4">
-        <label class="form-label">Department <span class="required">*</span></label>
-        <div class="sel-wrap" id="deptWrap">
-          <input class="sel-display" id="deptDisp" placeholder="Auto-suggested or select" readonly>
-          <i class="fas fa-chevron-down sel-chevron"></i>
-          <input type="hidden" id="department">
-          <div class="sel-dropdown" id="deptDrop">
-            <div class="sel-search-box"><input id="deptQ" placeholder="🔍 Search department…"></div>
-            <div class="sel-options" id="deptOpts"></div>
-          </div>
-          <div class="invalid-feedback" id="deptErr">Please select a department</div>
-        </div>
-      </div>
+            <!-- Address Information -->
+            <div class="form-section">
+                <h4 class="form-section-title">Address Details</h4>
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">Complete Address <span class="required">*</span></label>
+                        <textarea class="form-control" id="address" name="address" rows="2" required></textarea>
+                        <div class="invalid-feedback">Please enter your complete address</div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">State <span class="required">*</span></label>
+                        <select class="form-select" id="state" name="state" required>
+                            <option value="">Select State / UT</option>
+                            <!-- States -->
+                            <option value="Andhra Pradesh">Andhra Pradesh</option>
+                            <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                            <option value="Assam">Assam</option>
+                            <option value="Bihar">Bihar</option>
+                            <option value="Chhattisgarh">Chhattisgarh</option>
+                            <option value="Goa">Goa</option>
+                            <option value="Gujarat">Gujarat</option>
+                            <option value="Haryana">Haryana</option>
+                            <option value="Himachal Pradesh">Himachal Pradesh</option>
+                            <option value="Jharkhand">Jharkhand</option>
+                            <option value="Karnataka">Karnataka</option>
+                            <option value="Kerala">Kerala</option>
+                            <option value="Madhya Pradesh">Madhya Pradesh</option>
+                            <option value="Maharashtra">Maharashtra</option>
+                            <option value="Manipur">Manipur</option>
+                            <option value="Meghalaya">Meghalaya</option>
+                            <option value="Mizoram">Mizoram</option>
+                            <option value="Nagaland">Nagaland</option>
+                            <option value="Odisha">Odisha</option>
+                            <option value="Punjab">Punjab</option>
+                            <option value="Rajasthan">Rajasthan</option>
+                            <option value="Sikkim">Sikkim</option>
+                            <option value="Tamil Nadu">Tamil Nadu</option>
+                            <option value="Telangana">Telangana</option>
+                            <option value="Tripura">Tripura</option>
+                            <option value="Uttar Pradesh">Uttar Pradesh</option>
+                            <option value="Uttarakhand">Uttarakhand</option>
+                            <option value="West Bengal">West Bengal</option>
+                            <!-- Union Territories -->
+                            <optgroup label="── Union Territories ──">
+                            <option value="Andaman and Nicobar Islands">Andaman and Nicobar Islands</option>
+                            <option value="Chandigarh">Chandigarh</option>
+                            <option value="Dadra and Nagar Haveli and Daman and Diu">Dadra &amp; Nagar Haveli and Daman &amp; Diu</option>
+                            <option value="Delhi">Delhi (NCT)</option>
+                            <option value="Jammu and Kashmir">Jammu &amp; Kashmir</option>
+                            <option value="Ladakh">Ladakh</option>
+                            <option value="Lakshadweep">Lakshadweep</option>
+                            <option value="Puducherry">Puducherry</option>
+                            </optgroup>
+                        </select>
+                        <div class="invalid-feedback">Please select your state</div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">District <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="district" name="district" required>
+                        <div class="invalid-feedback">Please enter your district</div>
+                    </div>
+                    <div class="col-md-4 mb-3">
+                        <label class="form-label">PIN Code <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="pincode" name="pincode" pattern="[0-9]{6}" required>
+                        <div class="invalid-feedback">Please enter a valid 6-digit PIN code</div>
+                    </div>
+                </div>
+            </div>
 
-      <!-- Category -->
-      <div class="col-md-4">
-        <label class="form-label">Complaint Category <span class="required">*</span></label>
-        <div class="sel-wrap" id="catWrap">
-          <input class="sel-display" id="catDisp" placeholder="Auto-suggested or select" readonly>
-          <i class="fas fa-chevron-down sel-chevron"></i>
-          <input type="hidden" id="category">
-          <div class="sel-dropdown" id="catDrop">
-            <div class="sel-search-box"><input id="catQ" placeholder="🔍 Search category…"></div>
-            <div class="sel-options" id="catOpts"></div>
-          </div>
-          <div class="invalid-feedback" id="catErr">Please select a category</div>
-        </div>
-      </div>
+            <!-- Complaint Details -->
+            <div class="form-section">
+                <h4 class="form-section-title">Complaint Details</h4>
 
-      <!-- Priority -->
-      <div class="col-md-4">
-        <label class="form-label">Priority Level <span class="required">*</span></label>
-        <div class="sel-wrap" id="priWrap">
-          <input class="sel-display" id="priDisp" placeholder="Auto-suggested or select" readonly>
-          <i class="fas fa-chevron-down sel-chevron"></i>
-          <input type="hidden" id="priority">
-          <div class="sel-dropdown" id="priDrop">
-            <div class="sel-options" id="priOpts"></div>
-          </div>
-          <div class="invalid-feedback" id="priErr">Please select a priority level</div>
-        </div>
-      </div>
+                <div class="row">
+                    <div class="col-md-12 mb-3">
+                        <label class="form-label">Complaint Subject <span class="required">*</span></label>
+                        <input type="text" class="form-control" id="subject" name="subject" required>
+                        <div class="invalid-feedback">Please enter complaint subject</div>
+                    </div>
+                </div>
 
-      <div class="col-12">
-        <label class="form-label">Complaint Subject <span class="required">*</span></label>
-        <input class="form-control" id="subject" placeholder="Brief subject line for your complaint">
-        <div class="invalid-feedback">Please enter a subject (min 5 characters)</div>
-      </div>
+                <div class="row">
+                    <div class="col-md-12 mb-1">
+                        <label class="form-label">Detailed Description <span class="required">*</span></label>
+                        <textarea class="form-control" id="description" name="description" rows="6" required
+                            placeholder="Describe your complaint in detail. The system will automatically detect the department, category, and priority..."></textarea>
+                        <div class="invalid-feedback">Please provide detailed description (minimum 50 characters)</div>
+                        <small class="text-muted">Minimum 50 characters required. Department, category &amp; priority will be auto-detected.</small>
+                    </div>
+                </div>
 
-      <div class="col-md-6">
-        <label class="form-label">Supporting Documents <small class="text-muted fw-normal">(Optional)</small></label>
-        <input type="file" class="form-control" id="documents" multiple accept=".pdf,.jpg,.jpeg,.png">
-        <small class="text-muted">Max 5 files (PDF, JPG, PNG) – 5 MB each</small>
-      </div>
+                <!-- Analyzing indicator -->
+                <div class="analyzing-indicator" id="analyzingIndicator">
+                    <div class="dot-pulse"></div>
+                    <span>Analyzing complaint text…</span>
+                </div>
+
+                <!-- Auto-detection result card -->
+                <div class="auto-detect-card" id="autoDetectCard">
+                    <div class="label"><i class="fas fa-robot me-1"></i> Auto-detected by Smart Routing</div>
+                    <div class="tags" id="autoDetectTags"></div>
+                    <div class="note">These values will be automatically submitted. You can continue filling the form.</div>
+                </div>
+
+                <!-- Hidden fields — auto-filled by suggestion API -->
+                <input type="hidden" id="department" name="department" value="General">
+                <input type="hidden" id="category"   name="category"   value="Other">
+                <input type="hidden" id="priority"   name="priority"   value="Medium">
+
+                <div class="row mt-3">
+                    <div class="col-md-6 mb-3">
+                        <label class="form-label">Upload Supporting Documents (Optional)</label>
+                        <input type="file" class="form-control" id="documents" name="documents" multiple>
+                        <small class="text-muted">Max 5 files (PDF, JPG, PNG) – 5 MB each</small>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Declaration -->
+            <div class="form-section">
+                <div class="form-check mb-3">
+                    <input class="form-check-input" type="checkbox" id="declaration" required>
+                    <label class="form-check-label" for="declaration">
+                        <strong>I hereby declare</strong> that the information provided above is true and correct to the best of my knowledge. I understand that providing false information may lead to legal action.
+                    </label>
+                    <div class="invalid-feedback">You must accept the declaration</div>
+                </div>
+            </div>
+
+            <!-- Submit Buttons -->
+            <div class="text-center">
+                <button type="submit" class="btn btn-submit me-2" id="submitBtn">
+                    <i class="fas fa-paper-plane"></i> Submit Complaint
+                </button>
+                <button type="reset" class="btn btn-reset" id="resetBtn">
+                    <i class="fas fa-redo"></i> Reset Form
+                </button>
+            </div>
+
+        </form>
     </div>
-  </div>
+</div>
 
-  <!-- Declaration -->
-  <div class="form-section">
-    <div class="form-check">
-      <input class="form-check-input" type="checkbox" id="declaration">
-      <label class="form-check-label" for="declaration" style="font-size:14px">
-        <strong>I hereby declare</strong> that the information provided above is true and correct to the best of my knowledge. I understand that providing false information may lead to legal action.
-      </label>
-      <div class="invalid-feedback">You must accept the declaration to proceed</div>
+<!-- Success / Error Modal -->
+<div id="successModal" class="success-modal">
+    <div class="success-content">
+        <div id="modalIcon" class="success-icon"><i class="fas fa-check-circle"></i></div>
+        <h3 id="modalTitle">Complaint Registered Successfully!</h3>
+        <p id="modalMessage">Your complaint has been submitted and is now under review.</p>
+        <div class="complaint-id" id="complaintIdContainer" style="display:none;">
+            Complaint ID: <span id="generatedId"></span>
+        </div>
+        <p class="text-muted" id="trackingMessage" style="display:none;">Please save this ID for tracking your complaint status.</p>
+        <div id="modalButtons">
+            <button class="btn btn-submit" onclick="closeModal()"><i class="fas fa-home"></i> Go to Home</button>
+            <button class="btn btn-reset ms-2" onclick="trackComplaint()"><i class="fas fa-search"></i> Track Status</button>
+        </div>
     </div>
-  </div>
-
-  <div class="text-center">
-    <button type="submit" class="btn-submit me-2" id="submitBtn">
-      <i class="fas fa-paper-plane me-1"></i> Submit Complaint
-    </button>
-    <button type="button" class="btn-reset" onclick="resetAll()">
-      <i class="fas fa-redo me-1"></i> Reset Form
-    </button>
-  </div>
-</form>
-</div>
 </div>
 
-<!-- Modal -->
-<div class="modal-overlay" id="modal">
-  <div class="modal-box">
-    <div id="mIcon" class="modal-icon-ok"><i class="fas fa-check-circle"></i></div>
-    <h3 id="mTitle">Complaint Registered!</h3>
-    <p id="mMsg">Your complaint has been submitted and is now under review.</p>
-    <div class="cid-box" id="mCid" style="display:none">Complaint ID: <span id="mId"></span></div>
-    <p id="mTrack" class="text-muted" style="display:none;font-size:13px">Please save this ID for tracking your complaint status.</p>
-    <div class="mt-3">
-      <button class="btn-submit me-2" onclick="closeModal()"><i class="fas fa-home me-1"></i> Go to Home</button>
-      <button class="btn-reset" onclick="window.location.href='track.html'"><i class="fas fa-search me-1"></i> Track Status</button>
+<div class="tricolor-strip"></div>
+<footer class="footer">
+    <div class="container">
+        <div class="footer-bottom">
+            <p>&copy; 2026 Government of India | Digital India Initiative | National Informatics Centre (NIC)</p>
+        </div>
     </div>
-  </div>
-</div>
-
-<div class="tricolor"></div>
-<footer class="foot">
-  <div class="container">
-    <div class="foot-bottom">&copy; 2026 Government of India | Digital India Initiative | National Informatics Centre (NIC)</div>
-  </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// ═══════════════════════════════════════════════════
-// DATA  –  All 36 States/UTs with districts & PIN ranges
-// ═══════════════════════════════════════════════════
-const INDIA = {
-  "Andhra Pradesh":      { p:[515001,535003], d:["Anakapalle","Anantapur","Bapatla","Chittoor","East Godavari","Eluru","Guntur","Kadapa","Kakinada","Konaseema","Krishna","Kurnool","Nandyal","Nellore","NTR","Palnadu","Parvathipuram Manyam","Prakasam","Srikakulam","Sri Sathya Sai","Tirupati","Visakhapatnam","Vizianagaram","West Godavari"] },
-  "Arunachal Pradesh":   { p:[790001,792130], d:["Anjaw","Changlang","Dibang Valley","East Kameng","East Siang","Itanagar Capital Complex","Kamle","Kra Daadi","Kurung Kumey","Lepa Rada","Lohit","Longding","Lower Dibang Valley","Lower Siang","Lower Subansiri","Namsai","Pakke Kessang","Papum Pare","Shi Yomi","Siang","Tawang","Tirap","Upper Dibang Valley","Upper Siang","Upper Subansiri","West Kameng","West Siang"] },
-  "Assam":               { p:[781001,788931], d:["Bajali","Barpeta","Biswanath","Bongaigaon","Cachar","Charaideo","Chirang","Darrang","Dhemaji","Dhubri","Dibrugarh","Dima Hasao","Goalpara","Golaghat","Hailakandi","Hojai","Jorhat","Kamrup","Kamrup Metropolitan","Karbi Anglong","Karimganj","Kokrajhar","Lakhimpur","Majuli","Morigaon","Nagaon","Nalbari","Sivasagar","Sonitpur","South Salmara-Mankachar","Tinsukia","Udalguri","West Karbi Anglong"] },
-  "Bihar":               { p:[800001,855117], d:["Araria","Arwal","Aurangabad","Banka","Begusarai","Bhagalpur","Bhojpur","Buxar","Darbhanga","East Champaran","Gaya","Gopalganj","Jamui","Jehanabad","Kaimur","Katihar","Khagaria","Kishanganj","Lakhisarai","Madhepura","Madhubani","Munger","Muzaffarpur","Nalanda","Nawada","Patna","Purnia","Rohtas","Saharsa","Samastipur","Saran","Sheikhpura","Sheohar","Sitamarhi","Siwan","Supaul","Vaishali","West Champaran"] },
-  "Chhattisgarh":        { p:[490001,497778], d:["Balod","Baloda Bazar","Balrampur","Bastar","Bemetara","Bijapur","Bilaspur","Dantewada","Dhamtari","Durg","Gariaband","Gaurela-Pendra-Marwahi","Janjgir-Champa","Jashpur","Kabirdham","Kanker","Khairagarh","Kondagaon","Korba","Koriya","Mahasamund","Manendragarh","Mohla-Manpur","Mungeli","Narayanpur","Raigarh","Raipur","Rajnandgaon","Sakti","Sarangarh-Bilaigarh","Sukma","Surajpur","Surguja"] },
-  "Goa":                 { p:[403001,403731], d:["North Goa","South Goa"] },
-  "Gujarat":             { p:[360001,396590], d:["Ahmedabad","Amreli","Anand","Aravalli","Banaskantha","Bharuch","Bhavnagar","Botad","Chhota Udaipur","Dahod","Dang","Devbhoomi Dwarka","Gandhinagar","Gir Somnath","Jamnagar","Junagadh","Kheda","Kutch","Mahisagar","Mehsana","Morbi","Narmada","Navsari","Panchmahal","Patan","Porbandar","Rajkot","Sabarkantha","Surat","Surendranagar","Tapi","Vadodara","Valsad"] },
-  "Haryana":             { p:[121001,136156], d:["Ambala","Bhiwani","Charkhi Dadri","Faridabad","Fatehabad","Gurugram","Hisar","Jhajjar","Jind","Kaithal","Karnal","Kurukshetra","Mahendragarh","Nuh","Palwal","Panchkula","Panipat","Rewari","Rohtak","Sirsa","Sonipat","Yamunanagar"] },
-  "Himachal Pradesh":    { p:[171001,177601], d:["Bilaspur","Chamba","Hamirpur","Kangra","Kinnaur","Kullu","Lahaul Spiti","Mandi","Shimla","Sirmaur","Solan","Una"] },
-  "Jharkhand":           { p:[814101,835325], d:["Bokaro","Chatra","Deoghar","Dhanbad","Dumka","East Singhbhum","Garhwa","Giridih","Godda","Gumla","Hazaribagh","Jamtara","Khunti","Koderma","Latehar","Lohardaga","Pakur","Palamu","Ramgarh","Ranchi","Sahebganj","Seraikela Kharsawan","Simdega","West Singhbhum"] },
-  "Karnataka":           { p:[560001,591346], d:["Bagalkot","Ballari","Belagavi","Bengaluru Rural","Bengaluru Urban","Bidar","Chamarajanagar","Chikballapur","Chikkamagaluru","Chitradurga","Dakshina Kannada","Davanagere","Dharwad","Gadag","Hassan","Haveri","Kalaburagi","Kodagu","Kolar","Koppal","Mandya","Mysuru","Raichur","Ramanagara","Shivamogga","Tumakuru","Udupi","Uttara Kannada","Vijayapura","Yadgir"] },
-  "Kerala":              { p:[670001,695615], d:["Alappuzha","Ernakulam","Idukki","Kannur","Kasaragod","Kollam","Kottayam","Kozhikode","Malappuram","Palakkad","Pathanamthitta","Thiruvananthapuram","Thrissur","Wayanad"] },
-  "Madhya Pradesh":      { p:[450001,488776], d:["Agar Malwa","Alirajpur","Anuppur","Ashoknagar","Balaghat","Barwani","Betul","Bhind","Bhopal","Burhanpur","Chhatarpur","Chhindwara","Damoh","Datia","Dewas","Dhar","Dindori","Guna","Gwalior","Harda","Hoshangabad","Indore","Jabalpur","Jhabua","Katni","Khandwa","Khargone","Mandla","Mandsaur","Morena","Narsinghpur","Neemuch","Niwari","Panna","Raisen","Rajgarh","Ratlam","Rewa","Sagar","Satna","Sehore","Seoni","Shahdol","Shajapur","Sheopur","Shivpuri","Sidhi","Singrauli","Tikamgarh","Ujjain","Umaria","Vidisha"] },
-  "Maharashtra":         { p:[400001,445401], d:["Ahmednagar","Akola","Amravati","Aurangabad","Beed","Bhandara","Buldhana","Chandrapur","Dhule","Gadchiroli","Gondia","Hingoli","Jalgaon","Jalna","Kolhapur","Latur","Mumbai City","Mumbai Suburban","Nagpur","Nanded","Nandurbar","Nashik","Osmanabad","Palghar","Parbhani","Pune","Raigad","Ratnagiri","Sangli","Satara","Sindhudurg","Solapur","Thane","Wardha","Washim","Yavatmal"] },
-  "Manipur":             { p:[795001,795159], d:["Bishnupur","Chandel","Churachandpur","Imphal East","Imphal West","Jiribam","Kakching","Kamjong","Kangpokpi","Noney","Pherzawl","Senapati","Tamenglong","Tengnoupal","Thoubal","Ukhrul"] },
-  "Meghalaya":           { p:[793001,794115], d:["East Garo Hills","East Jaintia Hills","East Khasi Hills","Eastern West Khasi Hills","North Garo Hills","Ri Bhoi","South Garo Hills","South West Garo Hills","South West Khasi Hills","West Garo Hills","West Jaintia Hills","West Khasi Hills"] },
-  "Mizoram":             { p:[796001,796901], d:["Aizawl","Champhai","Hnahthial","Khawzawl","Kolasib","Lawngtlai","Lunglei","Mamit","Saitual","Serchhip","Siaha"] },
-  "Nagaland":            { p:[797001,798627], d:["Chumoukedima","Dimapur","Kiphire","Kohima","Longleng","Mokokchung","Mon","Niuland","Noklak","Peren","Phek","Shamator","Tseminyu","Tuensang","Wokha","Zunheboto"] },
-  "Odisha":              { p:[751001,770076], d:["Angul","Balangir","Balasore","Bargarh","Bhadrak","Boudh","Cuttack","Deogarh","Dhenkanal","Gajapati","Ganjam","Jagatsinghpur","Jajpur","Jharsuguda","Kalahandi","Kandhamal","Kendrapara","Kendujhar","Khordha","Koraput","Malkangiri","Mayurbhanj","Nabarangpur","Nayagarh","Nuapada","Puri","Rayagada","Sambalpur","Subarnapur","Sundargarh"] },
-  "Punjab":              { p:[140001,152128], d:["Amritsar","Barnala","Bathinda","Faridkot","Fatehgarh Sahib","Fazilka","Ferozepur","Gurdaspur","Hoshiarpur","Jalandhar","Kapurthala","Ludhiana","Malerkotla","Mansa","Moga","Mohali","Muktsar","Pathankot","Patiala","Rupnagar","Sangrur","Shaheed Bhagat Singh Nagar","Tarn Taran"] },
-  "Rajasthan":           { p:[301001,345034], d:["Ajmer","Alwar","Anupgarh","Balotra","Banswara","Baran","Barmer","Beawar","Bharatpur","Bhilwara","Bikaner","Bundi","Chittorgarh","Churu","Dausa","Deeg","Dholpur","Didwana-Kuchaman","Dudu","Dungarpur","Gangapur City","Hanumangarh","Jaipur","Jaipur Rural","Jaisalmer","Jalore","Jhalawar","Jhunjhunu","Jodhpur","Jodhpur Rural","Karauli","Kekri","Khairthal-Tijara","Kotputli-Behror","Kota","Nagaur","Neem Ka Thana","Pali","Phalodi","Pratapgarh","Rajsamand","Salumbar","Sanchore","Sawai Madhopur","Shahpura","Sikar","Sirohi","Sri Ganganagar","Tonk","Udaipur"] },
-  "Sikkim":              { p:[737101,737139], d:["East Sikkim","North Sikkim","Pakyong","Soreng","South Sikkim","West Sikkim"] },
-  "Tamil Nadu":          { p:[600001,643253], d:["Ariyalur","Chengalpattu","Chennai","Coimbatore","Cuddalore","Dharmapuri","Dindigul","Erode","Kallakurichi","Kancheepuram","Kanyakumari","Karur","Krishnagiri","Madurai","Mayiladuthurai","Nagapattinam","Namakkal","Nilgiris","Perambalur","Pudukkottai","Ramanathapuram","Ranipet","Salem","Sivaganga","Tenkasi","Thanjavur","Theni","Thoothukudi","Tiruchirappalli","Tirunelveli","Tirupathur","Tiruppur","Tiruvallur","Tiruvannamalai","Tiruvarur","Vellore","Villupuram","Virudhunagar"] },
-  "Telangana":           { p:[500001,509412], d:["Adilabad","Bhadradri Kothagudem","Hanumakonda","Hyderabad","Jagtial","Jangaon","Jayashankar Bhupalpally","Jogulamba Gadwal","Kamareddy","Karimnagar","Khammam","Kumuram Bheem","Mahabubabad","Mahabubnagar","Mancherial","Medak","Medchal-Malkajgiri","Mulugu","Nagarkurnool","Nalgonda","Narayanpet","Nirmal","Nizamabad","Peddapalli","Rajanna Sircilla","Ranga Reddy","Sangareddy","Siddipet","Suryapet","Vikarabad","Wanaparthy","Warangal","Yadadri Bhuvanagiri"] },
-  "Tripura":             { p:[799001,799290], d:["Dhalai","Gomati","Khowai","North Tripura","Sepahijala","South Tripura","Unakoti","West Tripura"] },
-  "Uttar Pradesh":       { p:[201001,285223], d:["Agra","Aligarh","Ambedkar Nagar","Amethi","Amroha","Auraiya","Ayodhya","Azamgarh","Baghpat","Bahraich","Ballia","Balrampur","Banda","Barabanki","Bareilly","Basti","Bhadohi","Bijnor","Budaun","Bulandshahr","Chandauli","Chitrakoot","Deoria","Etah","Etawah","Farrukhabad","Fatehpur","Firozabad","Gautam Buddh Nagar","Ghaziabad","Ghazipur","Gonda","Gorakhpur","Hamirpur","Hapur","Hardoi","Hathras","Jalaun","Jaunpur","Jhansi","Kannauj","Kanpur Dehat","Kanpur Nagar","Kasganj","Kaushambi","Kheri","Kushinagar","Lalitpur","Lucknow","Maharajganj","Mahoba","Mainpuri","Mathura","Mau","Meerut","Mirzapur","Moradabad","Muzaffarnagar","Pilibhit","Pratapgarh","Prayagraj","Rae Bareli","Rampur","Saharanpur","Sambhal","Sant Kabir Nagar","Shahjahanpur","Shamli","Shravasti","Siddharthnagar","Sitapur","Sonbhadra","Sultanpur","Unnao","Varanasi"] },
-  "Uttarakhand":         { p:[244001,263680], d:["Almora","Bageshwar","Chamoli","Champawat","Dehradun","Haridwar","Nainital","Pauri Garhwal","Pithoragarh","Rudraprayag","Tehri Garhwal","Udham Singh Nagar","Uttarkashi"] },
-  "West Bengal":         { p:[700001,743715], d:["Alipurduar","Bankura","Birbhum","Cooch Behar","Dakshin Dinajpur","Darjeeling","Hooghly","Howrah","Jalpaiguri","Jhargram","Kalimpong","Kolkata","Malda","Murshidabad","Nadia","North 24 Parganas","Paschim Bardhaman","Paschim Medinipur","Purba Bardhaman","Purba Medinipur","Purulia","South 24 Parganas","Uttar Dinajpur"] },
-  "Andaman and Nicobar Islands": { p:[744101,744304], d:["Nicobar","North and Middle Andaman","South Andaman"] },
-  "Chandigarh":          { p:[160001,160102], d:["Chandigarh"] },
-  "Dadra & Nagar Haveli and Daman & Diu": { p:[362520,396230], d:["Dadra and Nagar Haveli","Daman","Diu"] },
-  "Delhi":               { p:[110001,110096], d:["Central Delhi","East Delhi","New Delhi","North Delhi","North East Delhi","North West Delhi","Shahdara","South Delhi","South East Delhi","South West Delhi","West Delhi"] },
-  "Jammu and Kashmir":   { p:[180001,194404], d:["Anantnag","Bandipora","Baramulla","Budgam","Doda","Ganderbal","Jammu","Kathua","Kishtwar","Kulgam","Kupwara","Poonch","Pulwama","Rajouri","Ramban","Reasi","Samba","Shopian","Srinagar","Udhampur"] },
-  "Ladakh":              { p:[194101,194402], d:["Kargil","Leh"] },
-  "Lakshadweep":         { p:[682551,682559], d:["Lakshadweep"] },
-  "Puducherry":          { p:[533464,607402], d:["Karaikal","Mahe","Puducherry","Yanam"] }
-};
 
-const DEPTS = [
-  {v:"Public Works",   l:"Public Works Department"},
-  {v:"Health",         l:"Health & Family Welfare"},
-  {v:"Education",      l:"Education Department"},
-  {v:"Police",         l:"Police Department"},
-  {v:"Revenue",        l:"Revenue Department"},
-  {v:"Electricity",    l:"Electricity Board"},
-  {v:"Water",          l:"Water Supply Department"},
-  {v:"Transport",      l:"Transport Department"},
-  {v:"Municipal",      l:"Municipal Corporation"},
-  {v:"Agriculture",    l:"Agriculture Department"},
-  {v:"Forest",         l:"Forest Department"},
-  {v:"Social Welfare", l:"Social Welfare Department"}
-];
+    // ─── API Endpoints ───────────────────────────────────────────────────────────
+    const API_URL     = 'https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/complaints';
+    const SUGGEST_API = 'https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/suggest-department';
 
-const CATS = [
-  {v:"Infrastructure",   l:"Infrastructure Issues"},
-  {v:"Service Delay",    l:"Service Delay"},
-  {v:"Corruption",       l:"Corruption / Misconduct"},
-  {v:"Document",         l:"Document / Certificate Issues"},
-  {v:"Financial",        l:"Financial Issues"},
-  {v:"Water Issue",      l:"Water Supply Issue"},
-  {v:"Electricity Issue",l:"Electricity Issue"},
-  {v:"Sanitation",       l:"Sanitation & Cleanliness"},
-  {v:"Road",             l:"Road / Pothole Issue"},
-  {v:"Other",            l:"Other"}
-];
+    // ─── Smart Auto-detection ────────────────────────────────────────────────────
+    let suggestionTimeout = null;
 
-const PRIS = [
-  {v:"Low",      l:"🟢 Low"},
-  {v:"Medium",   l:"🔵 Medium"},
-  {v:"High",     l:"🟠 High"},
-  {v:"Critical", l:"🔴 Critical"}
-];
-
-// ═══════════════════════════════════════════════════
-// SEARCHABLE SELECT ENGINE
-// ═══════════════════════════════════════════════════
-const selects = {};
-
-function makeSelect(cfg) {
-  const {id, items, searchId} = cfg;
-  const wrap  = document.getElementById(id+'Wrap');
-  const disp  = document.getElementById(id+'Disp');
-  const hidden= document.getElementById(id);
-  const drop  = document.getElementById(id+'Drop');
-  const opts  = document.getElementById(id+'Opts');
-  const qEl   = searchId ? document.getElementById(searchId) : null;
-
-  let currentItems = items;
-
-  function render(q='') {
-    opts.innerHTML='';
-    const lq=q.toLowerCase();
-    let n=0;
-    currentItems.forEach(it=>{
-      const lbl=it.l||it; const val=it.v||it;
-      if(lq&&!lbl.toLowerCase().includes(lq)&&!val.toLowerCase().includes(lq)) return;
-      const d=document.createElement('div');
-      d.className='sel-option'+(hidden.value===val?' selected':'');
-      d.textContent=lbl; d.dataset.v=val; d.dataset.l=lbl;
-      d.onclick=()=>pick(val,lbl);
-      opts.appendChild(d); n++;
+    document.getElementById('description').addEventListener('input', function () {
+        clearTimeout(suggestionTimeout);
+        const val = this.value.trim();
+        if (val.length < 10) {
+            hideAutoCard();
+            return;
+        }
+        // Debounce: trigger 800ms after user stops typing
+        suggestionTimeout = setTimeout(() => fetchSuggestion(val), 800);
     });
-    if(!n){const d=document.createElement('div');d.className='sel-option no-results';d.textContent='No results found';opts.appendChild(d);}
-  }
 
-  function pick(val,lbl){
-    hidden.value=val; disp.value=lbl;
-    disp.classList.remove('is-invalid');
-    close();
-    wrap.dispatchEvent(new CustomEvent('sel-change',{detail:{v:val,l:lbl}}));
-  }
+    document.getElementById('description').addEventListener('blur', function () {
+        const val = this.value.trim();
+        if (val.length >= 10) {
+            clearTimeout(suggestionTimeout);
+            fetchSuggestion(val);
+        }
+    });
 
-  function open(){wrap.classList.add('open');if(qEl){qEl.value='';qEl.focus();}render();}
-  function close(){wrap.classList.remove('open');if(qEl)qEl.value='';}
-
-  disp.addEventListener('click',e=>{e.stopPropagation();wrap.classList.contains('open')?close():open();});
-  if(qEl) qEl.addEventListener('input',()=>render(qEl.value));
-  document.addEventListener('click',e=>{if(!wrap.contains(e.target))close();});
-
-  render();
-
-  const api = {
-    set(val){
-      const it=currentItems.find(i=>(i.v||i)===val);
-      if(it){hidden.value=val;disp.value=it.l||it;disp.classList.remove('is-invalid');flash(disp);}
-    },
-    reload(newItems){currentItems=newItems;hidden.value='';disp.value='';render();}
-  };
-  selects[id]=api;
-  return api;
-}
-
-function flash(el){el.classList.remove('auto-filled');void el.offsetWidth;el.classList.add('auto-filled');}
-
-// Init static selects
-makeSelect({id:'state', items:Object.keys(INDIA).sort().map(s=>({v:s,l:s})), searchId:'stateQ'});
-makeSelect({id:'dist',  items:[], searchId:'distQ'});
-makeSelect({id:'dept',  items:DEPTS, searchId:'deptQ'});
-makeSelect({id:'cat',   items:CATS,  searchId:'catQ'});
-makeSelect({id:'pri',   items:PRIS,  searchId:null});
-
-// State → reload districts
-document.getElementById('stateWrap').addEventListener('sel-change', e=>{
-  const data=INDIA[e.detail.v];
-  if(!data) return;
-  selects['dist'].reload(data.d.map(d=>({v:d,l:d})));
-  document.getElementById('pincode').value='';
-  clearPin();
-});
-
-// PIN validation
-document.getElementById('pincode').addEventListener('input',function(){
-  this.value=this.value.replace(/\D/g,'');
-  if(this.value.length!==6){clearPin();return;}
-  const st=document.getElementById('state').value;
-  if(!st||!INDIA[st]){clearPin();return;}
-  const [lo,hi]=INDIA[st].p, n=parseInt(this.value,10);
-  const h=document.getElementById('pinHint');
-  if(n>=lo&&n<=hi){h.textContent='✓ Valid PIN for '+st;h.className='pin-hint ok';this.classList.remove('is-invalid');}
-  else{h.textContent='✗ PIN may not belong to '+st+' (range '+lo+'–'+hi+')';h.className='pin-hint bad';}
-});
-function clearPin(){const h=document.getElementById('pinHint');h.className='pin-hint';h.textContent='';}
-
-// ═══════════════════════════════════════════════════
-// AUTO-SUGGESTION
-// ═══════════════════════════════════════════════════
-const SUGGEST_API='https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/suggest-department';
-const SUBMIT_API ='https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/complaints';
-
-document.getElementById('description').addEventListener('blur',async function(){
-  const desc=this.value.trim();
-  if(desc.length<10) return;
-  const ld=document.getElementById('sLoad'), bd=document.getElementById('sBadge');
-  bd.classList.remove('on'); ld.classList.add('on');
-  try{
-    const r=await fetch(SUGGEST_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({description:desc})});
-    if(!r.ok) throw new Error(r.status);
-    const d=await r.json();
-    if(d.department) selects['dept'].set(d.department);
-    if(d.category)   selects['cat'].set(d.category);
-    if(d.priority)   selects['pri'].set(d.priority);
-    // chips
-    const ch=document.getElementById('sChips'); ch.innerHTML='';
-    if(d.department) ch.innerHTML+=`<span class="chip chip-dept"><i class="fas fa-building me-1"></i>${d.department}</span>`;
-    if(d.category)   ch.innerHTML+=`<span class="chip chip-cat"><i class="fas fa-tag me-1"></i>${d.category}</span>`;
-    if(d.priority)   ch.innerHTML+=`<span class="chip chip-${d.priority}"><i class="fas fa-flag me-1"></i>Priority: ${d.priority}</span>`;
-    bd.classList.add('on');
-  }catch(e){console.log('suggest err',e);}
-  finally{ld.classList.remove('on');}
-});
-
-// ═══════════════════════════════════════════════════
-// VALIDATION & SUBMIT
-// ═══════════════════════════════════════════════════
-document.getElementById('cForm').addEventListener('submit',async function(e){
-  e.preventDefault();
-  document.querySelectorAll('.is-invalid').forEach(el=>el.classList.remove('is-invalid'));
-  document.querySelectorAll('.invalid-feedback').forEach(el=>el.style.display='');
-  let ok=true;
-
-  function chk(id,test){
-    const el=document.getElementById(id);
-    if(!el) return;
-    if(!test(el.value.trim())){el.classList.add('is-invalid');ok=false;}
-  }
-  function chkSel(id,errId){
-    if(!document.getElementById(id).value){
-      document.getElementById(id+'Disp').classList.add('is-invalid');
-      const e=document.getElementById(errId); if(e) e.style.display='block';
-      ok=false;
+    async function fetchSuggestion(description) {
+        showAnalyzing(true);
+        try {
+            const res = await fetch(SUGGEST_API, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ description })
+            });
+            const data = await res.json();
+            applyAutoDetection(data);
+        } catch (err) {
+            console.log('Suggestion error:', err);
+            // Fallback: use client-side keyword detection
+            applyAutoDetection(clientSideFallback(description));
+        } finally {
+            showAnalyzing(false);
+        }
     }
-  }
 
-  chk('fullName', v=>v.length>=3);
-  chk('email',    v=>/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v));
-  chk('mobile',   v=>/^[0-9]{10}$/.test(v));
-  const aEl=document.getElementById('aadhaar');
-  if(aEl.value.trim()&&!/^[0-9]{12}$/.test(aEl.value.trim())){aEl.classList.add('is-invalid');ok=false;}
-  chk('address',  v=>v.length>=10);
-  chkSel('state','stateErr');
-  chkSel('dist', 'distErr');
-  chk('pincode',  v=>/^[0-9]{6}$/.test(v));
-  chkSel('dept', 'deptErr');
-  chkSel('cat',  'catErr');
-  chkSel('pri',  'priErr');
-  chk('subject',     v=>v.length>=5);
-  chk('description', v=>v.length>=50);
-  const decl=document.getElementById('declaration');
-  if(!decl.checked){decl.classList.add('is-invalid');ok=false;}
+    // Client-side fallback (mirrors the Lambda logic)
+    function clientSideFallback(text) {
+        const t = text.toLowerCase();
+        let department = 'General', category = 'Other', priority = 'Medium';
 
-  if(!ok){document.querySelector('.is-invalid')?.scrollIntoView({behavior:'smooth',block:'center'});return;}
+        if (/road|pothole|bridge|pavement|footpath/.test(t))          { department = 'Public Works';   category = 'Infrastructure'; }
+        else if (/hospital|medicine|doctor|health|patient|ambulance/.test(t)) { department = 'Health';        category = 'Medical'; }
+        else if (/school|teacher|student|education|college/.test(t))  { department = 'Education';      category = 'Education Issue'; }
+        else if (/police|theft|crime|robbery|murder|assault/.test(t)) { department = 'Police';         category = 'Law & Order'; }
+        else if (/water|pipe|drainage|sewage|tap/.test(t))            { department = 'Water Supply';   category = 'Water Issue'; }
+        else if (/electric|power|light|transformer|voltage/.test(t))  { department = 'Electricity Board'; category = 'Power Issue'; }
+        else if (/revenue|land|property|tax|certificate|ration/.test(t)) { department = 'Revenue';    category = 'Document Issue'; }
+        else if (/transport|bus|auto|vehicle|licence|permit/.test(t)) { department = 'Transport';     category = 'Transport Issue'; }
 
-  const payload={
-    name:document.getElementById('fullName').value.trim(),
-    email:document.getElementById('email').value.trim(),
-    mobile:document.getElementById('mobile').value.trim(),
-    aadhaar:document.getElementById('aadhaar').value.trim()||null,
-    address:document.getElementById('address').value.trim(),
-    state:document.getElementById('state').value,
-    district:document.getElementById('dist').value,
-    pincode:document.getElementById('pincode').value.trim(),
-    department:document.getElementById('dept').value,
-    category:document.getElementById('cat').value,
-    priority:document.getElementById('pri').value,
-    subject:document.getElementById('subject').value.trim(),
-    description:document.getElementById('description').value.trim(),
-    timestamp:new Date().toISOString()
-  };
+        if (/fire|accident|emergency|flood|disaster|explosion/.test(t)) priority = 'Critical';
+        else if (/leak|electric shock|danger|urgent|collapse/.test(t))  priority = 'High';
+        else if (/not working|broken|damaged|missing|delay/.test(t))    priority = 'Medium';
+        else priority = 'Low';
 
-  const btn=document.getElementById('submitBtn'),orig=btn.innerHTML;
-  btn.disabled=true; btn.innerHTML='<span class="spinner-border spinner-sm me-2"></span>Submitting…';
+        return { department, category, priority };
+    }
 
-  try{
-    const r=await fetch(SUBMIT_API,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(payload)});
-    if(!r.ok) throw new Error('HTTP '+r.status);
-    const res=await r.json();
-    showModal(true,res.complaintId||res.id);
-    resetAll();
-  }catch(err){showModal(false,null,err.message);}
-  finally{btn.disabled=false;btn.innerHTML=orig;}
-});
+    function applyAutoDetection(data) {
+        // Update hidden fields
+        document.getElementById('department').value = data.department || 'General';
+        document.getElementById('category').value   = data.category   || 'Other';
+        document.getElementById('priority').value   = data.priority   || 'Medium';
 
-function resetAll(){
-  document.getElementById('cForm').reset();
-  ['state','dist','dept','cat','pri'].forEach(id=>{
-    document.getElementById(id).value='';
-    document.getElementById(id+'Disp').value='';
-    document.getElementById(id+'Disp').classList.remove('is-invalid','auto-filled');
-  });
-  document.getElementById('sBadge').classList.remove('on');
-  document.getElementById('sLoad').classList.remove('on');
-  clearPin();
-}
+        // Build tag display
+        const pClass = 'tag-priority-' + (data.priority || 'medium').toLowerCase();
+        const tagsHtml = `
+            <span class="auto-detect-tag tag-department">
+                <i class="fas fa-building"></i> ${data.department}
+            </span>
+            <span class="auto-detect-tag tag-category">
+                <i class="fas fa-tag"></i> ${data.category}
+            </span>
+            <span class="auto-detect-tag ${pClass}">
+                <i class="fas fa-flag"></i> Priority: ${data.priority}
+            </span>
+        `;
+        document.getElementById('autoDetectTags').innerHTML = tagsHtml;
+        document.getElementById('autoDetectCard').classList.add('show');
+    }
 
-function showModal(ok,id,err){
-  const m=document.getElementById('modal');
-  document.getElementById('mIcon').innerHTML=ok?'<i class="fas fa-check-circle"></i>':'<i class="fas fa-times-circle"></i>';
-  document.getElementById('mIcon').className=ok?'modal-icon-ok':'modal-icon-err';
-  document.getElementById('mTitle').textContent=ok?'Complaint Registered!':'Submission Failed';
-  document.getElementById('mMsg').textContent=ok?'Your complaint is now under review.'
-    :'Could not submit your complaint. Please try again.'+(err?' ('+err+')':'');
-  document.getElementById('mCid').style.display=ok?'block':'none';
-  document.getElementById('mTrack').style.display=ok?'block':'none';
-  if(ok) document.getElementById('mId').textContent=id;
-  m.style.display='flex';
-}
-function closeModal(){document.getElementById('modal').style.display='none';window.location.href='index.html';}
+    function hideAutoCard() {
+        document.getElementById('autoDetectCard').classList.remove('show');
+    }
 
-// Inline live validation
-document.querySelectorAll('input:not([readonly]),textarea').forEach(el=>{
-  el.addEventListener('blur',function(){if(this.hasAttribute('required')&&!this.value.trim())this.classList.add('is-invalid');else this.classList.remove('is-invalid');});
-  el.addEventListener('input',function(){if(this.classList.contains('is-invalid')&&this.value.trim())this.classList.remove('is-invalid');});
-});
+    function showAnalyzing(state) {
+        const el = document.getElementById('analyzingIndicator');
+        el.classList.toggle('show', state);
+    }
+
+    // ─── Reset also clears auto-detect card ─────────────────────────────────────
+    document.getElementById('resetBtn').addEventListener('click', function () {
+        hideAutoCard();
+        document.getElementById('department').value = 'General';
+        document.getElementById('category').value   = 'Other';
+        document.getElementById('priority').value   = 'Medium';
+    });
+
+    // ─── Form Validation & Submission ───────────────────────────────────────────
+    document.getElementById('complaintForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+        const form = e.target;
+        let isValid = true;
+
+        // Clear previous validation
+        form.querySelectorAll('input, select, textarea').forEach(el => el.classList.remove('is-invalid'));
+
+        const check = (id, fn) => {
+            const el = document.getElementById(id);
+            if (!fn(el.value)) { el.classList.add('is-invalid'); isValid = false; }
+        };
+
+        check('fullName',    v => v.trim().length >= 3);
+        check('email',       v => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v));
+        check('mobile',      v => /^[0-9]{10}$/.test(v));
+        check('address',     v => v.trim().length >= 10);
+        check('state',       v => !!v);
+        check('district',    v => v.trim().length >= 2);
+        check('pincode',     v => /^[0-9]{6}$/.test(v));
+        check('subject',     v => v.trim().length >= 5);
+        check('description', v => v.trim().length >= 50);
+
+        // Aadhaar optional
+        const aadhaar = document.getElementById('aadhaar');
+        if (aadhaar.value && !/^[0-9]{12}$/.test(aadhaar.value)) {
+            aadhaar.classList.add('is-invalid');
+            isValid = false;
+        }
+
+        // Declaration
+        const declaration = document.getElementById('declaration');
+        if (!declaration.checked) {
+            declaration.classList.add('is-invalid');
+            isValid = false;
+        }
+
+        if (!isValid) {
+            const firstErr = form.querySelector('.is-invalid');
+            if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            return;
+        }
+
+        // Build payload
+        const complaintData = {
+            name:        document.getElementById('fullName').value.trim(),
+            mobile:      document.getElementById('mobile').value.trim(),
+            email:       document.getElementById('email').value.trim(),
+            aadhaar:     document.getElementById('aadhaar').value.trim() || null,
+            address:     document.getElementById('address').value.trim(),
+            state:       document.getElementById('state').value,
+            district:    document.getElementById('district').value.trim(),
+            pincode:     document.getElementById('pincode').value.trim(),
+            department:  document.getElementById('department').value,
+            category:    document.getElementById('category').value,
+            subject:     document.getElementById('subject').value.trim(),
+            description: document.getElementById('description').value.trim(),
+            priority:    document.getElementById('priority').value,
+            timestamp:   new Date().toISOString()
+        };
+
+        const submitBtn = document.getElementById('submitBtn');
+        const original  = submitBtn.innerHTML;
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Submitting…';
+
+        try {
+            const response = await fetch(API_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(complaintData)
+            });
+            if (!response.ok) throw new Error(`HTTP ${response.status}`);
+            const result = await response.json();
+            showSuccessModal(result.complaintId || result.id);
+            form.reset();
+            hideAutoCard();
+        } catch (error) {
+            console.error('Submit error:', error);
+            showErrorModal(error.message);
+        } finally {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = original;
+        }
+    });
+
+    // ─── Modal helpers ───────────────────────────────────────────────────────────
+    function showSuccessModal(complaintId) {
+        document.getElementById('modalIcon').innerHTML = '<i class="fas fa-check-circle"></i>';
+        document.getElementById('modalIcon').className = 'success-icon';
+        document.getElementById('modalTitle').textContent   = 'Complaint Registered Successfully!';
+        document.getElementById('modalMessage').textContent = 'Your complaint has been submitted and is now under review.';
+        document.getElementById('generatedId').textContent  = complaintId;
+        document.getElementById('complaintIdContainer').style.display = 'block';
+        document.getElementById('trackingMessage').style.display      = 'block';
+        document.getElementById('successModal').style.display         = 'flex';
+    }
+
+    function showErrorModal(errorMessage) {
+        document.getElementById('modalIcon').innerHTML = '<i class="fas fa-times-circle"></i>';
+        document.getElementById('modalIcon').className = 'error-icon';
+        document.getElementById('modalTitle').textContent   = 'Submission Failed';
+        document.getElementById('modalMessage').textContent = 'We encountered an error while submitting your complaint. Please try again later.' + (errorMessage ? ' Error: ' + errorMessage : '');
+        document.getElementById('complaintIdContainer').style.display = 'none';
+        document.getElementById('trackingMessage').style.display      = 'none';
+        document.getElementById('successModal').style.display         = 'flex';
+    }
+
+    function closeModal()    { document.getElementById('successModal').style.display = 'none'; window.location.href = 'index.html'; }
+    function trackComplaint(){ window.location.href = 'track.html'; }
+
+    // ─── Real-time inline validation ────────────────────────────────────────────
+    document.querySelectorAll('input, select, textarea').forEach(input => {
+        input.addEventListener('blur', function () {
+            if (this.hasAttribute('required') && !this.value) this.classList.add('is-invalid');
+            else this.classList.remove('is-invalid');
+        });
+        input.addEventListener('input', function () {
+            if (this.classList.contains('is-invalid') && this.value) this.classList.remove('is-invalid');
+        });
+    });
+
 </script>
 </body>
 </html>
