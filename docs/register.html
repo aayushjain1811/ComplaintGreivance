@@ -640,6 +640,7 @@
         }
 
         // Build payload
+        const submittedAt = new Date().toISOString();
         const complaintData = {
             name:        document.getElementById('fullName').value.trim(),
             mobile:      document.getElementById('mobile').value.trim(),
@@ -654,7 +655,15 @@
             subject:     document.getElementById('subject').value.trim(),
             description: document.getElementById('description').value.trim(),
             priority:    document.getElementById('priority').value,
-            timestamp:   new Date().toISOString()
+            status:      'Submitted',
+            timestamp:   submittedAt,
+            timeline: [
+                {
+                    status:      'Submitted',
+                    time:        submittedAt,
+                    description: 'Complaint successfully registered in the system.'
+                }
+            ]
         };
 
         const submitBtn = document.getElementById('submitBtn');

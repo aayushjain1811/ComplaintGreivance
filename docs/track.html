@@ -17,11 +17,7 @@
             --white: #FFFFFF;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Roboto', 'Noto Sans Devanagari', sans-serif;
@@ -34,51 +30,15 @@
             background: linear-gradient(to right, #FF9933 0%, #FF9933 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #138808 66.66%, #138808 100%);
         }
 
-        .header-top {
-            background-color: var(--white);
-            padding: 15px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
+        .header-top { background-color: var(--white); padding: 15px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        .emblem-container { display: flex; align-items: center; gap: 15px; }
+        .emblem-icon { font-size: 50px; color: var(--primary); }
+        .emblem-text h1 { font-size: 20px; font-weight: 700; color: var(--primary); margin: 0; }
+        .emblem-text p  { font-size: 14px; color: #666; margin: 0; }
 
-        .emblem-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .emblem-icon {
-            font-size: 50px;
-            color: var(--primary);
-        }
-
-        .emblem-text h1 {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--primary);
-            margin: 0;
-        }
-
-        .emblem-text p {
-            font-size: 14px;
-            color: #666;
-            margin: 0;
-        }
-
-        .navbar {
-            background-color: var(--primary);
-            padding: 0;
-        }
-
-        .navbar-nav .nav-link {
-            color: var(--white) !important;
-            padding: 15px 20px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .navbar-nav .nav-link:hover {
-            background-color: rgba(255,255,255,0.1);
-        }
+        .navbar { background-color: var(--primary); padding: 0; }
+        .navbar-nav .nav-link { color: var(--white) !important; padding: 15px 20px; font-weight: 500; transition: all 0.3s ease; }
+        .navbar-nav .nav-link:hover { background-color: rgba(255,255,255,0.1); }
 
         .page-header {
             background: linear-gradient(135deg, var(--primary) 0%, #1a4d8f 100%);
@@ -86,13 +46,9 @@
             padding: 40px 0;
             margin-bottom: 40px;
         }
+        .page-header h2 { font-size: 32px; font-weight: 700; margin-bottom: 10px; }
 
-        .page-header h2 {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
+        /* ── Search Box ─────────────────────────────────────────────────────── */
         .search-container {
             background-color: var(--white);
             border-radius: 10px;
@@ -109,10 +65,9 @@
             font-size: 16px;
             transition: all 0.3s ease;
         }
-
         .search-form .form-control:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 0.2rem rgba(10, 46, 92, 0.15);
+            box-shadow: 0 0 0 0.2rem rgba(10,46,92,0.15);
         }
 
         .btn-track {
@@ -125,24 +80,14 @@
             border-radius: 5px;
             transition: all 0.3s ease;
         }
-
-        .btn-track:hover {
+        .btn-track:hover:not(:disabled) {
             background-color: #e68a2e;
             transform: translateY(-2px);
             box-shadow: 0 5px 15px rgba(255,153,51,0.4);
         }
+        .btn-track:disabled { background-color: #ccc; cursor: not-allowed; transform: none; }
 
-        .btn-track:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .loading-spinner {
-            display: none;
-            margin-left: 10px;
-        }
-
+        /* ── Result Container ───────────────────────────────────────────────── */
         .result-container {
             display: none;
             background-color: var(--white);
@@ -156,16 +101,11 @@
         .complaint-header {
             background: linear-gradient(135deg, var(--primary) 0%, #1a4d8f 100%);
             color: var(--white);
-            padding: 20px;
+            padding: 20px 25px;
             border-radius: 8px;
             margin-bottom: 30px;
         }
-
-        .complaint-id-display {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
+        .complaint-id-display { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
 
         .complaint-meta {
             display: grid;
@@ -173,138 +113,228 @@
             gap: 15px;
             margin-bottom: 30px;
         }
-
         .meta-item {
             background-color: #f8f9fa;
             padding: 15px;
             border-radius: 8px;
             border-left: 4px solid var(--accent);
         }
+        .meta-label { font-size: 12px; color: #666; margin-bottom: 5px; }
+        .meta-value { font-size: 16px; font-weight: 600; color: var(--primary); }
 
-        .meta-label {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 5px;
+        /* Status badges */
+        .status-badge { display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 14px; font-weight: 600; }
+        .status-submitted    { background-color: #0dcaf0; color: #000; }
+        .status-assigned     { background-color: #6f42c1; color: #fff; }
+        .status-under-review { background-color: #ffc107; color: #000; }
+        .status-in-progress  { background-color: #0d6efd; color: #fff; }
+        .status-resolved     { background-color: var(--success); color: #fff; }
+        .status-closed       { background-color: #6c757d; color: #fff; }
+
+        /* Priority badges */
+        .priority-critical { color: #b00020; font-weight: 700; }
+        .priority-high     { color: #b84800; font-weight: 600; }
+        .priority-medium   { color: #1a4d9e; }
+        .priority-low      { color: #186018; }
+
+        /* ── Complaint Details ───────────────────────────────────────────────── */
+        .complaint-details {
+            margin-top: 30px;
+            padding: 20px 25px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
         }
+        .complaint-details h5 { color: var(--primary); margin-bottom: 20px; font-weight: 700; }
+        .detail-row { display: flex; padding: 10px 0; border-bottom: 1px solid #ddd; }
+        .detail-row:last-child { border-bottom: none; }
+        .detail-label { flex: 0 0 200px; font-weight: 600; color: #666; }
+        .detail-value { flex: 1; color: #333; }
 
-        .meta-value {
-            font-size: 16px;
-            font-weight: 600;
-            color: var(--primary);
+        /* ── Progress Steps (top bar) ───────────────────────────────────────── */
+        .progress-section {
+            margin: 35px 0 10px;
         }
-
-        .status-badge {
-            display: inline-block;
-            padding: 5px 15px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .status-submitted {
-            background-color: #0dcaf0;
-            color: var(--white);
-        }
-
-        .status-under-review {
-            background-color: #ffc107;
-            color: #000;
-        }
-
-        .status-in-progress {
-            background-color: #0d6efd;
-            color: var(--white);
-        }
-
-        .status-resolved {
-            background-color: var(--success);
-            color: var(--white);
-        }
-
-        .status-closed {
-            background-color: #6c757d;
-            color: var(--white);
-        }
-
-        .timeline-section {
-            margin-top: 40px;
-        }
-
-        .timeline-title {
-            font-size: 24px;
+        .progress-section h4 {
+            font-size: 20px;
             font-weight: 700;
             color: var(--primary);
-            margin-bottom: 30px;
+            margin-bottom: 24px;
+        }
+
+        .steps-bar {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            position: relative;
+            padding: 0 10px;
+            margin-bottom: 10px;
+        }
+
+        /* connector line behind steps */
+        .steps-bar::before {
+            content: '';
+            position: absolute;
+            top: 18px;
+            left: 10%;
+            right: 10%;
+            height: 3px;
+            background: #ddd;
+            z-index: 0;
+        }
+
+        .step-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            flex: 1;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step-circle {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 3px solid #ddd;
+            background: var(--white);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 15px;
+            color: #bbb;
+            transition: all 0.4s ease;
+            position: relative;
+        }
+
+        .step-item.done .step-circle {
+            background: var(--success);
+            border-color: var(--success);
+            color: var(--white);
+            box-shadow: 0 0 0 4px rgba(19,136,8,0.15);
+        }
+
+        .step-item.active .step-circle {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: var(--white);
+            box-shadow: 0 0 0 5px rgba(255,153,51,0.25);
+            animation: pulse 1.8s infinite;
+        }
+
+        .step-label {
+            margin-top: 8px;
+            font-size: 11px;
+            font-weight: 600;
+            color: #999;
+            text-align: center;
+            max-width: 80px;
+            line-height: 1.3;
+        }
+
+        .step-item.done   .step-label { color: var(--success); }
+        .step-item.active .step-label { color: var(--accent); }
+
+        /* connector fill for completed steps */
+        .step-connector {
+            position: absolute;
+            top: 18px;
+            left: 50%;
+            width: 100%;
+            height: 3px;
+            background: #ddd;
+            z-index: 0;
+            transform: translateY(-50%);
+        }
+        .step-item.done .step-connector  { background: var(--success); }
+        .step-item.active .step-connector { background: linear-gradient(to right, var(--success), #ddd); }
+        .step-item:last-child .step-connector { display: none; }
+
+        /* ── Detailed Timeline ──────────────────────────────────────────────── */
+        .timeline-section { margin-top: 40px; }
+        .timeline-section h4 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 28px;
         }
 
         .timeline {
             position: relative;
-            padding-left: 40px;
+            padding-left: 50px;
         }
-
         .timeline::before {
             content: '';
             position: absolute;
-            left: 15px;
+            left: 18px;
             top: 0;
             bottom: 0;
-            width: 2px;
-            background-color: #ddd;
+            width: 3px;
+            background: linear-gradient(to bottom, var(--success), #ddd);
+            border-radius: 2px;
         }
 
         .timeline-item {
             position: relative;
-            padding-bottom: 30px;
-            animation: slideInLeft 0.6s ease;
+            padding-bottom: 28px;
+            animation: slideInLeft 0.5s ease both;
         }
-
-        .timeline-item:last-child {
-            padding-bottom: 0;
-        }
+        .timeline-item:last-child { padding-bottom: 0; }
 
         .timeline-dot {
             position: absolute;
-            left: -33px;
-            top: 0;
-            width: 30px;
-            height: 30px;
+            left: -39px;
+            top: 2px;
+            width: 34px;
+            height: 34px;
             border-radius: 50%;
-            background-color: var(--accent);
-            border: 4px solid var(--white);
-            box-shadow: 0 0 0 2px var(--accent);
+            background: var(--success);
+            border: 3px solid var(--white);
+            box-shadow: 0 0 0 2px var(--success);
             display: flex;
             align-items: center;
             justify-content: center;
             color: var(--white);
-            font-size: 14px;
+            font-size: 13px;
+        }
+
+        .timeline-item.pending .timeline-dot {
+            background: #ddd;
+            box-shadow: 0 0 0 2px #ccc;
+            color: #aaa;
+        }
+
+        .timeline-item.current .timeline-dot {
+            background: var(--accent);
+            box-shadow: 0 0 0 3px rgba(255,153,51,0.3);
+            animation: pulse 1.8s infinite;
         }
 
         .timeline-content {
-            background-color: #f8f9fa;
-            padding: 20px;
+            background: #f8f9fa;
+            padding: 16px 20px;
             border-radius: 8px;
-            border-left: 4px solid var(--accent);
+            border-left: 4px solid var(--success);
+            transition: all 0.3s ease;
+        }
+        .timeline-item.pending .timeline-content  { border-left-color: #ddd; background: #fafafa; }
+        .timeline-item.current .timeline-content  { border-left-color: var(--accent); background: #fff8f0; }
+
+        .timeline-date   { font-size: 12px; color: #888; margin-bottom: 5px; }
+        .timeline-status { font-size: 17px; font-weight: 700; color: var(--primary); margin-bottom: 5px; }
+        .timeline-item.pending .timeline-status { color: #aaa; }
+        .timeline-desc   { font-size: 14px; color: #666; line-height: 1.6; }
+
+        .timeline-pending-badge {
+            display: inline-block;
+            background: #eee;
+            color: #999;
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            margin-top: 4px;
         }
 
-        .timeline-date {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 8px;
-        }
-
-        .timeline-status {
-            font-size: 18px;
-            font-weight: 600;
-            color: var(--primary);
-            margin-bottom: 8px;
-        }
-
-        .timeline-description {
-            font-size: 14px;
-            color: #666;
-            line-height: 1.6;
-        }
-
+        /* ── Error ──────────────────────────────────────────────────────────── */
         .error-message {
             display: none;
             background-color: #f8d7da;
@@ -316,39 +346,8 @@
             animation: shake 0.5s ease;
         }
 
-        .complaint-details {
-            margin-top: 30px;
-            padding: 20px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
-        }
-
-        .detail-row {
-            display: flex;
-            padding: 10px 0;
-            border-bottom: 1px solid #ddd;
-        }
-
-        .detail-row:last-child {
-            border-bottom: none;
-        }
-
-        .detail-label {
-            flex: 0 0 200px;
-            font-weight: 600;
-            color: #666;
-        }
-
-        .detail-value {
-            flex: 1;
-            color: #333;
-        }
-
-        .action-buttons {
-            margin-top: 30px;
-            text-align: center;
-        }
-
+        /* ── Action Buttons ─────────────────────────────────────────────────── */
+        .action-buttons { margin-top: 30px; text-align: center; }
         .btn-secondary-custom {
             background-color: var(--primary);
             border: none;
@@ -360,386 +359,413 @@
             transition: all 0.3s ease;
             margin: 5px;
         }
+        .btn-secondary-custom:hover { background-color: #1a4d8f; transform: translateY(-2px); }
 
-        .btn-secondary-custom:hover {
-            background-color: #1a4d8f;
-            transform: translateY(-2px);
-        }
+        /* ── Footer ─────────────────────────────────────────────────────────── */
+        .footer { background-color: var(--primary); color: var(--white); padding: 40px 0 20px; margin-top: 40px; }
+        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px; text-align: center; font-size: 14px; }
 
-        .footer {
-            background-color: var(--primary);
-            color: var(--white);
-            padding: 40px 0 20px;
-            margin-top: 40px;
-        }
-
-        .footer-bottom {
-            border-top: 1px solid rgba(255,255,255,0.2);
-            padding-top: 20px;
-            text-align: center;
-            font-size: 14px;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-
-        @keyframes slideInLeft {
-            from {
-                opacity: 0;
-                transform: translateX(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateX(0);
-            }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            25% { transform: translateX(-10px); }
-            75% { transform: translateX(10px); }
-        }
+        /* ── Animations ─────────────────────────────────────────────────────── */
+        @keyframes slideUp      { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
+        @keyframes fadeIn       { from { opacity:0; } to { opacity:1; } }
+        @keyframes slideInLeft  { from { opacity:0; transform:translateX(-20px); } to { opacity:1; transform:translateX(0); } }
+        @keyframes shake        { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-10px);} 75%{transform:translateX(10px);} }
+        @keyframes pulse        { 0%,100%{box-shadow:0 0 0 3px rgba(255,153,51,0.3);} 50%{box-shadow:0 0 0 8px rgba(255,153,51,0.1);} }
 
         @media (max-width: 768px) {
-            .search-container, .result-container {
-                padding: 20px;
-            }
-
-            .complaint-meta {
-                grid-template-columns: 1fr;
-            }
-
-            .detail-row {
-                flex-direction: column;
-            }
-
-            .detail-label {
-                flex: none;
-                margin-bottom: 5px;
-            }
+            .search-container, .result-container { padding: 20px; }
+            .complaint-meta { grid-template-columns: 1fr; }
+            .detail-row { flex-direction: column; }
+            .detail-label { flex: none; margin-bottom: 5px; }
+            .steps-bar { overflow-x: auto; gap: 0; }
+            .step-label { font-size: 9px; max-width: 60px; }
         }
     </style>
 </head>
 <body>
-    <div class="tricolor-strip"></div>
 
-    <header class="header-top">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-12">
-                    <div class="emblem-container">
-                        <div class="emblem-icon">
-                            <i class="fas fa-landmark"></i>
-                        </div>
-                        <div class="emblem-text">
-                            <h1>Digital Complaint & Grievance Redressal Platform</h1>
-                            <p>भारत सरकार | Government of India</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
+<div class="tricolor-strip"></div>
 
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav mx-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.html">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="register.html">Register Complaint</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="track.html">Track Status</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="departments.html">Departments</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="help.html">Help & FAQ</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="login.html">Officer Login</a>
-                    </li>
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <div class="page-header">
-        <div class="container">
-            <h2><i class="fas fa-search"></i> Track Your Complaint</h2>
-            <p>Enter your Complaint ID and Mobile Number to track status</p>
-        </div>
-    </div>
-
+<header class="header-top">
     <div class="container">
-        <div class="search-container">
-            <form id="trackForm" class="search-form">
-                <div class="row g-3">
-                    <div class="col-md-5">
-                        <label class="form-label">Complaint ID</label>
-                        <input type="text" class="form-control" name="complaintId" id="complaintId" placeholder="e.g., CMP12345678" required>
-                    </div>
-                    <div class="col-md-5">
-                        <label class="form-label">Mobile Number</label>
-                        <input type="tel" class="form-control" name="mobile" id="mobileNumber" placeholder="Enter 10-digit mobile" pattern="[0-9]{10}" required>
-                    </div>
-                    <div class="col-md-2 d-flex align-items-end">
-                        <button type="submit" class="btn btn-track w-100" id="trackBtn">
-                            <i class="fas fa-search"></i> Track
-                            <span class="loading-spinner">
-                                <i class="fas fa-spinner fa-spin"></i>
-                            </span>
-                        </button>
-                    </div>
-                </div>
-            </form>
-            <div id="errorMessage" class="error-message">
-                <i class="fas fa-exclamation-circle"></i> <strong>Error:</strong> <span id="errorText">Complaint not found. Please check your Complaint ID and Mobile Number.</span>
-            </div>
-        </div>
-
-        <div id="resultContainer" class="result-container">
-            <div class="complaint-header">
-                <div class="complaint-id-display">
-                    <i class="fas fa-file-alt"></i> Complaint ID: <span id="displayId"></span>
-                </div>
-                <p id="displaySubject" style="margin: 0; font-size: 16px;"></p>
-            </div>
-
-            <div class="complaint-meta">
-                <div class="meta-item">
-                    <div class="meta-label">Current Status</div>
-                    <div class="meta-value">
-                        <span id="displayStatus" class="status-badge"></span>
-                    </div>
-                </div>
-                <div class="meta-item">
-                    <div class="meta-label">Department</div>
-                    <div class="meta-value" id="displayDepartment"></div>
-                </div>
-                <div class="meta-item">
-                    <div class="meta-label">Priority</div>
-                    <div class="meta-value" id="displayPriority"></div>
-                </div>
-                <div class="meta-item">
-                    <div class="meta-label">Submitted On</div>
-                    <div class="meta-value" id="displayDate"></div>
-                </div>
-            </div>
-
-            <div class="complaint-details">
-                <h5 style="color: var(--primary); margin-bottom: 20px;">Complaint Details</h5>
-                <div class="detail-row">
-                    <div class="detail-label">Name:</div>
-                    <div class="detail-value" id="displayName"></div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">Email:</div>
-                    <div class="detail-value" id="displayEmail"></div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">Mobile:</div>
-                    <div class="detail-value" id="displayMobile"></div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">Category:</div>
-                    <div class="detail-value" id="displayCategory"></div>
-                </div>
-                <div class="detail-row">
-                    <div class="detail-label">Description:</div>
-                    <div class="detail-value" id="displayDescription"></div>
-                </div>
-            </div>
-
-            <div class="timeline-section">
-                <h4 class="timeline-title"><i class="fas fa-history"></i> Status Timeline</h4>
-                <div class="timeline" id="timeline">
-                    <!-- Timeline items will be inserted here -->
-                </div>
-            </div>
-
-            <div class="action-buttons">
-                <button class="btn btn-secondary-custom" onclick="window.print()">
-                    <i class="fas fa-print"></i> Print Details
-                </button>
-                <button class="btn btn-secondary-custom" onclick="searchAgain()">
-                    <i class="fas fa-search"></i> Search Again
-                </button>
-                <a href="index.html" class="btn btn-secondary-custom">
-                    <i class="fas fa-home"></i> Back to Home
-                </a>
+        <div class="emblem-container">
+            <div class="emblem-icon"><i class="fas fa-landmark"></i></div>
+            <div class="emblem-text">
+                <h1>Digital Complaint &amp; Grievance Redressal Platform</h1>
+                <p>भारत सरकार | Government of India</p>
             </div>
         </div>
     </div>
+</header>
 
-    <div class="tricolor-strip"></div>
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-bottom">
-                <p>&copy; 2026 Government of India | Digital India Initiative | National Informatics Centre (NIC)</p>
+<nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="register.html">Register Complaint</a></li>
+                <li class="nav-item"><a class="nav-link active" href="track.html">Track Status</a></li>
+                <li class="nav-item"><a class="nav-link" href="departments.html">Departments</a></li>
+                <li class="nav-item"><a class="nav-link" href="help.html">Help &amp; FAQ</a></li>
+                <li class="nav-item"><a class="nav-link" href="login.html">Officer Login</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<div class="page-header">
+    <div class="container">
+        <h2><i class="fas fa-search"></i> Track Your Complaint</h2>
+        <p>Enter your Complaint ID and Mobile Number to track status</p>
+    </div>
+</div>
+
+<div class="container">
+
+    <!-- Search Form -->
+    <div class="search-container">
+        <form id="trackForm" class="search-form">
+            <div class="row g-3">
+                <div class="col-md-5">
+                    <label class="form-label">Complaint ID</label>
+                    <input type="text" class="form-control" id="complaintId" placeholder="e.g., CMP12345678" required>
+                </div>
+                <div class="col-md-5">
+                    <label class="form-label">Mobile Number</label>
+                    <input type="tel" class="form-control" id="mobileNumber" placeholder="Enter 10-digit mobile" pattern="[0-9]{10}" required>
+                </div>
+                <div class="col-md-2 d-flex align-items-end">
+                    <button type="submit" class="btn btn-track w-100" id="trackBtn">
+                        <i class="fas fa-search"></i> Track
+                        <span id="trackSpinner" style="display:none;">
+                            <i class="fas fa-spinner fa-spin ms-1"></i>
+                        </span>
+                    </button>
+                </div>
+            </div>
+        </form>
+        <div id="errorMessage" class="error-message">
+            <i class="fas fa-exclamation-circle"></i> <strong>Error:</strong>
+            <span id="errorText">Complaint not found. Please check your Complaint ID and Mobile Number.</span>
+        </div>
+    </div>
+
+    <!-- Result -->
+    <div id="resultContainer" class="result-container">
+
+        <!-- Header -->
+        <div class="complaint-header">
+            <div class="complaint-id-display">
+                <i class="fas fa-file-alt"></i> Complaint ID: <span id="displayId"></span>
+            </div>
+            <p id="displaySubject" style="margin:0; font-size:16px; opacity:0.9;"></p>
+        </div>
+
+        <!-- Meta cards -->
+        <div class="complaint-meta">
+            <div class="meta-item">
+                <div class="meta-label">Current Status</div>
+                <div class="meta-value"><span id="displayStatus" class="status-badge"></span></div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">Department</div>
+                <div class="meta-value" id="displayDepartment"></div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">Priority</div>
+                <div class="meta-value" id="displayPriority"></div>
+            </div>
+            <div class="meta-item">
+                <div class="meta-label">Submitted On</div>
+                <div class="meta-value" id="displayDate"></div>
             </div>
         </div>
-    </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // AWS API Integration
-        const API_URL = 'https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/complaints/status';
+        <!-- ── Progress Steps Bar ───────────────────────────────────────── -->
+        <div class="progress-section">
+            <h4><i class="fas fa-tasks me-2"></i>Complaint Progress</h4>
+            <div class="steps-bar" id="stepsBar">
+                <!-- Injected by JS -->
+            </div>
+        </div>
 
-        document.getElementById('trackForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
-            
-            const complaintId = document.getElementById('complaintId').value.trim();
-            const mobile = document.getElementById('mobileNumber').value.trim();
-            
-            // Hide previous results and errors
-            document.getElementById('errorMessage').style.display = 'none';
-            document.getElementById('resultContainer').style.display = 'none';
-            
-            // Show loading state
-            const trackBtn = document.getElementById('trackBtn');
-            const spinner = trackBtn.querySelector('.loading-spinner');
-            trackBtn.disabled = true;
-            spinner.style.display = 'inline-block';
-            
-            try {
-                // Call AWS API
-                const url = `${API_URL}?complaintId=${encodeURIComponent(complaintId)}&mobile=${encodeURIComponent(mobile)}`;
-                const response = await fetch(url);
-                const data = await response.json();
-                
-                if (!response.ok) {
-                    // Show error message
-                    document.getElementById('errorText').textContent = data.error || 'Complaint not found. Please check your Complaint ID and Mobile Number.';
-                    document.getElementById('errorMessage').style.display = 'block';
-                } else {
-                    // Display complaint data
-                    displayComplaint(data);
-                }
-            } catch (error) {
-                console.error('Error fetching complaint:', error);
-                document.getElementById('errorText').textContent = 'Something went wrong. Please try again later.';
-                document.getElementById('errorMessage').style.display = 'block';
-            } finally {
-                // Hide loading state
-                trackBtn.disabled = false;
-                spinner.style.display = 'none';
-            }
-        });
+        <!-- Complaint Details -->
+        <div class="complaint-details">
+            <h5><i class="fas fa-info-circle me-2"></i>Complaint Details</h5>
+            <div class="detail-row">
+                <div class="detail-label">Name:</div>
+                <div class="detail-value" id="displayName"></div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Email:</div>
+                <div class="detail-value" id="displayEmail"></div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Mobile:</div>
+                <div class="detail-value" id="displayMobile"></div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Category:</div>
+                <div class="detail-value" id="displayCategory"></div>
+            </div>
+            <div class="detail-row">
+                <div class="detail-label">Description:</div>
+                <div class="detail-value" id="displayDescription"></div>
+            </div>
+        </div>
 
-        function displayComplaint(data) {
-            // Display basic info
-            document.getElementById('displayId').textContent = data.complaintId || 'N/A';
-            document.getElementById('displaySubject').textContent = data.subject || 'No subject provided';
-            document.getElementById('displayName').textContent = data.name || 'N/A';
-            document.getElementById('displayEmail').textContent = data.email || 'N/A';
-            document.getElementById('displayMobile').textContent = data.mobile || 'N/A';
-            document.getElementById('displayDepartment').textContent = data.department || 'N/A';
-            document.getElementById('displayCategory').textContent = data.category || 'N/A';
-            document.getElementById('displayPriority').textContent = data.priority || 'Medium';
-            document.getElementById('displayDescription').textContent = data.description || 'No description available';
-            
-            // Format and display date
-            if (data.createdAt) {
-                const date = new Date(data.createdAt);
-                document.getElementById('displayDate').textContent = date.toLocaleDateString('en-IN', {
-                    day: '2-digit',
-                    month: 'short',
-                    year: 'numeric'
-                });
+        <!-- ── Detailed Timeline ────────────────────────────────────────── -->
+        <div class="timeline-section">
+            <h4><i class="fas fa-history me-2"></i>Status Timeline</h4>
+            <div class="timeline" id="timeline">
+                <!-- Injected by JS -->
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="action-buttons">
+            <button class="btn btn-secondary-custom" onclick="window.print()">
+                <i class="fas fa-print"></i> Print Details
+            </button>
+            <button class="btn btn-secondary-custom" onclick="searchAgain()">
+                <i class="fas fa-search"></i> Search Again
+            </button>
+            <a href="index.html" class="btn btn-secondary-custom">
+                <i class="fas fa-home"></i> Back to Home
+            </a>
+        </div>
+    </div>
+
+</div>
+
+<div class="tricolor-strip"></div>
+<footer class="footer">
+    <div class="container">
+        <div class="footer-bottom">
+            <p>&copy; 2026 Government of India | Digital India Initiative | National Informatics Centre (NIC)</p>
+        </div>
+    </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+
+    // ─── Config ──────────────────────────────────────────────────────────────────
+    const API_URL = 'https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/complaints/status';
+
+    // Ordered pipeline stages — used to render the progress bar
+    const PIPELINE = [
+        { key: 'Submitted',    label: 'Submitted',    icon: 'fa-paper-plane' },
+        { key: 'Assigned',     label: 'Assigned',     icon: 'fa-user-check'  },
+        { key: 'Under Review', label: 'Under Review', icon: 'fa-search'      },
+        { key: 'In Progress',  label: 'In Progress',  icon: 'fa-cog'         },
+        { key: 'Resolved',     label: 'Resolved',     icon: 'fa-check-double'},
+    ];
+
+    // Descriptions shown in the detailed timeline for each stage
+    const STAGE_DESC = {
+        'Submitted':    'Your complaint has been successfully registered in the system.',
+        'Assigned':     'Your complaint has been assigned to a responsible officer for review.',
+        'Under Review': 'The assigned officer is reviewing your complaint and gathering information.',
+        'In Progress':  'Action is being taken to resolve your complaint.',
+        'Resolved':     'Your complaint has been resolved. Thank you for your patience.',
+        'Closed':       'This complaint has been officially closed.',
+    };
+
+    // ─── Form Submit ─────────────────────────────────────────────────────────────
+    document.getElementById('trackForm').addEventListener('submit', async function (e) {
+        e.preventDefault();
+
+        const complaintId = document.getElementById('complaintId').value.trim();
+        const mobile      = document.getElementById('mobileNumber').value.trim();
+
+        document.getElementById('errorMessage').style.display  = 'none';
+        document.getElementById('resultContainer').style.display = 'none';
+
+        const trackBtn = document.getElementById('trackBtn');
+        const spinner  = document.getElementById('trackSpinner');
+        trackBtn.disabled = true;
+        spinner.style.display = 'inline';
+
+        try {
+            const url      = `${API_URL}?complaintId=${encodeURIComponent(complaintId)}&mobile=${encodeURIComponent(mobile)}`;
+            const response = await fetch(url);
+            const data     = await response.json();
+
+            if (!response.ok) {
+                showError(data.error || 'Complaint not found. Please check your Complaint ID and Mobile Number.');
             } else {
-                document.getElementById('displayDate').textContent = 'N/A';
+                displayComplaint(data);
             }
-            
-            // Display status with appropriate class
-            const statusBadge = document.getElementById('displayStatus');
-            const status = data.status || 'Submitted';
-            statusBadge.textContent = status;
-            statusBadge.className = 'status-badge status-' + status.toLowerCase().replace(/\s+/g, '-');
-            
-            // Display timeline
-            const statusHistory = data.statusHistory || [
-                { 
-                    status: status, 
-                    date: data.createdAt || new Date().toISOString(), 
-                    description: 'Complaint submitted successfully' 
-                }
-            ];
-            displayTimeline(statusHistory);
-            
-            // Show result container
-            document.getElementById('resultContainer').style.display = 'block';
-            document.getElementById('resultContainer').scrollIntoView({ behavior: 'smooth' });
+        } catch (err) {
+            console.error('Tracking error:', err);
+            showError('Something went wrong. Please try again later.');
+        } finally {
+            trackBtn.disabled = false;
+            spinner.style.display = 'none';
+        }
+    });
+
+    // ─── Display Complaint ───────────────────────────────────────────────────────
+    function displayComplaint(data) {
+        // Basic fields
+        document.getElementById('displayId').textContent          = data.complaintId || 'N/A';
+        document.getElementById('displaySubject').textContent     = data.subject      || 'No subject provided';
+        document.getElementById('displayName').textContent        = data.name         || 'N/A';
+        document.getElementById('displayEmail').textContent       = data.email        || 'N/A';
+        document.getElementById('displayMobile').textContent      = data.mobile       || 'N/A';
+        document.getElementById('displayDepartment').textContent  = data.department   || 'N/A';
+        document.getElementById('displayCategory').textContent    = data.category     || 'N/A';
+        document.getElementById('displayDescription').textContent = data.description  || 'N/A';
+
+        // Date
+        const dateEl = document.getElementById('displayDate');
+        if (data.createdAt) {
+            dateEl.textContent = new Date(data.createdAt).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
+        } else {
+            dateEl.textContent = 'N/A';
         }
 
-        function displayTimeline(history) {
-            const timeline = document.getElementById('timeline');
-            timeline.innerHTML = '';
-            
-            history.forEach((item, index) => {
-                const date = new Date(item.date || item.timestamp);
-                const formattedDate = date.toLocaleDateString('en-IN', {
-                    day: '2-digit',
-                    month: 'short',
-                    year: 'numeric',
-                    hour: '2-digit',
-                    minute: '2-digit'
-                });
-                
-                const timelineItem = document.createElement('div');
-                timelineItem.className = 'timeline-item';
-                timelineItem.style.animationDelay = (index * 0.1) + 's';
-                
-                timelineItem.innerHTML = `
-                    <div class="timeline-dot">
-                        <i class="fas fa-check"></i>
-                    </div>
-                    <div class="timeline-content">
-                        <div class="timeline-date">${formattedDate}</div>
-                        <div class="timeline-status">${item.status}</div>
-                        <div class="timeline-description">${item.description || item.remarks || 'Status updated'}</div>
-                    </div>
-                `;
-                
-                timeline.appendChild(timelineItem);
-            });
-        }
+        // Status badge
+        const statusBadge = document.getElementById('displayStatus');
+        const status = data.status || 'Submitted';
+        statusBadge.textContent = status;
+        statusBadge.className   = 'status-badge status-' + status.toLowerCase().replace(/\s+/g, '-');
 
-        function searchAgain() {
-            document.getElementById('trackForm').reset();
-            document.getElementById('resultContainer').style.display = 'none';
-            document.getElementById('errorMessage').style.display = 'none';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        // Priority with colour
+        const priorityEl = document.getElementById('displayPriority');
+        const priority   = data.priority || 'Medium';
+        priorityEl.textContent = priority;
+        priorityEl.className   = 'meta-value priority-' + priority.toLowerCase();
 
-        // Check URL parameters for direct tracking
-        window.addEventListener('load', function() {
-            const urlParams = new URLSearchParams(window.location.search);
-            const complaintId = urlParams.get('id');
-            if (complaintId) {
-                document.getElementById('complaintId').value = complaintId;
+        // Build the timeline array (from DynamoDB or synthesise from status)
+        const rawTimeline = buildTimeline(data);
+
+        // Render progress steps bar
+        renderProgressBar(status, rawTimeline);
+
+        // Render detailed timeline
+        renderTimeline(status, rawTimeline);
+
+        // Show result
+        document.getElementById('resultContainer').style.display = 'block';
+        document.getElementById('resultContainer').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // ─── Build Timeline ──────────────────────────────────────────────────────────
+    // Accepts DynamoDB `timeline` array OR synthesises one entry from `status`
+    function buildTimeline(data) {
+        if (data.timeline && Array.isArray(data.timeline) && data.timeline.length > 0) {
+            return data.timeline; // shape: [{ status, time, description? }]
+        }
+        // Fallback: single entry
+        return [{ status: data.status || 'Submitted', time: data.createdAt || new Date().toISOString() }];
+    }
+
+    // ─── Render Progress Bar ─────────────────────────────────────────────────────
+    function renderProgressBar(currentStatus, timeline) {
+        const bar = document.getElementById('stepsBar');
+        bar.innerHTML = '';
+
+        // Find the index of current status in the pipeline
+        const currentIdx = PIPELINE.findIndex(p => p.key.toLowerCase() === currentStatus.toLowerCase());
+        const doneStatuses = new Set(timeline.map(t => t.status.toLowerCase()));
+
+        PIPELINE.forEach((stage, idx) => {
+            const isDone    = doneStatuses.has(stage.key.toLowerCase()) && idx < (currentIdx === -1 ? 0 : currentIdx + 1);
+            const isActive  = stage.key.toLowerCase() === currentStatus.toLowerCase();
+            const isPending = !isDone && !isActive;
+
+            const item = document.createElement('div');
+            item.className = 'step-item' + (isDone ? ' done' : isActive ? ' active' : '');
+            item.innerHTML = `
+                <div class="step-connector"></div>
+                <div class="step-circle">
+                    <i class="fas ${isDone ? 'fa-check' : isActive ? stage.icon : stage.icon}"></i>
+                </div>
+                <div class="step-label">${stage.label}</div>
+            `;
+            bar.appendChild(item);
+        });
+    }
+
+    // ─── Render Detailed Timeline ────────────────────────────────────────────────
+    function renderTimeline(currentStatus, timeline) {
+        const container = document.getElementById('timeline');
+        container.innerHTML = '';
+
+        // Steps already completed (from DB timeline)
+        const completedKeys = timeline.map(t => t.status);
+
+        // Build full ordered list: completed steps first, then remaining pending
+        const currentIdx  = PIPELINE.findIndex(p => p.key.toLowerCase() === currentStatus.toLowerCase());
+        const allSteps    = [];
+
+        PIPELINE.forEach((stage, idx) => {
+            const matchInDB = timeline.find(t => t.status.toLowerCase() === stage.key.toLowerCase());
+            if (matchInDB) {
+                allSteps.push({ ...matchInDB, state: idx === currentIdx ? 'current' : 'done' });
+            } else if (idx <= currentIdx) {
+                // Completed but no explicit DB entry — infer
+                allSteps.push({ status: stage.key, time: null, state: 'done' });
+            } else {
+                allSteps.push({ status: stage.key, time: null, state: 'pending' });
             }
         });
-    </script>
+
+        allSteps.forEach((step, index) => {
+            const item = document.createElement('div');
+            item.className = `timeline-item ${step.state}`;
+            item.style.animationDelay = (index * 0.1) + 's';
+
+            let dateStr = '';
+            if (step.time) {
+                dateStr = new Date(step.time).toLocaleDateString('en-IN', {
+                    day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'
+                });
+            }
+
+            const desc = step.description || step.remarks || STAGE_DESC[step.status] || 'Status updated';
+
+            const iconMap = { done: 'fa-check', current: 'fa-circle-dot', pending: 'fa-clock' };
+            const iconClass = step.state === 'done' ? 'fa-check' : step.state === 'current' ? 'fa-cog' : 'fa-clock';
+
+            item.innerHTML = `
+                <div class="timeline-dot"><i class="fas ${iconClass}"></i></div>
+                <div class="timeline-content">
+                    ${dateStr ? `<div class="timeline-date"><i class="fas fa-calendar-alt me-1"></i>${dateStr}</div>` : ''}
+                    <div class="timeline-status">${step.status}</div>
+                    <div class="timeline-desc">${step.state !== 'pending' ? desc : 'Pending'}</div>
+                    ${step.state === 'pending' ? '<span class="timeline-pending-badge"><i class="fas fa-hourglass-half me-1"></i>Awaiting</span>' : ''}
+                </div>
+            `;
+
+            container.appendChild(item);
+        });
+    }
+
+    // ─── Helpers ─────────────────────────────────────────────────────────────────
+    function showError(msg) {
+        document.getElementById('errorText').textContent = msg;
+        document.getElementById('errorMessage').style.display = 'block';
+    }
+
+    function searchAgain() {
+        document.getElementById('trackForm').reset();
+        document.getElementById('resultContainer').style.display = 'none';
+        document.getElementById('errorMessage').style.display    = 'none';
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Pre-fill complaint ID from URL ?id=
+    window.addEventListener('load', function () {
+        const id = new URLSearchParams(window.location.search).get('id');
+        if (id) document.getElementById('complaintId').value = id;
+    });
+
+</script>
 </body>
 </html>
