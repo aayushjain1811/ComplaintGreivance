@@ -8,6 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css"/>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css"/>
     <style>
         :root {
             --primary: #0A2E5C;
@@ -313,7 +315,7 @@
                 <li class="nav-item"><a class="nav-link" href="register.html">Register Complaint</a></li>
                 <li class="nav-item"><a class="nav-link" href="track.html">Track Status</a></li>
                 <li class="nav-item"><a class="nav-link" href="departments.html">Departments</a></li>
-                <li class="nav-item"><a class="nav-link active" href="map.html">Complaint Map</a></li>
+                <li class="nav-item"><a class="nav-link active" href="map.html">Map</a></li>
                 <li class="nav-item"><a class="nav-link" href="help.html">Help &amp; FAQ</a></li>
                 <li class="nav-item"><a class="nav-link" href="login.html">Officer Login</a></li>
             </ul>
@@ -366,6 +368,9 @@
             <button class="filter-btn" style="margin-left:auto;" onclick="centerIndia()">
                 <i class="fas fa-crosshairs me-1"></i>Reset View
             </button>
+            <button class="filter-btn" id="heatmapToggleBtn" onclick="toggleHeatmap(this)" style="background:#1a3a5c;color:#fff;border-color:#1a3a5c;">
+                <i class="fas fa-fire me-1"></i>Heatmap OFF
+            </button>
         </div>
 
         <!-- Map -->
@@ -417,6 +422,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
+<script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
 <script>
 
     // ─── Config ──────────────────────────────────────────────────────────────────
@@ -433,12 +440,41 @@
     };
 
     // ─── Map Init ─────────────────────────────────────────────────────────────────
-    const map = L.map('map', { zoomControl: true }).setView([22.5, 80.0], 5);
+    const map = L.map('map', { zoomControl: true }).setView([22.9734, 78.6569], 5);
 
     L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
         attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        maxZoom: 18,
+        maxZoom: 19,
     }).addTo(map);
+
+    // Cluster group — all markers go here
+    const clusterGroup = L.markerClusterGroup({
+        chunkedLoading: true,
+        maxClusterRadius: 60,
+        iconCreateFunction: function(cluster) {
+            const count = cluster.getChildCount();
+            let size = 'small', dim = 36;
+            if (count >= 10)  { size = 'medium'; dim = 44; }
+            if (count >= 50)  { size = 'large';  dim = 54; }
+            return L.divIcon({
+                html: `<div style="
+                    width:${dim}px;height:${dim}px;border-radius:50%;
+                    background:var(--primary);color:#fff;
+                    display:flex;align-items:center;justify-content:center;
+                    font-weight:700;font-size:${dim < 44 ? 13 : 15}px;
+                    border:3px solid #fff;
+                    box-shadow:0 2px 8px rgba(0,0,0,0.3);">${count}</div>`,
+                className: '',
+                iconSize: [dim, dim],
+                iconAnchor: [dim/2, dim/2],
+            });
+        }
+    });
+    map.addLayer(clusterGroup);
+
+    // Heatmap layer (created fresh on toggle)
+    let heatLayer      = null;
+    let heatmapOn      = false;
 
     // ─── State ────────────────────────────────────────────────────────────────────
     let allComplaints = [];
@@ -484,10 +520,10 @@
         renderList(allComplaints);
     }
 
-    // ─── Render All Markers ───────────────────────────────────────────────────────
+    // ─── Render All Markers (with clustering) ────────────────────────────────────
     function renderAll(complaints) {
-        // Clear existing markers
-        markers.forEach(m => map.removeLayer(m.marker));
+        // Clear cluster group and markers array
+        clusterGroup.clearLayers();
         markers = [];
 
         const noGps = complaints.filter(c => !c.location || c.location.lat == null).length;
@@ -497,7 +533,7 @@
         complaints.forEach(c => {
             if (!c.location || c.location.lat == null) return;
             const icon   = makeIcon(markerColor(c));
-            const marker = L.marker([c.location.lat, c.location.lng], { icon }).addTo(map);
+            const marker = L.marker([c.location.lat, c.location.lng], { icon });
 
             const statusClass = 's-' + (c.status || 'submitted').toLowerCase().replace(/\s+/g, '-');
             marker.bindPopup(`
@@ -514,10 +550,48 @@
                 </div>
             `, { maxWidth: 280 });
 
+            clusterGroup.addLayer(marker);
             markers.push({ marker, complaint: c });
         });
 
         document.getElementById('markerCount').textContent = markers.length + ' complaint(s) shown';
+
+        // Refresh heatmap if it's currently on
+        if (heatmapOn) buildHeatmap(complaints);
+    }
+
+    // ─── Heatmap Toggle ───────────────────────────────────────────────────────────
+    function toggleHeatmap(btn) {
+        heatmapOn = !heatmapOn;
+        if (heatmapOn) {
+            buildHeatmap(allComplaints);
+            btn.innerHTML = '<i class="fas fa-fire me-1"></i>Heatmap ON';
+            btn.style.background     = '#C62828';
+            btn.style.borderColor    = '#C62828';
+            btn.style.color          = '#fff';
+        } else {
+            if (heatLayer) { map.removeLayer(heatLayer); heatLayer = null; }
+            btn.innerHTML = '<i class="fas fa-fire me-1"></i>Heatmap OFF';
+            btn.style.background  = '#1a3a5c';
+            btn.style.borderColor = '#1a3a5c';
+        }
+    }
+
+    function buildHeatmap(complaints) {
+        if (heatLayer) map.removeLayer(heatLayer);
+        const points = complaints
+            .filter(c => c.location && c.location.lat != null)
+            .map(c => {
+                // Weight by priority: Critical=1.0, High=0.7, Medium=0.4, Low=0.2
+                const w = { Critical:1.0, High:0.7, Medium:0.4, Low:0.2 };
+                return [c.location.lat, c.location.lng, w[c.priority] || 0.4];
+            });
+        heatLayer = L.heatLayer(points, {
+            radius: 35,
+            blur: 25,
+            maxZoom: 12,
+            gradient: { 0.2:'#138808', 0.5:'#FF9933', 0.8:'#C62828', 1.0:'#7b0000' }
+        }).addTo(map);
     }
 
     // ─── Filter ───────────────────────────────────────────────────────────────────
