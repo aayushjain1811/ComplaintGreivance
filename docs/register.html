@@ -266,6 +266,7 @@
                 <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
                 <li class="nav-item"><a class="nav-link active" href="register.html">Register Complaint</a></li>
                 <li class="nav-item"><a class="nav-link" href="track.html">Track Status</a></li>
+                <li class="nav-item"><a class="nav-link" href="map.html">Map</a></li>
                 <li class="nav-item"><a class="nav-link" href="departments.html">Departments</a></li>
                 <li class="nav-item"><a class="nav-link" href="help.html">Help &amp; FAQ</a></li>
                 <li class="nav-item"><a class="nav-link" href="login.html">Officer Login</a></li>
@@ -425,11 +426,32 @@
                 <input type="hidden" id="category"   name="category"   value="Other">
                 <input type="hidden" id="priority"   name="priority"   value="Medium">
 
+                <!-- Hidden GPS fields — auto-captured from browser -->
+                <input type="hidden" id="latitude"  name="latitude">
+                <input type="hidden" id="longitude" name="longitude">
+
                 <div class="row mt-3">
                     <div class="col-md-6 mb-3">
                         <label class="form-label">Upload Supporting Documents (Optional)</label>
                         <input type="file" class="form-control" id="documents" name="documents" multiple>
                         <small class="text-muted">Max 5 files (PDF, JPG, PNG) – 5 MB each</small>
+                    </div>
+                    <div class="col-md-6 mb-3 d-flex align-items-end">
+                        <div id="gpsStatus" style="
+                            display:flex; align-items:center; gap:10px;
+                            background:#f8f9fa; border:1px solid #ddd;
+                            border-radius:8px; padding:10px 16px; width:100%;
+                            font-size:13px; font-weight:500; color:#555;">
+                            <span id="gpsDot" style="width:10px;height:10px;border-radius:50%;
+                                background:#ccc;flex-shrink:0;"></span>
+                            <span id="gpsText"><i class="fas fa-spinner fa-spin me-1"></i>Acquiring GPS…</span>
+                            <button type="button" id="gpsRetryBtn" onclick="getLocation()"
+                                style="display:none;margin-left:auto;background:var(--primary);
+                                color:#fff;border:none;border-radius:5px;
+                                padding:4px 10px;font-size:12px;cursor:pointer;">
+                                <i class="fas fa-redo"></i> Retry
+                            </button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -491,6 +513,50 @@
     // ─── API Endpoints ───────────────────────────────────────────────────────────
     const API_URL     = 'https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/complaints';
     const SUGGEST_API = 'https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/suggest-department';
+    // ─── GPS Location Capture ────────────────────────────────────────────────────
+    function setGpsUI(state, msg) {
+        const dot      = document.getElementById('gpsDot');
+        const text     = document.getElementById('gpsText');
+        const retryBtn = document.getElementById('gpsRetryBtn');
+        const box      = document.getElementById('gpsStatus');
+        const colors   = { loading:'#FF9933', success:'#138808', error:'#C62828', denied:'#e65c00' };
+        dot.style.background   = colors[state] || '#ccc';
+        text.innerHTML         = msg;
+        box.style.borderColor  = colors[state] || '#ddd';
+        retryBtn.style.display = (state === 'error' || state === 'denied') ? 'inline-block' : 'none';
+    }
+
+    function getLocation() {
+        if (!navigator.geolocation) {
+            setGpsUI('error', '<i class="fas fa-times-circle me-1"></i> Geolocation not supported');
+            return;
+        }
+        setGpsUI('loading', '<i class="fas fa-spinner fa-spin me-1"></i> Acquiring GPS location...');
+        navigator.geolocation.getCurrentPosition(
+            function(pos) {
+                const lat = pos.coords.latitude.toFixed(6);
+                const lng = pos.coords.longitude.toFixed(6);
+                document.getElementById('latitude').value  = lat;
+                document.getElementById('longitude').value = lng;
+                setGpsUI('success',
+                    '<i class="fas fa-map-marker-alt me-1"></i>GPS captured — <strong>' + lat + ', ' + lng + '</strong>');
+            },
+            function(err) {
+                document.getElementById('latitude').value  = '';
+                document.getElementById('longitude').value = '';
+                if (err.code === 1) {
+                    setGpsUI('denied', '<i class="fas fa-ban me-1"></i> Location permission denied. Complaint will be submitted without GPS.');
+                } else {
+                    setGpsUI('error', '<i class="fas fa-exclamation-triangle me-1"></i> Could not get location. Retry or submit without GPS.');
+                }
+            },
+            { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
+        );
+    }
+
+    // Auto-capture GPS on page load
+    getLocation();
+
 
     // ─── Smart Auto-detection ────────────────────────────────────────────────────
     let suggestionTimeout = null;
@@ -655,6 +721,12 @@
             subject:     document.getElementById('subject').value.trim(),
             description: document.getElementById('description').value.trim(),
             priority:    document.getElementById('priority').value,
+            latitude:    document.getElementById('latitude').value  || null,
+            longitude:   document.getElementById('longitude').value || null,
+            location: (document.getElementById('latitude').value && document.getElementById('longitude').value) ? {
+                lat: parseFloat(document.getElementById('latitude').value),
+                lng: parseFloat(document.getElementById('longitude').value)
+            } : null,
             status:      'Submitted',
             timestamp:   submittedAt,
             timeline: [
