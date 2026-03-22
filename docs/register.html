@@ -238,6 +238,96 @@
             .form-container { padding: 20px; }
             .page-header h2 { font-size: 24px; }
         }
+
+        /* ── Image Upload ───────────────────────────────────────────────────── */
+        .image-upload-area {
+            border: 2px dashed #b8d4f0;
+            border-radius: 10px;
+            padding: 28px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: #f8fbff;
+            position: relative;
+        }
+
+        .image-upload-area:hover,
+        .image-upload-area.dragover {
+            border-color: var(--primary);
+            background: #eef5ff;
+        }
+
+        .image-upload-area .upload-icon {
+            font-size: 38px;
+            color: #b8d4f0;
+            margin-bottom: 10px;
+            transition: color 0.3s;
+        }
+
+        .image-upload-area:hover .upload-icon { color: var(--primary); }
+
+        .image-upload-area p {
+            margin: 0;
+            font-size: 14px;
+            color: #888;
+        }
+
+        .image-upload-area strong { color: var(--primary); }
+
+        #imageInput { display: none; }
+
+        /* Preview grid */
+        .preview-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 14px;
+        }
+
+        .preview-item {
+            position: relative;
+            width: 90px;
+            height: 90px;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 2px solid #ddd;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .preview-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .preview-item .remove-btn {
+            position: absolute;
+            top: 3px; right: 3px;
+            background: rgba(198,40,40,0.85);
+            color: #fff;
+            border: none;
+            border-radius: 50%;
+            width: 20px; height: 20px;
+            font-size: 11px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: background 0.2s;
+        }
+
+        .preview-item .remove-btn:hover { background: var(--error); }
+
+        .upload-progress {
+            display: none;
+            margin-top: 10px;
+            font-size: 13px;
+            color: var(--primary);
+        }
+
+        .upload-progress.show { display: block; }
+
+        .file-size-note { font-size: 11px; color: #aaa; margin-top: 6px; }
     </style>
 </head>
 <body>
@@ -266,7 +356,6 @@
                 <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
                 <li class="nav-item"><a class="nav-link active" href="register.html">Register Complaint</a></li>
                 <li class="nav-item"><a class="nav-link" href="track.html">Track Status</a></li>
-                <li class="nav-item"><a class="nav-link" href="map.html">Map</a></li>
                 <li class="nav-item"><a class="nav-link" href="departments.html">Departments</a></li>
                 <li class="nav-item"><a class="nav-link" href="help.html">Help &amp; FAQ</a></li>
                 <li class="nav-item"><a class="nav-link" href="login.html">Officer Login</a></li>
@@ -432,9 +521,22 @@
 
                 <div class="row mt-3">
                     <div class="col-md-6 mb-3">
-                        <label class="form-label">Upload Supporting Documents (Optional)</label>
-                        <input type="file" class="form-control" id="documents" name="documents" multiple>
-                        <small class="text-muted">Max 5 files (PDF, JPG, PNG) – 5 MB each</small>
+                        <label class="form-label">Upload Evidence Photos (Optional)</label>
+                        <div class="image-upload-area" id="uploadArea"
+                            onclick="document.getElementById('imageInput').click()"
+                            ondragover="handleDragOver(event)"
+                            ondragleave="handleDragLeave(event)"
+                            ondrop="handleDrop(event)">
+                            <div class="upload-icon"><i class="fas fa-camera"></i></div>
+                            <p><strong>Click to upload</strong> or drag &amp; drop photos</p>
+                            <p>JPG, PNG, WEBP — max 2 MB each, up to 3 photos</p>
+                        </div>
+                        <input type="file" id="imageInput" accept="image/jpeg,image/png,image/webp" multiple>
+                        <div class="preview-grid" id="previewGrid"></div>
+                        <div class="upload-progress" id="uploadProgress">
+                            <i class="fas fa-spinner fa-spin me-1"></i> Processing images…
+                        </div>
+                        <div class="file-size-note" id="fileSizeNote"></div>
                     </div>
                     <div class="col-md-6 mb-3 d-flex align-items-end">
                         <div id="gpsStatus" style="
@@ -557,6 +659,105 @@
     // Auto-capture GPS on page load
     getLocation();
 
+
+
+    // ─── Image Upload Handling ───────────────────────────────────────────────────
+    const MAX_FILES     = 3;
+    const MAX_SIZE_MB   = 2;
+    let selectedImages  = [];   // [{ file, base64 }]
+
+    document.getElementById('imageInput').addEventListener('change', function () {
+        handleFiles(Array.from(this.files));
+        this.value = ''; // reset so same file can be re-added if removed
+    });
+
+    function handleDragOver(e) {
+        e.preventDefault();
+        document.getElementById('uploadArea').classList.add('dragover');
+    }
+
+    function handleDragLeave(e) {
+        document.getElementById('uploadArea').classList.remove('dragover');
+    }
+
+    function handleDrop(e) {
+        e.preventDefault();
+        document.getElementById('uploadArea').classList.remove('dragover');
+        handleFiles(Array.from(e.dataTransfer.files));
+    }
+
+    async function handleFiles(files) {
+        const note = document.getElementById('fileSizeNote');
+        note.textContent = '';
+
+        const remaining = MAX_FILES - selectedImages.length;
+        if (remaining <= 0) {
+            note.textContent = `Maximum ${MAX_FILES} photos allowed.`;
+            note.style.color = 'var(--error)';
+            return;
+        }
+
+        const toAdd = files.slice(0, remaining);
+        document.getElementById('uploadProgress').classList.add('show');
+
+        for (const file of toAdd) {
+            if (!file.type.startsWith('image/')) {
+                note.textContent = 'Only image files (JPG, PNG, WEBP) are allowed.';
+                note.style.color = 'var(--error)';
+                continue;
+            }
+            if (file.size > MAX_SIZE_MB * 1024 * 1024) {
+                note.textContent = `"${file.name}" exceeds ${MAX_SIZE_MB}MB limit and was skipped.`;
+                note.style.color = 'var(--error)';
+                continue;
+            }
+            const base64 = await getBase64(file);
+            selectedImages.push({ file, base64, name: file.name });
+        }
+
+        document.getElementById('uploadProgress').classList.remove('show');
+        renderPreviews();
+
+        if (selectedImages.length > 0) {
+            note.textContent = `${selectedImages.length} / ${MAX_FILES} photo(s) selected.`;
+            note.style.color = 'var(--success)';
+        }
+    }
+
+    function getBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload  = () => resolve(reader.result.split(',')[1]);
+            reader.onerror = reject;
+        });
+    }
+
+    function renderPreviews() {
+        const grid = document.getElementById('previewGrid');
+        grid.innerHTML = '';
+        selectedImages.forEach((img, idx) => {
+            const item = document.createElement('div');
+            item.className = 'preview-item';
+            item.innerHTML = `
+                <img src="data:image/jpeg;base64,${img.base64}" alt="Evidence ${idx + 1}">
+                <button class="remove-btn" onclick="removeImage(${idx})" title="Remove">
+                    <i class="fas fa-times"></i>
+                </button>
+            `;
+            grid.appendChild(item);
+        });
+    }
+
+    function removeImage(idx) {
+        selectedImages.splice(idx, 1);
+        renderPreviews();
+        const note = document.getElementById('fileSizeNote');
+        note.textContent = selectedImages.length > 0
+            ? `${selectedImages.length} / ${MAX_FILES} photo(s) selected.`
+            : '';
+        note.style.color = 'var(--success)';
+    }
 
     // ─── Smart Auto-detection ────────────────────────────────────────────────────
     let suggestionTimeout = null;
@@ -727,6 +928,7 @@
                 lat: parseFloat(document.getElementById('latitude').value),
                 lng: parseFloat(document.getElementById('longitude').value)
             } : null,
+            images:      selectedImages.map(i => i.base64),
             status:      'Submitted',
             timestamp:   submittedAt,
             timeline: [
@@ -754,6 +956,9 @@
             showSuccessModal(result.complaintId || result.id);
             form.reset();
             hideAutoCard();
+            selectedImages = [];
+            renderPreviews();
+            document.getElementById('fileSizeNote').textContent = '';
         } catch (error) {
             console.error('Submit error:', error);
             showErrorModal(error.message);

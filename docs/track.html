@@ -508,6 +508,82 @@
             60%  { transform: scale(1.2); }
             100% { transform: scale(1); opacity: 1; }
         }
+
+        /* ── Evidence Images ────────────────────────────────────────────────── */
+        .evidence-section {
+            margin-top: 20px;
+        }
+
+        .evidence-section h6 {
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 12px;
+            font-size: 14px;
+        }
+
+        .evidence-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .evidence-thumb {
+            width: 110px;
+            height: 110px;
+            border-radius: 8px;
+            object-fit: cover;
+            border: 2px solid #ddd;
+            cursor: pointer;
+            transition: all 0.25s ease;
+        }
+
+        .evidence-thumb:hover {
+            border-color: var(--primary);
+            transform: scale(1.04);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        /* Lightbox */
+        .lightbox {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.88);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            animation: fadeIn 0.25s ease;
+        }
+
+        .lightbox.open { display: flex; }
+
+        .lightbox img {
+            max-width: 90vw;
+            max-height: 85vh;
+            border-radius: 10px;
+            box-shadow: 0 8px 40px rgba(0,0,0,0.5);
+        }
+
+        .lightbox-close {
+            position: absolute;
+            top: 20px; right: 28px;
+            color: #fff;
+            font-size: 32px;
+            cursor: pointer;
+            background: none;
+            border: none;
+            line-height: 1;
+            transition: opacity 0.2s;
+        }
+
+        .lightbox-close:hover { opacity: 0.7; }
+
+        .lightbox-caption {
+            position: absolute;
+            bottom: 20px;
+            color: rgba(255,255,255,0.7);
+            font-size: 13px;
+        }
     </style>
 </head>
 <body>
@@ -643,6 +719,11 @@
                 <div class="detail-label">Description:</div>
                 <div class="detail-value" id="displayDescription"></div>
             </div>
+            <!-- Evidence photos — shown only if images exist -->
+            <div class="evidence-section" id="evidenceSection" style="display:none;">
+                <h6><i class="fas fa-camera me-2"></i>Evidence Photos</h6>
+                <div class="evidence-grid" id="evidenceGrid"></div>
+            </div>
         </div>
 
         <!-- ── Detailed Timeline ────────────────────────────────────────── -->
@@ -712,6 +793,14 @@
     </div>
 
 </div>
+
+<!-- Lightbox -->
+<div class="lightbox" id="lightbox" onclick="closeLightbox()">
+    <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
+    <img id="lightboxImg" src="" alt="Evidence">
+    <span class="lightbox-caption" id="lightboxCaption"></span>
+</div>
+
 
 <div class="tricolor-strip"></div>
 <footer class="footer">
@@ -854,6 +943,10 @@
         document.getElementById('displayDepartment').textContent  = data.department   || 'N/A';
         document.getElementById('displayCategory').textContent    = data.category     || 'N/A';
         document.getElementById('displayDescription').textContent = data.description  || 'N/A';
+
+        // Render evidence images if present
+        const evidenceImages = data.images || data.imageUrls || [];
+        renderEvidenceImages(evidenceImages);
 
         // Date
         const dateEl = document.getElementById('displayDate');
@@ -1015,6 +1108,50 @@
         const id = new URLSearchParams(window.location.search).get('id');
         if (id) document.getElementById('complaintId').value = id;
     });
+
+    // ─── Evidence Image Display ───────────────────────────────────────────────────
+    function renderEvidenceImages(images) {
+        const section = document.getElementById('evidenceSection');
+        const grid    = document.getElementById('evidenceGrid');
+        grid.innerHTML = '';
+
+        if (!images || images.length === 0) {
+            section.style.display = 'none';
+            return;
+        }
+
+        section.style.display = 'block';
+
+        images.forEach((imgData, idx) => {
+            // imgData can be a full S3 URL or a base64 string
+            const src = imgData.startsWith('http') ? imgData : `data:image/jpeg;base64,${imgData}`;
+            const img = document.createElement('img');
+            img.className = 'evidence-thumb';
+            img.src       = src;
+            img.alt       = `Evidence ${idx + 1}`;
+            img.title     = `Photo ${idx + 1} — click to enlarge`;
+            img.onclick   = () => openLightbox(src, `Evidence Photo ${idx + 1}`);
+            grid.appendChild(img);
+        });
+    }
+
+    function openLightbox(src, caption) {
+        document.getElementById('lightboxImg').src         = src;
+        document.getElementById('lightboxCaption').textContent = caption;
+        document.getElementById('lightbox').classList.add('open');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeLightbox() {
+        document.getElementById('lightbox').classList.remove('open');
+        document.body.style.overflow = '';
+    }
+
+    // Close lightbox on Escape key
+    document.addEventListener('keydown', e => {
+        if (e.key === 'Escape') closeLightbox();
+    });
+
 
 </script>
 </body>
