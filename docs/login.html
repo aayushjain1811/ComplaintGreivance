@@ -17,11 +17,7 @@
             --white: #FFFFFF;
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
 
         body {
             font-family: 'Roboto', 'Noto Sans Devanagari', sans-serif;
@@ -37,9 +33,7 @@
             height: 5px;
             background: linear-gradient(to right, #FF9933 0%, #FF9933 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #138808 66.66%, #138808 100%);
             position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
+            top: 0; left: 0; right: 0;
             z-index: 1000;
         }
 
@@ -60,31 +54,27 @@
             text-align: center;
         }
 
-        .login-icon {
-            font-size: 60px;
-            margin-bottom: 15px;
-            color: var(--accent);
-        }
+        .login-icon { font-size: 60px; margin-bottom: 15px; color: var(--accent); }
+        .login-header h2 { font-size: 24px; font-weight: 700; margin-bottom: 5px; }
+        .login-header p  { font-size: 14px; opacity: 0.9; }
 
-        .login-header h2 {
-            font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 5px;
+        /* Role indicator strip — shown after token decode */
+        .role-strip {
+            display: none;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 600;
+            text-align: center;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
         }
+        .role-strip.show { display: block; }
+        .role-strip.level-1 { background: rgba(13,110,253,0.15); color: #0d6efd; }
+        .role-strip.level-2 { background: rgba(255,153,51,0.15); color: #b84800; }
+        .role-strip.level-3 { background: rgba(198,40,40,0.15);  color: var(--error); }
 
-        .login-header p {
-            font-size: 14px;
-            opacity: 0.9;
-        }
+        .login-body { padding: 40px 30px; }
 
-        .login-body {
-            padding: 40px 30px;
-        }
-
-        .form-floating {
-            margin-bottom: 20px;
-        }
-
+        .form-floating { margin-bottom: 20px; }
         .form-floating .form-control {
             border: 2px solid #ddd;
             border-radius: 8px;
@@ -92,30 +82,22 @@
             height: 58px;
             transition: all 0.3s ease;
         }
-
         .form-floating .form-control:focus {
             border-color: var(--primary);
-            box-shadow: 0 0 0 0.2rem rgba(10, 46, 92, 0.15);
+            box-shadow: 0 0 0 0.2rem rgba(10,46,92,0.15);
         }
-
-        .form-floating label {
-            padding: 1rem 15px;
-        }
+        .form-floating label { padding: 1rem 15px; }
 
         .password-toggle {
             position: absolute;
-            right: 15px;
-            top: 50%;
+            right: 15px; top: 50%;
             transform: translateY(-50%);
             cursor: pointer;
             color: #666;
             transition: color 0.3s ease;
             z-index: 10;
         }
-
-        .password-toggle:hover {
-            color: var(--primary);
-        }
+        .password-toggle:hover { color: var(--primary); }
 
         .remember-forgot {
             display: flex;
@@ -124,22 +106,9 @@
             margin-bottom: 25px;
             font-size: 14px;
         }
-
-        .form-check-label {
-            cursor: pointer;
-            user-select: none;
-        }
-
-        .forgot-link {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        .forgot-link:hover {
-            color: var(--accent);
-        }
+        .form-check-label { cursor: pointer; user-select: none; }
+        .forgot-link { color: var(--primary); text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
+        .forgot-link:hover { color: var(--accent); }
 
         .btn-login {
             background-color: var(--accent);
@@ -154,76 +123,105 @@
             position: relative;
             overflow: hidden;
         }
-
-        .btn-login:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-        }
-
+        .btn-login:disabled { opacity: 0.6; cursor: not-allowed; }
         .btn-login::before {
             content: '';
             position: absolute;
-            top: 50%;
-            left: 50%;
-            width: 0;
-            height: 0;
+            top: 50%; left: 50%;
+            width: 0; height: 0;
             background-color: rgba(255,255,255,0.2);
             border-radius: 50%;
             transform: translate(-50%, -50%);
             transition: width 0.6s ease, height 0.6s ease;
         }
-
-        .btn-login:not(:disabled):hover::before {
-            width: 300px;
-            height: 300px;
-        }
-
+        .btn-login:not(:disabled):hover::before { width: 300px; height: 300px; }
         .btn-login:not(:disabled):hover {
             background-color: #e68a2e;
             transform: translateY(-2px);
             box-shadow: 0 8px 20px rgba(255,153,51,0.4);
         }
+        .btn-login span { position: relative; z-index: 1; }
 
-        .btn-login span {
-            position: relative;
-            z-index: 1;
-        }
+        .spinner-border-sm { width: 1rem; height: 1rem; border-width: 0.15rem; }
 
-        .spinner-border-sm {
-            width: 1rem;
-            height: 1rem;
-            border-width: 0.15rem;
+        /* New-password modal overlay */
+        .pw-modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.65);
+            z-index: 2000;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
         }
+        .pw-modal-overlay.open { display: flex; }
+        .pw-modal-box {
+            background: var(--white);
+            border-radius: 12px;
+            max-width: 400px;
+            width: 100%;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.35);
+            animation: slideUp 0.35s ease;
+        }
+        .pw-modal-header {
+            background: linear-gradient(135deg, var(--primary), #1a4d8f);
+            color: #fff;
+            padding: 18px 22px;
+            font-size: 16px;
+            font-weight: 700;
+        }
+        .pw-modal-body { padding: 24px 22px; }
+        .pw-modal-body p { font-size: 14px; color: #555; margin-bottom: 16px; }
+        .pw-input {
+            width: 100%;
+            border: 1.5px solid #ddd;
+            border-radius: 7px;
+            padding: 11px 14px;
+            font-size: 14px;
+            font-family: inherit;
+            margin-bottom: 10px;
+            transition: border-color 0.3s;
+        }
+        .pw-input:focus { outline: none; border-color: var(--primary); }
+        .pw-requirements {
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 16px;
+            line-height: 1.6;
+        }
+        .btn-pw-submit {
+            background: var(--success);
+            color: #fff;
+            border: none;
+            padding: 11px;
+            border-radius: 7px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            transition: all 0.3s;
+        }
+        .btn-pw-submit:hover:not(:disabled) { background: #0f6605; }
+        .btn-pw-submit:disabled { opacity: 0.6; cursor: not-allowed; }
+        .pw-error { font-size: 12px; color: var(--error); margin-bottom: 8px; display: none; }
 
         .divider {
             text-align: center;
             margin: 25px 0;
             position: relative;
         }
-
         .divider::before {
             content: '';
             position: absolute;
-            top: 50%;
-            left: 0;
-            right: 0;
+            top: 50%; left: 0; right: 0;
             height: 1px;
             background-color: #ddd;
         }
+        .divider span { background-color: var(--white); padding: 0 15px; position: relative; color: #666; font-size: 14px; }
 
-        .divider span {
-            background-color: var(--white);
-            padding: 0 15px;
-            position: relative;
-            color: #666;
-            font-size: 14px;
-        }
-
-        .alt-login {
-            display: flex;
-            gap: 10px;
-        }
-
+        .alt-login { display: flex; gap: 10px; }
         .btn-alt {
             flex: 1;
             padding: 12px;
@@ -236,12 +234,7 @@
             transition: all 0.3s ease;
             cursor: pointer;
         }
-
-        .btn-alt:hover {
-            border-color: var(--primary);
-            color: var(--primary);
-            transform: translateY(-2px);
-        }
+        .btn-alt:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); }
 
         .back-home {
             text-align: center;
@@ -249,17 +242,8 @@
             padding-top: 25px;
             border-top: 1px solid #eee;
         }
-
-        .back-home a {
-            color: var(--primary);
-            text-decoration: none;
-            font-weight: 500;
-            transition: color 0.3s ease;
-        }
-
-        .back-home a:hover {
-            color: var(--accent);
-        }
+        .back-home a { color: var(--primary); text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
+        .back-home a:hover { color: var(--accent); }
 
         .alert {
             padding: 12px 15px;
@@ -269,101 +253,73 @@
             display: none;
             animation: slideDown 0.4s ease;
         }
+        .alert-danger  { background-color: #f8d7da; border: 1px solid #f5c2c7; color: #842029; }
+        .alert-success { background-color: #d1e7dd; border: 1px solid #badbcc; color: #0f5132; }
+        .alert-warning { background-color: #fff3cd; border: 1px solid #ffecb5; color: #664d03; }
 
-        .alert-danger {
-            background-color: #f8d7da;
-            border: 1px solid #f5c2c7;
-            color: #842029;
-        }
-
-        .alert-success {
-            background-color: #d1e7dd;
-            border: 1px solid #badbcc;
-            color: #0f5132;
-        }
-
-        .alert-warning {
-            background-color: #fff3cd;
-            border: 1px solid #ffecb5;
-            color: #664d03;
-        }
-
-        @keyframes slideUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes slideDown {
-            from {
-                opacity: 0;
-                transform: translateY(-10px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes shake {
-            0%, 100% { transform: translateX(0); }
-            10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
-            20%, 40%, 60%, 80% { transform: translateX(5px); }
-        }
-
-        .shake {
-            animation: shake 0.5s ease;
-        }
+        @keyframes slideUp   { from { opacity:0; transform:translateY(30px);  } to { opacity:1; transform:translateY(0);  } }
+        @keyframes slideDown { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0);  } }
+        @keyframes shake     { 0%,100%{transform:translateX(0);} 10%,30%,50%,70%,90%{transform:translateX(-5px);} 20%,40%,60%,80%{transform:translateX(5px);} }
+        .shake { animation: shake 0.5s ease; }
 
         @media (max-width: 576px) {
-            .login-body {
-                padding: 30px 20px;
-            }
-
-            .login-header h2 {
-                font-size: 20px;
-            }
+            .login-body { padding: 30px 20px; }
+            .login-header h2 { font-size: 20px; }
         }
     </style>
 </head>
 <body>
     <div class="tricolor-strip"></div>
 
-    <div class="login-container">
-        <div class="login-header">
-            <div class="login-icon">
-                <i class="fas fa-user-shield"></i>
+    <!-- ── New Password Modal (shown on first login) ───────────────────────── -->
+    <div class="pw-modal-overlay" id="pwModalOverlay">
+        <div class="pw-modal-box">
+            <div class="pw-modal-header">
+                <i class="fas fa-key me-2"></i> Set Your New Password
             </div>
+            <div class="pw-modal-body">
+                <p>This is your first login. Please set a new password to continue.</p>
+                <input type="password" class="pw-input" id="newPasswordInput"
+                    placeholder="New password" autocomplete="new-password">
+                <input type="password" class="pw-input" id="confirmPasswordInput"
+                    placeholder="Confirm new password" autocomplete="new-password">
+                <div class="pw-requirements">
+                    Password must be at least 8 characters and contain uppercase,
+                    lowercase, a number, and a special character.
+                </div>
+                <div class="pw-error" id="pwError"></div>
+                <button class="btn-pw-submit" id="pwSubmitBtn" onclick="submitNewPassword()">
+                    <i class="fas fa-check me-2"></i>Set Password &amp; Login
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="login-container" id="loginContainer">
+        <div class="login-header">
+            <div class="login-icon"><i class="fas fa-user-shield"></i></div>
             <h2>Officer Login Portal</h2>
-            <p>Digital Complaint & Grievance Redressal System</p>
+            <p>Digital Complaint &amp; Grievance Redressal System</p>
         </div>
 
+        <!-- Role indicator — appears after successful decode -->
+        <div class="role-strip" id="roleStrip"></div>
+
         <div class="login-body">
-            <div class="alert alert-danger" id="errorAlert">
-                <i class="fas fa-exclamation-circle"></i> <span id="errorMessage"></span>
-            </div>
-
-            <div class="alert alert-success" id="successAlert">
-                <i class="fas fa-check-circle"></i> <span id="successMessage"></span>
-            </div>
-
-            <div class="alert alert-warning" id="warningAlert">
-                <i class="fas fa-info-circle"></i> <span id="warningMessage"></span>
-            </div>
+            <div class="alert alert-danger"  id="errorAlert"><i class="fas fa-exclamation-circle me-1"></i><span id="errorMessage"></span></div>
+            <div class="alert alert-success" id="successAlert"><i class="fas fa-check-circle me-1"></i><span id="successMessage"></span></div>
+            <div class="alert alert-warning" id="warningAlert"><i class="fas fa-info-circle me-1"></i><span id="warningMessage"></span></div>
 
             <form id="loginForm">
                 <div class="form-floating">
-                    <input type="text" class="form-control" id="employeeId" placeholder="Employee ID" required autocomplete="username">
+                    <input type="text" class="form-control" id="employeeId"
+                        placeholder="Employee ID" required autocomplete="username">
                     <label for="employeeId"><i class="fas fa-id-card"></i> Employee ID</label>
                 </div>
 
-                <div class="form-floating" style="position: relative;">
-                    <input type="password" class="form-control" id="password" placeholder="Password" required autocomplete="current-password">
+                <div class="form-floating" style="position:relative;">
+                    <input type="password" class="form-control" id="password"
+                        placeholder="Password" required autocomplete="current-password">
                     <label for="password"><i class="fas fa-lock"></i> Password</label>
                     <i class="fas fa-eye password-toggle" id="togglePassword"></i>
                 </div>
@@ -371,9 +327,7 @@
                 <div class="remember-forgot">
                     <div class="form-check">
                         <input class="form-check-input" type="checkbox" id="rememberMe">
-                        <label class="form-check-label" for="rememberMe">
-                            Remember me
-                        </label>
+                        <label class="form-check-label" for="rememberMe">Remember me</label>
                     </div>
                     <a href="#" class="forgot-link" id="forgotPasswordLink">Forgot Password?</a>
                 </div>
@@ -383,9 +337,7 @@
                 </button>
             </form>
 
-            <div class="divider">
-                <span>OR LOGIN WITH</span>
-            </div>
+            <div class="divider"><span>OR LOGIN WITH</span></div>
 
             <div class="alt-login">
                 <button class="btn-alt" onclick="showComingSoon('Digital Signature')">
@@ -397,9 +349,7 @@
             </div>
 
             <div class="back-home">
-                <a href="index.html">
-                    <i class="fas fa-arrow-left"></i> Back to Home
-                </a>
+                <a href="index.html"><i class="fas fa-arrow-left"></i> Back to Home</a>
             </div>
         </div>
     </div>
@@ -407,276 +357,295 @@
     <!-- AWS Cognito SDK -->
     <script src="https://unpkg.com/amazon-cognito-identity-js@6.3.3/dist/amazon-cognito-identity.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    
+
     <script>
-        // AWS Cognito Configuration
-        const poolData = {
-            UserPoolId: "ap-south-1_GJ7rUyUuY",
-            ClientId: "1thh9cn56buk3lpubbu5m45orp"
-        };
-        const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+    // ── 1. COGNITO CONFIG ─────────────────────────────────────────────────────
+    const poolData = {
+        UserPoolId : "ap-south-1_GJ7rUyUuY",
+        ClientId   : "1thh9cn56buk3lpubbu5m45orp"
+    };
+    const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 
-        // UI Elements
-        const loginForm = document.getElementById('loginForm');
-        const employeeIdInput = document.getElementById('employeeId');
-        const passwordInput = document.getElementById('password');
-        const loginButton = document.getElementById('loginButton');
-        const loginButtonText = document.getElementById('loginButtonText');
-        const errorAlert = document.getElementById('errorAlert');
-        const errorMessage = document.getElementById('errorMessage');
-        const successAlert = document.getElementById('successAlert');
-        const successMessage = document.getElementById('successMessage');
-        const warningAlert = document.getElementById('warningAlert');
-        const warningMessage = document.getElementById('warningMessage');
-        const togglePasswordBtn = document.getElementById('togglePassword');
-        const forgotPasswordLink = document.getElementById('forgotPasswordLink');
-        const loginContainer = document.querySelector('.login-container');
+    // ── 2. UI REFERENCES ─────────────────────────────────────────────────────
+    const loginForm        = document.getElementById('loginForm');
+    const employeeIdInput  = document.getElementById('employeeId');
+    const passwordInput    = document.getElementById('password');
+    const loginButton      = document.getElementById('loginButton');
+    const loginButtonText  = document.getElementById('loginButtonText');
+    const loginContainer   = document.getElementById('loginContainer');
+    const roleStrip        = document.getElementById('roleStrip');
 
-        // Toggle password visibility
-        togglePasswordBtn.addEventListener('click', function() {
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                this.classList.remove('fa-eye');
-                this.classList.add('fa-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                this.classList.remove('fa-eye-slash');
-                this.classList.add('fa-eye');
-            }
-        });
+    // Active cognitoUser reference kept for new-password challenge
+    let activeCognitoUser  = null;
 
-        // Alert functions
-        function hideAllAlerts() {
-            errorAlert.style.display = 'none';
-            successAlert.style.display = 'none';
-            warningAlert.style.display = 'none';
-        }
-
-        function showError(msg) {
-            hideAllAlerts();
-            errorMessage.textContent = msg;
-            errorAlert.style.display = 'block';
-            loginContainer.classList.add('shake');
-            setTimeout(() => loginContainer.classList.remove('shake'), 500);
-        }
-
-        function showSuccess(msg) {
-            hideAllAlerts();
-            successMessage.textContent = msg;
-            successAlert.style.display = 'block';
-        }
-
-        function showWarning(msg) {
-            hideAllAlerts();
-            warningMessage.textContent = msg;
-            warningAlert.style.display = 'block';
-        }
-
-        function setLoading(isLoading) {
-            loginButton.disabled = isLoading;
-            if (isLoading) {
-                loginButtonText.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span> Authenticating...';
-            } else {
-                loginButtonText.innerHTML = '<i class="fas fa-sign-in-alt"></i> Login to Dashboard';
-            }
-        }
-
-        // Handle form submission
-        loginForm.addEventListener('submit', function(e) {
-            e.preventDefault();
-            
-            const empId = employeeIdInput.value.trim();
-            const password = passwordInput.value;
-            
-            if (!empId || !password) {
-                showError('Please enter both Employee ID and Password');
-                return;
-            }
-
-            hideAllAlerts();
-            setLoading(true);
-
-            const authenticationDetails = new AmazonCognitoIdentity.AuthenticationDetails({
-                Username: empId,
-                Password: password
-            });
-
-            const userData = {
-                Username: empId,
-                Pool: userPool
-            };
-
-            const cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
-
-            cognitoUser.authenticateUser(authenticationDetails, {
-                onSuccess: function(result) {
-                    const idToken = result.getIdToken().getJwtToken();
-                    const accessToken = result.getAccessToken().getJwtToken();
-                    const refreshToken = result.getRefreshToken().getToken();
-
-                    // Store tokens in localStorage
-                    localStorage.setItem('officerToken', idToken);
-                    localStorage.setItem('accessToken', accessToken);
-                    localStorage.setItem('refreshToken', refreshToken);
-
-                    // Get user attributes
-                    cognitoUser.getUserAttributes(function(err, attributes) {
-                        if (!err && attributes) {
-                            const userInfo = {};
-                            attributes.forEach(attr => {
-                                userInfo[attr.Name] = attr.Value;
-                            });
-                            
-                            // Store user session
-                            const sessionData = {
-                                id: empId,
-                                name: userInfo.name || userInfo.given_name || empId,
-                                email: userInfo.email,
-                                loginTime: new Date().toISOString()
-                            };
-                            sessionStorage.setItem('loggedInUser', JSON.stringify(sessionData));
-                        }
-
-                        // Show success and redirect
-                        showSuccess('Login successful! Redirecting to dashboard...');
-                        loginButtonText.innerHTML = '<i class="fas fa-check-circle"></i> Login Successful!';
-                        
-                        setTimeout(() => {
-                            window.location.href = 'dashboard.html';
-                        }, 1500);
-                    });
-                },
-
-                onFailure: function(err) {
-                    setLoading(false);
-                    console.error('Authentication error:', err);
-                    
-                    let errorMsg = 'Authentication failed. Please try again.';
-                    
-                    if (err.code === 'UserNotFoundException') {
-                        errorMsg = 'Employee ID not found. Please check your credentials.';
-                    } else if (err.code === 'NotAuthorizedException') {
-                        errorMsg = 'Incorrect Employee ID or Password.';
-                    } else if (err.code === 'UserNotConfirmedException') {
-                        errorMsg = 'Your account is not confirmed. Please contact administrator.';
-                    } else if (err.code === 'PasswordResetRequiredException') {
-                        errorMsg = 'Password reset required. Please contact administrator.';
-                    } else if (err.code === 'InvalidParameterException') {
-                        errorMsg = 'Invalid input. Please check your credentials.';
-                    } else if (err.code === 'TooManyRequestsException') {
-                        errorMsg = 'Too many login attempts. Please try again later.';
-                    } else if (err.message) {
-                        errorMsg = err.message;
-                    }
-                    
-                    showError(errorMsg);
-                },
-
-newPasswordRequired: function(userAttributes, requiredAttributes) {
-
-    setLoading(false);
-
-    // Remove attributes Cognito doesn't allow
-    delete userAttributes.email_verified;
-    delete userAttributes.phone_number_verified;
-
-    const newPassword = prompt("Enter your new password");
-
-    if(!newPassword){
-        showError("Password change cancelled.");
-        return;
+    // ── 3. ALERT HELPERS ─────────────────────────────────────────────────────
+    function hideAllAlerts() {
+        ['errorAlert','successAlert','warningAlert'].forEach(id =>
+            document.getElementById(id).style.display = 'none'
+        );
+    }
+    function showError(msg) {
+        hideAllAlerts();
+        document.getElementById('errorMessage').textContent = msg;
+        document.getElementById('errorAlert').style.display = 'block';
+        loginContainer.classList.add('shake');
+        setTimeout(() => loginContainer.classList.remove('shake'), 500);
+    }
+    function showSuccess(msg) {
+        hideAllAlerts();
+        document.getElementById('successMessage').textContent = msg;
+        document.getElementById('successAlert').style.display = 'block';
+    }
+    function showWarning(msg) {
+        hideAllAlerts();
+        document.getElementById('warningMessage').textContent = msg;
+        document.getElementById('warningAlert').style.display = 'block';
     }
 
-    // IMPORTANT: pass empty object if attributes already exist
-    cognitoUser.completeNewPasswordChallenge(
-        newPassword,
-        {},
-        {
-            onSuccess: function(result){
+    // ── 4. LOADING STATE ──────────────────────────────────────────────────────
+    function setLoading(on) {
+        loginButton.disabled = on;
+        loginButtonText.innerHTML = on
+            ? '<span class="spinner-border spinner-border-sm me-2"></span> Authenticating...'
+            : '<i class="fas fa-sign-in-alt"></i> Login to Dashboard';
+    }
 
-                const idToken = result.getIdToken().getJwtToken();
-                const accessToken = result.getAccessToken().getJwtToken();
+    // ── 5. TOKEN PARSE & STORE ────────────────────────────────────────────────
+    function parseJwt(token) {
+        try { return JSON.parse(atob(token.split('.')[1])); } catch(e) { return {}; }
+    }
 
-                localStorage.setItem("officerToken", idToken);
-                localStorage.setItem("accessToken", accessToken);
+    function storeSessionAndRedirect(result) {
+        const idToken      = result.getIdToken().getJwtToken();
+        const accessToken  = result.getAccessToken().getJwtToken();
+        const refreshToken = result.getRefreshToken().getToken();
 
-                showSuccess("Password updated successfully!");
+        // Store all tokens
+        localStorage.setItem('officerToken',  idToken);
+        localStorage.setItem('accessToken',   accessToken);
+        localStorage.setItem('refreshToken',  refreshToken);
 
-                setTimeout(()=>{
-                    window.location.href="dashboard.html";
-                },1500);
+        // ── Decode and extract role attributes ──────────────────────────────
+        const payload    = parseJwt(idToken);
+        const role       = payload['custom:role']       || payload['role']       || 'officer';
+        const department = payload['custom:department'] || payload['department'] || '';
+        const level      = parseInt(payload['custom:level'] || payload['level']  || '1', 10);
+        const name       = payload['cognito:username']  || payload['name']       || payload['email'] || 'Officer';
+
+        // Store decoded values for all pages to use
+        localStorage.setItem('role',       role);
+        localStorage.setItem('department', department);
+        localStorage.setItem('level',      String(level));
+        localStorage.setItem('officerName',name);
+
+        // Store compact session object
+        sessionStorage.setItem('loggedInUser', JSON.stringify({
+            id:         employeeIdInput.value.trim(),
+            name,
+            role,
+            department,
+            level,
+            loginTime:  new Date().toISOString()
+        }));
+
+        // ── Show role indicator briefly ─────────────────────────────────────
+        const ROLE_LABELS = { 1:'Officer', 2:'Senior Officer', 3:'Head Officer' };
+        const ROLE_ICONS  = { 1:'fa-user', 2:'fa-user-tie', 3:'fa-crown' };
+        roleStrip.className = `role-strip show level-${level}`;
+        roleStrip.innerHTML = `
+            <i class="fas ${ROLE_ICONS[level] || 'fa-user'} me-2"></i>
+            Logged in as <strong>${name}</strong> &nbsp;·&nbsp;
+            ${ROLE_LABELS[level] || 'Officer'} &nbsp;·&nbsp;
+            ${department || 'General'}`;
+
+        showSuccess('Login successful! Redirecting to dashboard...');
+        loginButtonText.innerHTML = '<i class="fas fa-check-circle"></i> Login Successful!';
+
+        // ── Role-based redirect ─────────────────────────────────────────────
+        setTimeout(() => {
+            if (level === 3) {
+                window.location.href = 'dashboard.html?type=head';
+            } else if (level === 2) {
+                window.location.href = 'dashboard.html?type=senior';
+            } else {
+                window.location.href = 'dashboard.html';
+            }
+        }, 1500);
+    }
+
+    // ── 6. LOGIN FORM SUBMIT ──────────────────────────────────────────────────
+    loginForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+
+        const empId    = employeeIdInput.value.trim();
+        const password = passwordInput.value;
+
+        if (!empId || !password) {
+            showError('Please enter both Employee ID and Password.');
+            return;
+        }
+
+        hideAllAlerts();
+        setLoading(true);
+
+        const authDetails = new AmazonCognitoIdentity.AuthenticationDetails({
+            Username: empId,
+            Password: password
+        });
+
+        activeCognitoUser = new AmazonCognitoIdentity.CognitoUser({
+            Username: empId,
+            Pool:     userPool
+        });
+
+        activeCognitoUser.authenticateUser(authDetails, {
+
+            // ── SUCCESS ───────────────────────────────────────────────────────
+            onSuccess: function(result) {
+                storeSessionAndRedirect(result);
             },
 
-            onFailure: function(err){
-                console.error(err);
-                showError(err.message || "Password update failed");
-            }
-        }
-    );
-}
-            });
-        });
+            // ── FAILURE ───────────────────────────────────────────────────────
+            onFailure: function(err) {
+                setLoading(false);
+                console.error('Auth error:', err);
 
-        // Forgot password handler
-        forgotPasswordLink.addEventListener('click', function(e) {
-            e.preventDefault();
-            
-            const empId = employeeIdInput.value.trim();
-            
-            if (!empId) {
-                showWarning('Please enter your Employee ID first, then click "Forgot Password"');
-                employeeIdInput.focus();
-                return;
-            }
-
-            if (confirm(`Send password reset instructions to your registered email for Employee ID: ${empId}?`)) {
-                const userData = {
-                    Username: empId,
-                    Pool: userPool
+                const MSG = {
+                    UserNotFoundException:       'Employee ID not found. Please check your credentials.',
+                    NotAuthorizedException:      'Incorrect Employee ID or Password.',
+                    UserNotConfirmedException:   'Account not confirmed. Please contact administrator.',
+                    PasswordResetRequiredException:'Password reset required. Please contact administrator.',
+                    InvalidParameterException:   'Invalid input. Please check your credentials.',
+                    TooManyRequestsException:    'Too many login attempts. Please try again later.',
                 };
-                
-                const cognitoUser = new AmazonCognitoIdentity.CognitoUser(userData);
-                
-                cognitoUser.forgotPassword({
-                    onSuccess: function(data) {
-                        showSuccess('Password reset code sent to your email. Please check your inbox.');
-                        console.log('CodeDeliveryData:', data);
-                    },
-                    onFailure: function(err) {
-                        console.error('Forgot password error:', err);
-                        showError(err.message || 'Failed to send reset code. Please try again.');
-                    }
-                });
+                showError(MSG[err.code] || err.message || 'Authentication failed. Please try again.');
+            },
+
+            // ── FIRST LOGIN: new password required ────────────────────────────
+            newPasswordRequired: function(userAttributes) {
+                setLoading(false);
+                // Open the modal — do NOT use prompt()
+                document.getElementById('pwModalOverlay').classList.add('open');
+                document.getElementById('newPasswordInput').focus();
             }
         });
+    });
 
-        // Show coming soon alert
-        function showComingSoon(method) {
-            showWarning(`${method} login coming soon! Currently, only Employee ID/Password authentication is available.`);
+    // ── 7. NEW PASSWORD MODAL ─────────────────────────────────────────────────
+    function submitNewPassword() {
+        const newPw     = document.getElementById('newPasswordInput').value;
+        const confirmPw = document.getElementById('confirmPasswordInput').value;
+        const pwError   = document.getElementById('pwError');
+        const pwBtn     = document.getElementById('pwSubmitBtn');
+
+        pwError.style.display = 'none';
+
+        if (newPw.length < 8) {
+            pwError.textContent = 'Password must be at least 8 characters.';
+            pwError.style.display = 'block';
+            return;
+        }
+        if (newPw !== confirmPw) {
+            pwError.textContent = 'Passwords do not match.';
+            pwError.style.display = 'block';
+            return;
         }
 
-        // Check if user is already logged in
-        window.addEventListener('load', function() {
-            const token = localStorage.getItem('officerToken');
-            if (token) {
-                // Verify token is still valid
-                const cognitoUser = userPool.getCurrentUser();
-                if (cognitoUser != null) {
-                    cognitoUser.getSession(function(err, session) {
-                        if (err) {
-                            console.log('Session invalid:', err);
-                        } else if (session.isValid()) {
-                            // User already logged in, redirect to dashboard
-                            window.location.href = 'dashboard.html';
-                        }
-                    });
-                }
+        pwBtn.disabled     = true;
+        pwBtn.textContent  = 'Setting password…';
+
+        // Pass empty object — Cognito handles required attributes itself
+        activeCognitoUser.completeNewPasswordChallenge(newPw, {}, {
+            onSuccess: function(result) {
+                document.getElementById('pwModalOverlay').classList.remove('open');
+                storeSessionAndRedirect(result);
+            },
+            onFailure: function(err) {
+                console.error('Password change error:', err);
+                pwError.textContent    = err.message || 'Password change failed. Please try again.';
+                pwError.style.display  = 'block';
+                pwBtn.disabled         = false;
+                pwBtn.innerHTML        = '<i class="fas fa-check me-2"></i>Set Password &amp; Login';
             }
         });
+    }
 
-        // Clear any previous errors when user starts typing
-        employeeIdInput.addEventListener('input', hideAllAlerts);
-        passwordInput.addEventListener('input', hideAllAlerts);
+    // Allow Enter key inside modal fields
+    ['newPasswordInput','confirmPasswordInput'].forEach(id => {
+        document.getElementById(id).addEventListener('keydown', e => {
+            if (e.key === 'Enter') submitNewPassword();
+        });
+    });
+
+    // ── 8. PASSWORD TOGGLE ────────────────────────────────────────────────────
+    document.getElementById('togglePassword').addEventListener('click', function() {
+        const isText = passwordInput.type === 'text';
+        passwordInput.type = isText ? 'password' : 'text';
+        this.classList.toggle('fa-eye',       isText);
+        this.classList.toggle('fa-eye-slash', !isText);
+    });
+
+    // ── 9. FORGOT PASSWORD ────────────────────────────────────────────────────
+    document.getElementById('forgotPasswordLink').addEventListener('click', function(e) {
+        e.preventDefault();
+        const empId = employeeIdInput.value.trim();
+
+        if (!empId) {
+            showWarning('Please enter your Employee ID first, then click "Forgot Password".');
+            employeeIdInput.focus();
+            return;
+        }
+
+        if (!confirm(`Send password reset code to the registered email for Employee ID: ${empId}?`)) return;
+
+        const cognitoUser = new AmazonCognitoIdentity.CognitoUser({ Username: empId, Pool: userPool });
+
+        cognitoUser.forgotPassword({
+            onSuccess: function(data) {
+                showSuccess('Password reset code sent to your registered email. Check your inbox.');
+            },
+            onFailure: function(err) {
+                showError(err.message || 'Failed to send reset code. Please try again.');
+            }
+        });
+    });
+
+    // ── 10. HELPER ────────────────────────────────────────────────────────────
+    function showComingSoon(method) {
+        showWarning(`${method} login coming soon! Use Employee ID/Password for now.`);
+    }
+
+    // ── 11. CLEAR ALERTS ON INPUT ─────────────────────────────────────────────
+    [employeeIdInput, passwordInput].forEach(el => el.addEventListener('input', hideAllAlerts));
+
+    // ── 12. AUTO-REDIRECT IF ALREADY LOGGED IN ───────────────────────────────
+    window.addEventListener('load', function() {
+        const token = localStorage.getItem('officerToken');
+        if (!token) return;
+
+        const cognitoUser = userPool.getCurrentUser();
+        if (!cognitoUser) return;
+
+        cognitoUser.getSession(function(err, session) {
+            if (err || !session || !session.isValid()) return;
+
+            // Still valid — redirect based on stored level
+            const level = parseInt(localStorage.getItem('level') || '1', 10);
+            if (level === 3)      window.location.href = 'dashboard.html?type=head';
+            else if (level === 2) window.location.href = 'dashboard.html?type=senior';
+            else                  window.location.href = 'dashboard.html';
+        });
+    });
+
+    // ── 13. LOGOUT UTILITY (imported by other pages via inline call) ──────────
+    function logout() {
+        const cognitoUser = userPool.getCurrentUser();
+        if (cognitoUser) cognitoUser.signOut();
+        localStorage.clear();
+        sessionStorage.clear();
+        window.location.href = 'login.html';
+    }
+
     </script>
 </body>
 </html>
