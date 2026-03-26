@@ -3,649 +3,680 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Officer Login - Digital Grievance Portal</title>
+    <title>Officer Login – Digital Grievance Redressal Platform</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #0A2E5C;
-            --background: #F2F2F2;
-            --accent: #FF9933;
-            --success: #138808;
-            --error: #C62828;
+            --primary: #0A2558;
+            --primary-dark: #06173a;
+            --primary-light: #1a3d7c;
+            --accent: #E8842A;
+            --green: #0e7c3b;
             --white: #FFFFFF;
+            --bg: #F5F6FA;
+            --text: #1c2b4a;
+            --text-muted: #6b7a99;
+            --border: #e2e8f0;
+            --error: #C62828;
+            --success-clr: #0e7c3b;
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         body {
-            font-family: 'Roboto', 'Noto Sans Devanagari', sans-serif;
-            background: linear-gradient(135deg, var(--primary) 0%, #1a4d8f 100%);
+            font-family: 'DM Sans', 'Noto Sans Devanagari', sans-serif;
             min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
+            background: linear-gradient(135deg, #061728 0%, var(--primary) 50%, #1a3d7c 100%);
+            display: flex; flex-direction: column;
+            overflow-x: hidden;
+        }
+        a { text-decoration: none; color: inherit; }
+
+        /* ── LOADER ── */
+        #page-loader {
+            position: fixed; inset: 0; z-index: 9999;
+            background: var(--primary-dark);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+        #page-loader.hidden { opacity: 0; visibility: hidden; }
+        .chakra-loader { width: 70px; height: 70px; animation: chakra-spin 1.2s linear infinite; }
+        .chakra-loader svg { width: 100%; height: 100%; }
+        @keyframes chakra-spin { to { transform: rotate(360deg); } }
+        .loader-text { margin-top: 18px; color: rgba(255,255,255,0.8); font-size: 13px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase; animation: loader-pulse 1.5s ease-in-out infinite; }
+        @keyframes loader-pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+        /* ── TRICOLOR ── */
+        .tricolor { height: 5px; background: linear-gradient(to right, #FF9933 0%, #FF9933 33.33%, #fff 33.33%, #fff 66.66%, #138808 66.66%, #138808 100%); position: fixed; top: 0; left: 0; right: 0; z-index: 1000; }
+
+        /* ── MANDALA BG ── */
+        .bg-mandala {
+            position: fixed; right: -150px; top: 50%; transform: translateY(-50%);
+            width: 700px; height: 700px; opacity: 0.04; pointer-events: none;
+            animation: mandala-rotate 80s linear infinite;
+        }
+        @keyframes mandala-rotate { to { transform: translateY(-50%) rotate(360deg); } }
+
+        /* ── PARTICLES ── */
+        .bg-particles { position: fixed; inset: 0; pointer-events: none; overflow: hidden; }
+        .particle { position: absolute; border-radius: 50%; opacity: 0; animation: float-particle 8s ease-in-out infinite; }
+        @keyframes float-particle { 0%{opacity:0;transform:translateY(0) scale(1)} 20%{opacity:0.5} 80%{opacity:0.2} 100%{opacity:0;transform:translateY(-300px) scale(0.3)} }
+
+        /* ── MAIN LAYOUT ── */
+        .login-layout {
+            flex: 1; display: flex; align-items: center; justify-content: center;
+            padding: 40px 20px 60px;
+            position: relative; z-index: 10;
+        }
+        .login-split {
+            display: grid; grid-template-columns: 1fr 440px;
+            gap: 60px; align-items: center;
+            max-width: 1000px; width: 100%;
         }
 
-        .tricolor-strip {
-            height: 5px;
-            background: linear-gradient(to right, #FF9933 0%, #FF9933 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #138808 66.66%, #138808 100%);
-            position: fixed;
-            top: 0; left: 0; right: 0;
-            z-index: 1000;
+        /* ── LEFT PANEL ── */
+        .login-left { color: #fff; animation: fade-up 0.8s ease both; }
+        @keyframes fade-up { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+        .login-eyebrow {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(255,153,51,0.15); border: 1px solid rgba(255,153,51,0.35);
+            padding: 5px 16px; border-radius: 30px;
+            font-size: 12px; font-weight: 600; color: #FFB74D;
+            margin-bottom: 22px;
+        }
+        .login-eyebrow .dot { width: 7px; height: 7px; background: #FFB74D; border-radius: 50%; animation: blink 2s infinite; }
+        @keyframes blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+        .login-left h2 { font-family: 'Playfair Display', serif; font-size: 42px; font-weight: 800; line-height: 1.15; margin-bottom: 16px; }
+        .login-left h2 .accent { color: var(--accent); }
+        .login-left-desc { font-size: 15px; opacity: 0.8; line-height: 1.75; margin-bottom: 36px; }
+        .login-features { display: flex; flex-direction: column; gap: 14px; }
+        .login-feature { display: flex; align-items: center; gap: 12px; font-size: 14px; opacity: 0.85; }
+        .feature-icon {
+            width: 36px; height: 36px; border-radius: 8px; flex-shrink: 0;
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.15);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 15px; color: var(--accent);
+        }
+        .secure-badge {
+            display: inline-flex; align-items: center; gap: 8px;
+            margin-top: 32px; padding: 10px 18px;
+            background: rgba(14,124,59,0.15); border: 1px solid rgba(14,124,59,0.3);
+            border-radius: 8px; font-size: 13px; color: #6fdd9a;
         }
 
-        .login-container {
-            background-color: var(--white);
-            border-radius: 15px;
-            box-shadow: 0 10px 50px rgba(0,0,0,0.3);
-            max-width: 450px;
-            width: 100%;
+        /* ── LOGIN CARD ── */
+        .login-card {
+            background: #fff; border-radius: 20px;
+            box-shadow: 0 24px 80px rgba(0,0,0,0.35);
             overflow: hidden;
-            animation: slideUp 0.6s ease;
+            animation: fade-up 0.8s 0.15s ease both;
         }
-
-        .login-header {
-            background: linear-gradient(135deg, var(--primary) 0%, #1a4d8f 100%);
-            color: var(--white);
-            padding: 30px;
-            text-align: center;
+        .login-card-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            padding: 28px 32px 24px;
+            text-align: center; color: #fff; position: relative; overflow: hidden;
         }
-
-        .login-icon { font-size: 60px; margin-bottom: 15px; color: var(--accent); }
-        .login-header h2 { font-size: 24px; font-weight: 700; margin-bottom: 5px; }
-        .login-header p  { font-size: 14px; opacity: 0.9; }
-
-        /* Role indicator strip — shown after token decode */
-        .role-strip {
-            display: none;
-            padding: 8px 16px;
-            font-size: 13px;
-            font-weight: 600;
-            text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
+        .login-card-header::before {
+            content: ''; position: absolute; inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
+        .card-header-icon {
+            width: 64px; height: 64px; border-radius: 16px;
+            background: rgba(255,255,255,0.12); border: 2px solid rgba(255,255,255,0.18);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 26px; color: var(--accent); margin: 0 auto 14px;
+        }
+        .login-card-header h2 { font-family: 'Playfair Display', serif; font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+        .login-card-header p { font-size: 13px; opacity: 0.75; }
+
+        /* Role strip */
+        .role-strip { display: none; padding: 9px 16px; font-size: 13px; font-weight: 600; text-align: center; border-bottom: 1px solid var(--border); }
         .role-strip.show { display: block; }
-        .role-strip.level-1 { background: rgba(13,110,253,0.15); color: #0d6efd; }
-        .role-strip.level-2 { background: rgba(255,153,51,0.15); color: #b84800; }
-        .role-strip.level-3 { background: rgba(198,40,40,0.15);  color: var(--error); }
+        .role-strip.level-1 { background: rgba(33,150,243,0.08); color: #1565c0; }
+        .role-strip.level-2 { background: rgba(232,132,42,0.1);  color: #b84800; }
+        .role-strip.level-3 { background: rgba(198,40,40,0.08);  color: var(--error); }
 
-        .login-body { padding: 40px 30px; }
+        /* ── FORM BODY ── */
+        .login-card-body { padding: 32px; }
 
-        .form-floating { margin-bottom: 20px; }
-        .form-floating .form-control {
-            border: 2px solid #ddd;
-            border-radius: 8px;
-            padding: 12px 15px;
-            height: 58px;
-            transition: all 0.3s ease;
-        }
-        .form-floating .form-control:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 0.2rem rgba(10,46,92,0.15);
-        }
-        .form-floating label { padding: 1rem 15px; }
+        /* Alerts */
+        .login-alert { display: none; border-radius: 10px; padding: 12px 16px; margin-bottom: 20px; font-size: 13.5px; font-weight: 500; animation: slide-down 0.35s ease; }
+        @keyframes slide-down { from{opacity:0;transform:translateY(-10px)} to{opacity:1;transform:translateY(0)} }
+        .login-alert i { margin-right: 7px; }
+        .alert-err  { background: #fff0f0; border: 1px solid #ffcdd2; color: #b71c1c; }
+        .alert-ok   { background: #f0fff4; border: 1px solid #c8e6c9; color: #1b5e20; }
+        .alert-warn { background: #fffbf0; border: 1px solid #ffe082; color: #6d4c00; }
 
-        .password-toggle {
-            position: absolute;
-            right: 15px; top: 50%;
-            transform: translateY(-50%);
-            cursor: pointer;
-            color: #666;
-            transition: color 0.3s ease;
-            z-index: 10;
+        /* Field group */
+        .field-group { margin-bottom: 18px; }
+        .field-label { font-size: 12px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 7px; display: block; }
+        .field-wrap { position: relative; }
+        .field-icon { position: absolute; left: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 15px; pointer-events: none; }
+        .field-input {
+            width: 100%; border: 2px solid var(--border); border-radius: 10px;
+            padding: 13px 14px 13px 42px;
+            font-size: 14.5px; font-family: 'DM Sans', sans-serif; color: var(--text);
+            background: var(--bg); outline: none; transition: all 0.3s;
         }
-        .password-toggle:hover { color: var(--primary); }
+        .field-input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(10,37,88,0.08); }
+        .field-input::placeholder { color: var(--text-muted); }
+        .pw-toggle { position: absolute; right: 14px; top: 50%; transform: translateY(-50%); color: var(--text-muted); cursor: pointer; font-size: 15px; transition: color 0.25s; }
+        .pw-toggle:hover { color: var(--primary); }
 
-        .remember-forgot {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 25px;
-            font-size: 14px;
-        }
-        .form-check-label { cursor: pointer; user-select: none; }
-        .forgot-link { color: var(--primary); text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
+        /* Remember / Forgot */
+        .rem-forgot { display: flex; justify-content: space-between; align-items: center; margin-bottom: 22px; font-size: 13.5px; }
+        .form-check-label { cursor: pointer; color: var(--text-muted); user-select: none; }
+        .form-check-input:checked { background-color: var(--primary); border-color: var(--primary); }
+        .forgot-link { color: var(--primary); font-weight: 600; transition: color 0.25s; }
         .forgot-link:hover { color: var(--accent); }
 
+        /* Login button */
         .btn-login {
-            background-color: var(--accent);
-            border: none;
-            color: var(--white);
-            padding: 14px;
-            font-size: 16px;
-            font-weight: 600;
-            border-radius: 8px;
-            width: 100%;
-            transition: all 0.3s ease;
-            position: relative;
-            overflow: hidden;
+            width: 100%; padding: 14px; border: none; border-radius: 10px;
+            background: linear-gradient(135deg, var(--accent), #d6741e);
+            color: #fff; font-size: 15px; font-weight: 700;
+            font-family: 'DM Sans', sans-serif; cursor: pointer;
+            transition: all 0.3s; position: relative; overflow: hidden;
+            box-shadow: 0 4px 20px rgba(232,132,42,0.4);
         }
-        .btn-login:disabled { opacity: 0.6; cursor: not-allowed; }
-        .btn-login::before {
-            content: '';
-            position: absolute;
-            top: 50%; left: 50%;
-            width: 0; height: 0;
-            background-color: rgba(255,255,255,0.2);
-            border-radius: 50%;
-            transform: translate(-50%, -50%);
-            transition: width 0.6s ease, height 0.6s ease;
-        }
-        .btn-login:not(:disabled):hover::before { width: 300px; height: 300px; }
-        .btn-login:not(:disabled):hover {
-            background-color: #e68a2e;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(255,153,51,0.4);
-        }
+        .btn-login::before { content: ''; position: absolute; top: 50%; left: 50%; width: 0; height: 0; background: rgba(255,255,255,0.18); border-radius: 50%; transform: translate(-50%,-50%); transition: width 0.55s ease, height 0.55s ease; }
+        .btn-login:not(:disabled):hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(232,132,42,0.5); }
+        .btn-login:not(:disabled):hover::before { width: 320px; height: 320px; }
+        .btn-login:disabled { opacity: 0.65; cursor: not-allowed; }
         .btn-login span { position: relative; z-index: 1; }
 
-        .spinner-border-sm { width: 1rem; height: 1rem; border-width: 0.15rem; }
+        /* Divider */
+        .or-divider { display: flex; align-items: center; gap: 12px; margin: 22px 0; font-size: 13px; color: var(--text-muted); }
+        .or-divider::before, .or-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
 
-        /* New-password modal overlay */
-        .pw-modal-overlay {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.65);
-            z-index: 2000;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-        }
-        .pw-modal-overlay.open { display: flex; }
-        .pw-modal-box {
-            background: var(--white);
-            border-radius: 12px;
-            max-width: 400px;
-            width: 100%;
-            overflow: hidden;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.35);
-            animation: slideUp 0.35s ease;
-        }
-        .pw-modal-header {
-            background: linear-gradient(135deg, var(--primary), #1a4d8f);
-            color: #fff;
-            padding: 18px 22px;
-            font-size: 16px;
-            font-weight: 700;
-        }
-        .pw-modal-body { padding: 24px 22px; }
-        .pw-modal-body p { font-size: 14px; color: #555; margin-bottom: 16px; }
-        .pw-input {
-            width: 100%;
-            border: 1.5px solid #ddd;
-            border-radius: 7px;
-            padding: 11px 14px;
-            font-size: 14px;
-            font-family: inherit;
-            margin-bottom: 10px;
-            transition: border-color 0.3s;
-        }
-        .pw-input:focus { outline: none; border-color: var(--primary); }
-        .pw-requirements {
-            font-size: 11px;
-            color: #999;
-            margin-bottom: 16px;
-            line-height: 1.6;
-        }
-        .btn-pw-submit {
-            background: var(--success);
-            color: #fff;
-            border: none;
-            padding: 11px;
-            border-radius: 7px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            width: 100%;
-            transition: all 0.3s;
-        }
-        .btn-pw-submit:hover:not(:disabled) { background: #0f6605; }
-        .btn-pw-submit:disabled { opacity: 0.6; cursor: not-allowed; }
-        .pw-error { font-size: 12px; color: var(--error); margin-bottom: 8px; display: none; }
-
-        .divider {
-            text-align: center;
-            margin: 25px 0;
-            position: relative;
-        }
-        .divider::before {
-            content: '';
-            position: absolute;
-            top: 50%; left: 0; right: 0;
-            height: 1px;
-            background-color: #ddd;
-        }
-        .divider span { background-color: var(--white); padding: 0 15px; position: relative; color: #666; font-size: 14px; }
-
-        .alt-login { display: flex; gap: 10px; }
+        /* Alt login */
+        .alt-btns { display: flex; gap: 10px; }
         .btn-alt {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid #ddd;
-            background-color: var(--white);
-            border-radius: 8px;
-            font-size: 14px;
-            font-weight: 600;
-            color: #666;
-            transition: all 0.3s ease;
-            cursor: pointer;
+            flex: 1; padding: 12px; border: 2px solid var(--border); background: #fff;
+            border-radius: 10px; font-size: 13px; font-weight: 600; color: var(--text-muted);
+            cursor: pointer; transition: all 0.3s; font-family: 'DM Sans', sans-serif;
         }
         .btn-alt:hover { border-color: var(--primary); color: var(--primary); transform: translateY(-2px); }
 
-        .back-home {
-            text-align: center;
-            margin-top: 25px;
-            padding-top: 25px;
-            border-top: 1px solid #eee;
-        }
-        .back-home a { color: var(--primary); text-decoration: none; font-weight: 500; transition: color 0.3s ease; }
-        .back-home a:hover { color: var(--accent); }
+        /* Back link */
+        .back-link { text-align: center; margin-top: 22px; padding-top: 20px; border-top: 1px solid var(--border); font-size: 13.5px; }
+        .back-link a { color: var(--primary); font-weight: 600; transition: color 0.25s; display: inline-flex; align-items: center; gap: 6px; }
+        .back-link a:hover { color: var(--accent); }
 
-        .alert {
-            padding: 12px 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            font-size: 14px;
-            display: none;
-            animation: slideDown 0.4s ease;
-        }
-        .alert-danger  { background-color: #f8d7da; border: 1px solid #f5c2c7; color: #842029; }
-        .alert-success { background-color: #d1e7dd; border: 1px solid #badbcc; color: #0f5132; }
-        .alert-warning { background-color: #fff3cd; border: 1px solid #ffecb5; color: #664d03; }
-
-        @keyframes slideUp   { from { opacity:0; transform:translateY(30px);  } to { opacity:1; transform:translateY(0);  } }
-        @keyframes slideDown { from { opacity:0; transform:translateY(-10px); } to { opacity:1; transform:translateY(0);  } }
-        @keyframes shake     { 0%,100%{transform:translateX(0);} 10%,30%,50%,70%,90%{transform:translateX(-5px);} 20%,40%,60%,80%{transform:translateX(5px);} }
+        /* Shake */
+        @keyframes shake { 0%,100%{transform:translateX(0)} 10%,30%,50%,70%,90%{transform:translateX(-5px)} 20%,40%,60%,80%{transform:translateX(5px)} }
         .shake { animation: shake 0.5s ease; }
 
-        @media (max-width: 576px) {
-            .login-body { padding: 30px 20px; }
-            .login-header h2 { font-size: 20px; }
+        /* ── NEW PASSWORD MODAL ── */
+        .pw-modal-overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.7); z-index: 2000; align-items: center; justify-content: center; padding: 20px; backdrop-filter: blur(4px); }
+        .pw-modal-overlay.open { display: flex; }
+        .pw-modal {
+            background: #fff; border-radius: 20px; max-width: 420px; width: 100%;
+            overflow: hidden; box-shadow: 0 30px 80px rgba(0,0,0,0.4);
+            animation: fade-up 0.35s ease;
         }
+        .pw-modal-header { background: linear-gradient(135deg, var(--primary), var(--primary-light)); padding: 22px 26px; color: #fff; display: flex; align-items: center; gap: 12px; }
+        .pw-modal-header-icon { width: 42px; height: 42px; border-radius: 10px; background: rgba(255,255,255,0.12); display: flex; align-items: center; justify-content: center; font-size: 18px; color: var(--accent); flex-shrink: 0; }
+        .pw-modal-header h3 { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; margin: 0; }
+        .pw-modal-header p { font-size: 12px; opacity: 0.7; margin: 2px 0 0; }
+        .pw-modal-body { padding: 28px 26px; }
+        .pw-modal-body > p { font-size: 14px; color: var(--text-muted); line-height: 1.65; margin-bottom: 20px; }
+        .pw-input {
+            width: 100%; border: 2px solid var(--border); border-radius: 10px;
+            padding: 13px 16px; font-size: 14px; font-family: 'DM Sans', sans-serif;
+            color: var(--text); background: var(--bg); margin-bottom: 12px; outline: none; transition: all 0.3s;
+        }
+        .pw-input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(10,37,88,0.08); }
+        .pw-requirements { font-size: 12px; color: var(--text-muted); margin-bottom: 16px; line-height: 1.7; background: var(--bg); padding: 10px 14px; border-radius: 8px; border-left: 3px solid var(--accent); }
+        .pw-err { font-size: 12.5px; color: var(--error); margin-bottom: 12px; display: none; padding: 8px 12px; background: #fff0f0; border-radius: 7px; }
+        .btn-pw-submit {
+            width: 100%; padding: 13px; border: none; border-radius: 10px;
+            background: linear-gradient(135deg, var(--green), #16a34a);
+            color: #fff; font-size: 14.5px; font-weight: 700;
+            font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.3s;
+            box-shadow: 0 4px 16px rgba(14,124,59,0.35);
+        }
+        .btn-pw-submit:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(14,124,59,0.45); }
+        .btn-pw-submit:disabled { opacity: 0.65; cursor: not-allowed; }
+
+        /* ── FOOTER ── */
+        .login-footer { position: relative; z-index: 10; text-align: center; padding: 16px 20px 24px; font-size: 12px; color: rgba(255,255,255,0.4); }
+        .login-footer a { color: rgba(255,255,255,0.5); transition: color 0.2s; }
+        .login-footer a:hover { color: rgba(255,255,255,0.8); }
+        .login-footer-links { display: flex; gap: 18px; justify-content: center; margin-top: 6px; flex-wrap: wrap; }
+
+        /* ── SPINNER ── */
+        .spinner-border-sm { width: 1rem; height: 1rem; border-width: 0.15rem; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 900px) { .login-split { grid-template-columns: 1fr; } .login-left { display: none; } }
+        @media (max-width: 576px) { .login-card-body { padding: 24px 20px; } .top-nav-links { display: none; } }
     </style>
 </head>
 <body>
-    <div class="tricolor-strip"></div>
 
-    <!-- ── New Password Modal (shown on first login) ───────────────────────── -->
-    <div class="pw-modal-overlay" id="pwModalOverlay">
-        <div class="pw-modal-box">
-            <div class="pw-modal-header">
-                <i class="fas fa-key me-2"></i> Set Your New Password
-            </div>
-            <div class="pw-modal-body">
-                <p>This is your first login. Please set a new password to continue.</p>
-                <input type="password" class="pw-input" id="newPasswordInput"
-                    placeholder="New password" autocomplete="new-password">
-                <input type="password" class="pw-input" id="confirmPasswordInput"
-                    placeholder="Confirm new password" autocomplete="new-password">
-                <div class="pw-requirements">
-                    Password must be at least 8 characters and contain uppercase,
-                    lowercase, a number, and a special character.
-                </div>
-                <div class="pw-error" id="pwError"></div>
-                <button class="btn-pw-submit" id="pwSubmitBtn" onclick="submitNewPassword()">
-                    <i class="fas fa-check me-2"></i>Set Password &amp; Login
-                </button>
-            </div>
-        </div>
+<!-- PAGE LOADER -->
+<div id="page-loader">
+    <div class="chakra-loader">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="46" stroke="#FF9933" stroke-width="4" fill="none"/>
+            <circle cx="50" cy="50" r="8" fill="#138808"/>
+            <g stroke="#003580" stroke-width="2">
+                <line x1="50" y1="50" x2="50" y2="6"/><line x1="50" y1="50" x2="66" y2="9"/>
+                <line x1="50" y1="50" x2="79" y2="21"/><line x1="50" y1="50" x2="86" y2="34"/>
+                <line x1="50" y1="50" x2="89" y2="50"/><line x1="50" y1="50" x2="86" y2="66"/>
+                <line x1="50" y1="50" x2="79" y2="79"/><line x1="50" y1="50" x2="66" y2="91"/>
+                <line x1="50" y1="50" x2="50" y2="94"/><line x1="50" y1="50" x2="34" y2="91"/>
+                <line x1="50" y1="50" x2="21" y2="79"/><line x1="50" y1="50" x2="14" y2="66"/>
+                <line x1="50" y1="50" x2="11" y2="50"/><line x1="50" y1="50" x2="14" y2="34"/>
+                <line x1="50" y1="50" x2="21" y2="21"/><line x1="50" y1="50" x2="34" y2="9"/>
+                <line x1="50" y1="50" x2="58" y2="7.5"/><line x1="50" y1="50" x2="73" y2="14"/>
+                <line x1="50" y1="50" x2="83" y2="27"/><line x1="50" y1="50" x2="88" y2="42"/>
+                <line x1="50" y1="50" x2="88" y2="58"/><line x1="50" y1="50" x2="83" y2="73"/>
+                <line x1="50" y1="50" x2="73" y2="86"/><line x1="50" y1="50" x2="58" y2="92.5"/>
+            </g>
+            <circle cx="50" cy="50" r="4" fill="#FF9933"/>
+        </svg>
     </div>
+    <p class="loader-text">Securing Connection…</p>
+</div>
 
-    <div class="login-container" id="loginContainer">
-        <div class="login-header">
-            <div class="login-icon"><i class="fas fa-user-shield"></i></div>
-            <h2>Officer Login Portal</h2>
-            <p>Digital Complaint &amp; Grievance Redressal System</p>
+<!-- BACKGROUND EFFECTS -->
+<div class="bg-particles" id="bgParticles"></div>
+<svg class="bg-mandala" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+    <g fill="none" stroke="white">
+        <circle cx="250" cy="250" r="240" stroke-width="1"/><circle cx="250" cy="250" r="200" stroke-width="0.8"/>
+        <circle cx="250" cy="250" r="160" stroke-width="0.6"/><circle cx="250" cy="250" r="120" stroke-width="0.5"/>
+        <circle cx="250" cy="250" r="80" stroke-width="0.4"/>
+        <line x1="250" y1="10" x2="250" y2="490" stroke-width="0.4"/><line x1="10" y1="250" x2="490" y2="250" stroke-width="0.4"/>
+        <line x1="74" y1="74" x2="426" y2="426" stroke-width="0.4"/><line x1="426" y1="74" x2="74" y2="426" stroke-width="0.4"/>
+        <ellipse cx="250" cy="130" rx="18" ry="40" stroke-width="0.6"/><ellipse cx="250" cy="370" rx="18" ry="40" stroke-width="0.6"/>
+        <ellipse cx="130" cy="250" rx="40" ry="18" stroke-width="0.6"/><ellipse cx="370" cy="250" rx="40" ry="18" stroke-width="0.6"/>
+    </g>
+</svg>
+
+<!-- TRICOLOR -->
+<div class="tricolor"></div>
+
+<!-- MAIN LAYOUT -->
+<div class="login-layout">
+    <div class="login-split">
+
+        <!-- LEFT PANEL -->
+        <div class="login-left">
+            <div class="login-eyebrow"><span class="dot"></span> Officer Portal — Restricted Access</div>
+            <h2>Secure Access<br>for <span class="accent">Government</span><br>Officers</h2>
+            <p class="login-left-desc">Log in to manage grievances, update case statuses, assign tasks, and generate reports — all from one unified dashboard.</p>
+            <div class="login-features">
+                <div class="login-feature">
+                    <div class="feature-icon"><i class="fas fa-tasks"></i></div>
+                    Manage and resolve citizen complaints in real-time
+                </div>
+                <div class="login-feature">
+                    <div class="feature-icon"><i class="fas fa-chart-bar"></i></div>
+                    Access department analytics and performance reports
+                </div>
+                <div class="login-feature">
+                    <div class="feature-icon"><i class="fas fa-bell"></i></div>
+                    Receive automated escalation alerts for overdue cases
+                </div>
+                <div class="login-feature">
+                    <div class="feature-icon"><i class="fas fa-sitemap"></i></div>
+                    Role-based access — Officer, Senior Officer, Head Officer
+                </div>
+            </div>
+            <div class="secure-badge">
+                <i class="fas fa-shield-alt"></i>
+                Secured by AWS Cognito &nbsp;·&nbsp; End-to-end encrypted &nbsp;·&nbsp; NIC Hosted
+            </div>
         </div>
 
-        <!-- Role indicator — appears after successful decode -->
-        <div class="role-strip" id="roleStrip"></div>
-
-        <div class="login-body">
-            <div class="alert alert-danger"  id="errorAlert"><i class="fas fa-exclamation-circle me-1"></i><span id="errorMessage"></span></div>
-            <div class="alert alert-success" id="successAlert"><i class="fas fa-check-circle me-1"></i><span id="successMessage"></span></div>
-            <div class="alert alert-warning" id="warningAlert"><i class="fas fa-info-circle me-1"></i><span id="warningMessage"></span></div>
-
-            <form id="loginForm">
-                <div class="form-floating">
-                    <input type="text" class="form-control" id="employeeId"
-                        placeholder="Employee ID" required autocomplete="username">
-                    <label for="employeeId"><i class="fas fa-id-card"></i> Employee ID</label>
-                </div>
-
-                <div class="form-floating" style="position:relative;">
-                    <input type="password" class="form-control" id="password"
-                        placeholder="Password" required autocomplete="current-password">
-                    <label for="password"><i class="fas fa-lock"></i> Password</label>
-                    <i class="fas fa-eye password-toggle" id="togglePassword"></i>
-                </div>
-
-                <div class="remember-forgot">
-                    <div class="form-check">
-                        <input class="form-check-input" type="checkbox" id="rememberMe">
-                        <label class="form-check-label" for="rememberMe">Remember me</label>
+        <!-- RIGHT: LOGIN CARD -->
+        <div>
+            <!-- NEW PASSWORD MODAL -->
+            <div class="pw-modal-overlay" id="pwModalOverlay">
+                <div class="pw-modal">
+                    <div class="pw-modal-header">
+                        <div class="pw-modal-header-icon"><i class="fas fa-key"></i></div>
+                        <div>
+                            <h3>Set New Password</h3>
+                            <p>First login detected — please set your password</p>
+                        </div>
                     </div>
-                    <a href="#" class="forgot-link" id="forgotPasswordLink">Forgot Password?</a>
+                    <div class="pw-modal-body">
+                        <p>For your security, a new password is required on first login. Please set a strong password to continue.</p>
+                        <input type="password" class="pw-input" id="newPasswordInput" placeholder="New password" autocomplete="new-password">
+                        <input type="password" class="pw-input" id="confirmPasswordInput" placeholder="Confirm new password" autocomplete="new-password">
+                        <div class="pw-requirements">
+                            <i class="fas fa-info-circle" style="color:var(--accent);"></i>
+                            Must be at least 8 characters and include uppercase, lowercase, a number, and a special character.
+                        </div>
+                        <div class="pw-err" id="pwError"></div>
+                        <button class="btn-pw-submit" id="pwSubmitBtn" onclick="submitNewPassword()">
+                            <i class="fas fa-check me-2"></i>Set Password &amp; Login
+                        </button>
+                    </div>
                 </div>
-
-                <button type="submit" class="btn-login" id="loginButton">
-                    <span id="loginButtonText"><i class="fas fa-sign-in-alt"></i> Login to Dashboard</span>
-                </button>
-            </form>
-
-            <div class="divider"><span>OR LOGIN WITH</span></div>
-
-            <div class="alt-login">
-                <button class="btn-alt" onclick="showComingSoon('Digital Signature')">
-                    <i class="fas fa-certificate"></i> Digital Signature
-                </button>
-                <button class="btn-alt" onclick="showComingSoon('Aadhaar')">
-                    <i class="fas fa-fingerprint"></i> Aadhaar
-                </button>
             </div>
 
-            <div class="back-home">
-                <a href="index.html"><i class="fas fa-arrow-left"></i> Back to Home</a>
+            <div class="login-card" id="loginCard">
+                <div class="login-card-header">
+                    <div class="card-header-icon"><i class="fas fa-user-shield"></i></div>
+                    <h2>Officer Login</h2>
+                    <p>Digital Complaint &amp; Grievance Redressal System</p>
+                </div>
+
+                <div class="role-strip" id="roleStrip"></div>
+
+                <div class="login-card-body">
+                    <div class="login-alert alert-err"  id="errorAlert"><i class="fas fa-exclamation-circle"></i><span id="errorMessage"></span></div>
+                    <div class="login-alert alert-ok"   id="successAlert"><i class="fas fa-check-circle"></i><span id="successMessage"></span></div>
+                    <div class="login-alert alert-warn" id="warningAlert"><i class="fas fa-info-circle"></i><span id="warningMessage"></span></div>
+
+                    <form id="loginForm">
+                        <div class="field-group">
+                            <label class="field-label" for="employeeId">Employee ID</label>
+                            <div class="field-wrap">
+                                <i class="fas fa-id-card field-icon"></i>
+                                <input type="text" class="field-input" id="employeeId"
+                                    placeholder="Enter your Employee ID" required autocomplete="username">
+                            </div>
+                        </div>
+
+                        <div class="field-group">
+                            <label class="field-label" for="password">Password</label>
+                            <div class="field-wrap">
+                                <i class="fas fa-lock field-icon"></i>
+                                <input type="password" class="field-input" id="password"
+                                    placeholder="Enter your password" required autocomplete="current-password">
+                                <i class="fas fa-eye pw-toggle" id="togglePassword"></i>
+                            </div>
+                        </div>
+
+                        <div class="rem-forgot">
+                            <div class="form-check">
+                                <input class="form-check-input" type="checkbox" id="rememberMe">
+                                <label class="form-check-label" for="rememberMe">Remember me</label>
+                            </div>
+                            <a href="#" class="forgot-link" id="forgotPasswordLink">Forgot Password?</a>
+                        </div>
+
+                        <button type="submit" class="btn-login" id="loginButton">
+                            <span id="loginButtonText"><i class="fas fa-sign-in-alt me-2"></i>Login to Dashboard</span>
+                        </button>
+                    </form>
+
+                    <div class="or-divider">OR LOGIN WITH</div>
+
+                    <div class="alt-btns">
+                        <button class="btn-alt" onclick="showComingSoon('Digital Signature')">
+                            <i class="fas fa-certificate me-1"></i> Digital Signature
+                        </button>
+                        <button class="btn-alt" onclick="showComingSoon('Aadhaar')">
+                            <i class="fas fa-fingerprint me-1"></i> Aadhaar
+                        </button>
+                    </div>
+
+                    <div class="back-link">
+                        <a href="index.html"><i class="fas fa-arrow-left"></i> Back to Home Portal</a>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
+</div>
 
-    <!-- AWS Cognito SDK -->
-    <script src="https://unpkg.com/amazon-cognito-identity-js@6.3.3/dist/amazon-cognito-identity.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<!-- FOOTER -->
+<div class="login-footer">
+    <p>© 2026 Government of India &nbsp;|&nbsp; Digital India Initiative &nbsp;|&nbsp; National Informatics Centre (NIC)</p>
+    <div class="login-footer-links">
+        <a href="#">Terms &amp; Conditions</a>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Accessibility</a>
+        <a href="help.html">Help &amp; FAQ</a>
+    </div>
+</div>
 
-    <script>
-    // ── 1. COGNITO CONFIG ─────────────────────────────────────────────────────
-    const poolData = {
-        UserPoolId : "ap-south-1_GJ7rUyUuY",
-        ClientId   : "1thh9cn56buk3lpubbu5m45orp"
-    };
-    const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
+<!-- COGNITO SDK -->
+<script src="https://unpkg.com/amazon-cognito-identity-js@6.3.3/dist/amazon-cognito-identity.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ── 1. COGNITO CONFIG ────────────────────────────────────
+const poolData = {
+    UserPoolId : "ap-south-1_GJ7rUyUuY",
+    ClientId   : "1thh9cn56buk3lpubbu5m45orp"
+};
+const userPool = new AmazonCognitoIdentity.CognitoUserPool(poolData);
 
-    // ── 2. UI REFERENCES ─────────────────────────────────────────────────────
-    const loginForm        = document.getElementById('loginForm');
-    const employeeIdInput  = document.getElementById('employeeId');
-    const passwordInput    = document.getElementById('password');
-    const loginButton      = document.getElementById('loginButton');
-    const loginButtonText  = document.getElementById('loginButtonText');
-    const loginContainer   = document.getElementById('loginContainer');
-    const roleStrip        = document.getElementById('roleStrip');
+// ── 2. UI REFS ───────────────────────────────────────────
+const loginForm       = document.getElementById('loginForm');
+const employeeIdInput = document.getElementById('employeeId');
+const passwordInput   = document.getElementById('password');
+const loginButton     = document.getElementById('loginButton');
+const loginButtonText = document.getElementById('loginButtonText');
+const loginCard       = document.getElementById('loginCard');
+const roleStrip       = document.getElementById('roleStrip');
+let   activeCognitoUser = null;
 
-    // Active cognitoUser reference kept for new-password challenge
-    let activeCognitoUser  = null;
-
-    // ── 3. ALERT HELPERS ─────────────────────────────────────────────────────
-    function hideAllAlerts() {
-        ['errorAlert','successAlert','warningAlert'].forEach(id =>
-            document.getElementById(id).style.display = 'none'
-        );
-    }
-    function showError(msg) {
-        hideAllAlerts();
-        document.getElementById('errorMessage').textContent = msg;
-        document.getElementById('errorAlert').style.display = 'block';
-        loginContainer.classList.add('shake');
-        setTimeout(() => loginContainer.classList.remove('shake'), 500);
-    }
-    function showSuccess(msg) {
-        hideAllAlerts();
-        document.getElementById('successMessage').textContent = msg;
-        document.getElementById('successAlert').style.display = 'block';
-    }
-    function showWarning(msg) {
-        hideAllAlerts();
-        document.getElementById('warningMessage').textContent = msg;
-        document.getElementById('warningAlert').style.display = 'block';
-    }
-
-    // ── 4. LOADING STATE ──────────────────────────────────────────────────────
-    function setLoading(on) {
-        loginButton.disabled = on;
-        loginButtonText.innerHTML = on
-            ? '<span class="spinner-border spinner-border-sm me-2"></span> Authenticating...'
-            : '<i class="fas fa-sign-in-alt"></i> Login to Dashboard';
-    }
-
-    // ── 5. TOKEN PARSE & STORE ────────────────────────────────────────────────
-    function parseJwt(token) {
-        try { return JSON.parse(atob(token.split('.')[1])); } catch(e) { return {}; }
-    }
-
-    function storeSessionAndRedirect(result) {
-        const idToken      = result.getIdToken().getJwtToken();
-        const accessToken  = result.getAccessToken().getJwtToken();
-        const refreshToken = result.getRefreshToken().getToken();
-
-        // Store all tokens
-        localStorage.setItem('officerToken',  idToken);
-        localStorage.setItem('accessToken',   accessToken);
-        localStorage.setItem('refreshToken',  refreshToken);
-
-        // ── Decode and extract role attributes ──────────────────────────────
-        const payload    = parseJwt(idToken);
-        const role       = payload['custom:role']       || payload['role']       || 'officer';
-        const department = payload['custom:department'] || payload['department'] || '';
-        const level      = parseInt(payload['custom:level'] || payload['level']  || '1', 10);
-        const name       = payload['cognito:username']  || payload['name']       || payload['email'] || 'Officer';
-
-        // Store decoded values for all pages to use
-        localStorage.setItem('role',       role);
-        localStorage.setItem('department', department);
-        localStorage.setItem('level',      String(level));
-        localStorage.setItem('officerName',name);
-
-        // Store compact session object
-        sessionStorage.setItem('loggedInUser', JSON.stringify({
-            id:         employeeIdInput.value.trim(),
-            name,
-            role,
-            department,
-            level,
-            loginTime:  new Date().toISOString()
-        }));
-
-        // ── Show role indicator briefly ─────────────────────────────────────
-        const ROLE_LABELS = { 1:'Officer', 2:'Senior Officer', 3:'Head Officer' };
-        const ROLE_ICONS  = { 1:'fa-user', 2:'fa-user-tie', 3:'fa-crown' };
-        roleStrip.className = `role-strip show level-${level}`;
-        roleStrip.innerHTML = `
-            <i class="fas ${ROLE_ICONS[level] || 'fa-user'} me-2"></i>
-            Logged in as <strong>${name}</strong> &nbsp;·&nbsp;
-            ${ROLE_LABELS[level] || 'Officer'} &nbsp;·&nbsp;
-            ${department || 'General'}`;
-
-        showSuccess('Login successful! Redirecting to dashboard...');
-        loginButtonText.innerHTML = '<i class="fas fa-check-circle"></i> Login Successful!';
-
-        // ── Role-based redirect ─────────────────────────────────────────────
-        setTimeout(() => {
-            if (level === 3) {
-                window.location.href = 'dashboard.html?type=head';
-            } else if (level === 2) {
-                window.location.href = 'dashboard.html?type=senior';
-            } else {
-                window.location.href = 'dashboard.html';
-            }
-        }, 1500);
-    }
-
-    // ── 6. LOGIN FORM SUBMIT ──────────────────────────────────────────────────
-    loginForm.addEventListener('submit', function(e) {
-        e.preventDefault();
-
-        const empId    = employeeIdInput.value.trim();
-        const password = passwordInput.value;
-
-        if (!empId || !password) {
-            showError('Please enter both Employee ID and Password.');
-            return;
-        }
-
-        hideAllAlerts();
-        setLoading(true);
-
-        const authDetails = new AmazonCognitoIdentity.AuthenticationDetails({
-            Username: empId,
-            Password: password
-        });
-
-        activeCognitoUser = new AmazonCognitoIdentity.CognitoUser({
-            Username: empId,
-            Pool:     userPool
-        });
-
-        activeCognitoUser.authenticateUser(authDetails, {
-
-            // ── SUCCESS ───────────────────────────────────────────────────────
-            onSuccess: function(result) {
-                storeSessionAndRedirect(result);
-            },
-
-            // ── FAILURE ───────────────────────────────────────────────────────
-            onFailure: function(err) {
-                setLoading(false);
-                console.error('Auth error:', err);
-
-                const MSG = {
-                    UserNotFoundException:       'Employee ID not found. Please check your credentials.',
-                    NotAuthorizedException:      'Incorrect Employee ID or Password.',
-                    UserNotConfirmedException:   'Account not confirmed. Please contact administrator.',
-                    PasswordResetRequiredException:'Password reset required. Please contact administrator.',
-                    InvalidParameterException:   'Invalid input. Please check your credentials.',
-                    TooManyRequestsException:    'Too many login attempts. Please try again later.',
-                };
-                showError(MSG[err.code] || err.message || 'Authentication failed. Please try again.');
-            },
-
-            // ── FIRST LOGIN: new password required ────────────────────────────
-            newPasswordRequired: function(userAttributes) {
-                setLoading(false);
-                // Open the modal — do NOT use prompt()
-                document.getElementById('pwModalOverlay').classList.add('open');
-                document.getElementById('newPasswordInput').focus();
-            }
-        });
+// ── 3. ALERTS ────────────────────────────────────────────
+function hideAllAlerts() {
+    ['errorAlert','successAlert','warningAlert'].forEach(id => {
+        document.getElementById(id).style.display = 'none';
     });
+}
+function showError(msg) {
+    hideAllAlerts();
+    document.getElementById('errorMessage').textContent = msg;
+    document.getElementById('errorAlert').style.display = 'block';
+    loginCard.classList.add('shake');
+    setTimeout(() => loginCard.classList.remove('shake'), 500);
+}
+function showSuccess(msg) {
+    hideAllAlerts();
+    document.getElementById('successMessage').textContent = msg;
+    document.getElementById('successAlert').style.display = 'block';
+}
+function showWarning(msg) {
+    hideAllAlerts();
+    document.getElementById('warningMessage').textContent = msg;
+    document.getElementById('warningAlert').style.display = 'block';
+}
 
-    // ── 7. NEW PASSWORD MODAL ─────────────────────────────────────────────────
-    function submitNewPassword() {
-        const newPw     = document.getElementById('newPasswordInput').value;
-        const confirmPw = document.getElementById('confirmPasswordInput').value;
-        const pwError   = document.getElementById('pwError');
-        const pwBtn     = document.getElementById('pwSubmitBtn');
+// ── 4. LOADING STATE ─────────────────────────────────────
+function setLoading(on) {
+    loginButton.disabled = on;
+    loginButtonText.innerHTML = on
+        ? '<span class="spinner-border spinner-border-sm me-2"></span>Authenticating…'
+        : '<i class="fas fa-sign-in-alt me-2"></i>Login to Dashboard';
+}
 
-        pwError.style.display = 'none';
+// ── 5. TOKEN HELPERS ─────────────────────────────────────
+function parseJwt(token) {
+    try { return JSON.parse(atob(token.split('.')[1])); } catch(e) { return {}; }
+}
 
-        if (newPw.length < 8) {
-            pwError.textContent = 'Password must be at least 8 characters.';
+function storeSessionAndRedirect(result) {
+    const idToken     = result.getIdToken().getJwtToken();
+    const accessToken = result.getAccessToken().getJwtToken();
+    const refreshToken= result.getRefreshToken().getToken();
+
+    localStorage.setItem('officerToken',  idToken);
+    localStorage.setItem('accessToken',   accessToken);
+    localStorage.setItem('refreshToken',  refreshToken);
+
+    const payload    = parseJwt(idToken);
+    const role       = payload['custom:role']       || payload['role']       || 'officer';
+    const department = payload['custom:department'] || payload['department'] || '';
+    const level      = parseInt(payload['custom:level'] || payload['level']  || '1', 10);
+    const name       = payload['cognito:username']  || payload['name']       || payload['email'] || 'Officer';
+
+    localStorage.setItem('role',       role);
+    localStorage.setItem('department', department);
+    localStorage.setItem('level',      String(level));
+    localStorage.setItem('officerName',name);
+
+    sessionStorage.setItem('loggedInUser', JSON.stringify({
+        id: employeeIdInput.value.trim(), name, role, department, level,
+        loginTime: new Date().toISOString()
+    }));
+
+    const ROLE_LABELS = { 1:'Officer', 2:'Senior Officer', 3:'Head Officer' };
+    const ROLE_ICONS  = { 1:'fa-user', 2:'fa-user-tie', 3:'fa-crown' };
+    roleStrip.className = `role-strip show level-${level}`;
+    roleStrip.innerHTML = `
+        <i class="fas ${ROLE_ICONS[level] || 'fa-user'} me-2"></i>
+        Logged in as <strong>${name}</strong> &nbsp;·&nbsp;
+        ${ROLE_LABELS[level] || 'Officer'} &nbsp;·&nbsp; ${department || 'General'}`;
+
+    showSuccess('Login successful! Redirecting to dashboard…');
+    loginButtonText.innerHTML = '<i class="fas fa-check-circle me-2"></i>Login Successful!';
+
+    setTimeout(() => {
+        if      (level === 3) window.location.href = 'dashboard.html?type=head';
+        else if (level === 2) window.location.href = 'dashboard.html?type=senior';
+        else                  window.location.href = 'dashboard.html';
+    }, 1500);
+}
+
+// ── 6. LOGIN SUBMIT ──────────────────────────────────────
+loginForm.addEventListener('submit', function(e) {
+    e.preventDefault();
+    const empId = employeeIdInput.value.trim();
+    const pw    = passwordInput.value;
+    if (!empId || !pw) { showError('Please enter both Employee ID and Password.'); return; }
+
+    hideAllAlerts();
+    setLoading(true);
+
+    const authDetails = new AmazonCognitoIdentity.AuthenticationDetails({ Username: empId, Password: pw });
+    activeCognitoUser = new AmazonCognitoIdentity.CognitoUser({ Username: empId, Pool: userPool });
+
+    activeCognitoUser.authenticateUser(authDetails, {
+        onSuccess: function(result) { storeSessionAndRedirect(result); },
+        onFailure: function(err) {
+            setLoading(false);
+            const MSG = {
+                UserNotFoundException:          'Employee ID not found. Please check your credentials.',
+                NotAuthorizedException:         'Incorrect Employee ID or Password.',
+                UserNotConfirmedException:      'Account not confirmed. Please contact administrator.',
+                PasswordResetRequiredException: 'Password reset required. Please contact administrator.',
+                InvalidParameterException:      'Invalid input. Please check your credentials.',
+                TooManyRequestsException:       'Too many login attempts. Please try again later.',
+            };
+            showError(MSG[err.code] || err.message || 'Authentication failed. Please try again.');
+        },
+        newPasswordRequired: function() {
+            setLoading(false);
+            document.getElementById('pwModalOverlay').classList.add('open');
+            document.getElementById('newPasswordInput').focus();
+        }
+    });
+});
+
+// ── 7. NEW PASSWORD ──────────────────────────────────────
+function submitNewPassword() {
+    const newPw     = document.getElementById('newPasswordInput').value;
+    const confirmPw = document.getElementById('confirmPasswordInput').value;
+    const pwError   = document.getElementById('pwError');
+    const pwBtn     = document.getElementById('pwSubmitBtn');
+    pwError.style.display = 'none';
+
+    if (newPw.length < 8) {
+        pwError.textContent = 'Password must be at least 8 characters.';
+        pwError.style.display = 'block'; return;
+    }
+    if (newPw !== confirmPw) {
+        pwError.textContent = 'Passwords do not match.';
+        pwError.style.display = 'block'; return;
+    }
+
+    pwBtn.disabled = true;
+    pwBtn.innerHTML = '<span class="spinner-border spinner-border-sm me-2"></span>Setting password…';
+
+    activeCognitoUser.completeNewPasswordChallenge(newPw, {}, {
+        onSuccess: function(result) {
+            document.getElementById('pwModalOverlay').classList.remove('open');
+            storeSessionAndRedirect(result);
+        },
+        onFailure: function(err) {
+            pwError.textContent = err.message || 'Password change failed. Please try again.';
             pwError.style.display = 'block';
-            return;
+            pwBtn.disabled = false;
+            pwBtn.innerHTML = '<i class="fas fa-check me-2"></i>Set Password &amp; Login';
         }
-        if (newPw !== confirmPw) {
-            pwError.textContent = 'Passwords do not match.';
-            pwError.style.display = 'block';
-            return;
-        }
+    });
+}
 
-        pwBtn.disabled     = true;
-        pwBtn.textContent  = 'Setting password…';
+['newPasswordInput','confirmPasswordInput'].forEach(id => {
+    document.getElementById(id).addEventListener('keydown', e => { if (e.key === 'Enter') submitNewPassword(); });
+});
 
-        // Pass empty object — Cognito handles required attributes itself
-        activeCognitoUser.completeNewPasswordChallenge(newPw, {}, {
-            onSuccess: function(result) {
-                document.getElementById('pwModalOverlay').classList.remove('open');
-                storeSessionAndRedirect(result);
-            },
-            onFailure: function(err) {
-                console.error('Password change error:', err);
-                pwError.textContent    = err.message || 'Password change failed. Please try again.';
-                pwError.style.display  = 'block';
-                pwBtn.disabled         = false;
-                pwBtn.innerHTML        = '<i class="fas fa-check me-2"></i>Set Password &amp; Login';
-            }
-        });
+// ── 8. PASSWORD TOGGLE ───────────────────────────────────
+document.getElementById('togglePassword').addEventListener('click', function() {
+    const isText = passwordInput.type === 'text';
+    passwordInput.type = isText ? 'password' : 'text';
+    this.classList.toggle('fa-eye', isText);
+    this.classList.toggle('fa-eye-slash', !isText);
+});
+
+// ── 9. FORGOT PASSWORD ───────────────────────────────────
+document.getElementById('forgotPasswordLink').addEventListener('click', function(e) {
+    e.preventDefault();
+    const empId = employeeIdInput.value.trim();
+    if (!empId) { showWarning('Please enter your Employee ID first, then click "Forgot Password".'); employeeIdInput.focus(); return; }
+    if (!confirm(`Send password reset code to registered email for Employee ID: ${empId}?`)) return;
+
+    const cUser = new AmazonCognitoIdentity.CognitoUser({ Username: empId, Pool: userPool });
+    cUser.forgotPassword({
+        onSuccess: () => showSuccess('Password reset code sent to your registered email. Check your inbox.'),
+        onFailure: (err) => showError(err.message || 'Failed to send reset code. Please try again.')
+    });
+});
+
+// ── 10. MISC ─────────────────────────────────────────────
+function showComingSoon(method) {
+    showWarning(`${method} login coming soon! Please use Employee ID and Password for now.`);
+}
+[employeeIdInput, passwordInput].forEach(el => el.addEventListener('input', hideAllAlerts));
+
+// ── 11. AUTO-REDIRECT IF ALREADY LOGGED IN ───────────────
+window.addEventListener('load', function() {
+    const token = localStorage.getItem('officerToken');
+    if (!token) return;
+    const cUser = userPool.getCurrentUser();
+    if (!cUser) return;
+    cUser.getSession(function(err, session) {
+        if (err || !session || !session.isValid()) return;
+        const level = parseInt(localStorage.getItem('level') || '1', 10);
+        if      (level === 3) window.location.href = 'dashboard.html?type=head';
+        else if (level === 2) window.location.href = 'dashboard.html?type=senior';
+        else                  window.location.href = 'dashboard.html';
+    });
+});
+
+// ── 12. LOGOUT UTILITY ───────────────────────────────────
+function logout() {
+    const cUser = userPool.getCurrentUser();
+    if (cUser) cUser.signOut();
+    localStorage.clear(); sessionStorage.clear();
+    window.location.href = 'login.html';
+}
+
+// ── 13. LOADER ───────────────────────────────────────────
+window.addEventListener('load', () => setTimeout(() => document.getElementById('page-loader').classList.add('hidden'), 1200));
+
+// ── 14. PARTICLES ────────────────────────────────────────
+(function() {
+    const c = document.getElementById('bgParticles');
+    const colors = ['#FF9933','#138808','rgba(255,255,255,0.6)','#E8842A'];
+    for (let i = 0; i < 28; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;width:${Math.random()*5+2}px;height:${Math.random()*5+2}px;background:${colors[Math.floor(Math.random()*colors.length)]};animation-delay:${Math.random()*8}s;animation-duration:${6+Math.random()*7}s;`;
+        c.appendChild(p);
     }
-
-    // Allow Enter key inside modal fields
-    ['newPasswordInput','confirmPasswordInput'].forEach(id => {
-        document.getElementById(id).addEventListener('keydown', e => {
-            if (e.key === 'Enter') submitNewPassword();
-        });
-    });
-
-    // ── 8. PASSWORD TOGGLE ────────────────────────────────────────────────────
-    document.getElementById('togglePassword').addEventListener('click', function() {
-        const isText = passwordInput.type === 'text';
-        passwordInput.type = isText ? 'password' : 'text';
-        this.classList.toggle('fa-eye',       isText);
-        this.classList.toggle('fa-eye-slash', !isText);
-    });
-
-    // ── 9. FORGOT PASSWORD ────────────────────────────────────────────────────
-    document.getElementById('forgotPasswordLink').addEventListener('click', function(e) {
-        e.preventDefault();
-        const empId = employeeIdInput.value.trim();
-
-        if (!empId) {
-            showWarning('Please enter your Employee ID first, then click "Forgot Password".');
-            employeeIdInput.focus();
-            return;
-        }
-
-        if (!confirm(`Send password reset code to the registered email for Employee ID: ${empId}?`)) return;
-
-        const cognitoUser = new AmazonCognitoIdentity.CognitoUser({ Username: empId, Pool: userPool });
-
-        cognitoUser.forgotPassword({
-            onSuccess: function(data) {
-                showSuccess('Password reset code sent to your registered email. Check your inbox.');
-            },
-            onFailure: function(err) {
-                showError(err.message || 'Failed to send reset code. Please try again.');
-            }
-        });
-    });
-
-    // ── 10. HELPER ────────────────────────────────────────────────────────────
-    function showComingSoon(method) {
-        showWarning(`${method} login coming soon! Use Employee ID/Password for now.`);
-    }
-
-    // ── 11. CLEAR ALERTS ON INPUT ─────────────────────────────────────────────
-    [employeeIdInput, passwordInput].forEach(el => el.addEventListener('input', hideAllAlerts));
-
-    // ── 12. AUTO-REDIRECT IF ALREADY LOGGED IN ───────────────────────────────
-    window.addEventListener('load', function() {
-        const token = localStorage.getItem('officerToken');
-        if (!token) return;
-
-        const cognitoUser = userPool.getCurrentUser();
-        if (!cognitoUser) return;
-
-        cognitoUser.getSession(function(err, session) {
-            if (err || !session || !session.isValid()) return;
-
-            // Still valid — redirect based on stored level
-            const level = parseInt(localStorage.getItem('level') || '1', 10);
-            if (level === 3)      window.location.href = 'dashboard.html?type=head';
-            else if (level === 2) window.location.href = 'dashboard.html?type=senior';
-            else                  window.location.href = 'dashboard.html';
-        });
-    });
-
-    // ── 13. LOGOUT UTILITY (imported by other pages via inline call) ──────────
-    function logout() {
-        const cognitoUser = userPool.getCurrentUser();
-        if (cognitoUser) cognitoUser.signOut();
-        localStorage.clear();
-        sessionStorage.clear();
-        window.location.href = 'login.html';
-    }
-
-    </script>
+})();
+</script>
 </body>
 </html>

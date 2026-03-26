@@ -3,583 +3,1077 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Departments Directory - Digital Grievance Portal</title>
+    <title>Departments Directory – Digital Grievance Redressal Platform</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #0A2E5C;
-            --background: #F2F2F2;
-            --accent: #FF9933;
-            --success: #138808;
-            --error: #C62828;
+            --primary: #0A2558;
+            --primary-dark: #06173a;
+            --primary-light: #1a3d7c;
+            --accent: #E8842A;
+            --accent-light: #f4a355;
+            --green: #0e7c3b;
+            --green-light: #16a34a;
             --white: #FFFFFF;
+            --bg: #F5F6FA;
+            --text: #1c2b4a;
+            --text-muted: #6b7a99;
+            --border: #e2e8f0;
+            --card-shadow: 0 4px 24px rgba(10,37,88,0.10);
+            --card-shadow-hover: 0 16px 48px rgba(10,37,88,0.18);
         }
 
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         body {
-            font-family: 'Roboto', 'Noto Sans Devanagari', sans-serif;
-            background-color: var(--background);
-            color: #333;
+            font-family: 'DM Sans', 'Noto Sans Devanagari', sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            overflow-x: hidden;
+        }
+        a { text-decoration: none; color: inherit; }
+
+        /* ── LOADER ── */
+        #page-loader {
+            position: fixed; inset: 0; z-index: 9999;
+            background: var(--primary-dark);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+        #page-loader.hidden { opacity: 0; visibility: hidden; }
+        .chakra-loader { width: 80px; height: 80px; animation: chakra-spin 1.2s linear infinite; }
+        .chakra-loader svg { width: 100%; height: 100%; }
+        @keyframes chakra-spin { to { transform: rotate(360deg); } }
+        .loader-text {
+            margin-top: 20px; color: rgba(255,255,255,0.8);
+            font-size: 14px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase;
+            animation: loader-pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes loader-pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+        /* ── TRICOLOR ── */
+        .tricolor {
+            height: 6px;
+            background: linear-gradient(to right,
+                #FF9933 0%, #FF9933 33.33%,
+                #fff 33.33%, #fff 66.66%,
+                #138808 66.66%, #138808 100%);
         }
 
-        .tricolor-strip {
-            height: 5px;
-            background: linear-gradient(to right, #FF9933 0%, #FF9933 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #138808 66.66%, #138808 100%);
-        }
-
-        .header-top {
-            background-color: var(--white);
-            padding: 15px 0;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        }
-
-        .emblem-container {
-            display: flex;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .emblem-icon {
-            font-size: 50px;
-            color: var(--primary);
-        }
-
-        .emblem-text h1 {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--primary);
-            margin: 0;
-        }
-
-        .emblem-text p {
-            font-size: 14px;
-            color: #666;
-            margin: 0;
-        }
-
-        .navbar {
-            background-color: var(--primary);
-            padding: 0;
-        }
-
-        .navbar-nav .nav-link {
-            color: var(--white) !important;
-            padding: 15px 20px;
-            font-weight: 500;
-            transition: all 0.3s ease;
-        }
-
-        .navbar-nav .nav-link:hover {
-            background-color: rgba(255,255,255,0.1);
-        }
-
-        .page-header {
-            background: linear-gradient(135deg, var(--primary) 0%, #1a4d8f 100%);
-            color: var(--white);
-            padding: 40px 0;
-            margin-bottom: 40px;
-        }
-
-        .page-header h2 {
-            font-size: 32px;
-            font-weight: 700;
-            margin-bottom: 10px;
-        }
-
-        .search-bar {
-            background-color: var(--white);
-            border-radius: 10px;
-            padding: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-        }
-
-        .search-input {
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            padding: 10px 15px;
-            font-size: 16px;
-            width: 100%;
-            transition: all 0.3s ease;
-        }
-
-        .search-input:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 0.2rem rgba(10, 46, 92, 0.15);
-        }
-
-        .departments-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
-            gap: 25px;
-            margin-bottom: 40px;
-        }
-
-        .department-card {
-            background-color: var(--white);
-            border-radius: 10px;
-            padding: 25px;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-            transition: all 0.3s ease;
-            animation: fadeIn 0.6s ease;
-            position: relative;
+        /* ── TICKER ── */
+        .ticker-bar {
+            background: #e8f0fe;
+            border-bottom: 1px solid #c5d4f5;
+            padding: 8px 0;
+            font-size: 13px; color: var(--primary);
             overflow: hidden;
         }
+        .ticker-inner { display: flex; align-items: center; }
+        .ticker-label {
+            background: var(--accent); color: #fff;
+            padding: 3px 14px; font-weight: 700; font-size: 11px;
+            border-radius: 3px; margin-right: 18px; white-space: nowrap; flex-shrink: 0;
+            letter-spacing: 0.5px;
+        }
+        .ticker-track { overflow: hidden; flex: 1; }
+        .ticker-scroll { display: inline-block; white-space: nowrap; animation: ticker 40s linear infinite; }
+        @keyframes ticker { from { transform: translateX(100vw); } to { transform: translateX(-100%); } }
 
+        /* ── HEADER ── */
+        .site-header {
+            background: var(--white);
+            padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 1000;
+            box-shadow: 0 2px 20px rgba(10,37,88,0.08);
+        }
+        .header-logo { display: flex; align-items: center; gap: 14px; }
+        .ashoka-emblem { width: 56px; height: 56px; animation: emblem-appear 1s ease both; }
+        @keyframes emblem-appear { from{opacity:0;transform:scale(0.6) rotate(-15deg)} to{opacity:1;transform:scale(1) rotate(0)} }
+        .header-titles h1 { font-family: 'Playfair Display', serif; font-size: 17px; font-weight: 700; color: var(--primary); line-height: 1.2; }
+        .header-titles p { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
+        .digital-india-badge {
+            display: flex; align-items: center; gap: 8px;
+            padding: 6px 14px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 6px; color: #fff;
+        }
+        .digital-india-badge span { font-size: 12px; font-weight: 700; letter-spacing: 0.5px; }
+
+        /* ── NAVBAR ── */
+        .main-nav { background: var(--primary); position: relative; overflow: hidden; }
+        .main-nav::before {
+            content: ''; position: absolute; inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        .main-nav .navbar-nav .nav-link {
+            color: rgba(255,255,255,0.9) !important;
+            padding: 15px 18px; font-weight: 500; font-size: 14px;
+            position: relative; transition: all 0.3s;
+        }
+        .main-nav .navbar-nav .nav-link::after {
+            content: ''; position: absolute; bottom: 0; left: 50%;
+            width: 0; height: 3px; background: var(--accent);
+            transition: all 0.3s; transform: translateX(-50%);
+            border-radius: 2px 2px 0 0;
+        }
+        .main-nav .navbar-nav .nav-link:hover,
+        .main-nav .navbar-nav .nav-link.active { color: #fff !important; background: rgba(255,255,255,0.07); }
+        .main-nav .navbar-nav .nav-link:hover::after,
+        .main-nav .navbar-nav .nav-link.active::after { width: 80%; }
+        .nav-officer-btn {
+            background: var(--accent) !important; border-radius: 5px !important;
+            margin: 9px 0 !important; padding: 7px 18px !important;
+            font-weight: 700 !important; transition: all 0.3s !important;
+        }
+        .nav-officer-btn:hover { background: #d6741e !important; transform: translateY(-1px); }
+        .nav-officer-btn::after { display: none !important; }
+        .navbar-toggler { border-color: rgba(255,255,255,0.3) !important; }
+        .navbar-toggler-icon { filter: invert(1); }
+
+        /* ── PAGE HERO ── */
+        .page-hero {
+            background: linear-gradient(135deg, #061728 0%, var(--primary) 45%, #1a3d7c 100%);
+            color: #fff; padding: 70px 0 60px;
+            position: relative; overflow: hidden;
+        }
+        .page-hero-mandala {
+            position: absolute; right: -80px; top: 50%; transform: translateY(-50%);
+            width: 500px; height: 500px; opacity: 0.04;
+            animation: mandala-rotate 60s linear infinite;
+        }
+        @keyframes mandala-rotate { to { transform: translateY(-50%) rotate(360deg); } }
+        .hero-particles { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
+        .particle {
+            position: absolute; width: 4px; height: 4px;
+            border-radius: 50%; opacity: 0;
+            animation: float-particle 8s ease-in-out infinite;
+        }
+        @keyframes float-particle {
+            0% { opacity: 0; transform: translateY(0) scale(1); }
+            20% { opacity: 0.6; }
+            80% { opacity: 0.3; }
+            100% { opacity: 0; transform: translateY(-300px) scale(0.3); }
+        }
+        .page-hero-content { position: relative; z-index: 2; }
+        .hero-eyebrow {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(255,153,51,0.15); border: 1px solid rgba(255,153,51,0.35);
+            padding: 5px 16px; border-radius: 30px;
+            font-size: 12px; font-weight: 600; color: #FFB74D;
+            margin-bottom: 20px; animation: fade-up 0.8s ease both;
+        }
+        .hero-eyebrow .dot { width: 7px; height: 7px; background: #FFB74D; border-radius: 50%; animation: blink 2s infinite; }
+        @keyframes blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+        .page-hero h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 46px; font-weight: 800; line-height: 1.12;
+            margin-bottom: 14px; animation: fade-up 0.8s 0.15s ease both;
+        }
+        .page-hero h2 .accent-word { color: var(--accent); }
+        .page-hero-hindi {
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            font-size: 15px; opacity: 0.65; margin-bottom: 12px;
+            animation: fade-up 0.8s 0.25s ease both;
+        }
+        .page-hero-desc {
+            font-size: 16px; opacity: 0.85; line-height: 1.7;
+            max-width: 560px; margin-bottom: 28px;
+            animation: fade-up 0.8s 0.3s ease both;
+        }
+        .hero-trust {
+            display: flex; gap: 22px; flex-wrap: wrap;
+            animation: fade-up 0.8s 0.4s ease both;
+        }
+        .trust-item { display: flex; align-items: center; gap: 7px; font-size: 13px; opacity: 0.8; }
+        .trust-item i { color: var(--accent); font-size: 14px; }
+        @keyframes fade-up { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+
+        /* ── STATS BAND ── */
+        .stats-band {
+            background: var(--primary-dark); color: #fff;
+            border-bottom: 3px solid var(--accent);
+        }
+        .stats-grid-4 { display: grid; grid-template-columns: repeat(4,1fr); }
+        .stat-cell {
+            padding: 30px 20px; text-align: center;
+            border-right: 1px solid rgba(255,255,255,0.08);
+            position: relative; overflow: hidden; transition: background 0.3s;
+        }
+        .stat-cell:last-child { border-right: none; }
+        .stat-cell:hover { background: rgba(255,255,255,0.04); }
+        .stat-cell::before {
+            content: ''; position: absolute; bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 0; height: 3px; background: var(--accent); transition: width 0.4s;
+        }
+        .stat-cell:hover::before { width: 80%; }
+        .stat-icon { font-size: 22px; color: rgba(255,255,255,0.25); margin-bottom: 8px; }
+        .stat-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 40px; font-weight: 700; color: var(--accent);
+            line-height: 1; margin-bottom: 6px;
+        }
+        .stat-lbl { font-size: 12px; opacity: 0.7; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; }
+
+        /* ── SECTION COMMON ── */
+        .section-overline {
+            display: inline-block; font-size: 12px; font-weight: 700;
+            letter-spacing: 2px; text-transform: uppercase; color: var(--accent); margin-bottom: 10px;
+        }
+        .divider-line {
+            width: 56px; height: 4px;
+            background: linear-gradient(90deg, var(--accent), var(--green));
+            border-radius: 2px; margin: 14px auto 0;
+        }
+
+        /* ── SEARCH BAR ── */
+        .search-section { padding: 48px 0 0; }
+        .search-wrap {
+            background: #fff; border-radius: 16px;
+            padding: 28px 32px;
+            box-shadow: var(--card-shadow);
+            display: flex; gap: 16px; align-items: center;
+            flex-wrap: wrap;
+        }
+        .search-icon-wrap {
+            width: 52px; height: 52px; border-radius: 12px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; color: #fff; flex-shrink: 0;
+        }
+        .search-input-wrap { flex: 1; min-width: 220px; position: relative; }
+        .search-input {
+            width: 100%; border: 2px solid var(--border);
+            border-radius: 10px; padding: 13px 20px 13px 46px;
+            font-size: 15px; font-family: 'DM Sans', sans-serif;
+            color: var(--text); background: var(--bg);
+            transition: all 0.3s; outline: none;
+        }
+        .search-input:focus { border-color: var(--primary); background: #fff; box-shadow: 0 0 0 4px rgba(10,37,88,0.08); }
+        .search-input::placeholder { color: var(--text-muted); }
+        .search-input-icon {
+            position: absolute; left: 16px; top: 50%; transform: translateY(-50%);
+            color: var(--text-muted); font-size: 16px; pointer-events: none;
+        }
+        .search-meta { font-size: 13px; color: var(--text-muted); white-space: nowrap; }
+        .search-meta strong { color: var(--primary); font-weight: 700; }
+
+        /* ── FILTER PILLS ── */
+        .filter-row { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 18px; }
+        .filter-pill {
+            padding: 6px 16px; border-radius: 30px;
+            border: 1.5px solid var(--border);
+            font-size: 13px; font-weight: 600; color: var(--text-muted);
+            cursor: pointer; transition: all 0.25s; background: #fff;
+        }
+        .filter-pill:hover, .filter-pill.active {
+            background: var(--primary); color: #fff; border-color: var(--primary);
+        }
+
+        /* ── DEPARTMENTS GRID ── */
+        .depts-section { padding: 40px 0 80px; }
+        .departments-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(340px, 1fr));
+            gap: 24px;
+        }
+
+        /* ── DEPARTMENT CARD ── */
+        .department-card {
+            background: #fff;
+            border-radius: 16px;
+            padding: 28px;
+            box-shadow: var(--card-shadow);
+            transition: all 0.35s ease;
+            border: 1px solid transparent;
+            position: relative; overflow: hidden;
+            animation: card-in 0.55s ease both;
+        }
+        @keyframes card-in {
+            from { opacity: 0; transform: translateY(24px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
         .department-card::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 5px;
-            height: 100%;
-            background-color: var(--accent);
-            transition: width 0.3s ease;
+            content: ''; position: absolute;
+            top: 0; left: 0; right: 0; height: 4px;
+            background: linear-gradient(90deg, var(--accent), var(--green));
+            transform: scaleX(0); transform-origin: left;
+            transition: transform 0.35s ease;
         }
-
         .department-card:hover {
-            transform: translateY(-5px);
-            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+            transform: translateY(-8px);
+            box-shadow: var(--card-shadow-hover);
+            border-color: #e8f0fe;
+        }
+        .department-card:hover::before { transform: scaleX(1); }
+
+        .dept-card-header { display: flex; align-items: flex-start; gap: 16px; margin-bottom: 20px; }
+        .dept-icon-wrap {
+            width: 60px; height: 60px; border-radius: 14px; flex-shrink: 0;
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 26px; color: var(--accent);
+            transition: all 0.35s;
+        }
+        .department-card:hover .dept-icon-wrap {
+            background: linear-gradient(135deg, var(--accent), #d6741e);
+            color: #fff; transform: scale(1.08) rotate(-5deg);
+        }
+        .dept-card-title { flex: 1; }
+        .dept-name {
+            font-size: 18px; font-weight: 700; color: var(--primary);
+            margin-bottom: 4px; line-height: 1.25;
+        }
+        .dept-head {
+            font-size: 13px; color: var(--text-muted);
+            display: flex; align-items: center; gap: 5px;
+        }
+        .dept-head i { color: var(--accent); font-size: 11px; }
+
+        .dept-info-list { display: flex; flex-direction: column; gap: 9px; margin-bottom: 20px; }
+        .dept-info-item {
+            display: flex; align-items: center; gap: 10px;
+            font-size: 13.5px; color: var(--text-muted);
+        }
+        .dept-info-item i {
+            width: 18px; text-align: center;
+            color: var(--accent); font-size: 13px; flex-shrink: 0;
         }
 
-        .department-card:hover::before {
-            width: 100%;
-            opacity: 0.1;
-        }
-
-        .department-icon {
-            font-size: 40px;
-            color: var(--accent);
-            margin-bottom: 15px;
-        }
-
-        .department-name {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 10px;
-        }
-
-        .department-head {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 15px;
-        }
-
-        .department-info {
-            margin-top: 15px;
-            padding-top: 15px;
-            border-top: 1px solid #eee;
-        }
-
-        .info-item {
-            display: flex;
-            align-items: center;
-            margin-bottom: 10px;
-            font-size: 14px;
-            color: #666;
-        }
-
-        .info-item i {
-            width: 20px;
-            color: var(--accent);
-            margin-right: 10px;
-        }
+        .dept-divider { height: 1px; background: var(--border); margin-bottom: 18px; }
 
         .contact-button {
-            background-color: var(--primary);
-            color: var(--white);
-            border: none;
-            padding: 8px 20px;
-            border-radius: 5px;
-            font-size: 14px;
-            font-weight: 600;
-            transition: all 0.3s ease;
             width: 100%;
-            margin-top: 15px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: #fff; border: none;
+            padding: 12px 20px; border-radius: 10px;
+            font-size: 14px; font-weight: 700;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+            cursor: pointer; transition: all 0.3s;
+            font-family: 'DM Sans', sans-serif;
         }
-
         .contact-button:hover {
-            background-color: #1a4d8f;
+            background: linear-gradient(135deg, var(--accent), #d6741e);
             transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(232,132,42,0.35);
         }
 
-        .stats-section {
-            background-color: var(--white);
-            border-radius: 10px;
-            padding: 30px;
-            box-shadow: 0 2px 15px rgba(0,0,0,0.1);
-            margin-bottom: 40px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 20px;
-            text-align: center;
-        }
-
-        .stat-item {
-            padding: 20px;
-            background: linear-gradient(135deg, var(--primary) 0%, #1a4d8f 100%);
-            color: var(--white);
-            border-radius: 8px;
-        }
-
-        .stat-number {
-            font-size: 36px;
-            font-weight: 700;
-            margin-bottom: 5px;
-        }
-
-        .stat-label {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-
+        /* ── NO RESULTS ── */
         .no-results {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-            display: none;
+            text-align: center; padding: 80px 20px;
+            display: none; grid-column: 1 / -1;
         }
-
-        .footer {
-            background-color: var(--primary);
-            color: var(--white);
-            padding: 40px 0 20px;
-            margin-top: 40px;
+        .no-results-icon {
+            width: 90px; height: 90px; border-radius: 50%;
+            background: linear-gradient(135deg, #e8f0fe, #c5d4f5);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 36px; color: var(--primary); margin: 0 auto 20px;
         }
+        .no-results h4 { font-size: 22px; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
+        .no-results p { color: var(--text-muted); font-size: 15px; }
 
-        .footer-bottom {
-            border-top: 1px solid rgba(255,255,255,0.2);
-            padding-top: 20px;
-            text-align: center;
-            font-size: 14px;
+        /* ── CTA BAND ── */
+        .cta-band {
+            background: linear-gradient(135deg, var(--primary) 0%, #1a3d7c 100%);
+            padding: 70px 0; color: #fff;
         }
-
-        @keyframes fadeIn {
-            from {
-                opacity: 0;
-                transform: translateY(20px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
+        .cta-card {
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.12);
+            border-radius: 20px; padding: 48px 40px;
+            display: flex; align-items: center;
+            gap: 40px; flex-wrap: wrap;
         }
+        .cta-icon {
+            width: 80px; height: 80px; border-radius: 20px; flex-shrink: 0;
+            background: rgba(232,132,42,0.15); border: 2px solid rgba(232,132,42,0.3);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 34px; color: var(--accent);
+        }
+        .cta-text { flex: 1; min-width: 220px; }
+        .cta-text h3 { font-family: 'Playfair Display', serif; font-size: 28px; margin-bottom: 8px; }
+        .cta-text p { font-size: 15px; opacity: 0.75; line-height: 1.65; }
+        .cta-actions { display: flex; gap: 14px; flex-wrap: wrap; }
+        .btn-cta-primary {
+            background: var(--accent); color: #fff; border: none;
+            padding: 14px 28px; border-radius: 8px;
+            font-size: 15px; font-weight: 700;
+            display: inline-flex; align-items: center; gap: 9px;
+            cursor: pointer; transition: all 0.3s;
+            box-shadow: 0 4px 20px rgba(232,132,42,0.4);
+            font-family: 'DM Sans', sans-serif;
+        }
+        .btn-cta-primary:hover { background: #d6741e; transform: translateY(-3px); box-shadow: 0 10px 30px rgba(232,132,42,0.5); }
+        .btn-cta-secondary {
+            background: transparent; color: #fff;
+            border: 2px solid rgba(255,255,255,0.45);
+            padding: 12px 26px; border-radius: 8px;
+            font-size: 15px; font-weight: 600;
+            display: inline-flex; align-items: center; gap: 9px;
+            cursor: pointer; transition: all 0.3s;
+            font-family: 'DM Sans', sans-serif;
+        }
+        .btn-cta-secondary:hover { background: rgba(255,255,255,0.1); border-color: #fff; transform: translateY(-3px); }
 
-        @media (max-width: 768px) {
-            .departments-grid {
-                grid-template-columns: 1fr;
-            }
+        /* ── WAVE ── */
+        .wave-sep { line-height: 0; overflow: hidden; }
+        .wave-sep svg { display: block; width: 100%; }
 
-            .page-header h2 {
-                font-size: 24px;
-            }
+        /* ── FOOTER ── */
+        .site-footer { background: #050f1e; color: rgba(255,255,255,0.82); padding: 56px 0 20px; }
+        .footer-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
+        .footer-logo-text { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: #fff; }
+        .footer-desc { font-size: 13px; line-height: 1.75; opacity: 0.7; }
+        .footer-head { font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 16px; letter-spacing: 0.5px; text-transform: uppercase; }
+        .footer-links { list-style: none; padding: 0; }
+        .footer-links li { margin-bottom: 9px; }
+        .footer-links a { font-size: 13px; opacity: 0.75; transition: all 0.2s; display: inline-flex; align-items: center; gap: 7px; }
+        .footer-links a:hover { opacity: 1; color: var(--accent); transform: translateX(4px); }
+        .footer-links a i { font-size: 10px; }
+        .footer-divider { border-color: rgba(255,255,255,0.08); margin: 30px 0 20px; }
+        .footer-bottom { font-size: 12px; opacity: 0.5; text-align: center; }
+        .footer-bottom-links { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
+        .footer-bottom-links a { font-size: 12px; opacity: 0.6; color: inherit; transition: opacity 0.2s; }
+        .footer-bottom-links a:hover { opacity: 1; }
+
+        /* ── SCROLL REVEAL ── */
+        .sr { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
+        .sr.visible { opacity: 1; transform: translateY(0); }
+
+        /* ── SCROLL TOP ── */
+        #scrollTop {
+            position: fixed; bottom: 28px; right: 28px; z-index: 500;
+            width: 48px; height: 48px; border-radius: 50%;
+            background: var(--accent); color: #fff; border: none;
+            font-size: 18px; cursor: pointer; display: none;
+            align-items: center; justify-content: center;
+            box-shadow: 0 4px 20px rgba(232,132,42,0.5); transition: all 0.3s;
+        }
+        #scrollTop:hover { background: #d6741e; transform: translateY(-3px); }
+        #scrollTop.show { display: flex; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 991px) {
+            .page-hero h2 { font-size: 34px; }
+            .stats-grid-4 { grid-template-columns: repeat(2,1fr); }
+        }
+        @media (max-width: 575px) {
+            .page-hero h2 { font-size: 26px; }
+            .departments-grid { grid-template-columns: 1fr; }
+            .stats-grid-4 { grid-template-columns: repeat(2,1fr); }
+            .cta-card { padding: 32px 22px; }
+            .search-wrap { flex-direction: column; align-items: stretch; }
         }
     </style>
 </head>
 <body>
-    <div class="tricolor-strip"></div>
 
-    <header class="header-top">
-        <div class="container">
-            <div class="row align-items-center">
-                <div class="col-md-12">
-                    <div class="emblem-container">
-                        <div class="emblem-icon">
-                            <i class="fas fa-landmark"></i>
-                        </div>
-                        <div class="emblem-text">
-                            <h1>Digital Complaint & Grievance Redressal Platform</h1>
-                            <p>भारत सरकार | Government of India</p>
-                        </div>
+<!-- PAGE LOADER -->
+<div id="page-loader">
+    <div class="chakra-loader">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="46" stroke="#FF9933" stroke-width="4" fill="none"/>
+            <circle cx="50" cy="50" r="8" fill="#138808"/>
+            <g stroke="#003580" stroke-width="2">
+                <line x1="50" y1="50" x2="50" y2="6"/>
+                <line x1="50" y1="50" x2="66" y2="9"/>
+                <line x1="50" y1="50" x2="79" y2="21"/>
+                <line x1="50" y1="50" x2="86" y2="34"/>
+                <line x1="50" y1="50" x2="89" y2="50"/>
+                <line x1="50" y1="50" x2="86" y2="66"/>
+                <line x1="50" y1="50" x2="79" y2="79"/>
+                <line x1="50" y1="50" x2="66" y2="91"/>
+                <line x1="50" y1="50" x2="50" y2="94"/>
+                <line x1="50" y1="50" x2="34" y2="91"/>
+                <line x1="50" y1="50" x2="21" y2="79"/>
+                <line x1="50" y1="50" x2="14" y2="66"/>
+                <line x1="50" y1="50" x2="11" y2="50"/>
+                <line x1="50" y1="50" x2="14" y2="34"/>
+                <line x1="50" y1="50" x2="21" y2="21"/>
+                <line x1="50" y1="50" x2="34" y2="9"/>
+                <line x1="50" y1="50" x2="58" y2="7.5"/>
+                <line x1="50" y1="50" x2="73" y2="14"/>
+                <line x1="50" y1="50" x2="83" y2="27"/>
+                <line x1="50" y1="50" x2="88" y2="42"/>
+                <line x1="50" y1="50" x2="88" y2="58"/>
+                <line x1="50" y1="50" x2="83" y2="73"/>
+                <line x1="50" y1="50" x2="73" y2="86"/>
+                <line x1="50" y1="50" x2="58" y2="92.5"/>
+            </g>
+            <circle cx="50" cy="50" r="4" fill="#FF9933"/>
+        </svg>
+    </div>
+    <p class="loader-text">Loading Portal…</p>
+</div>
+
+<!-- SCROLL TO TOP -->
+<button id="scrollTop" title="Back to top"><i class="fas fa-chevron-up"></i></button>
+
+<!-- TRICOLOR -->
+<div class="tricolor"></div>
+
+<!-- TICKER -->
+<div class="ticker-bar">
+    <div class="container">
+        <div class="ticker-inner">
+            <span class="ticker-label">📢 NOTICE</span>
+            <div class="ticker-track">
+                <span class="ticker-scroll">
+                    12 departments are now onboarded on this portal &nbsp;|&nbsp;
+                    Citizens can directly contact department offices via the portal &nbsp;|&nbsp;
+                    Response time for all departments reduced to 48 hours &nbsp;|&nbsp;
+                    New departments: Housing & Urban Development and Labour & Employment now active &nbsp;|&nbsp;
+                    Integration with DigiLocker now live for document submission &nbsp;|&nbsp;
+                    156 officers available across all departments for grievance resolution
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- HEADER -->
+<header class="site-header">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="header-logo">
+                <svg class="ashoka-emblem" viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg">
+                    <ellipse cx="60" cy="50" rx="44" ry="44" fill="#FF9933" opacity="0.15"/>
+                    <circle cx="60" cy="50" r="38" stroke="#FF9933" stroke-width="3" fill="none"/>
+                    <circle cx="60" cy="50" r="10" fill="#003580"/>
+                    <g stroke="#003580" stroke-width="1.5">
+                        <line x1="60" y1="50" x2="60" y2="14"/>
+                        <line x1="60" y1="50" x2="79" y2="19"/>
+                        <line x1="60" y1="50" x2="92" y2="31"/>
+                        <line x1="60" y1="50" x2="96" y2="50"/>
+                        <line x1="60" y1="50" x2="92" y2="69"/>
+                        <line x1="60" y1="50" x2="79" y2="81"/>
+                        <line x1="60" y1="50" x2="60" y2="86"/>
+                        <line x1="60" y1="50" x2="41" y2="81"/>
+                        <line x1="60" y1="50" x2="28" y2="69"/>
+                        <line x1="60" y1="50" x2="24" y2="50"/>
+                        <line x1="60" y1="50" x2="28" y2="31"/>
+                        <line x1="60" y1="50" x2="41" y2="19"/>
+                    </g>
+                    <circle cx="60" cy="50" r="5" fill="#FF9933"/>
+                    <rect x="20" y="100" width="80" height="6" rx="3" fill="#FF9933"/>
+                    <rect x="28" y="110" width="64" height="5" rx="2.5" fill="#fff" stroke="#ccc" stroke-width="0.5"/>
+                    <rect x="28" y="119" width="64" height="6" rx="3" fill="#138808"/>
+                    <text x="60" y="134" text-anchor="middle" font-size="7" fill="#003580" font-family="serif" font-weight="bold">सत्यमेव जयते</text>
+                </svg>
+                <div class="header-titles">
+                    <h1>Digital Grievance Redressal Platform</h1>
+                    <p>भारत सरकार &nbsp;·&nbsp; Government of India &nbsp;·&nbsp; National Informatics Centre</p>
+                </div>
+            </div>
+            <div class="d-none d-md-flex">
+                <div class="digital-india-badge">
+                    <i class="fas fa-globe" style="font-size:18px;color:var(--accent);"></i>
+                    <div>
+                        <div style="font-size:13px;font-weight:700;">Digital India</div>
+                        <div style="font-size:10px;opacity:0.75;">डिजिटल इंडिया</div>
                     </div>
                 </div>
             </div>
         </div>
-    </header>
+    </div>
+</header>
 
-    <nav class="navbar navbar-expand-lg navbar-dark">
-        <div class="container">
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav mx-auto">
-                    <li class="nav-item">
-                        <a class="nav-link" href="index.html">Home</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="register.html">Register Complaint</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="track.html">Track Status</a>
-                    </li>
-                    <li class="nav-item"><a class="nav-link" href="map.html">Map</a></li>
-                    <li class="nav-item">
-                        <a class="nav-link active" href="departments.html">Departments</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="help.html">Help & FAQ</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="login.html">Officer Login</a>
-                    </li>
+<!-- NAVBAR -->
+<nav class="main-nav navbar navbar-expand-lg">
+    <div class="container">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="mainNav">
+            <ul class="navbar-nav mx-auto">
+                <li class="nav-item"><a class="nav-link" href="index.html"><i class="fas fa-home me-1"></i>Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="register.html"><i class="fas fa-file-alt me-1"></i>Register Complaint</a></li>
+                <li class="nav-item"><a class="nav-link" href="track.html"><i class="fas fa-search me-1"></i>Track Status</a></li>
+                <li class="nav-item"><a class="nav-link" href="map.html"><i class="fas fa-map-marked-alt me-1"></i>Map</a></li>
+                <li class="nav-item"><a class="nav-link active" href="departments.html"><i class="fas fa-building me-1"></i>Departments</a></li>
+                <li class="nav-item"><a class="nav-link" href="help.html"><i class="fas fa-question-circle me-1"></i>Help &amp; FAQ</a></li>
+                <li class="nav-item"><a class="nav-link nav-officer-btn" href="login.html"><i class="fas fa-user-shield me-1"></i>Officer Login</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- PAGE HERO -->
+<section class="page-hero">
+    <div class="hero-particles" id="heroParticles"></div>
+    <svg class="page-hero-mandala" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+        <g fill="none" stroke="white">
+            <circle cx="250" cy="250" r="240" stroke-width="1"/>
+            <circle cx="250" cy="250" r="200" stroke-width="0.8"/>
+            <circle cx="250" cy="250" r="160" stroke-width="0.6"/>
+            <circle cx="250" cy="250" r="120" stroke-width="0.5"/>
+            <circle cx="250" cy="250" r="80" stroke-width="0.4"/>
+            <line x1="250" y1="10" x2="250" y2="490" stroke-width="0.4"/>
+            <line x1="10" y1="250" x2="490" y2="250" stroke-width="0.4"/>
+            <line x1="74" y1="74" x2="426" y2="426" stroke-width="0.4"/>
+            <line x1="426" y1="74" x2="74" y2="426" stroke-width="0.4"/>
+            <ellipse cx="250" cy="130" rx="18" ry="40" stroke-width="0.6"/>
+            <ellipse cx="250" cy="370" rx="18" ry="40" stroke-width="0.6"/>
+            <ellipse cx="130" cy="250" rx="40" ry="18" stroke-width="0.6"/>
+            <ellipse cx="370" cy="250" rx="40" ry="18" stroke-width="0.6"/>
+        </g>
+    </svg>
+
+    <div class="container page-hero-content">
+        <div class="row align-items-center">
+            <div class="col-lg-8">
+                <div class="hero-eyebrow">
+                    <span class="dot"></span>
+                    Government Departments Directory
+                </div>
+                <h2>
+                    Find the Right<br>
+                    <span class="accent-word">Department, Fast</span>
+                </h2>
+                <p class="page-hero-hindi">सभी सरकारी विभागों की जानकारी एक ही स्थान पर — त्वरित संपर्क और शिकायत निवारण।</p>
+                <p class="page-hero-desc">Browse contact details, working hours, and department heads for all 12 registered government departments. Your complaint is automatically routed to the right office.</p>
+                <div class="hero-trust">
+                    <span class="trust-item"><i class="fas fa-check-circle"></i> 12 Departments</span>
+                    <span class="trust-item"><i class="fas fa-check-circle"></i> 156 Officers</span>
+                    <span class="trust-item"><i class="fas fa-check-circle"></i> 24 × 7 Support</span>
+                    <span class="trust-item"><i class="fas fa-check-circle"></i> 98% Response Rate</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- WAVE -->
+<div class="wave-sep" style="background: var(--primary-dark);">
+    <svg viewBox="0 0 1440 48" xmlns="http://www.w3.org/2000/svg">
+        <path d="M0,48 C360,0 1080,0 1440,48 L1440,0 L0,0 Z" fill="var(--primary-dark)"/>
+    </svg>
+</div>
+
+<!-- STATS BAND -->
+<div style="background:var(--primary-dark); border-bottom: 3px solid var(--accent);">
+    <div class="container">
+        <div class="stats-grid-4">
+            <div class="stat-cell">
+                <div class="stat-icon"><i class="fas fa-building"></i></div>
+                <div class="stat-num" id="s1">12</div>
+                <div class="stat-lbl">Total Departments</div>
+            </div>
+            <div class="stat-cell">
+                <div class="stat-icon"><i class="fas fa-user-tie"></i></div>
+                <div class="stat-num" id="s2">156</div>
+                <div class="stat-lbl">Officers Available</div>
+            </div>
+            <div class="stat-cell">
+                <div class="stat-icon"><i class="fas fa-clock"></i></div>
+                <div class="stat-num">24/7</div>
+                <div class="stat-lbl">Support Available</div>
+            </div>
+            <div class="stat-cell">
+                <div class="stat-icon"><i class="fas fa-percentage"></i></div>
+                <div class="stat-num" id="s4">98%</div>
+                <div class="stat-lbl">Response Rate</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SEARCH SECTION -->
+<section class="search-section">
+    <div class="container">
+        <div class="search-wrap sr">
+            <div class="search-icon-wrap">
+                <i class="fas fa-search"></i>
+            </div>
+            <div class="search-input-wrap">
+                <i class="fas fa-search search-input-icon"></i>
+                <input type="text" class="search-input" id="searchInput"
+                    placeholder="Search by department name, head, email or phone…">
+            </div>
+            <div class="search-meta">
+                Showing <strong id="resultCount">12</strong> of 12 departments
+            </div>
+        </div>
+        <div class="filter-row sr" style="transition-delay:0.1s;">
+            <button class="filter-pill active" data-filter="all">All Departments</button>
+            <button class="filter-pill" data-filter="infrastructure">Infrastructure</button>
+            <button class="filter-pill" data-filter="welfare">Welfare</button>
+            <button class="filter-pill" data-filter="utilities">Utilities</button>
+            <button class="filter-pill" data-filter="admin">Administration</button>
+        </div>
+    </div>
+</section>
+
+<!-- DEPARTMENTS GRID -->
+<section class="depts-section">
+    <div class="container">
+        <div class="departments-grid" id="departmentsGrid"></div>
+    </div>
+</section>
+
+<!-- CTA BAND -->
+<section class="cta-band">
+    <div class="container sr">
+        <div class="cta-card">
+            <div class="cta-icon"><i class="fas fa-paper-plane"></i></div>
+            <div class="cta-text">
+                <h3>Ready to File a Complaint?</h3>
+                <p>Submit your grievance and it will be automatically routed to the appropriate department. Get a unique Complaint ID via SMS and track your case in real-time.</p>
+            </div>
+            <div class="cta-actions">
+                <a href="register.html">
+                    <button class="btn-cta-primary"><i class="fas fa-file-alt"></i> Register Complaint</button>
+                </a>
+                <a href="track.html">
+                    <button class="btn-cta-secondary"><i class="fas fa-search"></i> Track Status</button>
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- FOOTER -->
+<div class="tricolor"></div>
+<footer class="site-footer">
+    <div class="container">
+        <div class="row mb-4">
+            <div class="col-md-4 mb-4">
+                <div class="footer-logo">
+                    <i class="fas fa-landmark" style="font-size:26px;color:var(--accent);"></i>
+                    <span class="footer-logo-text">Grievance Redressal<br>Platform</span>
+                </div>
+                <p class="footer-desc">An initiative under the Digital India Programme to provide citizens a transparent and efficient mechanism for addressing grievances with government departments across India.</p>
+                <div style="margin-top:16px;font-size:12px;opacity:0.5;">
+                    <i class="fas fa-shield-alt me-1" style="color:var(--accent);"></i> Secured by AWS &nbsp;·&nbsp;
+                    <i class="fas fa-server me-1" style="color:var(--accent);"></i> Hosted on NIC Cloud
+                </div>
+            </div>
+            <div class="col-md-2 col-sm-6 mb-4">
+                <div class="footer-head">Citizen Services</div>
+                <ul class="footer-links">
+                    <li><a href="register.html"><i class="fas fa-chevron-right"></i>Register Complaint</a></li>
+                    <li><a href="track.html"><i class="fas fa-chevron-right"></i>Track Status</a></li>
+                    <li><a href="departments.html"><i class="fas fa-chevron-right"></i>Departments</a></li>
+                    <li><a href="help.html"><i class="fas fa-chevron-right"></i>Help &amp; FAQ</a></li>
+                    <li><a href="map.html"><i class="fas fa-chevron-right"></i>Complaint Map</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="footer-head">Officer Portal</div>
+                <ul class="footer-links">
+                    <li><a href="login.html"><i class="fas fa-chevron-right"></i>Officer Login</a></li>
+                    <li><a href="dashboard.html"><i class="fas fa-chevron-right"></i>Dashboard</a></li>
+                    <li><a href="analytics.html"><i class="fas fa-chevron-right"></i>Analytics</a></li>
+                    <li><a href="admin-departments.html"><i class="fas fa-chevron-right"></i>Dept Overview</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="footer-head">Contact</div>
+                <ul class="footer-links">
+                    <li><i class="fas fa-phone" style="color:var(--accent);"></i>&nbsp; 1800-000-XXXX</li>
+                    <li><i class="fas fa-envelope" style="color:var(--accent);"></i>&nbsp; grievance@gov.in</li>
+                    <li><i class="fas fa-map-marker-alt" style="color:var(--accent);"></i>&nbsp; New Delhi, India</li>
+                    <li><i class="fas fa-clock" style="color:var(--accent);"></i>&nbsp; Mon–Fri: 9 AM – 6 PM</li>
                 </ul>
             </div>
         </div>
-    </nav>
-
-    <div class="page-header">
-        <div class="container">
-            <h2><i class="fas fa-building"></i> Government Departments Directory</h2>
-            <p>Contact information and details of all registered departments</p>
-        </div>
-    </div>
-
-    <div class="container">
-        <!-- Statistics Section -->
-        <div class="stats-section">
-            <div class="stats-grid">
-                <div class="stat-item">
-                    <div class="stat-number">12</div>
-                    <div class="stat-label">Total Departments</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">156</div>
-                    <div class="stat-label">Officers Available</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">24/7</div>
-                    <div class="stat-label">Support Available</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-number">98%</div>
-                    <div class="stat-label">Response Rate</div>
-                </div>
+        <hr class="footer-divider">
+        <div class="footer-bottom">
+            <p>© 2026 Government of India &nbsp;|&nbsp; Digital India Initiative &nbsp;|&nbsp; National Informatics Centre (NIC)</p>
+            <div class="footer-bottom-links">
+                <a href="#">Terms &amp; Conditions</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Accessibility</a>
+                <a href="#">Contact Us</a>
+                <a href="#">Sitemap</a>
+                <a href="#">RTI</a>
             </div>
         </div>
-
-        <!-- Search Bar -->
-        <div class="search-bar">
-            <input type="text" class="search-input" id="searchInput" placeholder="Search departments by name, head, or contact...">
-        </div>
-
-        <!-- Departments Grid -->
-        <div class="departments-grid" id="departmentsGrid">
-            <!-- Departments will be loaded here -->
-        </div>
-
-        <div class="no-results" id="noResults">
-            <i class="fas fa-search" style="font-size: 60px; color: #ccc; margin-bottom: 20px;"></i>
-            <h4>No Departments Found</h4>
-            <p>Try adjusting your search terms</p>
-        </div>
     </div>
+</footer>
 
-    <div class="tricolor-strip"></div>
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-bottom">
-                <p>&copy; 2026 Government of India | Digital India Initiative | National Informatics Centre (NIC)</p>
-            </div>
-        </div>
-    </footer>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ── DATA ────────────────────────────────────────────────
+const departments = [
+    {
+        name: 'Public Works Department',
+        icon: 'fa-road',
+        head: 'Shri Rajesh Kumar, IAS',
+        email: 'pwd@gov.in',
+        phone: '1800-111-2222',
+        address: 'PWD Bhawan, New Delhi',
+        workingHours: 'Mon–Fri: 9:00 AM – 6:00 PM',
+        category: 'infrastructure'
+    },
+    {
+        name: 'Health & Family Welfare',
+        icon: 'fa-heartbeat',
+        head: 'Dr. Priya Sharma, IAS',
+        email: 'health@gov.in',
+        phone: '1800-111-3333',
+        address: 'Health Ministry, Nirman Bhawan',
+        workingHours: 'Mon–Sat: 8:00 AM – 8:00 PM',
+        category: 'welfare'
+    },
+    {
+        name: 'Education Department',
+        icon: 'fa-graduation-cap',
+        head: 'Prof. Anil Verma',
+        email: 'education@gov.in',
+        phone: '1800-111-4444',
+        address: 'Shiksha Bhawan, Delhi',
+        workingHours: 'Mon–Fri: 9:00 AM – 5:00 PM',
+        category: 'welfare'
+    },
+    {
+        name: 'Police Department',
+        icon: 'fa-shield-alt',
+        head: 'Shri Vikram Singh, IPS',
+        email: 'police@gov.in',
+        phone: '100 / 1800-111-5555',
+        address: 'Police Headquarters, State',
+        workingHours: '24/7 Emergency Services',
+        category: 'admin'
+    },
+    {
+        name: 'Revenue Department',
+        icon: 'fa-file-invoice-dollar',
+        head: 'Shri Ramesh Gupta, IAS',
+        email: 'revenue@gov.in',
+        phone: '1800-111-6666',
+        address: 'Revenue Bhawan, Civil Lines',
+        workingHours: 'Mon–Fri: 10:00 AM – 5:00 PM',
+        category: 'admin'
+    },
+    {
+        name: 'Electricity Board',
+        icon: 'fa-bolt',
+        head: 'Er. Suresh Reddy',
+        email: 'electricity@gov.in',
+        phone: '1800-111-7777',
+        address: 'Power House, Sector 12',
+        workingHours: '24/7 Complaint Centre',
+        category: 'utilities'
+    },
+    {
+        name: 'Water Supply Department',
+        icon: 'fa-tint',
+        head: 'Er. Meena Patel',
+        email: 'water@gov.in',
+        phone: '1800-111-8888',
+        address: 'Jal Bhawan, City Centre',
+        workingHours: 'Mon–Sat: 8:00 AM – 6:00 PM',
+        category: 'utilities'
+    },
+    {
+        name: 'Transport Department',
+        icon: 'fa-bus',
+        head: 'Shri Ashok Kumar, IAS',
+        email: 'transport@gov.in',
+        phone: '1800-111-9999',
+        address: 'Transport Nagar, Main Road',
+        workingHours: 'Mon–Fri: 9:00 AM – 5:00 PM',
+        category: 'infrastructure'
+    },
+    {
+        name: 'Social Welfare Department',
+        icon: 'fa-hands-helping',
+        head: 'Smt. Kavita Devi, IAS',
+        email: 'socialwelfare@gov.in',
+        phone: '1800-222-1111',
+        address: 'Welfare Bhawan, Gandhi Nagar',
+        workingHours: 'Mon–Fri: 9:00 AM – 6:00 PM',
+        category: 'welfare'
+    },
+    {
+        name: 'Agriculture Department',
+        icon: 'fa-leaf',
+        head: 'Dr. Mohan Singh',
+        email: 'agriculture@gov.in',
+        phone: '1800-222-2222',
+        address: 'Krishi Bhawan, Pusa Complex',
+        workingHours: 'Mon–Sat: 9:00 AM – 5:00 PM',
+        category: 'welfare'
+    },
+    {
+        name: 'Housing & Urban Development',
+        icon: 'fa-city',
+        head: 'Shri Deepak Joshi, IAS',
+        email: 'housing@gov.in',
+        phone: '1800-222-3333',
+        address: 'Urban Development Office',
+        workingHours: 'Mon–Fri: 10:00 AM – 6:00 PM',
+        category: 'infrastructure'
+    },
+    {
+        name: 'Labour & Employment',
+        icon: 'fa-briefcase',
+        head: 'Shri Vinod Sharma',
+        email: 'labour@gov.in',
+        phone: '1800-222-4444',
+        address: 'Shram Shakti Bhawan',
+        workingHours: 'Mon–Fri: 9:00 AM – 5:00 PM',
+        category: 'admin'
+    }
+];
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        const departments = [
-            {
-                name: 'Public Works Department',
-                icon: 'fa-road',
-                head: 'Shri Rajesh Kumar, IAS',
-                email: 'pwd@gov.in',
-                phone: '1800-111-2222',
-                address: 'PWD Bhawan, New Delhi',
-                workingHours: 'Mon-Fri: 9:00 AM - 6:00 PM'
-            },
-            {
-                name: 'Health & Family Welfare',
-                icon: 'fa-heartbeat',
-                head: 'Dr. Priya Sharma, IAS',
-                email: 'health@gov.in',
-                phone: '1800-111-3333',
-                address: 'Health Ministry, Nirman Bhawan',
-                workingHours: 'Mon-Sat: 8:00 AM - 8:00 PM'
-            },
-            {
-                name: 'Education Department',
-                icon: 'fa-graduation-cap',
-                head: 'Prof. Anil Verma',
-                email: 'education@gov.in',
-                phone: '1800-111-4444',
-                address: 'Shiksha Bhawan, Delhi',
-                workingHours: 'Mon-Fri: 9:00 AM - 5:00 PM'
-            },
-            {
-                name: 'Police Department',
-                icon: 'fa-shield-alt',
-                head: 'Shri Vikram Singh, IPS',
-                email: 'police@gov.in',
-                phone: '100 / 1800-111-5555',
-                address: 'Police Headquarters, State',
-                workingHours: '24/7 Emergency Services'
-            },
-            {
-                name: 'Revenue Department',
-                icon: 'fa-file-invoice-dollar',
-                head: 'Shri Ramesh Gupta, IAS',
-                email: 'revenue@gov.in',
-                phone: '1800-111-6666',
-                address: 'Revenue Bhawan, Civil Lines',
-                workingHours: 'Mon-Fri: 10:00 AM - 5:00 PM'
-            },
-            {
-                name: 'Electricity Board',
-                icon: 'fa-bolt',
-                head: 'Er. Suresh Reddy',
-                email: 'electricity@gov.in',
-                phone: '1800-111-7777',
-                address: 'Power House, Sector 12',
-                workingHours: '24/7 Complaint Centre'
-            },
-            {
-                name: 'Water Supply Department',
-                icon: 'fa-tint',
-                head: 'Er. Meena Patel',
-                email: 'water@gov.in',
-                phone: '1800-111-8888',
-                address: 'Jal Bhawan, City Centre',
-                workingHours: 'Mon-Sat: 8:00 AM - 6:00 PM'
-            },
-            {
-                name: 'Transport Department',
-                icon: 'fa-bus',
-                head: 'Shri Ashok Kumar, IAS',
-                email: 'transport@gov.in',
-                phone: '1800-111-9999',
-                address: 'Transport Nagar, Main Road',
-                workingHours: 'Mon-Fri: 9:00 AM - 5:00 PM'
-            },
-            {
-                name: 'Social Welfare Department',
-                icon: 'fa-hands-helping',
-                head: 'Smt. Kavita Devi, IAS',
-                email: 'socialwelfare@gov.in',
-                phone: '1800-222-1111',
-                address: 'Welfare Bhawan, Gandhi Nagar',
-                workingHours: 'Mon-Fri: 9:00 AM - 6:00 PM'
-            },
-            {
-                name: 'Agriculture Department',
-                icon: 'fa-leaf',
-                head: 'Dr. Mohan Singh',
-                email: 'agriculture@gov.in',
-                phone: '1800-222-2222',
-                address: 'Krishi Bhawan, Pusa Complex',
-                workingHours: 'Mon-Sat: 9:00 AM - 5:00 PM'
-            },
-            {
-                name: 'Housing & Urban Development',
-                icon: 'fa-city',
-                head: 'Shri Deepak Joshi, IAS',
-                email: 'housing@gov.in',
-                phone: '1800-222-3333',
-                address: 'Urban Development Office',
-                workingHours: 'Mon-Fri: 10:00 AM - 6:00 PM'
-            },
-            {
-                name: 'Labour & Employment',
-                icon: 'fa-briefcase',
-                head: 'Shri Vinod Sharma',
-                email: 'labour@gov.in',
-                phone: '1800-222-4444',
-                address: 'Shram Shakti Bhawan',
-                workingHours: 'Mon-Fri: 9:00 AM - 5:00 PM'
-            }
-        ];
-
-        function createDepartmentCard(dept, index) {
-            const delay = index * 0.1;
-            return `
-                <div class="department-card" style="animation-delay: ${delay}s;">
-                    <div class="department-icon">
-                        <i class="fas ${dept.icon}"></i>
-                    </div>
-                    <div class="department-name">${dept.name}</div>
-                    <div class="department-head">
-                        <i class="fas fa-user"></i> ${dept.head}
-                    </div>
-                    <div class="department-info">
-                        <div class="info-item">
-                            <i class="fas fa-envelope"></i>
-                            <span>${dept.email}</span>
-                        </div>
-                        <div class="info-item">
-                            <i class="fas fa-phone"></i>
-                            <span>${dept.phone}</span>
-                        </div>
-                        <div class="info-item">
-                            <i class="fas fa-map-marker-alt"></i>
-                            <span>${dept.address}</span>
-                        </div>
-                        <div class="info-item">
-                            <i class="fas fa-clock"></i>
-                            <span>${dept.workingHours}</span>
-                        </div>
-                    </div>
-                    <button class="contact-button" onclick="contactDepartment('${dept.name}')">
-                        <i class="fas fa-paper-plane"></i> Contact Department
-                    </button>
+// ── CARD TEMPLATE ────────────────────────────────────────
+function createCard(dept, index) {
+    const delay = (index * 0.07).toFixed(2);
+    return `
+        <div class="department-card" style="animation-delay:${delay}s;" data-category="${dept.category}">
+            <div class="dept-card-header">
+                <div class="dept-icon-wrap">
+                    <i class="fas ${dept.icon}"></i>
                 </div>
-            `;
+                <div class="dept-card-title">
+                    <div class="dept-name">${dept.name}</div>
+                    <div class="dept-head">
+                        <i class="fas fa-user-tie"></i> ${dept.head}
+                    </div>
+                </div>
+            </div>
+            <div class="dept-divider"></div>
+            <div class="dept-info-list">
+                <div class="dept-info-item">
+                    <i class="fas fa-envelope"></i>
+                    <span>${dept.email}</span>
+                </div>
+                <div class="dept-info-item">
+                    <i class="fas fa-phone-alt"></i>
+                    <span>${dept.phone}</span>
+                </div>
+                <div class="dept-info-item">
+                    <i class="fas fa-map-marker-alt"></i>
+                    <span>${dept.address}</span>
+                </div>
+                <div class="dept-info-item">
+                    <i class="fas fa-clock"></i>
+                    <span>${dept.workingHours}</span>
+                </div>
+            </div>
+            <button class="contact-button" onclick="contactDept('${dept.name}', '${dept.phone}', '${dept.email}')">
+                <i class="fas fa-paper-plane"></i> Contact Department
+            </button>
+        </div>
+    `;
+}
+
+// ── RENDER ───────────────────────────────────────────────
+let activeFilter = 'all';
+let searchQuery  = '';
+
+function render() {
+    const grid = document.getElementById('departmentsGrid');
+    const countEl = document.getElementById('resultCount');
+
+    let filtered = departments.filter(d => {
+        const matchFilter = activeFilter === 'all' || d.category === activeFilter;
+        const q = searchQuery.toLowerCase();
+        const matchSearch = !q ||
+            d.name.toLowerCase().includes(q) ||
+            d.head.toLowerCase().includes(q) ||
+            d.email.toLowerCase().includes(q) ||
+            d.phone.includes(q);
+        return matchFilter && matchSearch;
+    });
+
+    countEl.textContent = filtered.length;
+
+    if (filtered.length === 0) {
+        grid.innerHTML = `
+            <div class="no-results" style="display:block;">
+                <div class="no-results-icon"><i class="fas fa-search"></i></div>
+                <h4>No Departments Found</h4>
+                <p>Try adjusting your search or filter to find what you're looking for.</p>
+            </div>`;
+        return;
+    }
+
+    grid.innerHTML = filtered.map((d, i) => createCard(d, i)).join('');
+}
+
+// ── SEARCH ───────────────────────────────────────────────
+document.getElementById('searchInput').addEventListener('input', function () {
+    searchQuery = this.value.trim();
+    render();
+});
+
+// ── FILTERS ──────────────────────────────────────────────
+document.querySelectorAll('.filter-pill').forEach(pill => {
+    pill.addEventListener('click', function () {
+        document.querySelectorAll('.filter-pill').forEach(p => p.classList.remove('active'));
+        this.classList.add('active');
+        activeFilter = this.dataset.filter;
+        render();
+    });
+});
+
+// ── CONTACT HANDLER ──────────────────────────────────────
+function contactDept(name, phone, email) {
+    alert(`Contact: ${name}\n\nPhone: ${phone}\nEmail: ${email}\n\nOr register a formal complaint on this portal for a tracked response.`);
+}
+
+// ── STAT COUNTER ─────────────────────────────────────────
+function animateCount(id, target, suffix = '') {
+    const el = document.getElementById(id);
+    if (!el) return;
+    let cur = 0;
+    const step = Math.max(1, Math.ceil(target / 60));
+    const t = setInterval(() => {
+        cur = Math.min(cur + step, target);
+        el.textContent = cur + suffix;
+        if (cur >= target) clearInterval(t);
+    }, 20);
+}
+animateCount('s1', 12);
+animateCount('s2', 156);
+
+// ── LOADER ───────────────────────────────────────────────
+window.addEventListener('load', () => {
+    setTimeout(() => document.getElementById('page-loader').classList.add('hidden'), 1400);
+});
+
+// ── PARTICLES ────────────────────────────────────────────
+(function () {
+    const c = document.getElementById('heroParticles');
+    if (!c) return;
+    const colors = ['#FF9933','#138808','#fff','#E8842A'];
+    for (let i = 0; i < 22; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        p.style.cssText = `
+            left:${Math.random()*100}%;top:${Math.random()*100}%;
+            width:${Math.random()*5+3}px;height:${Math.random()*5+3}px;
+            background:${colors[Math.floor(Math.random()*colors.length)]};
+            animation-delay:${Math.random()*8}s;
+            animation-duration:${6+Math.random()*6}s;
+        `;
+        c.appendChild(p);
+    }
+})();
+
+// ── SCROLL REVEAL ─────────────────────────────────────────
+const srObs = new IntersectionObserver(entries => {
+    entries.forEach((e, i) => {
+        if (e.isIntersecting) {
+            setTimeout(() => e.target.classList.add('visible'), i * 90);
+            srObs.unobserve(e.target);
         }
+    });
+}, { threshold: 0.12 });
+document.querySelectorAll('.sr').forEach(el => srObs.observe(el));
 
-        function displayDepartments(depts) {
-            const grid = document.getElementById('departmentsGrid');
-            const noResults = document.getElementById('noResults');
-            
-            if (depts.length === 0) {
-                grid.innerHTML = '';
-                noResults.style.display = 'block';
-            } else {
-                noResults.style.display = 'none';
-                grid.innerHTML = depts.map((dept, index) => createDepartmentCard(dept, index)).join('');
-            }
-        }
+// ── SCROLL TOP ────────────────────────────────────────────
+const scrollBtn = document.getElementById('scrollTop');
+window.addEventListener('scroll', () => scrollBtn.classList.toggle('show', scrollY > 400));
+scrollBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-        function searchDepartments(query) {
-            const filtered = departments.filter(dept => {
-                const searchText = query.toLowerCase();
-                return dept.name.toLowerCase().includes(searchText) ||
-                       dept.head.toLowerCase().includes(searchText) ||
-                       dept.email.toLowerCase().includes(searchText) ||
-                       dept.phone.includes(searchText);
-            });
-            displayDepartments(filtered);
-        }
-
-        function contactDepartment(name) {
-            alert(`Opening contact form for ${name}\n\nYou can:\n• Call the helpline\n• Send an email\n• Register a complaint`);
-        }
-
-        // Search functionality
-        document.getElementById('searchInput').addEventListener('input', function(e) {
-            searchDepartments(e.target.value);
-        });
-
-        // Initial load
-        displayDepartments(departments);
-    </script>
+// ── INIT ─────────────────────────────────────────────────
+render();
+</script>
 </body>
 </html>

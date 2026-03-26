@@ -3,1156 +3,1088 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Track Complaint - Digital Grievance Portal</title>
+    <title>Track Complaint — Digital Grievance Redressal Platform</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        /* ── TOKENS ──────────────────────────────────────────── */
         :root {
-            --primary: #0A2E5C;
-            --background: #F2F2F2;
-            --accent: #FF9933;
-            --success: #138808;
-            --error: #C62828;
-            --white: #FFFFFF;
+            --primary:       #0A2558;
+            --primary-dark:  #06173a;
+            --primary-light: #1a3d7c;
+            --accent:        #E8842A;
+            --accent-light:  #f4a355;
+            --green:         #0e7c3b;
+            --green-light:   #16a34a;
+            --red:           #C62828;
+            --bg:            #F5F6FA;
+            --white:         #FFFFFF;
+            --text:          #1c2b4a;
+            --muted:         #6b7a99;
+            --border:        #e2e8f0;
+            --shadow:        0 4px 24px rgba(10,37,88,.10);
+            --shadow-lg:     0 16px 48px rgba(10,37,88,.18);
         }
-
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior:smooth; }
         body {
-            font-family: 'Roboto', 'Noto Sans Devanagari', sans-serif;
-            background-color: var(--background);
-            color: #333;
+            font-family: 'DM Sans','Noto Sans Devanagari',sans-serif;
+            background: var(--bg); color: var(--text); overflow-x:hidden;
         }
-
-        .tricolor-strip {
-            height: 5px;
-            background: linear-gradient(to right, #FF9933 0%, #FF9933 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #138808 66.66%, #138808 100%);
+        a { text-decoration:none; color:inherit; }
+                /* ── ASHOKA CHAKRA LOADER ── */
+        #page-loader {
+            position: fixed; inset: 0; z-index: 9999;
+            background: var(--primary-dark);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
         }
-
-        .header-top { background-color: var(--white); padding: 15px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .emblem-container { display: flex; align-items: center; gap: 15px; }
-        .emblem-icon { font-size: 50px; color: var(--primary); }
-        .emblem-text h1 { font-size: 20px; font-weight: 700; color: var(--primary); margin: 0; }
-        .emblem-text p  { font-size: 14px; color: #666; margin: 0; }
-
-        .navbar { background-color: var(--primary); padding: 0; }
-        .navbar-nav .nav-link { color: var(--white) !important; padding: 15px 20px; font-weight: 500; transition: all 0.3s ease; }
-        .navbar-nav .nav-link:hover { background-color: rgba(255,255,255,0.1); }
-
-        .page-header {
-            background: linear-gradient(135deg, var(--primary) 0%, #1a4d8f 100%);
-            color: var(--white);
-            padding: 40px 0;
-            margin-bottom: 40px;
+        #page-loader.hidden { opacity: 0; visibility: hidden; }
+        .chakra-loader {
+            width: 80px; height: 80px;
+            animation: chakra-spin 1.2s linear infinite;
         }
-        .page-header h2 { font-size: 32px; font-weight: 700; margin-bottom: 10px; }
+        .chakra-loader svg { width: 100%; height: 100%; }
+        @keyframes chakra-spin { to { transform: rotate(360deg); } }
+        .loader-text {
+            margin-top: 20px; color: rgba(255,255,255,0.8);
+            font-size: 14px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase;
+            animation: loader-pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes loader-pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
 
-        /* ── Search Box ─────────────────────────────────────────────────────── */
-        .search-container {
-            background-color: var(--white);
-            border-radius: 10px;
-            padding: 40px;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-            margin-bottom: 40px;
-            animation: slideUp 0.6s ease;
-        }
+        /* ── TRICOLOR ─────────────────────────────────────────── */
+        .tricolor { height:6px; background:linear-gradient(to right,#FF9933 0%,#FF9933 33.33%,#fff 33.33%,#fff 66.66%,#138808 66.66%,#138808 100%); }
 
-        .search-form .form-control {
-            border: 2px solid #ddd;
-            border-radius: 5px;
-            padding: 12px 15px;
-            font-size: 16px;
-            transition: all 0.3s ease;
+        /* ── TICKER ───────────────────────────────────────────── */
+        .ticker-bar { background:#e8f0fe; border-bottom:1px solid #c5d4f5; padding:7px 0; font-size:13px; color:var(--primary); overflow:hidden; }
+        .ticker-inner { display:flex; align-items:center; }
+        .ticker-label { background:var(--accent); color:#fff; padding:3px 14px; font-weight:700; font-size:11px; border-radius:3px; margin-right:18px; white-space:nowrap; flex-shrink:0; letter-spacing:.5px; }
+        .ticker-track { overflow:hidden; flex:1; }
+        .ticker-scroll { display:inline-block; white-space:nowrap; animation:ticker 40s linear infinite; }
+        @keyframes ticker { from{transform:translateX(100vw)} to{transform:translateX(-100%)} }
+
+        /* ── HEADER ───────────────────────────────────────────── */
+        .site-header { background:var(--white); padding:14px 0; border-bottom:1px solid var(--border); position:sticky; top:0; z-index:1000; box-shadow:0 2px 20px rgba(10,37,88,.08); }
+        .header-logo { display:flex; align-items:center; gap:14px; }
+        .ashoka-emblem { width:52px; height:52px; }
+        .header-titles h1 { font-family:'Playfair Display',serif; font-size:16px; font-weight:700; color:var(--primary); line-height:1.2; }
+        .header-titles p { font-size:11px; color:var(--muted); margin-top:2px; }
+        .digital-india-badge { display:flex; align-items:center; gap:8px; padding:6px 14px; background:linear-gradient(135deg,var(--primary),var(--primary-light)); border-radius:6px; color:#fff; }
+        .digital-india-badge span { font-size:12px; font-weight:700; }
+
+        /* ── NAVBAR ───────────────────────────────────────────── */
+        .main-nav { background:var(--primary); }
+        .main-nav .navbar-nav .nav-link { color:rgba(255,255,255,.9)!important; padding:15px 18px; font-weight:500; font-size:14px; position:relative; transition:all .3s; }
+        .main-nav .navbar-nav .nav-link::after { content:''; position:absolute; bottom:0; left:50%; width:0; height:3px; background:var(--accent); transition:all .3s; transform:translateX(-50%); border-radius:2px 2px 0 0; }
+        .main-nav .navbar-nav .nav-link:hover, .main-nav .navbar-nav .nav-link.active { color:#fff!important; background:rgba(255,255,255,.07); }
+        .main-nav .navbar-nav .nav-link:hover::after, .main-nav .navbar-nav .nav-link.active::after { width:80%; }
+        .nav-officer-btn { background:var(--accent)!important; border-radius:5px!important; margin:9px 0!important; padding:7px 18px!important; font-weight:700!important; }
+        .nav-officer-btn:hover { background:#d6741e!important; }
+        .nav-officer-btn::after { display:none!important; }
+
+        /* ── PAGE HERO ────────────────────────────────────────── */
+        .page-hero {
+            background:linear-gradient(135deg,#061728 0%,var(--primary) 50%,#1a3d7c 100%);
+            color:#fff; padding:52px 0 44px; position:relative; overflow:hidden;
         }
-        .search-form .form-control:focus {
-            border-color: var(--primary);
-            box-shadow: 0 0 0 0.2rem rgba(10,46,92,0.15);
+        .page-hero::before {
+            content:'';position:absolute;inset:0;
+            background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.025'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
         }
+        .page-hero .hero-mandala {
+            position:absolute; right:-80px; top:50%; transform:translateY(-50%);
+            width:400px; height:400px; opacity:.04;
+            animation:mandala-spin 60s linear infinite;
+        }
+        @keyframes mandala-spin { to{transform:translateY(-50%) rotate(360deg)} }
+        .hero-overline { display:inline-flex; align-items:center; gap:8px; background:rgba(255,153,51,.15); border:1px solid rgba(255,153,51,.35); padding:4px 14px; border-radius:30px; font-size:12px; font-weight:600; color:#FFB74D; margin-bottom:14px; }
+        .hero-overline .live-dot { width:7px; height:7px; background:#FFB74D; border-radius:50%; animation:blink 2s infinite; }
+        @keyframes blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:.4;transform:scale(.7)} }
+        .page-hero h2 { font-family:'Playfair Display',serif; font-size:38px; font-weight:800; margin-bottom:10px; line-height:1.15; }
+        .page-hero h2 span { color:var(--accent); }
+        .page-hero p { font-size:15px; opacity:.8; }
+        .hero-stat-pills { display:flex; gap:12px; margin-top:22px; flex-wrap:wrap; }
+        .hero-stat-pill { display:flex; align-items:center; gap:8px; background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.18); padding:7px 16px; border-radius:30px; font-size:13px; font-weight:600; }
+        .hero-stat-pill i { color:var(--accent); }
+
+        /* ── SEARCH CARD ──────────────────────────────────────── */
+        .search-card {
+            background:var(--white); border-radius:16px; padding:40px 44px;
+            box-shadow:var(--shadow-lg); margin-bottom:36px;
+            border-top:4px solid var(--accent);
+            animation:fade-up .7s ease both;
+        }
+        .search-card-title { display:flex; align-items:center; gap:12px; margin-bottom:28px; }
+        .search-card-title .icon-wrap { width:44px; height:44px; border-radius:10px; background:linear-gradient(135deg,#fff3e0,#ffe0b2); display:flex; align-items:center; justify-content:center; font-size:20px; color:var(--accent); }
+        .search-card-title h4 { font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:var(--primary); margin:0; }
+        .search-card-title p  { font-size:13px; color:var(--muted); margin:2px 0 0; }
+
+        .form-label-custom { font-size:13px; font-weight:600; color:var(--primary); margin-bottom:6px; display:block; }
+        .form-control-custom {
+            border:2px solid var(--border); border-radius:8px; padding:12px 16px;
+            font-size:15px; color:var(--text); width:100%;
+            font-family:'DM Sans',sans-serif; transition:all .3s;
+            background:#fafbff;
+        }
+        .form-control-custom:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 4px rgba(10,37,88,.08); background:#fff; }
+        .form-control-custom::placeholder { color:#b0bdd6; }
+        .input-wrap { position:relative; }
+        .input-icon { position:absolute; left:14px; top:50%; transform:translateY(-50%); color:var(--accent); font-size:15px; pointer-events:none; }
+        .form-control-custom.has-icon { padding-left:42px; }
 
         .btn-track {
-            background-color: var(--accent);
-            border: none;
-            color: var(--white);
-            padding: 12px 40px;
-            font-size: 16px;
-            font-weight: 600;
-            border-radius: 5px;
-            transition: all 0.3s ease;
+            background:linear-gradient(135deg,var(--accent),#d6741e);
+            border:none; color:#fff; padding:13px 36px;
+            font-size:15px; font-weight:700; border-radius:8px;
+            display:inline-flex; align-items:center; gap:9px; cursor:pointer;
+            transition:all .3s; box-shadow:0 4px 20px rgba(232,132,42,.35);
+            width:100%;
         }
-        .btn-track:hover:not(:disabled) {
-            background-color: #e68a2e;
-            transform: translateY(-2px);
-            box-shadow: 0 5px 15px rgba(255,153,51,0.4);
-        }
-        .btn-track:disabled { background-color: #ccc; cursor: not-allowed; transform: none; }
+        .btn-track:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 8px 28px rgba(232,132,42,.5); }
+        .btn-track:disabled { background:#c9d0e0; box-shadow:none; cursor:not-allowed; }
 
-        /* ── Result Container ───────────────────────────────────────────────── */
-        .result-container {
-            display: none;
-            background-color: var(--white);
-            border-radius: 10px;
-            padding: 40px;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-            margin-bottom: 40px;
-            animation: fadeIn 0.6s ease;
-        }
+        .input-hint { font-size:11.5px; color:var(--muted); margin-top:5px; display:flex; align-items:center; gap:5px; }
+        .input-hint i { color:var(--accent); }
 
-        .complaint-header {
-            background: linear-gradient(135deg, var(--primary) 0%, #1a4d8f 100%);
-            color: var(--white);
-            padding: 20px 25px;
-            border-radius: 8px;
-            margin-bottom: 30px;
+        /* ── ERROR BOX ────────────────────────────────────────── */
+        .error-box {
+            display:none; background:#fff5f5; border:1.5px solid #fca5a5;
+            border-left:4px solid var(--red); border-radius:10px;
+            padding:16px 20px; margin-top:20px;
+            animation:shake .5s ease;
+            display:flex; align-items:flex-start; gap:12px;
         }
-        .complaint-id-display { font-size: 24px; font-weight: 700; margin-bottom: 6px; }
+        .error-box.hidden { display:none; }
+        .error-icon { font-size:22px; color:var(--red); flex-shrink:0; }
+        .error-text strong { color:var(--red); font-size:14px; }
+        .error-text span   { font-size:13px; color:#7f1d1d; display:block; margin-top:3px; }
 
-        .complaint-meta {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 15px;
-            margin-bottom: 30px;
+        /* ── RESULT CONTAINER ─────────────────────────────────── */
+        .result-wrap { display:none; animation:fade-up .6s ease both; }
+
+        /* ── RESULT HEADER CARD ───────────────────────────────── */
+        .complaint-header-card {
+            background:linear-gradient(135deg,#061728,var(--primary));
+            border-radius:16px; padding:32px 36px; color:#fff; margin-bottom:24px;
+            position:relative; overflow:hidden;
         }
-        .meta-item {
-            background-color: #f8f9fa;
-            padding: 15px;
-            border-radius: 8px;
-            border-left: 4px solid var(--accent);
+        .complaint-header-card::before {
+            content:''; position:absolute; right:-60px; top:-60px;
+            width:240px; height:240px; border-radius:50%;
+            background:rgba(255,153,51,.07);
         }
-        .meta-label { font-size: 12px; color: #666; margin-bottom: 5px; }
-        .meta-value { font-size: 16px; font-weight: 600; color: var(--primary); }
+        .complaint-header-card::after {
+            content:''; position:absolute; right:40px; top:40px;
+            width:120px; height:120px; border-radius:50%;
+            background:rgba(255,255,255,.04);
+        }
+        .comp-id { font-family:'Playfair Display',serif; font-size:28px; font-weight:800; margin-bottom:6px; display:flex; align-items:center; gap:10px; }
+        .comp-id i { color:var(--accent); font-size:22px; }
+        .comp-subject { font-size:16px; opacity:.85; margin-bottom:0; }
+        .comp-header-meta { display:flex; gap:24px; margin-top:20px; flex-wrap:wrap; }
+        .comp-meta-pill { display:flex; align-items:center; gap:7px; font-size:13px; opacity:.8; }
+        .comp-meta-pill i { color:var(--accent); }
+
+        /* ── META GRID ────────────────────────────────────────── */
+        .meta-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(210px,1fr)); gap:16px; margin-bottom:28px; }
+        .meta-tile {
+            background:var(--white); border-radius:12px; padding:18px 20px;
+            border:1px solid var(--border); border-left:4px solid var(--accent);
+            box-shadow:0 2px 10px rgba(10,37,88,.06); transition:all .3s;
+        }
+        .meta-tile:hover { transform:translateY(-2px); box-shadow:var(--shadow); }
+        .meta-tile-label { font-size:11px; font-weight:600; color:var(--muted); text-transform:uppercase; letter-spacing:.6px; margin-bottom:6px; }
+        .meta-tile-value { font-size:16px; font-weight:700; color:var(--primary); }
 
         /* Status badges */
-        .status-badge { display: inline-block; padding: 5px 15px; border-radius: 20px; font-size: 14px; font-weight: 600; }
-        .status-submitted    { background-color: #0dcaf0; color: #000; }
-        .status-assigned     { background-color: #6f42c1; color: #fff; }
-        .status-under-review { background-color: #ffc107; color: #000; }
-        .status-in-progress  { background-color: #0d6efd; color: #fff; }
-        .status-resolved     { background-color: var(--success); color: #fff; }
-        .status-closed       { background-color: #6c757d; color: #fff; }
+        .badge-status { display:inline-flex; align-items:center; gap:5px; padding:5px 14px; border-radius:20px; font-size:13px; font-weight:700; }
+        .badge-submitted    { background:#e0f7fa; color:#006064; border:1px solid #80deea; }
+        .badge-assigned     { background:#ede7f6; color:#4527a0; border:1px solid #b39ddb; }
+        .badge-under-review { background:#fff8e1; color:#e65100; border:1px solid #ffcc80; }
+        .badge-in-progress  { background:#e3f2fd; color:#0d47a1; border:1px solid #90caf9; }
+        .badge-resolved     { background:#e8f5e9; color:#1b5e20; border:1px solid #a5d6a7; }
+        .badge-closed       { background:#f5f5f5; color:#424242; border:1px solid #bdbdbd; }
 
-        /* Priority badges */
-        .priority-critical { color: #b00020; font-weight: 700; }
-        .priority-high     { color: #b84800; font-weight: 600; }
-        .priority-medium   { color: #1a4d9e; }
-        .priority-low      { color: #186018; }
+        /* Priority */
+        .prio-critical { background:#fce4ec; color:#880e4f; border:1px solid #f48fb1; display:inline-flex; align-items:center; gap:5px; padding:4px 12px; border-radius:20px; font-size:13px; font-weight:700; }
+        .prio-high     { background:#fff3e0; color:#bf360c; border:1px solid #ffcc80; display:inline-flex; align-items:center; gap:5px; padding:4px 12px; border-radius:20px; font-size:13px; font-weight:700; }
+        .prio-medium   { background:#e3f2fd; color:#0d47a1; border:1px solid #90caf9; display:inline-flex; align-items:center; gap:5px; padding:4px 12px; border-radius:20px; font-size:13px; font-weight:700; }
+        .prio-low      { background:#e8f5e9; color:#1b5e20; border:1px solid #a5d6a7; display:inline-flex; align-items:center; gap:5px; padding:4px 12px; border-radius:20px; font-size:13px; font-weight:700; }
 
-        /* ── Complaint Details ───────────────────────────────────────────────── */
-        .complaint-details {
-            margin-top: 30px;
-            padding: 20px 25px;
-            background-color: #f8f9fa;
-            border-radius: 8px;
+        /* ── SECTION CARD ─────────────────────────────────────── */
+        .section-card { background:var(--white); border-radius:16px; padding:32px 36px; box-shadow:var(--shadow); margin-bottom:24px; }
+        .section-card-head { display:flex; align-items:center; gap:12px; margin-bottom:28px; padding-bottom:18px; border-bottom:2px solid #f0f4ff; }
+        .section-card-head .icon { width:40px; height:40px; border-radius:10px; background:linear-gradient(135deg,var(--primary),var(--primary-light)); display:flex; align-items:center; justify-content:center; font-size:16px; color:#fff; flex-shrink:0; }
+        .section-card-head h4 { font-family:'Playfair Display',serif; font-size:20px; font-weight:700; color:var(--primary); margin:0; }
+        .section-card-head p  { font-size:12.5px; color:var(--muted); margin:2px 0 0; }
+
+        /* ── PROGRESS STEPPER ─────────────────────────────────── */
+        .stepper-wrap { position:relative; padding:10px 0 20px; }
+        .stepper-line {
+            position:absolute; top:36px; left:calc(10% + 22px); right:calc(10% + 22px);
+            height:3px; background:var(--border); border-radius:2px; z-index:0;
         }
-        .complaint-details h5 { color: var(--primary); margin-bottom: 20px; font-weight: 700; }
-        .detail-row { display: flex; padding: 10px 0; border-bottom: 1px solid #ddd; }
-        .detail-row:last-child { border-bottom: none; }
-        .detail-label { flex: 0 0 200px; font-weight: 600; color: #666; }
-        .detail-value { flex: 1; color: #333; }
-
-        /* ── Progress Steps (top bar) ───────────────────────────────────────── */
-        .progress-section {
-            margin: 35px 0 10px;
+        .stepper-line-fill {
+            height:100%; background:linear-gradient(90deg,var(--green),var(--accent));
+            border-radius:2px; width:0; transition:width 1s ease;
         }
-        .progress-section h4 {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 24px;
+        .stepper-row { display:flex; justify-content:space-between; position:relative; z-index:1; }
+        .step-node { display:flex; flex-direction:column; align-items:center; flex:1; }
+        .step-bubble {
+            width:46px; height:46px; border-radius:50%; border:3px solid var(--border);
+            background:var(--white); display:flex; align-items:center; justify-content:center;
+            font-size:17px; color:#c0cce0; transition:all .4s ease; position:relative;
         }
+        .step-node.done   .step-bubble { background:var(--green); border-color:var(--green); color:#fff; box-shadow:0 0 0 5px rgba(14,124,59,.15); }
+        .step-node.active .step-bubble { background:var(--accent); border-color:var(--accent); color:#fff; box-shadow:0 0 0 6px rgba(232,132,42,.2); animation:pulse-ring 1.8s infinite; }
+        @keyframes pulse-ring { 0%,100%{box-shadow:0 0 0 5px rgba(232,132,42,.2)} 50%{box-shadow:0 0 0 12px rgba(232,132,42,.07)} }
+        .step-label-text { margin-top:10px; font-size:11px; font-weight:600; color:#a0aec0; text-align:center; max-width:76px; line-height:1.35; }
+        .step-node.done   .step-label-text { color:var(--green); }
+        .step-node.active .step-label-text { color:var(--accent); }
+        .step-check { position:absolute; bottom:-4px; right:-4px; width:16px; height:16px; border-radius:50%; background:var(--green); display:flex; align-items:center; justify-content:center; }
+        .step-check i { font-size:8px; color:#fff; }
 
-        .steps-bar {
-            display: flex;
-            align-items: flex-start;
-            justify-content: space-between;
-            position: relative;
-            padding: 0 10px;
-            margin-bottom: 10px;
+        /* ── DETAILS GRID ─────────────────────────────────────── */
+        .details-grid { display:grid; grid-template-columns:1fr 1fr; gap:0; }
+        .details-row { display:contents; }
+        .detail-cell { padding:13px 16px; font-size:14px; border-bottom:1px solid #f0f4ff; }
+        .detail-cell.label { font-weight:600; color:var(--muted); background:#fafbff; }
+        .detail-cell.value { color:var(--text); }
+        .details-grid .details-row:last-child .detail-cell { border-bottom:none; }
+
+        /* ── TIMELINE ─────────────────────────────────────────── */
+        .timeline-wrap { padding-left:0; }
+        .tl-item { display:flex; gap:0; position:relative; }
+        .tl-left { display:flex; flex-direction:column; align-items:center; width:56px; flex-shrink:0; }
+        .tl-dot {
+            width:42px; height:42px; border-radius:50%;
+            display:flex; align-items:center; justify-content:center;
+            font-size:15px; flex-shrink:0; z-index:1; position:relative;
         }
-
-        /* connector line behind steps */
-        .steps-bar::before {
-            content: '';
-            position: absolute;
-            top: 18px;
-            left: 10%;
-            right: 10%;
-            height: 3px;
-            background: #ddd;
-            z-index: 0;
+        .tl-dot.done    { background:var(--green); color:#fff; box-shadow:0 4px 14px rgba(14,124,59,.3); }
+        .tl-dot.active  { background:var(--accent); color:#fff; box-shadow:0 4px 14px rgba(232,132,42,.35); animation:pulse-ring 1.8s infinite; }
+        .tl-dot.pending { background:#f1f4f9; border:2px solid var(--border); color:#c0cce0; }
+        .tl-connector { width:3px; flex:1; min-height:28px; background:linear-gradient(to bottom,var(--green) 0%,var(--border) 100%); margin:0 auto; border-radius:2px; }
+        .tl-item:last-child .tl-connector { display:none; }
+        .tl-item.pending .tl-connector { background:var(--border); }
+        .tl-body { flex:1; padding:0 0 28px 20px; }
+        .tl-card {
+            background:#fafbff; border-radius:12px; padding:18px 22px;
+            border:1.5px solid var(--border); border-left:4px solid var(--green);
+            transition:all .3s;
         }
+        .tl-item.active .tl-card { border-left-color:var(--accent); background:#fff8f0; }
+        .tl-item.pending .tl-card { border-left-color:var(--border); background:#f8f9fb; }
+        .tl-card:hover { box-shadow:var(--shadow); transform:translateX(3px); }
+        .tl-time { font-size:12px; color:var(--muted); margin-bottom:5px; display:flex; align-items:center; gap:5px; }
+        .tl-time i { color:var(--accent); }
+        .tl-status { font-family:'Playfair Display',serif; font-size:18px; font-weight:700; color:var(--primary); margin-bottom:5px; }
+        .tl-item.pending .tl-status { color:#a0aec0; }
+        .tl-desc { font-size:13.5px; color:var(--muted); line-height:1.65; }
+        .tl-item.pending .tl-desc { color:#c0cce0; font-style:italic; }
+        .tl-pending-chip { display:inline-flex; align-items:center; gap:5px; background:#f0f4ff; color:#94a3b8; font-size:11px; font-weight:600; padding:3px 10px; border-radius:10px; margin-top:6px; }
 
-        .step-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            flex: 1;
-            position: relative;
-            z-index: 1;
+        /* ── EVIDENCE ─────────────────────────────────────────── */
+        .evidence-grid { display:flex; flex-wrap:wrap; gap:12px; }
+        .ev-thumb { width:116px; height:116px; border-radius:10px; object-fit:cover; border:2px solid var(--border); cursor:pointer; transition:all .25s; }
+        .ev-thumb:hover { border-color:var(--primary); transform:scale(1.05); box-shadow:0 6px 20px rgba(10,37,88,.18); }
+
+        /* ── FEEDBACK SECTION ─────────────────────────────────── */
+        .feedback-card {
+            background:linear-gradient(135deg,#f0f7ff 0%,#f0fdf4 100%);
+            border:1.5px solid #c5d4f5; border-radius:16px; padding:34px 36px;
+            margin-bottom:24px; display:none; animation:fade-up .5s ease both;
         }
+        .feedback-card.show { display:block; }
+        .feedback-head { display:flex; align-items:center; gap:12px; margin-bottom:6px; }
+        .feedback-head i { font-size:28px; color:var(--accent); }
+        .feedback-head h4 { font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:var(--primary); margin:0; }
+        .feedback-sub { font-size:14px; color:var(--muted); margin-bottom:26px; }
 
-        .step-circle {
-            width: 38px;
-            height: 38px;
-            border-radius: 50%;
-            border: 3px solid #ddd;
-            background: var(--white);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 15px;
-            color: #bbb;
-            transition: all 0.4s ease;
-            position: relative;
+        .star-row { display:flex; flex-direction:row-reverse; justify-content:flex-end; gap:6px; margin-bottom:8px; }
+        .star-row input { display:none; }
+        .star-row label { font-size:40px; color:#dde2ec; cursor:pointer; transition:color .15s,transform .15s; line-height:1; }
+        .star-row label:hover, .star-row label:hover ~ label, .star-row input:checked ~ label { color:var(--accent); }
+        .star-row label:hover { transform:scale(1.2); }
+        .rating-hint { font-size:13px; font-weight:600; color:var(--muted); min-height:22px; margin-bottom:18px; transition:all .2s; }
+        .feedback-ta {
+            width:100%; border:2px solid var(--border); border-radius:10px;
+            padding:13px 16px; font-size:14px; font-family:'DM Sans',sans-serif;
+            resize:vertical; min-height:100px; margin-bottom:18px; transition:all .3s;
+            background:#fff; color:var(--text);
         }
+        .feedback-ta:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 4px rgba(10,37,88,.08); }
+        .btn-feedback { background:linear-gradient(135deg,var(--green),var(--green-light)); border:none; color:#fff; padding:12px 32px; border-radius:8px; font-size:15px; font-weight:700; cursor:pointer; transition:all .3s; display:inline-flex; align-items:center; gap:8px; box-shadow:0 4px 16px rgba(14,124,59,.3); }
+        .btn-feedback:hover:not(:disabled) { transform:translateY(-2px); box-shadow:0 8px 24px rgba(14,124,59,.4); }
+        .btn-feedback:disabled { opacity:.6; cursor:not-allowed; }
+        .feedback-done { text-align:center; padding:28px 0 12px; animation:fade-up .5s ease; }
+        .feedback-done .big-tick { font-size:68px; color:var(--green); animation:check-pop .5s ease; }
+        .feedback-done h5 { font-family:'Playfair Display',serif; font-size:22px; font-weight:700; color:var(--primary); margin:14px 0 6px; }
+        .feedback-done p { color:var(--muted); font-size:14px; }
+        .stars-rendered { font-size:26px; color:var(--accent); margin:8px 0; }
+        @keyframes check-pop { 0%{transform:scale(0);opacity:0} 60%{transform:scale(1.15)} 100%{transform:scale(1);opacity:1} }
 
-        .step-item.done .step-circle {
-            background: var(--success);
-            border-color: var(--success);
-            color: var(--white);
-            box-shadow: 0 0 0 4px rgba(19,136,8,0.15);
+        /* ── ACTIONS ──────────────────────────────────────────── */
+        .action-strip { display:flex; gap:12px; flex-wrap:wrap; justify-content:center; margin-top:8px; }
+        .btn-action {
+            display:inline-flex; align-items:center; gap:8px;
+            background:var(--primary); color:#fff; border:none;
+            padding:11px 26px; border-radius:8px; font-size:14px; font-weight:600;
+            cursor:pointer; transition:all .3s;
         }
+        .btn-action:hover { background:var(--primary-light); transform:translateY(-2px); box-shadow:var(--shadow); }
+        .btn-action.outline { background:transparent; border:2px solid var(--primary); color:var(--primary); }
+        .btn-action.outline:hover { background:var(--primary); color:#fff; }
 
-        .step-item.active .step-circle {
-            background: var(--accent);
-            border-color: var(--accent);
-            color: var(--white);
-            box-shadow: 0 0 0 5px rgba(255,153,51,0.25);
-            animation: pulse 1.8s infinite;
-        }
+        /* ── LIGHTBOX ─────────────────────────────────────────── */
+        .lightbox { display:none; position:fixed; inset:0; background:rgba(0,0,0,.9); z-index:9999; justify-content:center; align-items:center; animation:fade-in .25s ease; }
+        .lightbox.open { display:flex; }
+        .lightbox img { max-width:90vw; max-height:85vh; border-radius:12px; box-shadow:0 16px 60px rgba(0,0,0,.6); }
+        .lb-close { position:absolute; top:24px; right:32px; color:#fff; font-size:34px; cursor:pointer; background:none; border:none; transition:opacity .2s; }
+        .lb-close:hover { opacity:.7; }
+        .lb-caption { position:absolute; bottom:24px; color:rgba(255,255,255,.65); font-size:13px; }
 
-        .step-label {
-            margin-top: 8px;
-            font-size: 11px;
-            font-weight: 600;
-            color: #999;
-            text-align: center;
-            max-width: 80px;
-            line-height: 1.3;
-        }
+        /* ── FOOTER ───────────────────────────────────────────── */
+        .site-footer { background:#050f1e; color:rgba(255,255,255,.8); padding:40px 0 20px; }
+        .footer-bottom { border-top:1px solid rgba(255,255,255,.08); padding-top:18px; text-align:center; font-size:13px; opacity:.55; }
+        .footer-links { display:flex; gap:20px; justify-content:center; flex-wrap:wrap; margin-top:8px; }
+        .footer-links a { font-size:12px; color:rgba(255,255,255,.6); transition:color .2s; }
+        .footer-links a:hover { color:var(--accent); }
 
-        .step-item.done   .step-label { color: var(--success); }
-        .step-item.active .step-label { color: var(--accent); }
+        /* ── ANIMATIONS ───────────────────────────────────────── */
+        @keyframes fade-up { from{opacity:0;transform:translateY(24px)} to{opacity:1;transform:translateY(0)} }
+        @keyframes fade-in  { from{opacity:0} to{opacity:1} }
+        @keyframes shake    { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
 
-        /* connector fill for completed steps */
-        .step-connector {
-            position: absolute;
-            top: 18px;
-            left: 50%;
-            width: 100%;
-            height: 3px;
-            background: #ddd;
-            z-index: 0;
-            transform: translateY(-50%);
-        }
-        .step-item.done .step-connector  { background: var(--success); }
-        .step-item.active .step-connector { background: linear-gradient(to right, var(--success), #ddd); }
-        .step-item:last-child .step-connector { display: none; }
+        /* ── SCROLL REVEAL ────────────────────────────────────── */
+        .sr { opacity:0; transform:translateY(24px); transition:opacity .6s ease,transform .6s ease; }
+        .sr.visible { opacity:1; transform:translateY(0); }
 
-        /* ── Detailed Timeline ──────────────────────────────────────────────── */
-        .timeline-section { margin-top: 40px; }
-        .timeline-section h4 {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 28px;
-        }
+        /* ── SCROLL-TO-TOP ────────────────────────────────────── */
+        #scrollTop { position:fixed; bottom:26px; right:26px; z-index:500; width:46px; height:46px; border-radius:50%; background:var(--accent); color:#fff; border:none; font-size:17px; cursor:pointer; display:none; align-items:center; justify-content:center; box-shadow:0 4px 18px rgba(232,132,42,.5); transition:all .3s; }
+        #scrollTop:hover { background:#d6741e; transform:translateY(-3px); }
+        #scrollTop.show { display:flex; }
 
-        .timeline {
-            position: relative;
-            padding-left: 50px;
-        }
-        .timeline::before {
-            content: '';
-            position: absolute;
-            left: 18px;
-            top: 0;
-            bottom: 0;
-            width: 3px;
-            background: linear-gradient(to bottom, var(--success), #ddd);
-            border-radius: 2px;
-        }
-
-        .timeline-item {
-            position: relative;
-            padding-bottom: 28px;
-            animation: slideInLeft 0.5s ease both;
-        }
-        .timeline-item:last-child { padding-bottom: 0; }
-
-        .timeline-dot {
-            position: absolute;
-            left: -39px;
-            top: 2px;
-            width: 34px;
-            height: 34px;
-            border-radius: 50%;
-            background: var(--success);
-            border: 3px solid var(--white);
-            box-shadow: 0 0 0 2px var(--success);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: var(--white);
-            font-size: 13px;
-        }
-
-        .timeline-item.pending .timeline-dot {
-            background: #ddd;
-            box-shadow: 0 0 0 2px #ccc;
-            color: #aaa;
-        }
-
-        .timeline-item.current .timeline-dot {
-            background: var(--accent);
-            box-shadow: 0 0 0 3px rgba(255,153,51,0.3);
-            animation: pulse 1.8s infinite;
+        /* ── RESPONSIVE ───────────────────────────────────────── */
+        @media (max-width:767px) {
+            .page-hero h2 { font-size:26px; }
+            .search-card { padding:24px 20px; }
+            .section-card { padding:22px 18px; }
+            .complaint-header-card { padding:22px 20px; }
+            .comp-id { font-size:20px; }
+            .details-grid { grid-template-columns:1fr; }
+            .detail-cell.label { background:transparent; font-size:11px; padding-bottom:2px; }
+            .detail-cell.value { padding-top:0; }
+            .stepper-line { display:none; }
+            .step-label-text { font-size:9.5px; max-width:58px; }
         }
 
-        .timeline-content {
-            background: #f8f9fa;
-            padding: 16px 20px;
-            border-radius: 8px;
-            border-left: 4px solid var(--success);
-            transition: all 0.3s ease;
-        }
-        .timeline-item.pending .timeline-content  { border-left-color: #ddd; background: #fafafa; }
-        .timeline-item.current .timeline-content  { border-left-color: var(--accent); background: #fff8f0; }
-
-        .timeline-date   { font-size: 12px; color: #888; margin-bottom: 5px; }
-        .timeline-status { font-size: 17px; font-weight: 700; color: var(--primary); margin-bottom: 5px; }
-        .timeline-item.pending .timeline-status { color: #aaa; }
-        .timeline-desc   { font-size: 14px; color: #666; line-height: 1.6; }
-
-        .timeline-pending-badge {
-            display: inline-block;
-            background: #eee;
-            color: #999;
-            font-size: 11px;
-            padding: 2px 8px;
-            border-radius: 10px;
-            margin-top: 4px;
-        }
-
-        /* ── Error ──────────────────────────────────────────────────────────── */
-        .error-message {
-            display: none;
-            background-color: #f8d7da;
-            border: 1px solid #f5c2c7;
-            color: #842029;
-            padding: 15px;
-            border-radius: 8px;
-            margin-top: 20px;
-            animation: shake 0.5s ease;
-        }
-
-        /* ── Action Buttons ─────────────────────────────────────────────────── */
-        .action-buttons { margin-top: 30px; text-align: center; }
-        .btn-secondary-custom {
-            background-color: var(--primary);
-            border: none;
-            color: var(--white);
-            padding: 10px 30px;
-            font-size: 14px;
-            font-weight: 600;
-            border-radius: 5px;
-            transition: all 0.3s ease;
-            margin: 5px;
-        }
-        .btn-secondary-custom:hover { background-color: #1a4d8f; transform: translateY(-2px); }
-
-        /* ── Footer ─────────────────────────────────────────────────────────── */
-        .footer { background-color: var(--primary); color: var(--white); padding: 40px 0 20px; margin-top: 40px; }
-        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px; text-align: center; font-size: 14px; }
-
-        /* ── Animations ─────────────────────────────────────────────────────── */
-        @keyframes slideUp      { from { opacity:0; transform:translateY(30px); } to { opacity:1; transform:translateY(0); } }
-        @keyframes fadeIn       { from { opacity:0; } to { opacity:1; } }
-        @keyframes slideInLeft  { from { opacity:0; transform:translateX(-20px); } to { opacity:1; transform:translateX(0); } }
-        @keyframes shake        { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-10px);} 75%{transform:translateX(10px);} }
-        @keyframes pulse        { 0%,100%{box-shadow:0 0 0 3px rgba(255,153,51,0.3);} 50%{box-shadow:0 0 0 8px rgba(255,153,51,0.1);} }
-
-        @media (max-width: 768px) {
-            .search-container, .result-container { padding: 20px; }
-            .complaint-meta { grid-template-columns: 1fr; }
-            .detail-row { flex-direction: column; }
-            .detail-label { flex: none; margin-bottom: 5px; }
-            .steps-bar { overflow-x: auto; gap: 0; }
-            .step-label { font-size: 9px; max-width: 60px; }
-        }
-
-        /* ── Feedback Section ───────────────────────────────────────────────── */
-        .feedback-section {
-            display: none;
-            margin-top: 35px;
-            background: linear-gradient(135deg, #f0f7ff 0%, #e8f8e8 100%);
-            border: 1px solid #b8d4f0;
-            border-radius: 12px;
-            padding: 30px;
-            animation: fadeIn 0.5s ease;
-        }
-
-        .feedback-section.show { display: block; }
-
-        .feedback-section h4 {
-            color: var(--primary);
-            font-size: 20px;
-            font-weight: 700;
-            margin-bottom: 6px;
-        }
-
-        .feedback-section .sub {
-            font-size: 14px;
-            color: #666;
-            margin-bottom: 24px;
-        }
-
-        /* Star rating */
-        .star-rating {
-            display: flex;
-            flex-direction: row-reverse;
-            justify-content: flex-end;
-            gap: 6px;
-            margin-bottom: 20px;
-        }
-
-        .star-rating input { display: none; }
-
-        .star-rating label {
-            font-size: 36px;
-            color: #ddd;
-            cursor: pointer;
-            transition: color 0.15s, transform 0.15s;
-            line-height: 1;
-        }
-
-        .star-rating label:hover,
-        .star-rating label:hover ~ label,
-        .star-rating input:checked ~ label {
-            color: #FF9933;
-        }
-
-        .star-rating label:hover { transform: scale(1.2); }
-
-        .rating-label {
-            font-size: 13px;
-            font-weight: 600;
-            color: #888;
-            margin-bottom: 16px;
-            height: 20px;
-            transition: color 0.2s;
-        }
-
-        .feedback-textarea {
-            width: 100%;
-            border: 1.5px solid #ddd;
-            border-radius: 8px;
-            padding: 12px 15px;
-            font-size: 14px;
-            font-family: inherit;
-            resize: vertical;
-            min-height: 100px;
-            transition: border-color 0.3s;
-            margin-bottom: 16px;
-        }
-
-        .feedback-textarea:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(10,46,92,0.1);
-        }
-
-        .btn-feedback {
-            background: var(--success);
-            color: #fff;
-            border: none;
-            padding: 11px 32px;
-            border-radius: 6px;
-            font-size: 15px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-feedback:hover:not(:disabled) {
-            background: #0f6605;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(19,136,8,0.35);
-        }
-
-        .btn-feedback:disabled { opacity: 0.6; cursor: not-allowed; }
-
-        /* Already submitted state */
-        .feedback-submitted {
-            text-align: center;
-            padding: 20px;
-        }
-
-        .feedback-submitted .tick {
-            font-size: 60px;
-            color: var(--success);
-            animation: checkPop 0.5s ease;
-        }
-
-        .feedback-submitted h5 { color: var(--primary); font-weight: 700; margin: 12px 0 6px; }
-        .feedback-submitted p  { color: #666; font-size: 14px; }
-
-        .stars-display {
-            font-size: 22px;
-            color: #FF9933;
-            margin: 8px 0;
-        }
-
-        @keyframes checkPop {
-            0%   { transform: scale(0); opacity: 0; }
-            60%  { transform: scale(1.2); }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        /* ── Evidence Images ────────────────────────────────────────────────── */
-        .evidence-section {
-            margin-top: 20px;
-        }
-
-        .evidence-section h6 {
-            font-weight: 700;
-            color: var(--primary);
-            margin-bottom: 12px;
-            font-size: 14px;
-        }
-
-        .evidence-grid {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 10px;
-        }
-
-        .evidence-thumb {
-            width: 110px;
-            height: 110px;
-            border-radius: 8px;
-            object-fit: cover;
-            border: 2px solid #ddd;
-            cursor: pointer;
-            transition: all 0.25s ease;
-        }
-
-        .evidence-thumb:hover {
-            border-color: var(--primary);
-            transform: scale(1.04);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-        }
-
-        /* Lightbox */
-        .lightbox {
-            display: none;
-            position: fixed;
-            inset: 0;
-            background: rgba(0,0,0,0.88);
-            z-index: 9999;
-            justify-content: center;
-            align-items: center;
-            animation: fadeIn 0.25s ease;
-        }
-
-        .lightbox.open { display: flex; }
-
-        .lightbox img {
-            max-width: 90vw;
-            max-height: 85vh;
-            border-radius: 10px;
-            box-shadow: 0 8px 40px rgba(0,0,0,0.5);
-        }
-
-        .lightbox-close {
-            position: absolute;
-            top: 20px; right: 28px;
-            color: #fff;
-            font-size: 32px;
-            cursor: pointer;
-            background: none;
-            border: none;
-            line-height: 1;
-            transition: opacity 0.2s;
-        }
-
-        .lightbox-close:hover { opacity: 0.7; }
-
-        .lightbox-caption {
-            position: absolute;
-            bottom: 20px;
-            color: rgba(255,255,255,0.7);
-            font-size: 13px;
-        }
+        /* Navbar mobile */
+        .navbar-toggler { border-color:rgba(255,255,255,.3)!important; }
+        .navbar-toggler-icon { filter:invert(1); }
     </style>
 </head>
 <body>
+    <!-- PAGE LOADER -->
+<div id="page-loader">
+    <div class="chakra-loader">
+        <!-- Ashoka Chakra SVG -->
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="46" stroke="#FF9933" stroke-width="4" fill="none"/>
+            <circle cx="50" cy="50" r="8" fill="#138808"/>
+            <!-- 24 spokes -->
+            <g stroke="#003580" stroke-width="2">
+                <line x1="50" y1="50" x2="50" y2="6"/>
+                <line x1="50" y1="50" x2="66" y2="9"/>
+                <line x1="50" y1="50" x2="79" y2="21"/>
+                <line x1="50" y1="50" x2="86" y2="34"/>
+                <line x1="50" y1="50" x2="89" y2="50"/>
+                <line x1="50" y1="50" x2="86" y2="66"/>
+                <line x1="50" y1="50" x2="79" y2="79"/>
+                <line x1="50" y1="50" x2="66" y2="91"/>
+                <line x1="50" y1="50" x2="50" y2="94"/>
+                <line x1="50" y1="50" x2="34" y2="91"/>
+                <line x1="50" y1="50" x2="21" y2="79"/>
+                <line x1="50" y1="50" x2="14" y2="66"/>
+                <line x1="50" y1="50" x2="11" y2="50"/>
+                <line x1="50" y1="50" x2="14" y2="34"/>
+                <line x1="50" y1="50" x2="21" y2="21"/>
+                <line x1="50" y1="50" x2="34" y2="9"/>
+                <line x1="50" y1="50" x2="58" y2="7.5"/>
+                <line x1="50" y1="50" x2="73" y2="14"/>
+                <line x1="50" y1="50" x2="83" y2="27"/>
+                <line x1="50" y1="50" x2="88" y2="42"/>
+                <line x1="50" y1="50" x2="88" y2="58"/>
+                <line x1="50" y1="50" x2="83" y2="73"/>
+                <line x1="50" y1="50" x2="73" y2="86"/>
+                <line x1="50" y1="50" x2="58" y2="92.5"/>
+            </g>
+            <circle cx="50" cy="50" r="4" fill="#FF9933"/>
+        </svg>
+    </div>
+    <p class="loader-text">Loading Portal…</p>
+</div>
 
-<div class="tricolor-strip"></div>
+<button id="scrollTop" title="Back to top"><i class="fas fa-chevron-up"></i></button>
 
-<header class="header-top">
+
+<!-- TRICOLOR -->
+<div class="tricolor"></div>
+
+<!-- TICKER -->
+<div class="ticker-bar">
     <div class="container">
-        <div class="emblem-container">
-            <div class="emblem-icon"><i class="fas fa-landmark"></i></div>
-            <div class="emblem-text">
-                <h1>Digital Complaint &amp; Grievance Redressal Platform</h1>
-                <p>भारत सरकार | Government of India</p>
+        <div class="ticker-inner">
+            <span class="ticker-label">📢 NOTICE</span>
+            <div class="ticker-track">
+                <span class="ticker-scroll">
+                    Resolution time reduced to 48 hours for urgent complaints &nbsp;|&nbsp;
+                    You can now re-open resolved complaints within 30 days &nbsp;|&nbsp;
+                    SMS tracking updates now available in Hindi and regional languages &nbsp;|&nbsp;
+                    New: Upload additional evidence after registration using your Complaint ID
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- HEADER -->
+<header class="site-header">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="header-logo">
+                <svg class="ashoka-emblem" viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg">
+                    <ellipse cx="60" cy="50" rx="44" ry="44" fill="#FF9933" opacity=".15"/>
+                    <circle cx="60" cy="50" r="38" stroke="#FF9933" stroke-width="3" fill="none"/>
+                    <circle cx="60" cy="50" r="10" fill="#003580"/>
+                    <g stroke="#003580" stroke-width="1.5">
+                        <line x1="60" y1="50" x2="60" y2="14"/><line x1="60" y1="50" x2="79" y2="19"/><line x1="60" y1="50" x2="92" y2="31"/><line x1="60" y1="50" x2="96" y2="50"/><line x1="60" y1="50" x2="92" y2="69"/><line x1="60" y1="50" x2="79" y2="81"/><line x1="60" y1="50" x2="60" y2="86"/><line x1="60" y1="50" x2="41" y2="81"/><line x1="60" y1="50" x2="28" y2="69"/><line x1="60" y1="50" x2="24" y2="50"/><line x1="60" y1="50" x2="28" y2="31"/><line x1="60" y1="50" x2="41" y2="19"/>
+                    </g>
+                    <circle cx="60" cy="50" r="5" fill="#FF9933"/>
+                    <rect x="20" y="100" width="80" height="6" rx="3" fill="#FF9933"/>
+                    <rect x="28" y="110" width="64" height="5" rx="2.5" fill="#fff" stroke="#ccc" stroke-width=".5"/>
+                    <rect x="28" y="119" width="64" height="6" rx="3" fill="#138808"/>
+                    <text x="60" y="134" text-anchor="middle" font-size="7" fill="#003580" font-family="serif" font-weight="bold">सत्यमेव जयते</text>
+                </svg>
+                <div class="header-titles">
+                    <h1>Digital Grievance Redressal Platform</h1>
+                    <p>भारत सरकार &nbsp;·&nbsp; Government of India &nbsp;·&nbsp; National Informatics Centre</p>
+                </div>
+            </div>
+            <div class="d-none d-md-flex">
+                <div class="digital-india-badge">
+                    <i class="fas fa-globe" style="font-size:18px;color:var(--accent);"></i>
+                    <div>
+                        <span style="display:block;font-size:13px;font-weight:700;">Digital India</span>
+                        <span style="font-size:10px;opacity:.75;">डिजिटल इंडिया</span>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </header>
 
-<nav class="navbar navbar-expand-lg navbar-dark">
+<!-- NAVBAR -->
+<nav class="main-nav navbar navbar-expand-lg">
     <div class="container">
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
+        <div class="collapse navbar-collapse" id="mainNav">
             <ul class="navbar-nav mx-auto">
-                <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="register.html">Register Complaint</a></li>
-                <li class="nav-item"><a class="nav-link active" href="track.html">Track Status</a></li>
-                <li class="nav-item"><a class="nav-link" href="departments.html">Departments</a></li>
-                <li class="nav-item"><a class="nav-link" href="help.html">Help &amp; FAQ</a></li>
-                <li class="nav-item"><a class="nav-link" href="login.html">Officer Login</a></li>
+                <li class="nav-item"><a class="nav-link" href="index.html"><i class="fas fa-home me-1"></i>Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="register.html"><i class="fas fa-file-alt me-1"></i>Register Complaint</a></li>
+                <li class="nav-item"><a class="nav-link active" href="track.html"><i class="fas fa-search me-1"></i>Track Status</a></li>
+                <li class="nav-item"><a class="nav-link" href="map.html"><i class="fas fa-map-marked-alt me-1"></i>Map</a></li>
+                <li class="nav-item"><a class="nav-link" href="departments.html"><i class="fas fa-building me-1"></i>Departments</a></li>
+                <li class="nav-item"><a class="nav-link" href="help.html"><i class="fas fa-question-circle me-1"></i>Help &amp; FAQ</a></li>
+                <li class="nav-item"><a class="nav-link nav-officer-btn" href="login.html"><i class="fas fa-user-shield me-1"></i>Officer Login</a></li>
             </ul>
         </div>
     </div>
 </nav>
 
-<div class="page-header">
-    <div class="container">
-        <h2><i class="fas fa-search"></i> Track Your Complaint</h2>
-        <p>Enter your Complaint ID and Mobile Number to track status</p>
+<!-- PAGE HERO -->
+<section class="page-hero">
+    <!-- Mandala BG -->
+    <svg class="hero-mandala" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
+        <g fill="none" stroke="white">
+            <circle cx="250" cy="250" r="240" stroke-width="1"/><circle cx="250" cy="250" r="200" stroke-width=".8"/><circle cx="250" cy="250" r="160" stroke-width=".6"/><circle cx="250" cy="250" r="120" stroke-width=".5"/><circle cx="250" cy="250" r="80" stroke-width=".4"/>
+            <line x1="250" y1="10" x2="250" y2="490" stroke-width=".4"/><line x1="10" y1="250" x2="490" y2="250" stroke-width=".4"/><line x1="74" y1="74" x2="426" y2="426" stroke-width=".4"/><line x1="426" y1="74" x2="74" y2="426" stroke-width=".4"/>
+        </g>
+    </svg>
+    <div class="container position-relative">
+        <div class="hero-overline"><span class="live-dot"></span>Real-time Tracking — AWS DynamoDB</div>
+        <h2><i class="fas fa-search" style="color:var(--accent);margin-right:12px;font-size:32px;"></i>Track Your <span>Complaint</span></h2>
+        <p>Enter your Complaint ID and mobile number to get an instant, real-time status update</p>
+        <div class="hero-stat-pills">
+            <div class="hero-stat-pill"><i class="fas fa-bolt"></i> Live Status Updates</div>
+            <div class="hero-stat-pill"><i class="fas fa-lock"></i> Secure &amp; Private</div>
+            <div class="hero-stat-pill"><i class="fas fa-mobile-alt"></i> SMS Notifications</div>
+            <div class="hero-stat-pill"><i class="fas fa-clock"></i> 48-hr Resolution</div>
+        </div>
     </div>
-</div>
+</section>
 
-<div class="container">
+<!-- MAIN CONTENT -->
+<div class="container" style="padding-top:40px; padding-bottom:60px;">
 
-    <!-- Search Form -->
-    <div class="search-container">
-        <form id="trackForm" class="search-form">
-            <div class="row g-3">
+    <!-- SEARCH CARD -->
+    <div class="search-card sr">
+        <div class="search-card-title">
+            <div class="icon-wrap"><i class="fas fa-search"></i></div>
+            <div>
+                <h4>Find Your Complaint</h4>
+                <p>Your complaint ID was sent to your mobile via SMS at the time of registration</p>
+            </div>
+        </div>
+        <form id="trackForm">
+            <div class="row g-3 align-items-end">
                 <div class="col-md-5">
-                    <label class="form-label">Complaint ID</label>
-                    <input type="text" class="form-control" id="complaintId" placeholder="e.g., CMP12345678" required>
+                    <label class="form-label-custom"><i class="fas fa-hashtag me-1" style="color:var(--accent);"></i>Complaint ID</label>
+                    <div class="input-wrap">
+                        <i class="input-icon fas fa-file-alt"></i>
+                        <input type="text" class="form-control-custom has-icon" id="complaintId" placeholder="e.g. CMP-2026-XXXXXX" required autocomplete="off">
+                    </div>
+                    <div class="input-hint"><i class="fas fa-info-circle"></i>As received in your SMS/email</div>
                 </div>
                 <div class="col-md-5">
-                    <label class="form-label">Mobile Number</label>
-                    <input type="tel" class="form-control" id="mobileNumber" placeholder="Enter 10-digit mobile" pattern="[0-9]{10}" required>
+                    <label class="form-label-custom"><i class="fas fa-mobile-alt me-1" style="color:var(--accent);"></i>Registered Mobile Number</label>
+                    <div class="input-wrap">
+                        <i class="input-icon fas fa-phone"></i>
+                        <input type="tel" class="form-control-custom has-icon" id="mobileNumber" placeholder="10-digit mobile number" pattern="[0-9]{10}" maxlength="10" required>
+                    </div>
+                    <div class="input-hint"><i class="fas fa-shield-alt"></i>Used to verify your identity</div>
                 </div>
-                <div class="col-md-2 d-flex align-items-end">
-                    <button type="submit" class="btn btn-track w-100" id="trackBtn">
-                        <i class="fas fa-search"></i> Track
-                        <span id="trackSpinner" style="display:none;">
-                            <i class="fas fa-spinner fa-spin ms-1"></i>
-                        </span>
+                <div class="col-md-2">
+                    <button type="submit" class="btn-track" id="trackBtn">
+                        <i class="fas fa-search" id="trackIcon"></i>
+                        <span id="trackBtnText">Track</span>
+                        <i class="fas fa-spinner fa-spin" id="trackSpinner" style="display:none;"></i>
                     </button>
                 </div>
             </div>
         </form>
-        <div id="errorMessage" class="error-message">
-            <i class="fas fa-exclamation-circle"></i> <strong>Error:</strong>
-            <span id="errorText">Complaint not found. Please check your Complaint ID and Mobile Number.</span>
+
+        <!-- Error -->
+        <div class="error-box hidden" id="errorBox">
+            <div class="error-icon"><i class="fas fa-exclamation-triangle"></i></div>
+            <div class="error-text">
+                <strong>Complaint Not Found</strong>
+                <span id="errorText">Please verify your Complaint ID and Mobile Number.</span>
+            </div>
         </div>
     </div>
 
-    <!-- Result -->
-    <div id="resultContainer" class="result-container">
+    <!-- RESULT -->
+    <div class="result-wrap" id="resultWrap">
 
-        <!-- Header -->
-        <div class="complaint-header">
-            <div class="complaint-id-display">
-                <i class="fas fa-file-alt"></i> Complaint ID: <span id="displayId"></span>
+        <!-- HEADER CARD -->
+        <div class="complaint-header-card sr">
+            <div class="comp-id">
+                <i class="fas fa-file-alt"></i>
+                <span id="displayId">—</span>
             </div>
-            <p id="displaySubject" style="margin:0; font-size:16px; opacity:0.9;"></p>
-        </div>
-
-        <!-- Meta cards -->
-        <div class="complaint-meta">
-            <div class="meta-item">
-                <div class="meta-label">Current Status</div>
-                <div class="meta-value"><span id="displayStatus" class="status-badge"></span></div>
-            </div>
-            <div class="meta-item">
-                <div class="meta-label">Department</div>
-                <div class="meta-value" id="displayDepartment"></div>
-            </div>
-            <div class="meta-item">
-                <div class="meta-label">Priority</div>
-                <div class="meta-value" id="displayPriority"></div>
-            </div>
-            <div class="meta-item">
-                <div class="meta-label">Submitted On</div>
-                <div class="meta-value" id="displayDate"></div>
+            <p class="comp-subject" id="displaySubject">—</p>
+            <div class="comp-header-meta">
+                <div class="comp-meta-pill"><i class="fas fa-building"></i><span id="displayDeptMini">—</span></div>
+                <div class="comp-meta-pill"><i class="fas fa-calendar-alt"></i><span id="displayDateMini">—</span></div>
+                <div class="comp-meta-pill"><i class="fas fa-map-marker-alt"></i> India</div>
             </div>
         </div>
 
-        <!-- ── Progress Steps Bar ───────────────────────────────────────── -->
-        <div class="progress-section">
-            <h4><i class="fas fa-tasks me-2"></i>Complaint Progress</h4>
-            <div class="steps-bar" id="stepsBar">
-                <!-- Injected by JS -->
+        <!-- META TILES -->
+        <div class="meta-grid sr">
+            <div class="meta-tile">
+                <div class="meta-tile-label">Current Status</div>
+                <div class="meta-tile-value"><span id="displayStatus" class="badge-status">—</span></div>
+            </div>
+            <div class="meta-tile">
+                <div class="meta-tile-label">Department</div>
+                <div class="meta-tile-value" id="displayDepartment">—</div>
+            </div>
+            <div class="meta-tile">
+                <div class="meta-tile-label">Priority</div>
+                <div class="meta-tile-value"><span id="displayPriority">—</span></div>
+            </div>
+            <div class="meta-tile">
+                <div class="meta-tile-label">Submitted On</div>
+                <div class="meta-tile-value" id="displayDate">—</div>
             </div>
         </div>
 
-        <!-- Complaint Details -->
-        <div class="complaint-details">
-            <h5><i class="fas fa-info-circle me-2"></i>Complaint Details</h5>
-            <div class="detail-row">
-                <div class="detail-label">Name:</div>
-                <div class="detail-value" id="displayName"></div>
+        <!-- PROGRESS STEPPER -->
+        <div class="section-card sr">
+            <div class="section-card-head">
+                <div class="icon"><i class="fas fa-tasks"></i></div>
+                <div>
+                    <h4>Complaint Progress</h4>
+                    <p>Live stage-by-stage view of your grievance journey</p>
+                </div>
             </div>
-            <div class="detail-row">
-                <div class="detail-label">Email:</div>
-                <div class="detail-value" id="displayEmail"></div>
+            <div class="stepper-wrap">
+                <div class="stepper-line"><div class="stepper-line-fill" id="stepperFill"></div></div>
+                <div class="stepper-row" id="stepperRow"><!-- JS --></div>
             </div>
-            <div class="detail-row">
-                <div class="detail-label">Mobile:</div>
-                <div class="detail-value" id="displayMobile"></div>
+        </div>
+
+        <!-- COMPLAINT DETAILS -->
+        <div class="section-card sr">
+            <div class="section-card-head">
+                <div class="icon"><i class="fas fa-info-circle"></i></div>
+                <div>
+                    <h4>Complaint Details</h4>
+                    <p>Full information as submitted during registration</p>
+                </div>
             </div>
-            <div class="detail-row">
-                <div class="detail-label">Category:</div>
-                <div class="detail-value" id="displayCategory"></div>
-            </div>
-            <div class="detail-row">
-                <div class="detail-label">Description:</div>
-                <div class="detail-value" id="displayDescription"></div>
-            </div>
-            <!-- Evidence photos — shown only if images exist -->
-            <div class="evidence-section" id="evidenceSection" style="display:none;">
-                <h6><i class="fas fa-camera me-2"></i>Evidence Photos</h6>
+            <div class="details-grid" id="detailsGrid"><!-- JS --></div>
+
+            <!-- Evidence images -->
+            <div id="evidenceSection" style="display:none; margin-top:22px;">
+                <div style="font-size:14px;font-weight:700;color:var(--primary);margin-bottom:12px;display:flex;align-items:center;gap:6px;">
+                    <i class="fas fa-camera" style="color:var(--accent);"></i> Evidence Photos
+                </div>
                 <div class="evidence-grid" id="evidenceGrid"></div>
             </div>
         </div>
 
-        <!-- ── Detailed Timeline ────────────────────────────────────────── -->
-        <div class="timeline-section">
-            <h4><i class="fas fa-history me-2"></i>Status Timeline</h4>
-            <div class="timeline" id="timeline">
-                <!-- Injected by JS -->
+        <!-- TIMELINE -->
+        <div class="section-card sr">
+            <div class="section-card-head">
+                <div class="icon"><i class="fas fa-history"></i></div>
+                <div>
+                    <h4>Status Timeline</h4>
+                    <p>Detailed chronological log of every stage</p>
+                </div>
             </div>
+            <div class="timeline-wrap" id="timelineWrap"><!-- JS --></div>
         </div>
 
-
-        <!-- ── Citizen Feedback (shown only when Resolved) ────────────────── -->
-        <div class="feedback-section" id="feedbackSection">
-            <h4><i class="fas fa-star me-2" style="color:#FF9933;"></i>Rate This Service</h4>
-            <p class="sub">Your complaint has been resolved. Please take a moment to rate the service quality.</p>
+        <!-- FEEDBACK -->
+        <div class="feedback-card" id="feedbackCard">
+            <div class="feedback-head">
+                <i class="fas fa-star"></i>
+                <h4>Rate This Service</h4>
+            </div>
+            <p class="feedback-sub">Your complaint has been resolved. Please take a moment to rate the service quality — your feedback improves governance.</p>
 
             <div id="feedbackForm">
-                <!-- Star picker -->
-                <div class="star-rating" id="starRating">
-                    <input type="radio" id="s5" name="rating" value="5">
-                    <label for="s5" title="Excellent">★</label>
-                    <input type="radio" id="s4" name="rating" value="4">
-                    <label for="s4" title="Good">★</label>
-                    <input type="radio" id="s3" name="rating" value="3">
-                    <label for="s3" title="Average">★</label>
-                    <input type="radio" id="s2" name="rating" value="2">
-                    <label for="s2" title="Poor">★</label>
-                    <input type="radio" id="s1" name="rating" value="1">
-                    <label for="s1" title="Very Poor">★</label>
+                <div class="star-row" id="starRow">
+                    <input type="radio" id="s5" name="rating" value="5"><label for="s5" title="Excellent">★</label>
+                    <input type="radio" id="s4" name="rating" value="4"><label for="s4" title="Good">★</label>
+                    <input type="radio" id="s3" name="rating" value="3"><label for="s3" title="Average">★</label>
+                    <input type="radio" id="s2" name="rating" value="2"><label for="s2" title="Poor">★</label>
+                    <input type="radio" id="s1" name="rating" value="1"><label for="s1" title="Very Poor">★</label>
                 </div>
-                <div class="rating-label" id="ratingLabel">Click a star to rate</div>
-
-                <textarea class="feedback-textarea" id="feedbackText"
-                    placeholder="Share your experience — what went well, what could be improved? (Optional)"></textarea>
-
-                <div style="display:flex; align-items:center; gap:14px; flex-wrap:wrap;">
-                    <button class="btn-feedback" id="feedbackSubmitBtn" onclick="submitFeedback()">
-                        <i class="fas fa-paper-plane me-2"></i>Submit Feedback
+                <div class="rating-hint" id="ratingHint">Click a star to rate your experience</div>
+                <textarea class="feedback-ta" id="feedbackText" placeholder="Share your experience — what went well, what could be improved? (Optional)"></textarea>
+                <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
+                    <button class="btn-feedback" id="feedbackBtn" onclick="submitFeedback()">
+                        <i class="fas fa-paper-plane"></i> Submit Feedback
                     </button>
-                    <span style="font-size:12px; color:#aaa;">
-                        <i class="fas fa-lock me-1"></i>Your feedback is confidential
-                    </span>
+                    <span style="font-size:12px;color:var(--muted);display:flex;align-items:center;gap:5px;"><i class="fas fa-lock" style="color:var(--accent);"></i>Confidential &amp; anonymous</span>
                 </div>
             </div>
 
-            <!-- Shown after successful submission -->
-            <div class="feedback-submitted" id="feedbackDone" style="display:none;">
-                <div class="tick"><i class="fas fa-check-circle"></i></div>
+            <div class="feedback-done" id="feedbackDone" style="display:none;">
+                <div class="big-tick"><i class="fas fa-check-circle"></i></div>
                 <h5>Thank you for your feedback!</h5>
-                <div class="stars-display" id="submittedStars"></div>
-                <p>Your rating helps us improve government services for everyone.</p>
+                <div class="stars-rendered" id="submittedStars"></div>
+                <p>Your rating helps us improve government services for all citizens of India.</p>
             </div>
         </div>
 
-        <!-- Actions -->
-        <div class="action-buttons">
-            <button class="btn btn-secondary-custom" onclick="window.print()">
-                <i class="fas fa-print"></i> Print Details
-            </button>
-            <button class="btn btn-secondary-custom" onclick="searchAgain()">
-                <i class="fas fa-search"></i> Search Again
-            </button>
-            <a href="index.html" class="btn btn-secondary-custom">
-                <i class="fas fa-home"></i> Back to Home
-            </a>
+        <!-- ACTIONS -->
+        <div class="action-strip sr">
+            <button class="btn-action" onclick="window.print()"><i class="fas fa-print"></i> Print Details</button>
+            <button class="btn-action outline" onclick="resetSearch()"><i class="fas fa-search"></i> Search Again</button>
+            <a href="index.html" class="btn-action outline"><i class="fas fa-home"></i> Back to Home</a>
         </div>
-    </div>
 
+    </div><!-- /result-wrap -->
+
+</div><!-- /container -->
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" onclick="closeLb()">
+    <button class="lb-close" onclick="closeLb()">&times;</button>
+    <img id="lbImg" src="" alt="Evidence Photo">
+    <span class="lb-caption" id="lbCaption"></span>
 </div>
 
-<!-- Lightbox -->
-<div class="lightbox" id="lightbox" onclick="closeLightbox()">
-    <button class="lightbox-close" onclick="closeLightbox()">&times;</button>
-    <img id="lightboxImg" src="" alt="Evidence">
-    <span class="lightbox-caption" id="lightboxCaption"></span>
-</div>
-
-
-<div class="tricolor-strip"></div>
-<footer class="footer">
+<!-- FOOTER -->
+<div class="tricolor"></div>
+<footer class="site-footer">
     <div class="container">
         <div class="footer-bottom">
-            <p>&copy; 2026 Government of India | Digital India Initiative | National Informatics Centre (NIC)</p>
+            <p>© 2026 Government of India &nbsp;|&nbsp; Digital India Initiative &nbsp;|&nbsp; National Informatics Centre (NIC)</p>
+            <div class="footer-links">
+                <a href="#">Terms &amp; Conditions</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Accessibility</a>
+                <a href="#">Contact Us</a>
+                <a href="#">Sitemap</a>
+            </div>
         </div>
     </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    // ── PAGE LOADER ─────────────────────────────────────────
+window.addEventListener('load', () => {
+    setTimeout(() => {
+        document.getElementById('page-loader').classList.add('hidden');
+    }, 1400);
+});
+// ── CONFIG ─────────────────────────────────────────────────────────
+const API_URL      = 'https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/status';
+const FEEDBACK_API = 'https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/feedback';
 
+const PIPELINE = [
+    { key:'Submitted',    label:'Submitted',    icon:'fa-paper-plane' },
+    { key:'Assigned',     label:'Assigned',     icon:'fa-user-check'  },
+    { key:'Under Review', label:'Under Review', icon:'fa-search'      },
+    { key:'In Progress',  label:'In Progress',  icon:'fa-cog'         },
+    { key:'Resolved',     label:'Resolved',     icon:'fa-check-double'},
+];
 
-    // ─── Feedback API ─────────────────────────────────────────────────────────────
-    const FEEDBACK_API = 'https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/feedback';
+const STAGE_DESC = {
+    'Submitted':    'Your complaint has been successfully registered in the system.',
+    'Assigned':     'Your complaint has been assigned to a responsible officer for investigation.',
+    'Under Review': 'The assigned officer is reviewing your complaint and gathering relevant information.',
+    'In Progress':  'Necessary actions are being taken to address and resolve your complaint.',
+    'Resolved':     'Your complaint has been resolved successfully. Thank you for your patience.',
+    'Closed':       'This complaint has been officially closed.',
+};
 
-    const RATING_LABELS = {
-        '1': '⭐ Very Poor — Service was unsatisfactory',
-        '2': '⭐⭐ Poor — Needs significant improvement',
-        '3': '⭐⭐⭐ Average — Acceptable but can be better',
-        '4': '⭐⭐⭐⭐ Good — Satisfied with the service',
-        '5': '⭐⭐⭐⭐⭐ Excellent — Outstanding service!',
-    };
+const RATING_LABELS = {
+    '1':'⭐  Very Poor — Service was unsatisfactory',
+    '2':'⭐⭐  Poor — Needs significant improvement',
+    '3':'⭐⭐⭐  Average — Acceptable but can be better',
+    '4':'⭐⭐⭐⭐  Good — Satisfied with the service',
+    '5':'⭐⭐⭐⭐⭐  Excellent — Outstanding service!',
+};
 
-    // Live label update when user picks a star
-    document.querySelectorAll('.star-rating input').forEach(input => {
-        input.addEventListener('change', function () {
-            const lbl = document.getElementById('ratingLabel');
-            lbl.textContent = RATING_LABELS[this.value] || '';
-            lbl.style.color = this.value >= 4 ? 'var(--success)' : this.value == 3 ? '#b84800' : 'var(--error)';
-        });
+// ── STAR RATING HINTS ───────────────────────────────────────────────
+document.querySelectorAll('.star-row input').forEach(inp => {
+    inp.addEventListener('change', function () {
+        const hint = document.getElementById('ratingHint');
+        hint.textContent = RATING_LABELS[this.value] || '';
+        hint.style.color = this.value >= 4 ? 'var(--green)' : this.value == 3 ? '#b84800' : 'var(--red)';
     });
+});
 
-    async function submitFeedback() {
-        const ratingEl    = document.querySelector('.star-rating input:checked');
-        const feedbackText = document.getElementById('feedbackText').value.trim();
-        const complaintId  = document.getElementById('displayId').textContent.trim();
+// ── FORM SUBMIT ─────────────────────────────────────────────────────
+document.getElementById('trackForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+    const cid    = document.getElementById('complaintId').value.trim();
+    const mobile = document.getElementById('mobileNumber').value.trim();
 
-        if (!ratingEl) {
-            document.getElementById('ratingLabel').textContent = '⚠ Please select a star rating first';
-            document.getElementById('ratingLabel').style.color = 'var(--error)';
-            return;
-        }
+    hideError();
+    document.getElementById('resultWrap').style.display = 'none';
 
-        const rating = parseInt(ratingEl.value);
-        if (rating < 1 || rating > 5) return;
+    const btn = document.getElementById('trackBtn');
+    const ico = document.getElementById('trackIcon');
+    const txt = document.getElementById('trackBtnText');
+    const spn = document.getElementById('trackSpinner');
+    btn.disabled = true;
+    ico.style.display = 'none';
+    txt.textContent = 'Searching…';
+    spn.style.display = 'inline-block';
 
-        const btn = document.getElementById('feedbackSubmitBtn');
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Submitting…';
+    try {
+        const url  = `${API_URL}?complaintId=${encodeURIComponent(cid)}&mobile=${encodeURIComponent(mobile)}`;
+        const resp = await fetch(url);
+        const data = await resp.json();
 
-        try {
-            const res = await fetch(FEEDBACK_API, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ complaintId, rating, feedback: feedbackText })
-            });
-
-            // Show success state regardless of API response (graceful degradation)
-            showFeedbackSuccess(rating);
-
-        } catch (err) {
-            console.warn('Feedback API error:', err);
-            // Still show success UI — don't block citizen experience
-            showFeedbackSuccess(rating);
-        }
+        if (!resp.ok) { showError(data.error || 'Complaint not found. Please verify your details.'); }
+        else           { renderResult(data); }
+    } catch (err) {
+        showError('Connection error. Please try again in a moment.');
+    } finally {
+        btn.disabled = false;
+        ico.style.display = 'inline-block';
+        txt.textContent = 'Track';
+        spn.style.display = 'none';
     }
+});
 
-    function showFeedbackSuccess(rating) {
-        document.getElementById('feedbackForm').style.display = 'none';
-        document.getElementById('feedbackDone').style.display = 'block';
-        document.getElementById('submittedStars').textContent = '★'.repeat(rating) + '☆'.repeat(5 - rating);
-    }
+// ── RENDER RESULT ───────────────────────────────────────────────────
+function renderResult(d) {
+    const status   = d.status || 'Submitted';
+    const priority = d.priority || 'Medium';
 
-    // ─── Config ──────────────────────────────────────────────────────────────────
-    const API_URL = 'https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/status';
+    // Header
+    document.getElementById('displayId').textContent      = d.complaintId || '—';
+    document.getElementById('displaySubject').textContent = d.subject      || 'No subject provided';
+    document.getElementById('displayDeptMini').textContent = d.department  || '—';
 
-    // Ordered pipeline stages — used to render the progress bar
-    const PIPELINE = [
-        { key: 'Submitted',    label: 'Submitted',    icon: 'fa-paper-plane' },
-        { key: 'Assigned',     label: 'Assigned',     icon: 'fa-user-check'  },
-        { key: 'Under Review', label: 'Under Review', icon: 'fa-search'      },
-        { key: 'In Progress',  label: 'In Progress',  icon: 'fa-cog'         },
-        { key: 'Resolved',     label: 'Resolved',     icon: 'fa-check-double'},
+    const dateStr = d.createdAt
+        ? new Date(d.createdAt).toLocaleDateString('en-IN', {day:'2-digit',month:'short',year:'numeric'})
+        : '—';
+    document.getElementById('displayDateMini').textContent = dateStr;
+    document.getElementById('displayDate').textContent     = dateStr;
+
+    // Status badge
+    const statusEl = document.getElementById('displayStatus');
+    statusEl.textContent = status;
+    statusEl.className   = 'badge-status badge-' + status.toLowerCase().replace(/\s+/g,'-');
+
+    // Department
+    document.getElementById('displayDepartment').textContent = d.department || '—';
+
+    // Priority
+    const prioEl = document.getElementById('displayPriority');
+    prioEl.textContent = priority;
+    prioEl.className   = 'prio-' + priority.toLowerCase();
+
+    // Details grid
+    const rows = [
+        ['Full Name',    d.name        || '—'],
+        ['Email',        d.email       || '—'],
+        ['Mobile',       d.mobile      || '—'],
+        ['Category',     d.category    || '—'],
+        ['Description',  d.description || '—'],
     ];
+    const grid = document.getElementById('detailsGrid');
+    grid.innerHTML = rows.map(([lbl,val]) => `
+        <div class="detail-cell label">${lbl}</div>
+        <div class="detail-cell value">${val}</div>
+    `).join('');
 
-    // Descriptions shown in the detailed timeline for each stage
-    const STAGE_DESC = {
-        'Submitted':    'Your complaint has been successfully registered in the system.',
-        'Assigned':     'Your complaint has been assigned to a responsible officer for review.',
-        'Under Review': 'The assigned officer is reviewing your complaint and gathering information.',
-        'In Progress':  'Action is being taken to resolve your complaint.',
-        'Resolved':     'Your complaint has been resolved. Thank you for your patience.',
-        'Closed':       'This complaint has been officially closed.',
-    };
+    // Evidence images
+    renderEvidence(d.images || d.imageUrls || []);
 
-    // ─── Form Submit ─────────────────────────────────────────────────────────────
-    document.getElementById('trackForm').addEventListener('submit', async function (e) {
-        e.preventDefault();
+    // Stepper + Timeline
+    const timeline = buildTimeline(d);
+    renderStepper(status, timeline);
+    renderTimeline(status, timeline);
 
-        const complaintId = document.getElementById('complaintId').value.trim();
-        const mobile      = document.getElementById('mobileNumber').value.trim();
+    // Feedback
+    const fb = document.getElementById('feedbackCard');
+    if (status.toLowerCase() === 'resolved') {
+        fb.classList.add('show');
+        resetFeedbackForm();
+    } else {
+        fb.classList.remove('show');
+    }
 
-        document.getElementById('errorMessage').style.display  = 'none';
-        document.getElementById('resultContainer').style.display = 'none';
+    // Show result
+    const wrap = document.getElementById('resultWrap');
+    wrap.style.display = 'block';
+    setTimeout(() => { wrap.scrollIntoView({ behavior:'smooth', block:'start' }); }, 80);
 
-        const trackBtn = document.getElementById('trackBtn');
-        const spinner  = document.getElementById('trackSpinner');
-        trackBtn.disabled = true;
-        spinner.style.display = 'inline';
+    // Trigger reveal animations
+    wrap.querySelectorAll('.sr').forEach((el,i) => {
+        setTimeout(() => el.classList.add('visible'), i * 100);
+    });
+}
 
-        try {
-            const url      = `${API_URL}?complaintId=${encodeURIComponent(complaintId)}&mobile=${encodeURIComponent(mobile)}`;
-            const response = await fetch(url);
-            const data     = await response.json();
+// ── BUILD TIMELINE ──────────────────────────────────────────────────
+function buildTimeline(d) {
+    if (d.timeline && Array.isArray(d.timeline) && d.timeline.length) return d.timeline;
+    return [{ status: d.status || 'Submitted', time: d.createdAt || new Date().toISOString() }];
+}
 
-            if (!response.ok) {
-                showError(data.error || 'Complaint not found. Please check your Complaint ID and Mobile Number.');
-            } else {
-                displayComplaint(data);
-            }
-        } catch (err) {
-            console.error('Tracking error:', err);
-            showError('Something went wrong. Please try again later.');
-        } finally {
-            trackBtn.disabled = false;
-            spinner.style.display = 'none';
-        }
+// ── RENDER STEPPER ──────────────────────────────────────────────────
+function renderStepper(currentStatus, timeline) {
+    const row   = document.getElementById('stepperRow');
+    const fill  = document.getElementById('stepperFill');
+    row.innerHTML = '';
+
+    const curIdx = PIPELINE.findIndex(p => p.key.toLowerCase() === currentStatus.toLowerCase());
+    const doneSet = new Set(timeline.map(t => t.status.toLowerCase()));
+
+    PIPELINE.forEach((stage, idx) => {
+        const isDone   = idx < curIdx || (idx === curIdx && doneSet.has(stage.key.toLowerCase()));
+        const isActive = stage.key.toLowerCase() === currentStatus.toLowerCase() && idx === curIdx;
+        const cls      = isDone ? 'done' : isActive ? 'active' : '';
+
+        const node = document.createElement('div');
+        node.className = `step-node ${cls}`;
+        node.innerHTML = `
+            <div class="step-bubble">
+                <i class="fas ${isDone ? 'fa-check' : stage.icon}"></i>
+                ${isDone ? '<div class="step-check"><i class="fas fa-check"></i></div>' : ''}
+            </div>
+            <div class="step-label-text">${stage.label}</div>
+        `;
+        row.appendChild(node);
     });
 
-    // ─── Display Complaint ───────────────────────────────────────────────────────
-    function displayComplaint(data) {
-        // Basic fields
-        document.getElementById('displayId').textContent          = data.complaintId || 'N/A';
-        document.getElementById('displaySubject').textContent     = data.subject      || 'No subject provided';
-        document.getElementById('displayName').textContent        = data.name         || 'N/A';
-        document.getElementById('displayEmail').textContent       = data.email        || 'N/A';
-        document.getElementById('displayMobile').textContent      = data.mobile       || 'N/A';
-        document.getElementById('displayDepartment').textContent  = data.department   || 'N/A';
-        document.getElementById('displayCategory').textContent    = data.category     || 'N/A';
-        document.getElementById('displayDescription').textContent = data.description  || 'N/A';
+    // Animate fill bar width
+    const pct = curIdx >= 0 ? (curIdx / (PIPELINE.length - 1)) * 100 : 0;
+    setTimeout(() => { fill.style.width = pct + '%'; }, 200);
+}
 
-        // Render evidence images if present
-        const evidenceImages = data.images || data.imageUrls || [];
-        renderEvidenceImages(evidenceImages);
+// ── RENDER TIMELINE ─────────────────────────────────────────────────
+function renderTimeline(currentStatus, timeline) {
+    const wrap   = document.getElementById('timelineWrap');
+    wrap.innerHTML = '';
+    const curIdx = PIPELINE.findIndex(p => p.key.toLowerCase() === currentStatus.toLowerCase());
 
-        // Date
-        const dateEl = document.getElementById('displayDate');
-        if (data.createdAt) {
-            dateEl.textContent = new Date(data.createdAt).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' });
-        } else {
-            dateEl.textContent = 'N/A';
-        }
+    PIPELINE.forEach((stage, idx) => {
+        const dbEntry = timeline.find(t => t.status.toLowerCase() === stage.key.toLowerCase());
+        let state;
+        if (dbEntry && idx < curIdx) state = 'done';
+        else if (stage.key.toLowerCase() === currentStatus.toLowerCase()) state = 'active';
+        else if (idx < curIdx) state = 'done';
+        else state = 'pending';
 
-        // Status badge
-        const statusBadge = document.getElementById('displayStatus');
-        const status = data.status || 'Submitted';
-        statusBadge.textContent = status;
-        statusBadge.className   = 'status-badge status-' + status.toLowerCase().replace(/\s+/g, '-');
+        const item = document.createElement('div');
+        item.className = `tl-item ${state}`;
+        item.style.animationDelay = (idx * 0.08) + 's';
 
-        // Priority with colour
-        const priorityEl = document.getElementById('displayPriority');
-        const priority   = data.priority || 'Medium';
-        priorityEl.textContent = priority;
-        priorityEl.className   = 'meta-value priority-' + priority.toLowerCase();
+        const timeStr = (dbEntry && dbEntry.time)
+            ? new Date(dbEntry.time).toLocaleString('en-IN', {day:'2-digit',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})
+            : '';
 
-        // Build the timeline array (from DynamoDB or synthesise from status)
-        const rawTimeline = buildTimeline(data);
+        const desc = (dbEntry && (dbEntry.description || dbEntry.remarks))
+            ? (dbEntry.description || dbEntry.remarks)
+            : (state !== 'pending' ? STAGE_DESC[stage.key] || 'Status updated.' : 'Awaiting action.');
 
-        // Render progress steps bar
-        renderProgressBar(status, rawTimeline);
+        const iconMap = { done:'fa-check', active:'fa-cog fa-spin', pending:'fa-clock' };
 
-        // Render detailed timeline
-        renderTimeline(status, rawTimeline);
-
-        // Show feedback section only if Resolved
-        const feedbackSec = document.getElementById('feedbackSection');
-        if (status.toLowerCase() === 'resolved') {
-            feedbackSec.classList.add('show');
-            // Reset form in case user tracks another complaint
-            document.getElementById('feedbackForm').style.display = 'block';
-            document.getElementById('feedbackDone').style.display = 'none';
-            const checkedStar = document.querySelector('.star-rating input:checked');
-            if (checkedStar) checkedStar.checked = false;
-            document.getElementById('ratingLabel').textContent = 'Click a star to rate';
-            document.getElementById('ratingLabel').style.color = '';
-            document.getElementById('feedbackText').value = '';
-        } else {
-            feedbackSec.classList.remove('show');
-        }
-
-        // Show result
-        document.getElementById('resultContainer').style.display = 'block';
-        document.getElementById('resultContainer').scrollIntoView({ behavior: 'smooth' });
-    }
-
-    // ─── Build Timeline ──────────────────────────────────────────────────────────
-    // Accepts DynamoDB `timeline` array OR synthesises one entry from `status`
-    function buildTimeline(data) {
-        if (data.timeline && Array.isArray(data.timeline) && data.timeline.length > 0) {
-            return data.timeline; // shape: [{ status, time, description? }]
-        }
-        // Fallback: single entry
-        return [{ status: data.status || 'Submitted', time: data.createdAt || new Date().toISOString() }];
-    }
-
-    // ─── Render Progress Bar ─────────────────────────────────────────────────────
-    function renderProgressBar(currentStatus, timeline) {
-        const bar = document.getElementById('stepsBar');
-        bar.innerHTML = '';
-
-        // Find the index of current status in the pipeline
-        const currentIdx = PIPELINE.findIndex(p => p.key.toLowerCase() === currentStatus.toLowerCase());
-        const doneStatuses = new Set(timeline.map(t => t.status.toLowerCase()));
-
-        PIPELINE.forEach((stage, idx) => {
-            const isDone    = doneStatuses.has(stage.key.toLowerCase()) && idx < (currentIdx === -1 ? 0 : currentIdx + 1);
-            const isActive  = stage.key.toLowerCase() === currentStatus.toLowerCase();
-            const isPending = !isDone && !isActive;
-
-            const item = document.createElement('div');
-            item.className = 'step-item' + (isDone ? ' done' : isActive ? ' active' : '');
-            item.innerHTML = `
-                <div class="step-connector"></div>
-                <div class="step-circle">
-                    <i class="fas ${isDone ? 'fa-check' : isActive ? stage.icon : stage.icon}"></i>
+        item.innerHTML = `
+            <div class="tl-left">
+                <div class="tl-dot ${state}"><i class="fas ${iconMap[state]}"></i></div>
+                <div class="tl-connector"></div>
+            </div>
+            <div class="tl-body">
+                <div class="tl-card">
+                    ${timeStr ? `<div class="tl-time"><i class="fas fa-calendar-alt"></i>${timeStr}</div>` : ''}
+                    <div class="tl-status">${stage.key}</div>
+                    <div class="tl-desc">${state !== 'pending' ? desc : ''}</div>
+                    ${state === 'pending' ? '<div class="tl-pending-chip"><i class="fas fa-hourglass-half"></i>Awaiting</div>' : ''}
                 </div>
-                <div class="step-label">${stage.label}</div>
-            `;
-            bar.appendChild(item);
-        });
-    }
-
-    // ─── Render Detailed Timeline ────────────────────────────────────────────────
-    function renderTimeline(currentStatus, timeline) {
-        const container = document.getElementById('timeline');
-        container.innerHTML = '';
-
-        // Steps already completed (from DB timeline)
-        const completedKeys = timeline.map(t => t.status);
-
-        // Build full ordered list: completed steps first, then remaining pending
-        const currentIdx  = PIPELINE.findIndex(p => p.key.toLowerCase() === currentStatus.toLowerCase());
-        const allSteps    = [];
-
-        PIPELINE.forEach((stage, idx) => {
-            const matchInDB = timeline.find(t => t.status.toLowerCase() === stage.key.toLowerCase());
-            if (matchInDB) {
-                allSteps.push({ ...matchInDB, state: idx === currentIdx ? 'current' : 'done' });
-            } else if (idx <= currentIdx) {
-                // Completed but no explicit DB entry — infer
-                allSteps.push({ status: stage.key, time: null, state: 'done' });
-            } else {
-                allSteps.push({ status: stage.key, time: null, state: 'pending' });
-            }
-        });
-
-        allSteps.forEach((step, index) => {
-            const item = document.createElement('div');
-            item.className = `timeline-item ${step.state}`;
-            item.style.animationDelay = (index * 0.1) + 's';
-
-            let dateStr = '';
-            if (step.time) {
-                dateStr = new Date(step.time).toLocaleDateString('en-IN', {
-                    day:'2-digit', month:'short', year:'numeric', hour:'2-digit', minute:'2-digit'
-                });
-            }
-
-            const desc = step.description || step.remarks || STAGE_DESC[step.status] || 'Status updated';
-
-            const iconMap = { done: 'fa-check', current: 'fa-circle-dot', pending: 'fa-clock' };
-            const iconClass = step.state === 'done' ? 'fa-check' : step.state === 'current' ? 'fa-cog' : 'fa-clock';
-
-            item.innerHTML = `
-                <div class="timeline-dot"><i class="fas ${iconClass}"></i></div>
-                <div class="timeline-content">
-                    ${dateStr ? `<div class="timeline-date"><i class="fas fa-calendar-alt me-1"></i>${dateStr}</div>` : ''}
-                    <div class="timeline-status">${step.status}</div>
-                    <div class="timeline-desc">${step.state !== 'pending' ? desc : 'Pending'}</div>
-                    ${step.state === 'pending' ? '<span class="timeline-pending-badge"><i class="fas fa-hourglass-half me-1"></i>Awaiting</span>' : ''}
-                </div>
-            `;
-
-            container.appendChild(item);
-        });
-    }
-
-    // ─── Helpers ─────────────────────────────────────────────────────────────────
-    function showError(msg) {
-        document.getElementById('errorText').textContent = msg;
-        document.getElementById('errorMessage').style.display = 'block';
-    }
-
-    function searchAgain() {
-        document.getElementById('trackForm').reset();
-        document.getElementById('resultContainer').style.display = 'none';
-        document.getElementById('errorMessage').style.display    = 'none';
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-
-    // Pre-fill complaint ID from URL ?id=
-    window.addEventListener('load', function () {
-        const id = new URLSearchParams(window.location.search).get('id');
-        if (id) document.getElementById('complaintId').value = id;
+            </div>
+        `;
+        wrap.appendChild(item);
     });
+}
 
-    // ─── Evidence Image Display ───────────────────────────────────────────────────
-    function renderEvidenceImages(images) {
-        const section = document.getElementById('evidenceSection');
-        const grid    = document.getElementById('evidenceGrid');
-        grid.innerHTML = '';
+// ── EVIDENCE ────────────────────────────────────────────────────────
+function renderEvidence(images) {
+    const sec  = document.getElementById('evidenceSection');
+    const grid = document.getElementById('evidenceGrid');
+    grid.innerHTML = '';
+    if (!images || !images.length) { sec.style.display = 'none'; return; }
+    sec.style.display = 'block';
+    images.forEach((img, i) => {
+        const src = img.startsWith('http') ? img : `data:image/jpeg;base64,${img}`;
+        const el  = document.createElement('img');
+        el.className = 'ev-thumb';
+        el.src   = src;
+        el.alt   = `Evidence ${i+1}`;
+        el.title = `Photo ${i+1} — click to enlarge`;
+        el.onclick = () => openLb(src, `Evidence Photo ${i+1}`);
+        grid.appendChild(el);
+    });
+}
 
-        if (!images || images.length === 0) {
-            section.style.display = 'none';
-            return;
+// ── FEEDBACK ────────────────────────────────────────────────────────
+async function submitFeedback() {
+    const ratingEl = document.querySelector('.star-row input:checked');
+    if (!ratingEl) {
+        const hint = document.getElementById('ratingHint');
+        hint.textContent = '⚠ Please select a star rating first';
+        hint.style.color = 'var(--red)';
+        return;
+    }
+    const btn = document.getElementById('feedbackBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Submitting…';
+
+    try {
+        await fetch(FEEDBACK_API, {
+            method:'POST',
+            headers:{'Content-Type':'application/json'},
+            body: JSON.stringify({
+                complaintId: document.getElementById('displayId').textContent.trim(),
+                rating:      parseInt(ratingEl.value),
+                feedback:    document.getElementById('feedbackText').value.trim()
+            })
+        });
+    } catch {}
+
+    showFeedbackDone(parseInt(ratingEl.value));
+}
+
+function showFeedbackDone(rating) {
+    document.getElementById('feedbackForm').style.display = 'none';
+    document.getElementById('feedbackDone').style.display = 'block';
+    document.getElementById('submittedStars').textContent = '★'.repeat(rating) + '☆'.repeat(5-rating);
+}
+
+function resetFeedbackForm() {
+    document.getElementById('feedbackForm').style.display = 'block';
+    document.getElementById('feedbackDone').style.display = 'none';
+    document.querySelectorAll('.star-row input:checked').forEach(el => el.checked = false);
+    document.getElementById('ratingHint').textContent = 'Click a star to rate your experience';
+    document.getElementById('ratingHint').style.color = '';
+    document.getElementById('feedbackText').value = '';
+    const btn = document.getElementById('feedbackBtn');
+    btn.disabled = false;
+    btn.innerHTML = '<i class="fas fa-paper-plane"></i> Submit Feedback';
+}
+
+// ── LIGHTBOX ─────────────────────────────────────────────────────────
+function openLb(src, cap) {
+    document.getElementById('lbImg').src = src;
+    document.getElementById('lbCaption').textContent = cap;
+    document.getElementById('lightbox').classList.add('open');
+    document.body.style.overflow = 'hidden';
+}
+function closeLb() {
+    document.getElementById('lightbox').classList.remove('open');
+    document.body.style.overflow = '';
+}
+document.addEventListener('keydown', e => { if (e.key==='Escape') closeLb(); });
+
+// ── HELPERS ──────────────────────────────────────────────────────────
+function showError(msg) {
+    const box  = document.getElementById('errorBox');
+    const text = document.getElementById('errorText');
+    text.textContent = msg;
+    box.classList.remove('hidden');
+    box.style.display = 'flex';
+}
+function hideError() {
+    const box = document.getElementById('errorBox');
+    box.classList.add('hidden');
+    box.style.display = 'none';
+}
+function resetSearch() {
+    document.getElementById('trackForm').reset();
+    document.getElementById('resultWrap').style.display = 'none';
+    hideError();
+    window.scrollTo({ top:0, behavior:'smooth' });
+}
+
+// Pre-fill from URL ?id=
+window.addEventListener('load', () => {
+    const id = new URLSearchParams(window.location.search).get('id');
+    if (id) document.getElementById('complaintId').value = id;
+});
+
+// ── SCROLL REVEAL ────────────────────────────────────────────────────
+const srObs = new IntersectionObserver((entries) => {
+    entries.forEach((entry, i) => {
+        if (entry.isIntersecting) {
+            setTimeout(() => entry.target.classList.add('visible'), i * 80);
+            srObs.unobserve(entry.target);
         }
-
-        section.style.display = 'block';
-
-        images.forEach((imgData, idx) => {
-            // imgData can be a full S3 URL or a base64 string
-            const src = imgData.startsWith('http') ? imgData : `data:image/jpeg;base64,${imgData}`;
-            const img = document.createElement('img');
-            img.className = 'evidence-thumb';
-            img.src       = src;
-            img.alt       = `Evidence ${idx + 1}`;
-            img.title     = `Photo ${idx + 1} — click to enlarge`;
-            img.onclick   = () => openLightbox(src, `Evidence Photo ${idx + 1}`);
-            grid.appendChild(img);
-        });
-    }
-
-    function openLightbox(src, caption) {
-        document.getElementById('lightboxImg').src         = src;
-        document.getElementById('lightboxCaption').textContent = caption;
-        document.getElementById('lightbox').classList.add('open');
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeLightbox() {
-        document.getElementById('lightbox').classList.remove('open');
-        document.body.style.overflow = '';
-    }
-
-    // Close lightbox on Escape key
-    document.addEventListener('keydown', e => {
-        if (e.key === 'Escape') closeLightbox();
     });
+}, { threshold:.1 });
+document.querySelectorAll('.sr').forEach(el => srObs.observe(el));
 
-
+// ── SCROLL TO TOP ────────────────────────────────────────────────────
+const sBtn = document.getElementById('scrollTop');
+window.addEventListener('scroll', () => sBtn.classList.toggle('show', window.scrollY > 400));
+sBtn.addEventListener('click', () => window.scrollTo({ top:0, behavior:'smooth' }));
 </script>
 </body>
 </html>

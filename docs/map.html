@@ -3,419 +3,700 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Complaint Map - Digital Grievance Portal</title>
+    <title>Complaint Map – Digital Grievance Redressal Platform</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.css"/>
     <link rel="stylesheet" href="https://unpkg.com/leaflet.markercluster/dist/MarkerCluster.Default.css"/>
     <style>
         :root {
-            --primary: #0A2E5C;
-            --background: #F2F2F2;
-            --accent: #FF9933;
-            --success: #138808;
-            --error: #C62828;
+            --primary: #0A2558;
+            --primary-dark: #06173a;
+            --primary-light: #1a3d7c;
+            --accent: #E8842A;
+            --accent-light: #f4a355;
+            --green: #0e7c3b;
+            --green-light: #16a34a;
             --white: #FFFFFF;
+            --bg: #F5F6FA;
+            --text: #1c2b4a;
+            --text-muted: #6b7a99;
+            --border: #e2e8f0;
+            --error: #C62828;
+            --card-shadow: 0 4px 24px rgba(10,37,88,0.10);
+            --card-shadow-hover: 0 16px 48px rgba(10,37,88,0.18);
         }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
         body {
-            font-family: 'Roboto', 'Noto Sans Devanagari', sans-serif;
-            background-color: var(--background);
-            color: #333;
+            font-family: 'DM Sans', 'Noto Sans Devanagari', sans-serif;
+            background: var(--bg); color: var(--text); overflow-x: hidden;
+        }
+        a { text-decoration: none; color: inherit; }
+
+        /* ── PAGE LOADER ── */
+        #page-loader {
+            position: fixed; inset: 0; z-index: 9999;
+            background: var(--primary-dark);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            transition: opacity 0.6s ease, visibility 0.6s ease;
+        }
+        #page-loader.hidden { opacity: 0; visibility: hidden; }
+        .chakra-loader { width: 80px; height: 80px; animation: chakra-spin 1.2s linear infinite; }
+        .chakra-loader svg { width: 100%; height: 100%; }
+        @keyframes chakra-spin { to { transform: rotate(360deg); } }
+        .loader-text {
+            margin-top: 20px; color: rgba(255,255,255,0.8);
+            font-size: 14px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase;
+            animation: loader-pulse 1.5s ease-in-out infinite;
+        }
+        @keyframes loader-pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+
+        /* ── TRICOLOR ── */
+        .tricolor {
+            height: 6px;
+            background: linear-gradient(to right, #FF9933 0%, #FF9933 33.33%, #fff 33.33%, #fff 66.66%, #138808 66.66%, #138808 100%);
         }
 
-        .tricolor-strip {
-            height: 5px;
-            background: linear-gradient(to right, #FF9933 0%, #FF9933 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #138808 66.66%, #138808 100%);
+        /* ── TICKER ── */
+        .ticker-bar {
+            background: #e8f0fe; border-bottom: 1px solid #c5d4f5;
+            padding: 8px 0; font-size: 13px; color: var(--primary); overflow: hidden;
+        }
+        .ticker-inner { display: flex; align-items: center; }
+        .ticker-label {
+            background: var(--accent); color: #fff;
+            padding: 3px 14px; font-weight: 700; font-size: 11px;
+            border-radius: 3px; margin-right: 18px; white-space: nowrap; flex-shrink: 0;
+        }
+        .ticker-track { overflow: hidden; flex: 1; }
+        .ticker-scroll { display: inline-block; white-space: nowrap; animation: ticker 40s linear infinite; }
+        @keyframes ticker { from{transform:translateX(100vw)} to{transform:translateX(-100%)} }
+
+        /* ── HEADER ── */
+        .site-header {
+            background: var(--white); padding: 14px 0;
+            border-bottom: 1px solid var(--border);
+            position: sticky; top: 0; z-index: 1000;
+            box-shadow: 0 2px 20px rgba(10,37,88,0.08);
+        }
+        .header-logo { display: flex; align-items: center; gap: 14px; }
+        .ashoka-emblem { width: 56px; height: 56px; }
+        .header-titles h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: 17px; font-weight: 700; color: var(--primary); line-height: 1.2;
+        }
+        .header-titles p { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
+        .digital-india-badge {
+            display: flex; align-items: center; gap: 8px; padding: 6px 14px;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            border-radius: 6px; color: #fff;
+        }
+        .digital-india-badge span { font-size: 12px; font-weight: 700; letter-spacing: 0.5px; }
+
+        /* ── NAVBAR ── */
+        .main-nav { background: var(--primary); position: relative; overflow: hidden; }
+        .main-nav::before {
+            content: ''; position: absolute; inset: 0;
+            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        }
+        .main-nav .navbar-nav .nav-link {
+            color: rgba(255,255,255,0.9) !important; padding: 15px 18px;
+            font-weight: 500; font-size: 14px; position: relative; transition: all 0.3s;
+        }
+        .main-nav .navbar-nav .nav-link::after {
+            content: ''; position: absolute; bottom: 0; left: 50%;
+            width: 0; height: 3px; background: var(--accent);
+            transition: all 0.3s; transform: translateX(-50%);
+            border-radius: 2px 2px 0 0;
+        }
+        .main-nav .navbar-nav .nav-link:hover,
+        .main-nav .navbar-nav .nav-link.active { color: #fff !important; background: rgba(255,255,255,0.07); }
+        .main-nav .navbar-nav .nav-link:hover::after,
+        .main-nav .navbar-nav .nav-link.active::after { width: 80%; }
+        .nav-officer-btn {
+            background: var(--accent) !important; border-radius: 5px !important;
+            margin: 9px 0 !important; padding: 7px 18px !important;
+            font-weight: 700 !important; transition: all 0.3s !important;
+        }
+        .nav-officer-btn:hover { background: #d6741e !important; transform: translateY(-1px); }
+        .nav-officer-btn::after { display: none !important; }
+        .navbar-toggler { border-color: rgba(255,255,255,0.3) !important; }
+        .navbar-toggler-icon { filter: invert(1); }
+
+        /* ── PAGE HERO ── */
+        .page-hero {
+            background: linear-gradient(135deg, #061728 0%, var(--primary) 45%, #1a3d7c 100%);
+            color: #fff; padding: 52px 0 44px; position: relative; overflow: hidden;
+        }
+        .page-hero::before {
+            content: ''; position: absolute; right: -60px; top: 50%; transform: translateY(-50%);
+            width: 420px; height: 420px; opacity: 0.04;
+            background: url("data:image/svg+xml,%3Csvg viewBox='0 0 500 500' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='250' cy='250' r='240' stroke='white' stroke-width='1' fill='none'/%3E%3Ccircle cx='250' cy='250' r='190' stroke='white' stroke-width='0.8' fill='none'/%3E%3Ccircle cx='250' cy='250' r='140' stroke='white' stroke-width='0.6' fill='none'/%3E%3C/svg%3E") center/contain no-repeat;
+        }
+        .page-hero-content { position: relative; z-index: 2; }
+        .hero-breadcrumb {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 13px; opacity: 0.7; margin-bottom: 16px; flex-wrap: wrap;
+        }
+        .hero-breadcrumb a { color: rgba(255,255,255,0.7); transition: color 0.2s; }
+        .hero-breadcrumb a:hover { color: var(--accent); }
+        .hero-breadcrumb i { font-size: 9px; opacity: 0.5; }
+        .page-hero-eyebrow {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: rgba(255,153,51,0.15); border: 1px solid rgba(255,153,51,0.35);
+            padding: 5px 16px; border-radius: 30px;
+            font-size: 12px; font-weight: 600; color: #FFB74D; margin-bottom: 16px;
+        }
+        .page-hero-eyebrow .dot { width: 7px; height: 7px; background: #FFB74D; border-radius: 50%; animation: blink 2s infinite; }
+        @keyframes blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+        .page-hero h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 38px; font-weight: 800; line-height: 1.15; margin-bottom: 10px;
+        }
+        .page-hero h2 .accent-word { color: var(--accent); }
+        .page-hero .hero-hindi {
+            font-family: 'Noto Sans Devanagari', sans-serif;
+            font-size: 14px; opacity: 0.65; margin-bottom: 0;
         }
 
-        /* ── Header ─────────────────────────────────────────────────────────── */
-        .header-top { background-color: var(--white); padding: 15px 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
-        .emblem-container { display: flex; align-items: center; gap: 15px; }
-        .emblem-icon { font-size: 50px; color: var(--primary); }
-        .emblem-text h1 { font-size: 20px; font-weight: 700; color: var(--primary); margin: 0; }
-        .emblem-text p  { font-size: 14px; color: #666; margin: 0; }
+        /* ── MAIN CONTENT ── */
+        .map-outer { padding: 40px 0 60px; }
 
-        /* ── Navbar ──────────────────────────────────────────────────────────── */
-        .navbar { background-color: var(--primary); padding: 0; }
-        .navbar-nav .nav-link { color: var(--white) !important; padding: 15px 20px; font-weight: 500; transition: all 0.3s ease; }
-        .navbar-nav .nav-link:hover,
-        .navbar-nav .nav-link.active { background-color: rgba(255,255,255,0.15); }
-
-        /* ── Page Header ─────────────────────────────────────────────────────── */
-        .page-header {
-            background: linear-gradient(135deg, var(--primary) 0%, #1a4d8f 100%);
-            color: var(--white);
-            padding: 35px 0;
-            margin-bottom: 30px;
+        /* ── STATS STRIP ── */
+        .stats-strip {
+            display: grid; grid-template-columns: repeat(5,1fr);
+            gap: 16px; margin-bottom: 28px;
         }
-        .page-header h2 { font-size: 30px; font-weight: 700; margin-bottom: 6px; }
-
-        /* ── Stats Bar ───────────────────────────────────────────────────────── */
-        .stats-bar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 14px;
-            margin-bottom: 22px;
+        .stat-pill {
+            background: #fff; border-radius: 14px;
+            padding: 18px 20px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border);
+            border-top: 4px solid var(--accent);
+            transition: all 0.3s;
+            animation: fade-up 0.5s ease both;
         }
-
-        .stat-card {
-            background: var(--white);
-            border-radius: 8px;
-            padding: 14px 20px;
-            flex: 1;
-            min-width: 140px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
-            border-left: 4px solid var(--accent);
-            animation: slideUp 0.5s ease both;
+        .stat-pill:hover { transform: translateY(-4px); box-shadow: var(--card-shadow-hover); }
+        .stat-pill:nth-child(1) { border-top-color: var(--primary); }
+        .stat-pill:nth-child(2) { border-top-color: #f59e0b; }
+        .stat-pill:nth-child(3) { border-top-color: #3b82f6; }
+        .stat-pill:nth-child(4) { border-top-color: var(--green); }
+        .stat-pill:nth-child(5) { border-top-color: var(--error); }
+        .stat-pill-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px; font-weight: 700; color: var(--primary);
+            line-height: 1; margin-bottom: 5px;
         }
-        .stat-card:nth-child(1) { border-left-color: #0dcaf0; }
-        .stat-card:nth-child(2) { border-left-color: #ffc107; }
-        .stat-card:nth-child(3) { border-left-color: #0d6efd; }
-        .stat-card:nth-child(4) { border-left-color: var(--success); }
-        .stat-card:nth-child(5) { border-left-color: var(--error); }
+        .stat-pill-lbl { font-size: 12px; color: var(--text-muted); font-weight: 500; }
+        .stat-pill-icon { font-size: 20px; color: var(--border); margin-bottom: 8px; }
 
-        .stat-value { font-size: 26px; font-weight: 700; color: var(--primary); line-height: 1; }
-        .stat-label { font-size: 12px; color: #777; margin-top: 4px; }
+        @keyframes fade-up { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
 
-        /* ── Map Wrapper ─────────────────────────────────────────────────────── */
-        .map-wrapper {
-            background: var(--white);
-            border-radius: 10px;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-            overflow: hidden;
-            margin-bottom: 30px;
+        /* ── MAP CARD ── */
+        .map-card {
+            background: #fff; border-radius: 20px;
+            box-shadow: var(--card-shadow); border: 1px solid var(--border);
+            overflow: hidden; margin-bottom: 28px;
         }
 
+        /* Map toolbar */
         .map-toolbar {
-            display: flex;
-            flex-wrap: wrap;
-            align-items: center;
-            gap: 10px;
-            padding: 14px 20px;
-            border-bottom: 1px solid #eee;
-            background: #fafafa;
+            display: flex; flex-wrap: wrap; align-items: center; gap: 10px;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, #fafbfd, #f0f4ff);
+            border-bottom: 1px solid var(--border);
         }
-
-        .map-toolbar .toolbar-title {
-            font-weight: 700;
-            color: var(--primary);
-            font-size: 15px;
-            flex: 1;
+        .map-toolbar-title {
+            display: flex; align-items: center; gap: 10px;
+            font-weight: 700; color: var(--primary); font-size: 15px; flex: 1;
         }
+        .map-toolbar-title i { color: var(--accent); }
+        .live-pill {
+            display: inline-flex; align-items: center; gap: 5px;
+            background: rgba(14,124,59,0.1); border: 1px solid rgba(14,124,59,0.25);
+            padding: 3px 10px; border-radius: 20px;
+            font-size: 11px; color: var(--green); font-weight: 700;
+        }
+        .live-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: glow-green 2s infinite; }
+        @keyframes glow-green { 0%,100%{box-shadow:0 0 3px rgba(14,124,59,0.5)} 50%{box-shadow:0 0 10px rgba(14,124,59,0.9)} }
 
-        .filter-btn {
-            border: 2px solid #ddd;
-            background: var(--white);
-            color: #555;
-            padding: 5px 14px;
-            border-radius: 20px;
+        /* Filter buttons */
+        .filter-group { display: flex; flex-wrap: wrap; gap: 6px; }
+        .fbtn {
+            border: 1.5px solid var(--border); background: #fff; color: var(--text-muted);
+            padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 600;
+            cursor: pointer; transition: all 0.25s; font-family: 'DM Sans', sans-serif;
+            display: inline-flex; align-items: center; gap: 5px;
+        }
+        .fbtn:hover { border-color: var(--primary); color: var(--primary); background: #f0f4ff; }
+        .fbtn.active-all      { background: var(--primary);  border-color: var(--primary); color: #fff; }
+        .fbtn.active-critical { background: #C62828; border-color: #C62828; color: #fff; }
+        .fbtn.active-high     { background: #e65c00; border-color: #e65c00; color: #fff; }
+        .fbtn.active-medium   { background: #3b82f6; border-color: #3b82f6; color: #fff; }
+        .fbtn.active-resolved { background: var(--green); border-color: var(--green); color: #fff; }
+        .fbtn-util {
+            background: var(--primary-dark); color: rgba(255,255,255,0.85); border-color: var(--primary-dark);
+        }
+        .fbtn-util:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .fbtn-heat-on { background: #C62828 !important; border-color: #C62828 !important; color: #fff !important; }
+
+        /* Map container */
+        .map-container { position: relative; }
+        .map-loading-overlay {
+            position: absolute; inset: 0; z-index: 999;
+            background: rgba(255,255,255,0.9); backdrop-filter: blur(4px);
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+        }
+        .map-loading-overlay .spin-ring {
+            width: 52px; height: 52px;
+            border: 4px solid var(--border); border-top-color: var(--primary);
+            border-radius: 50%; animation: spin 0.8s linear infinite; margin-bottom: 14px;
+        }
+        @keyframes spin { to{ transform: rotate(360deg); } }
+        .map-loading-overlay p { color: var(--primary); font-weight: 600; font-size: 14px; }
+
+        #map { height: 560px; width: 100%; z-index: 0; }
+
+        /* Map legend bar */
+        .map-legend-bar {
+            display: flex; flex-wrap: wrap; align-items: center; gap: 18px;
+            padding: 14px 24px;
+            background: linear-gradient(135deg, #fafbfd, #f0f4ff);
+            border-top: 1px solid var(--border);
             font-size: 13px;
-            font-weight: 500;
-            cursor: pointer;
-            transition: all 0.2s;
         }
-        .filter-btn:hover,
-        .filter-btn.active { border-color: var(--primary); background: var(--primary); color: var(--white); }
-        .filter-btn.all.active    { background: var(--primary);  border-color: var(--primary); }
-        .filter-btn.critical.active { background: #C62828; border-color: #C62828; color: #fff; }
-        .filter-btn.high.active     { background: #e65c00; border-color: #e65c00; color: #fff; }
-        .filter-btn.medium.active   { background: #0d6efd; border-color: #0d6efd; color: #fff; }
-        .filter-btn.resolved.active { background: var(--success); border-color: var(--success); color: #fff; }
+        .legend-label { font-weight: 700; color: var(--primary); font-size: 12px; letter-spacing: 0.5px; text-transform: uppercase; }
+        .legend-item { display: flex; align-items: center; gap: 7px; font-weight: 500; color: var(--text-muted); }
+        .legend-dot { width: 13px; height: 13px; border-radius: 50%; border: 2px solid rgba(0,0,0,0.15); flex-shrink: 0; }
+        .ld-critical { background: #C62828; }
+        .ld-high     { background: #e65c00; }
+        .ld-medium   { background: #3b82f6; }
+        .ld-low      { background: var(--green); }
+        .ld-resolved { background: #6b7a99; }
+        #markerCount { margin-left: auto; font-size: 12px; color: var(--text-muted); }
+        #noGpsNote   { font-size: 12px; color: var(--accent); }
 
-        #map {
-            height: 560px;
-            width: 100%;
-            z-index: 0;
+        /* ── POPUP STYLES ── */
+        .leaflet-popup-content-wrapper {
+            border-radius: 16px !important;
+            box-shadow: 0 8px 32px rgba(10,37,88,0.2) !important;
+            padding: 0 !important; overflow: hidden;
         }
-
-        /* ── Legend ──────────────────────────────────────────────────────────── */
-        .map-legend {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 16px;
-            padding: 14px 20px;
-            background: #fafafa;
-            border-top: 1px solid #eee;
-            font-size: 13px;
+        .leaflet-popup-content { margin: 0 !important; min-width: 230px; }
+        .pop-header {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: #fff; padding: 12px 16px;
         }
-
-        .legend-item {
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            font-weight: 500;
-            color: #444;
+        .pop-header .pop-title { font-weight: 700; font-size: 14px; line-height: 1.3; }
+        .pop-header .pop-id { font-size: 11px; opacity: 0.65; margin-top: 3px; }
+        .pop-body { padding: 12px 16px; }
+        .pop-row { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: var(--text-muted); margin-bottom: 7px; }
+        .pop-row i { width: 14px; text-align: center; color: var(--accent); font-size: 12px; }
+        .pop-row span b { color: var(--text); }
+        .pop-status-row { margin-top: 8px; }
+        .pop-badge {
+            display: inline-block; font-size: 11px; font-weight: 700;
+            padding: 4px 12px; border-radius: 20px;
         }
-
-        .legend-dot {
-            width: 14px;
-            height: 14px;
-            border-radius: 50%;
-            border: 2px solid rgba(0,0,0,0.2);
-            flex-shrink: 0;
+        .pop-footer {
+            background: var(--accent); color: #fff;
+            padding: 10px 16px; text-align: center;
+            font-size: 13px; font-weight: 700; cursor: pointer;
+            transition: background 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 7px;
         }
+        .pop-footer:hover { background: #d6741e; }
 
-        /* ── Loading Overlay ─────────────────────────────────────────────────── */
-        .map-loading {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background: rgba(255,255,255,0.85);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            z-index: 999;
-            border-radius: 0;
+        /* ── COMPLAINTS LIST CARD ── */
+        .list-card {
+            background: #fff; border-radius: 20px;
+            box-shadow: var(--card-shadow); border: 1px solid var(--border);
+            overflow: hidden; margin-bottom: 28px;
         }
-
-        .map-loading .spinner-ring {
-            width: 48px; height: 48px;
-            border: 4px solid #ddd;
-            border-top-color: var(--primary);
-            border-radius: 50%;
-            animation: spin 0.8s linear infinite;
-            margin-bottom: 12px;
+        .list-card-header {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 18px 24px;
+            background: linear-gradient(135deg, #fafbfd, #f0f4ff);
+            border-bottom: 1px solid var(--border);
         }
-
-        .map-loading p { color: var(--primary); font-weight: 500; }
-
-        /* ── Complaint List Panel ────────────────────────────────────────────── */
-        .complaints-panel {
-            background: var(--white);
-            border-radius: 10px;
-            box-shadow: 0 2px 20px rgba(0,0,0,0.1);
-            margin-bottom: 40px;
-            animation: slideUp 0.6s ease 0.2s both;
+        .list-card-header-left { display: flex; align-items: center; gap: 12px; }
+        .list-card-icon {
+            width: 40px; height: 40px; border-radius: 10px;
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 17px; color: var(--accent);
         }
+        .list-card-title { font-family: 'Playfair Display', serif; font-size: 18px; font-weight: 700; color: var(--primary); }
+        .list-card-sub { font-size: 12px; color: var(--text-muted); }
+        #listCount { font-size: 13px; color: var(--text-muted); background: #f0f4ff; padding: 4px 12px; border-radius: 20px; font-weight: 600; }
 
-        .panel-header {
-            padding: 16px 22px;
-            border-bottom: 1px solid #eee;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
-        .panel-header h5 { color: var(--primary); font-weight: 700; margin: 0; }
-
-        .complaint-list { max-height: 360px; overflow-y: auto; }
+        .complaint-list { max-height: 400px; overflow-y: auto; }
+        .complaint-list::-webkit-scrollbar { width: 5px; }
+        .complaint-list::-webkit-scrollbar-track { background: #f0f4ff; }
+        .complaint-list::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
 
         .complaint-row {
-            display: flex;
-            align-items: center;
-            gap: 14px;
-            padding: 13px 22px;
-            border-bottom: 1px solid #f0f0f0;
-            cursor: pointer;
-            transition: background 0.2s;
+            display: flex; align-items: center; gap: 14px;
+            padding: 14px 24px; border-bottom: 1px solid #f4f6fa;
+            cursor: pointer; transition: all 0.2s;
         }
         .complaint-row:last-child { border-bottom: none; }
-        .complaint-row:hover { background: #f8f9fa; }
+        .complaint-row:hover { background: #f8faff; transform: translateX(4px); }
+        .cr-dot { width: 11px; height: 11px; border-radius: 50%; flex-shrink: 0; }
+        .cr-info { flex: 1; }
+        .cr-subject { font-weight: 600; font-size: 14px; color: var(--primary); }
+        .cr-meta { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+        .cr-badge {
+            font-size: 11px; font-weight: 700; padding: 4px 12px;
+            border-radius: 20px; white-space: nowrap;
+        }
+        .s-submitted    { background: #e0f2fe; color: #0369a1; }
+        .s-assigned     { background: #ede9fe; color: #6d28d9; }
+        .s-under-review { background: #fef9c3; color: #92400e; }
+        .s-in-progress  { background: #dbeafe; color: #1d4ed8; }
+        .s-resolved     { background: #dcfce7; color: #15803d; }
+        .s-closed       { background: #f1f5f9; color: #475569; }
 
-        .complaint-row .marker-dot {
-            width: 12px; height: 12px;
-            border-radius: 50%;
-            flex-shrink: 0;
+        /* ── SCROLL TO TOP ── */
+        #scrollTop {
+            position: fixed; bottom: 28px; right: 28px; z-index: 500;
+            width: 48px; height: 48px; border-radius: 50%;
+            background: var(--accent); color: #fff; border: none;
+            font-size: 18px; cursor: pointer; display: none;
+            align-items: center; justify-content: center;
+            box-shadow: 0 4px 20px rgba(232,132,42,0.5); transition: all 0.3s;
+        }
+        #scrollTop:hover { background: #d6741e; transform: translateY(-3px); }
+        #scrollTop.show { display: flex; }
+
+        /* ── FOOTER ── */
+        .site-footer { background: #050f1e; color: rgba(255,255,255,0.82); padding: 50px 0 20px; }
+        .footer-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+        .footer-logo-text { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: #fff; }
+        .footer-desc { font-size: 13px; line-height: 1.75; opacity: 0.65; }
+        .footer-head { font-size: 13px; font-weight: 700; color: var(--accent); margin-bottom: 14px; letter-spacing: 0.5px; text-transform: uppercase; }
+        .footer-links { list-style: none; padding: 0; }
+        .footer-links li { margin-bottom: 8px; }
+        .footer-links a { font-size: 13px; opacity: 0.72; transition: all 0.2s; display: inline-flex; align-items: center; gap: 7px; }
+        .footer-links a:hover { opacity: 1; color: var(--accent); transform: translateX(4px); }
+        .footer-links a i { font-size: 10px; }
+        .footer-divider { border-color: rgba(255,255,255,0.08); margin: 28px 0 18px; }
+        .footer-bottom { font-size: 12px; opacity: 0.5; text-align: center; }
+        .footer-bottom-links { display: flex; gap: 18px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
+        .footer-bottom-links a { font-size: 12px; opacity: 0.6; color: inherit; transition: opacity 0.2s; }
+        .footer-bottom-links a:hover { opacity: 1; }
+
+        /* ── RESPONSIVE ── */
+        @media (max-width: 991px) {
+            .stats-strip { grid-template-columns: repeat(3,1fr); }
+            #map { height: 420px; }
+            .page-hero h2 { font-size: 28px; }
+        }
+        @media (max-width: 575px) {
+            .stats-strip { grid-template-columns: repeat(2,1fr); }
+            #map { height: 340px; }
+            .map-toolbar { padding: 12px 16px; }
+            .complaint-row { padding: 12px 16px; }
         }
 
-        .complaint-row .info { flex: 1; }
-        .complaint-row .info .subject { font-weight: 600; font-size: 14px; color: var(--primary); }
-        .complaint-row .info .meta    { font-size: 12px; color: #888; margin-top: 2px; }
-
-        .row-status {
-            font-size: 11px;
-            font-weight: 600;
-            padding: 3px 10px;
-            border-radius: 12px;
-        }
-
-        /* Status colours */
-        .s-submitted    { background: #cff4fc; color: #055160; }
-        .s-assigned     { background: #e2d9f3; color: #41217c; }
-        .s-under-review { background: #fff3cd; color: #664d03; }
-        .s-in-progress  { background: #cfe2ff; color: #084298; }
-        .s-resolved     { background: #d1e7dd; color: #0f5132; }
-        .s-closed       { background: #e2e3e5; color: #383d41; }
-
-        /* Priority marker colours */
-        .mc-critical { background: #C62828; }
-        .mc-high     { background: #e65c00; }
-        .mc-medium   { background: #0d6efd; }
-        .mc-low      { background: var(--success); }
-        .mc-resolved { background: #6c757d; }
-
-        /* ── Leaflet popup overrides ─────────────────────────────────────────── */
-        .leaflet-popup-content-wrapper {
-            border-radius: 10px !important;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.18) !important;
-            padding: 0 !important;
-            overflow: hidden;
-        }
-        .leaflet-popup-content { margin: 0 !important; width: auto !important; min-width: 220px; }
-        .popup-inner { padding: 14px 16px; }
-        .popup-inner .pop-title  { font-weight: 700; font-size: 14px; color: var(--primary); margin-bottom: 8px; }
-        .popup-inner .pop-row    { font-size: 12px; color: #555; margin-bottom: 4px; display: flex; gap: 6px; }
-        .popup-inner .pop-row b  { color: #333; }
-        .popup-inner .pop-footer {
-            background: var(--primary);
-            color: var(--white);
-            padding: 8px 16px;
-            font-size: 12px;
-            text-align: center;
-            cursor: pointer;
-            transition: background 0.2s;
-        }
-        .popup-inner .pop-footer:hover { background: #1a4d8f; }
-
-        /* ── Footer ──────────────────────────────────────────────────────────── */
-        .footer { background-color: var(--primary); color: var(--white); padding: 40px 0 20px; margin-top: 20px; }
-        .footer-bottom { border-top: 1px solid rgba(255,255,255,0.2); padding-top: 20px; text-align: center; font-size: 14px; }
-
-        /* ── Animations ──────────────────────────────────────────────────────── */
-        @keyframes slideUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:translateY(0); } }
-        @keyframes spin    { to   { transform:rotate(360deg); } }
-
-        @media (max-width: 768px) {
-            #map { height: 380px; }
-            .stats-bar { gap: 8px; }
-            .stat-card { min-width: 100px; padding: 10px 14px; }
-            .stat-value { font-size: 20px; }
+        /* Cluster override */
+        .marker-cluster-small, .marker-cluster-medium, .marker-cluster-large {
+            background-clip: padding-box;
         }
     </style>
 </head>
 <body>
 
-<div class="tricolor-strip"></div>
+<!-- PAGE LOADER -->
+<div id="page-loader">
+    <div class="chakra-loader">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="46" stroke="#FF9933" stroke-width="4" fill="none"/>
+            <circle cx="50" cy="50" r="8" fill="#138808"/>
+            <g stroke="#003580" stroke-width="2">
+                <line x1="50" y1="50" x2="50" y2="6"/><line x1="50" y1="50" x2="66" y2="9"/>
+                <line x1="50" y1="50" x2="79" y2="21"/><line x1="50" y1="50" x2="86" y2="34"/>
+                <line x1="50" y1="50" x2="89" y2="50"/><line x1="50" y1="50" x2="86" y2="66"/>
+                <line x1="50" y1="50" x2="79" y2="79"/><line x1="50" y1="50" x2="66" y2="91"/>
+                <line x1="50" y1="50" x2="50" y2="94"/><line x1="50" y1="50" x2="34" y2="91"/>
+                <line x1="50" y1="50" x2="21" y2="79"/><line x1="50" y1="50" x2="14" y2="66"/>
+                <line x1="50" y1="50" x2="11" y2="50"/><line x1="50" y1="50" x2="14" y2="34"/>
+                <line x1="50" y1="50" x2="21" y2="21"/><line x1="50" y1="50" x2="34" y2="9"/>
+                <line x1="50" y1="50" x2="58" y2="7.5"/><line x1="50" y1="50" x2="73" y2="14"/>
+                <line x1="50" y1="50" x2="83" y2="27"/><line x1="50" y1="50" x2="88" y2="42"/>
+                <line x1="50" y1="50" x2="88" y2="58"/><line x1="50" y1="50" x2="83" y2="73"/>
+                <line x1="50" y1="50" x2="73" y2="86"/><line x1="50" y1="50" x2="58" y2="92.5"/>
+            </g>
+            <circle cx="50" cy="50" r="4" fill="#FF9933"/>
+        </svg>
+    </div>
+    <p class="loader-text">Loading Portal…</p>
+</div>
 
-<header class="header-top">
+<button id="scrollTop" title="Back to top"><i class="fas fa-chevron-up"></i></button>
+
+<!-- TRICOLOR -->
+<div class="tricolor"></div>
+
+<!-- TICKER -->
+<div class="ticker-bar">
     <div class="container">
-        <div class="emblem-container">
-            <div class="emblem-icon"><i class="fas fa-landmark"></i></div>
-            <div class="emblem-text">
-                <h1>Digital Complaint &amp; Grievance Redressal Platform</h1>
-                <p>भारत सरकार | Government of India</p>
+        <div class="ticker-inner">
+            <span class="ticker-label">📢 NOTICE</span>
+            <div class="ticker-track">
+                <span class="ticker-scroll">
+                    New departments added to the portal &nbsp;|&nbsp;
+                    Citizens can now track complaints in real-time &nbsp;|&nbsp;
+                    Resolution time reduced to 48 hours for urgent complaints &nbsp;|&nbsp;
+                    Portal now available in Hindi and all 22 scheduled regional languages &nbsp;|&nbsp;
+                    All 28 government departments are now onboarded on this portal
+                </span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- HEADER -->
+<header class="site-header">
+    <div class="container">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="header-logo">
+                <svg class="ashoka-emblem" viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg">
+                    <ellipse cx="60" cy="50" rx="44" ry="44" fill="#FF9933" opacity="0.15"/>
+                    <circle cx="60" cy="50" r="38" stroke="#FF9933" stroke-width="3" fill="none"/>
+                    <circle cx="60" cy="50" r="10" fill="#003580"/>
+                    <g stroke="#003580" stroke-width="1.5">
+                        <line x1="60" y1="50" x2="60" y2="14"/><line x1="60" y1="50" x2="79" y2="19"/>
+                        <line x1="60" y1="50" x2="92" y2="31"/><line x1="60" y1="50" x2="96" y2="50"/>
+                        <line x1="60" y1="50" x2="92" y2="69"/><line x1="60" y1="50" x2="79" y2="81"/>
+                        <line x1="60" y1="50" x2="60" y2="86"/><line x1="60" y1="50" x2="41" y2="81"/>
+                        <line x1="60" y1="50" x2="28" y2="69"/><line x1="60" y1="50" x2="24" y2="50"/>
+                        <line x1="60" y1="50" x2="28" y2="31"/><line x1="60" y1="50" x2="41" y2="19"/>
+                    </g>
+                    <circle cx="60" cy="50" r="5" fill="#FF9933"/>
+                    <rect x="20" y="100" width="80" height="6" rx="3" fill="#FF9933"/>
+                    <rect x="28" y="110" width="64" height="5" rx="2.5" fill="#fff" stroke="#ccc" stroke-width="0.5"/>
+                    <rect x="28" y="119" width="64" height="6" rx="3" fill="#138808"/>
+                    <text x="60" y="134" text-anchor="middle" font-size="7" fill="#003580" font-family="serif" font-weight="bold">सत्यमेव जयते</text>
+                </svg>
+                <div class="header-titles">
+                    <h1>Digital Grievance Redressal Platform</h1>
+                    <p>भारत सरकार &nbsp;·&nbsp; Government of India &nbsp;·&nbsp; National Informatics Centre</p>
+                </div>
+            </div>
+            <div class="d-none d-md-flex">
+                <div class="digital-india-badge">
+                    <i class="fas fa-globe" style="font-size:18px;color:var(--accent);"></i>
+                    <div>
+                        <div style="font-size:13px;font-weight:700;">Digital India</div>
+                        <div style="font-size:10px;opacity:0.75;">डिजिटल इंडिया</div>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 </header>
 
-<nav class="navbar navbar-expand-lg navbar-dark">
+<!-- NAVBAR -->
+<nav class="main-nav navbar navbar-expand-lg">
     <div class="container">
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse" id="navbarNav">
+        <div class="collapse navbar-collapse" id="mainNav">
             <ul class="navbar-nav mx-auto">
-                <li class="nav-item"><a class="nav-link" href="index.html">Home</a></li>
-                <li class="nav-item"><a class="nav-link" href="register.html">Register Complaint</a></li>
-                <li class="nav-item"><a class="nav-link" href="track.html">Track Status</a></li>
-                <li class="nav-item"><a class="nav-link active" href="map.html">Map</a></li>
-                <li class="nav-item"><a class="nav-link" href="departments.html">Departments</a></li>
-                <li class="nav-item"><a class="nav-link" href="help.html">Help &amp; FAQ</a></li>
-                <li class="nav-item"><a class="nav-link" href="login.html">Officer Login</a></li>
+                <li class="nav-item"><a class="nav-link" href="index.html"><i class="fas fa-home me-1"></i>Home</a></li>
+                <li class="nav-item"><a class="nav-link" href="register.html"><i class="fas fa-file-alt me-1"></i>Register Complaint</a></li>
+                <li class="nav-item"><a class="nav-link" href="track.html"><i class="fas fa-search me-1"></i>Track Status</a></li>
+                <li class="nav-item"><a class="nav-link active" href="map.html"><i class="fas fa-map-marked-alt me-1"></i>Map</a></li>
+                <li class="nav-item"><a class="nav-link" href="departments.html"><i class="fas fa-building me-1"></i>Departments</a></li>
+                <li class="nav-item"><a class="nav-link" href="help.html"><i class="fas fa-question-circle me-1"></i>Help &amp; FAQ</a></li>
+                <li class="nav-item"><a class="nav-link nav-officer-btn" href="login.html"><i class="fas fa-user-shield me-1"></i>Officer Login</a></li>
             </ul>
         </div>
     </div>
 </nav>
 
-<div class="page-header">
+<!-- PAGE HERO -->
+<section class="page-hero">
+    <div class="container page-hero-content">
+        <div class="hero-breadcrumb">
+            <a href="index.html"><i class="fas fa-home me-1"></i>Home</a>
+            <i class="fas fa-chevron-right"></i>
+            <span>Complaint Map</span>
+        </div>
+        <div class="page-hero-eyebrow">
+            <span class="dot"></span>
+            Live Geographic View — Across India
+        </div>
+        <h2>Complaint <span class="accent-word">Heat Map</span></h2>
+        <p class="hero-hindi">भारत भर की सभी शिकायतों का लाइव भौगोलिक दृश्य — पारदर्शिता की ओर एक कदम।</p>
+    </div>
+</section>
+
+<!-- MAIN -->
+<div class="map-outer">
     <div class="container">
-        <h2><i class="fas fa-map-marked-alt"></i> Complaint Map</h2>
-        <p>Live geographic view of all registered complaints across India</p>
+
+        <!-- STATS STRIP -->
+        <div class="stats-strip">
+            <div class="stat-pill" style="animation-delay:0s">
+                <div class="stat-pill-icon"><i class="fas fa-file-alt"></i></div>
+                <div class="stat-pill-num" id="statTotal">—</div>
+                <div class="stat-pill-lbl">Total Complaints</div>
+            </div>
+            <div class="stat-pill" style="animation-delay:0.08s">
+                <div class="stat-pill-icon"><i class="fas fa-hourglass-half"></i></div>
+                <div class="stat-pill-num" id="statPending">—</div>
+                <div class="stat-pill-lbl">Pending / Active</div>
+            </div>
+            <div class="stat-pill" style="animation-delay:0.16s">
+                <div class="stat-pill-icon"><i class="fas fa-cogs"></i></div>
+                <div class="stat-pill-num" id="statInProgress">—</div>
+                <div class="stat-pill-lbl">In Progress</div>
+            </div>
+            <div class="stat-pill" style="animation-delay:0.24s">
+                <div class="stat-pill-icon"><i class="fas fa-check-double"></i></div>
+                <div class="stat-pill-num" id="statResolved">—</div>
+                <div class="stat-pill-lbl">Resolved</div>
+            </div>
+            <div class="stat-pill" style="animation-delay:0.32s">
+                <div class="stat-pill-icon"><i class="fas fa-exclamation-triangle"></i></div>
+                <div class="stat-pill-num" id="statCritical">—</div>
+                <div class="stat-pill-lbl">Critical Priority</div>
+            </div>
+        </div>
+
+        <!-- MAP CARD -->
+        <div class="map-card">
+
+            <!-- Toolbar -->
+            <div class="map-toolbar">
+                <div class="map-toolbar-title">
+                    <i class="fas fa-map-marked-alt"></i>
+                    Live Complaint Map
+                    <span class="live-pill"><span class="live-dot"></span> Live</span>
+                </div>
+                <div class="filter-group" id="filterGroup">
+                    <button class="fbtn active-all" data-filter="all"      onclick="applyFilter('all',this)">All</button>
+                    <button class="fbtn"            data-filter="critical" onclick="applyFilter('critical',this)"><span style="color:#C62828;">●</span> Critical</button>
+                    <button class="fbtn"            data-filter="high"     onclick="applyFilter('high',this)"><span style="color:#e65c00;">●</span> High</button>
+                    <button class="fbtn"            data-filter="medium"   onclick="applyFilter('medium',this)"><span style="color:#3b82f6;">●</span> Medium</button>
+                    <button class="fbtn"            data-filter="resolved" onclick="applyFilter('resolved',this)"><span style="color:var(--green);">●</span> Resolved</button>
+                </div>
+                <div style="display:flex;gap:8px;margin-left:auto;">
+                    <button class="fbtn fbtn-util" onclick="centerIndia()">
+                        <i class="fas fa-crosshairs"></i> Reset View
+                    </button>
+                    <button class="fbtn fbtn-util" id="heatmapBtn" onclick="toggleHeatmap(this)">
+                        <i class="fas fa-fire"></i> Heatmap
+                    </button>
+                </div>
+            </div>
+
+            <!-- Map -->
+            <div class="map-container">
+                <div id="mapLoading" class="map-loading-overlay">
+                    <div class="spin-ring"></div>
+                    <p>Loading complaint data…</p>
+                </div>
+                <div id="map"></div>
+            </div>
+
+            <!-- Legend -->
+            <div class="map-legend-bar">
+                <span class="legend-label"><i class="fas fa-circle-info me-1"></i>Legend</span>
+                <div class="legend-item"><div class="legend-dot ld-critical"></div> Critical</div>
+                <div class="legend-item"><div class="legend-dot ld-high"></div> High</div>
+                <div class="legend-item"><div class="legend-dot ld-medium"></div> Medium</div>
+                <div class="legend-item"><div class="legend-dot ld-low"></div> Low</div>
+                <div class="legend-item"><div class="legend-dot ld-resolved"></div> Resolved</div>
+                <span id="markerCount"></span>
+                <span id="noGpsNote"></span>
+            </div>
+        </div>
+
+        <!-- COMPLAINTS LIST CARD -->
+        <div class="list-card">
+            <div class="list-card-header">
+                <div class="list-card-header-left">
+                    <div class="list-card-icon"><i class="fas fa-list"></i></div>
+                    <div>
+                        <div class="list-card-title">Complaints on Map</div>
+                        <div class="list-card-sub">Click a row to fly to the location on the map</div>
+                    </div>
+                </div>
+                <span id="listCount">—</span>
+            </div>
+            <div class="complaint-list" id="complaintList">
+                <div style="padding:36px;text-align:center;color:var(--text-muted);">
+                    <i class="fas fa-spinner fa-spin fa-2x" style="color:var(--accent);"></i>
+                    <p style="margin-top:12px;font-weight:500;">Loading complaints…</p>
+                </div>
+            </div>
+        </div>
+
     </div>
 </div>
 
-<div class="container">
-
-    <!-- Stats Bar -->
-    <div class="stats-bar" id="statsBar">
-        <div class="stat-card" style="animation-delay:0s">
-            <div class="stat-value" id="statTotal">—</div>
-            <div class="stat-label">Total Complaints</div>
-        </div>
-        <div class="stat-card" style="animation-delay:0.08s">
-            <div class="stat-value" id="statPending">—</div>
-            <div class="stat-label">Pending / Active</div>
-        </div>
-        <div class="stat-card" style="animation-delay:0.16s">
-            <div class="stat-value" id="statInProgress">—</div>
-            <div class="stat-label">In Progress</div>
-        </div>
-        <div class="stat-card" style="animation-delay:0.24s">
-            <div class="stat-value" id="statResolved">—</div>
-            <div class="stat-label">Resolved</div>
-        </div>
-        <div class="stat-card" style="animation-delay:0.32s">
-            <div class="stat-value" id="statCritical">—</div>
-            <div class="stat-label">Critical Priority</div>
-        </div>
-    </div>
-
-    <!-- Map Card -->
-    <div class="map-wrapper">
-        <div class="map-toolbar">
-            <span class="toolbar-title"><i class="fas fa-filter me-2"></i>Filter by Priority / Status</span>
-            <button class="filter-btn all active"      onclick="applyFilter('all',      this)">All</button>
-            <button class="filter-btn critical"        onclick="applyFilter('critical', this)">🔴 Critical</button>
-            <button class="filter-btn high"            onclick="applyFilter('high',     this)">🟠 High</button>
-            <button class="filter-btn medium"          onclick="applyFilter('medium',   this)">🔵 Medium</button>
-            <button class="filter-btn resolved"        onclick="applyFilter('resolved', this)">🟢 Resolved</button>
-            <button class="filter-btn" style="margin-left:auto;" onclick="centerIndia()">
-                <i class="fas fa-crosshairs me-1"></i>Reset View
-            </button>
-            <button class="filter-btn" id="heatmapToggleBtn" onclick="toggleHeatmap(this)" style="background:#1a3a5c;color:#fff;border-color:#1a3a5c;">
-                <i class="fas fa-fire me-1"></i>Heatmap OFF
-            </button>
-        </div>
-
-        <!-- Map -->
-        <div style="position:relative;">
-            <div id="mapLoading" class="map-loading">
-                <div class="spinner-ring"></div>
-                <p>Loading complaint data…</p>
-            </div>
-            <div id="map"></div>
-        </div>
-
-        <!-- Legend -->
-        <div class="map-legend">
-            <span style="font-weight:700; color:var(--primary); margin-right:6px;">Legend:</span>
-            <div class="legend-item"><div class="legend-dot mc-critical"></div> Critical</div>
-            <div class="legend-item"><div class="legend-dot mc-high"></div> High</div>
-            <div class="legend-item"><div class="legend-dot mc-medium"></div> Medium</div>
-            <div class="legend-item"><div class="legend-dot mc-low"></div> Low</div>
-            <div class="legend-item"><div class="legend-dot mc-resolved"></div> Resolved / Closed</div>
-            <span id="markerCount" style="margin-left:auto; font-size:12px; color:#888;"></span>
-            <span id="noGpsNote" style="font-size:12px; color:#e65c00; margin-left:12px;"></span>
-        </div>
-    </div>
-
-    <!-- Complaints List Panel -->
-    <div class="complaints-panel">
-        <div class="panel-header">
-            <h5><i class="fas fa-list me-2"></i>Complaints on Map</h5>
-            <span id="listCount" style="font-size:13px; color:#888;"></span>
-        </div>
-        <div class="complaint-list" id="complaintList">
-            <div style="padding:30px; text-align:center; color:#aaa;">
-                <i class="fas fa-spinner fa-spin fa-2x"></i>
-                <p style="margin-top:10px;">Loading complaints…</p>
-            </div>
-        </div>
-    </div>
-
-</div>
-
-<div class="tricolor-strip"></div>
-<footer class="footer">
+<!-- TRICOLOR + FOOTER -->
+<div class="tricolor"></div>
+<footer class="site-footer">
     <div class="container">
+        <div class="row mb-4">
+            <div class="col-md-4 mb-4">
+                <div class="footer-logo">
+                    <i class="fas fa-landmark" style="font-size:26px;color:var(--accent);"></i>
+                    <span class="footer-logo-text">Grievance Redressal<br>Platform</span>
+                </div>
+                <p class="footer-desc">An initiative under the Digital India Programme to provide citizens a transparent and efficient mechanism for addressing grievances with government departments.</p>
+                <div style="margin-top:14px;font-size:12px;opacity:0.5;">
+                    <i class="fas fa-shield-alt me-1" style="color:var(--accent);"></i> Secured by AWS &nbsp;·&nbsp;
+                    <i class="fas fa-server me-1" style="color:var(--accent);"></i> Hosted on NIC Cloud
+                </div>
+            </div>
+            <div class="col-md-2 col-sm-6 mb-4">
+                <div class="footer-head">Citizen Services</div>
+                <ul class="footer-links">
+                    <li><a href="register.html"><i class="fas fa-chevron-right"></i>Register Complaint</a></li>
+                    <li><a href="track.html"><i class="fas fa-chevron-right"></i>Track Status</a></li>
+                    <li><a href="departments.html"><i class="fas fa-chevron-right"></i>Departments</a></li>
+                    <li><a href="help.html"><i class="fas fa-chevron-right"></i>Help &amp; FAQ</a></li>
+                    <li><a href="map.html"><i class="fas fa-chevron-right"></i>Complaint Map</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 col-sm-6 mb-4">
+                <div class="footer-head">Officer Portal</div>
+                <ul class="footer-links">
+                    <li><a href="login.html"><i class="fas fa-chevron-right"></i>Officer Login</a></li>
+                    <li><a href="dashboard.html"><i class="fas fa-chevron-right"></i>Dashboard</a></li>
+                    <li><a href="analytics.html"><i class="fas fa-chevron-right"></i>Analytics</a></li>
+                </ul>
+            </div>
+            <div class="col-md-3 mb-4">
+                <div class="footer-head">Contact</div>
+                <ul class="footer-links">
+                    <li><i class="fas fa-phone" style="color:var(--accent);"></i>&nbsp; 1800-000-XXXX</li>
+                    <li><i class="fas fa-envelope" style="color:var(--accent);"></i>&nbsp; grievance@gov.in</li>
+                    <li><i class="fas fa-map-marker-alt" style="color:var(--accent);"></i>&nbsp; New Delhi, India</li>
+                    <li><i class="fas fa-clock" style="color:var(--accent);"></i>&nbsp; Mon–Fri: 9 AM – 6 PM</li>
+                </ul>
+            </div>
+        </div>
+        <hr class="footer-divider">
         <div class="footer-bottom">
-            <p>&copy; 2026 Government of India | Digital India Initiative | National Informatics Centre (NIC)</p>
+            <p>© 2026 Government of India &nbsp;|&nbsp; Digital India Initiative &nbsp;|&nbsp; National Informatics Centre (NIC)</p>
+            <div class="footer-bottom-links">
+                <a href="#">Terms &amp; Conditions</a>
+                <a href="#">Privacy Policy</a>
+                <a href="#">Accessibility</a>
+                <a href="#">Contact Us</a>
+                <a href="#">RTI</a>
+            </div>
         </div>
     </div>
 </footer>
@@ -425,306 +706,281 @@
 <script src="https://unpkg.com/leaflet.markercluster/dist/leaflet.markercluster.js"></script>
 <script src="https://unpkg.com/leaflet.heat/dist/leaflet-heat.js"></script>
 <script>
+// ── Config ───────────────────────────────────────────────────────────────
+const API_URL = 'https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/complaints';
 
-    // ─── Config ──────────────────────────────────────────────────────────────────
-    const API_URL = 'https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/complaints';
+const COLOR = {
+    Critical: '#C62828',
+    High:     '#e65c00',
+    Medium:   '#3b82f6',
+    Low:      '#0e7c3b',
+    Resolved: '#6b7a99',
+    Closed:   '#6b7a99',
+};
 
-    // Marker colours per priority / status
-    const COLOR = {
-        Critical : '#C62828',
-        High     : '#e65c00',
-        Medium   : '#0d6efd',
-        Low      : '#138808',
-        Resolved : '#6c757d',
-        Closed   : '#6c757d',
-    };
+const STATUS_CLASS = {
+    'Submitted':    's-submitted',
+    'Assigned':     's-assigned',
+    'Under Review': 's-under-review',
+    'In Progress':  's-in-progress',
+    'Resolved':     's-resolved',
+    'Closed':       's-closed',
+};
 
-    // ─── Map Init ─────────────────────────────────────────────────────────────────
-    const map = L.map('map', { zoomControl: true }).setView([22.9734, 78.6569], 5);
+// ── Page Loader ──────────────────────────────────────────────────────────
+window.addEventListener('load', () => setTimeout(() => document.getElementById('page-loader').classList.add('hidden'), 1400));
 
-    L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-        attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
-        maxZoom: 19,
-    }).addTo(map);
+// ── Scroll Top ───────────────────────────────────────────────────────────
+const scrollBtn = document.getElementById('scrollTop');
+window.addEventListener('scroll', () => scrollBtn.classList.toggle('show', window.scrollY > 400));
+scrollBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
-    // Cluster group — all markers go here
-    const clusterGroup = L.markerClusterGroup({
-        chunkedLoading: true,
-        maxClusterRadius: 60,
-        iconCreateFunction: function(cluster) {
-            const count = cluster.getChildCount();
-            let size = 'small', dim = 36;
-            if (count >= 10)  { size = 'medium'; dim = 44; }
-            if (count >= 50)  { size = 'large';  dim = 54; }
-            return L.divIcon({
-                html: `<div style="
-                    width:${dim}px;height:${dim}px;border-radius:50%;
-                    background:var(--primary);color:#fff;
-                    display:flex;align-items:center;justify-content:center;
-                    font-weight:700;font-size:${dim < 44 ? 13 : 15}px;
-                    border:3px solid #fff;
-                    box-shadow:0 2px 8px rgba(0,0,0,0.3);">${count}</div>`,
-                className: '',
-                iconSize: [dim, dim],
-                iconAnchor: [dim/2, dim/2],
-            });
-        }
-    });
-    map.addLayer(clusterGroup);
+// ── Map Init ─────────────────────────────────────────────────────────────
+const map = L.map('map', { zoomControl: true }).setView([22.9734, 78.6569], 5);
 
-    // Heatmap layer (created fresh on toggle)
-    let heatLayer      = null;
-    let heatmapOn      = false;
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+    attribution: '© <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+    maxZoom: 19,
+}).addTo(map);
 
-    // ─── State ────────────────────────────────────────────────────────────────────
-    let allComplaints = [];
-    let markers       = [];       // [{ marker, complaint }]
-    let activeFilter  = 'all';
-
-    // ─── Custom Circle Marker Factory ────────────────────────────────────────────
-    function makeIcon(color) {
-        const svg = `
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 40" width="32" height="40">
-              <path d="M16 0C7.164 0 0 7.164 0 16c0 10 16 24 16 24s16-14 16-24C32 7.164 24.836 0 16 0z"
-                    fill="${color}" stroke="white" stroke-width="2"/>
-              <circle cx="16" cy="16" r="7" fill="white" opacity="0.9"/>
-            </svg>`;
+// Custom cluster group
+const clusterGroup = L.markerClusterGroup({
+    chunkedLoading: true,
+    maxClusterRadius: 60,
+    iconCreateFunction: cluster => {
+        const n = cluster.getChildCount();
+        const dim = n >= 50 ? 54 : n >= 10 ? 44 : 36;
+        const fs  = dim < 44 ? 13 : 15;
         return L.divIcon({
-            html: svg,
-            className: '',
-            iconSize:   [32, 40],
-            iconAnchor: [16, 40],
-            popupAnchor:[0, -42],
+            html: `<div style="
+                width:${dim}px;height:${dim}px;border-radius:50%;
+                background:linear-gradient(135deg,#0A2558,#1a3d7c);color:#fff;
+                display:flex;align-items:center;justify-content:center;
+                font-weight:700;font-size:${fs}px;font-family:'DM Sans',sans-serif;
+                border:3px solid #fff;
+                box-shadow:0 4px 14px rgba(10,37,88,0.45);">${n}</div>`,
+            className: '', iconSize: [dim, dim], iconAnchor: [dim/2, dim/2],
         });
     }
+});
+map.addLayer(clusterGroup);
 
-    function markerColor(c) {
-        if (c.status === 'Resolved' || c.status === 'Closed') return COLOR.Resolved;
-        return COLOR[c.priority] || COLOR.Medium;
+let heatLayer = null, heatmapOn = false;
+let allComplaints = [], markers = [], activeFilter = 'all';
+
+// ── Marker Icon Factory ───────────────────────────────────────────────────
+function makeIcon(color) {
+    const svg = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 42" width="32" height="42">
+        <path d="M16 0C7.163 0 0 7.163 0 16c0 11 16 26 16 26s16-15 16-26C32 7.163 24.837 0 16 0z"
+              fill="${color}" stroke="white" stroke-width="2.5"/>
+        <circle cx="16" cy="16" r="7" fill="white" opacity="0.9"/>
+    </svg>`;
+    return L.divIcon({ html: svg, className: '', iconSize: [32,42], iconAnchor: [16,42], popupAnchor: [0,-44] });
+}
+
+function markerColor(c) {
+    if (c.status === 'Resolved' || c.status === 'Closed') return COLOR.Resolved;
+    return COLOR[c.priority] || COLOR.Medium;
+}
+
+// ── Load Data ─────────────────────────────────────────────────────────────
+async function loadComplaints() {
+    try {
+        const res  = await fetch(API_URL);
+        const data = await res.json();
+        allComplaints = Array.isArray(data) ? data : (data.items || data.complaints || []);
+    } catch {
+        allComplaints = generateDemoData();
     }
+    document.getElementById('mapLoading').style.display = 'none';
+    renderAll(allComplaints);
+    updateStats(allComplaints);
+    renderList(allComplaints);
+}
 
-    // ─── Load Complaints ──────────────────────────────────────────────────────────
-    async function loadComplaints() {
-        try {
-            const res  = await fetch(API_URL);
-            const data = await res.json();
-            allComplaints = Array.isArray(data) ? data : (data.items || data.complaints || []);
-        } catch (err) {
-            console.warn('API failed, using demo data:', err);
-            allComplaints = generateDemoData();
-        }
+// ── Render Markers ────────────────────────────────────────────────────────
+function renderAll(complaints) {
+    clusterGroup.clearLayers();
+    markers = [];
 
-        document.getElementById('mapLoading').style.display = 'none';
-        renderAll(allComplaints);
-        updateStats(allComplaints);
-        renderList(allComplaints);
-    }
+    const noGps = complaints.filter(c => !c.location || c.location.lat == null).length;
+    const noGpsEl = document.getElementById('noGpsNote');
+    noGpsEl.textContent = noGps > 0 ? `${noGps} complaint(s) without GPS — list only` : '';
 
-    // ─── Render All Markers (with clustering) ────────────────────────────────────
-    function renderAll(complaints) {
-        // Clear cluster group and markers array
-        clusterGroup.clearLayers();
-        markers = [];
+    complaints.forEach(c => {
+        if (!c.location || c.location.lat == null) return;
+        const icon = makeIcon(markerColor(c));
+        const marker = L.marker([c.location.lat, c.location.lng], { icon });
+        const col = markerColor(c);
+        const sc  = STATUS_CLASS[c.status] || 's-submitted';
 
-        const noGps = complaints.filter(c => !c.location || c.location.lat == null).length;
-        const noGpsEl = document.getElementById('noGpsNote');
-        if (noGpsEl) noGpsEl.textContent = noGps > 0 ? noGps + ' complaint(s) have no GPS — shown in list only.' : '';
-
-        complaints.forEach(c => {
-            if (!c.location || c.location.lat == null) return;
-            const icon   = makeIcon(markerColor(c));
-            const marker = L.marker([c.location.lat, c.location.lng], { icon });
-
-            const statusClass = 's-' + (c.status || 'submitted').toLowerCase().replace(/\s+/g, '-');
-            marker.bindPopup(`
-                <div class="popup-inner">
-                    <div class="pop-title"><i class="fas fa-map-pin me-1"></i>${c.subject || c.category || 'Complaint'}</div>
-                    <div class="pop-row"><i class="fas fa-building" style="color:var(--primary);"></i><span><b>Department:</b> ${c.department || 'N/A'}</span></div>
-                    <div class="pop-row"><i class="fas fa-tag"      style="color:var(--accent);"></i><span><b>Category:</b> ${c.category || 'N/A'}</span></div>
-                    <div class="pop-row"><i class="fas fa-flag"     style="color:${markerColor(c)};"></i><span><b>Priority:</b> ${c.priority || 'Medium'}</span></div>
-                    <div class="pop-row"><i class="fas fa-map-marker-alt" style="color:#555;"></i><span><b>Location:</b> ${c.district || ''}, ${c.state || ''}</span></div>
-                    <div class="pop-row"><span class="row-status ${statusClass}" style="margin-left:auto;">${c.status || 'Submitted'}</span></div>
-                    <div class="pop-footer" onclick="window.location.href='track.html?id=${c.complaintId}'">
-                        <i class="fas fa-search me-1"></i>Track this Complaint
-                    </div>
+        marker.bindPopup(`
+            <div>
+                <div class="pop-header" style="background:linear-gradient(135deg,#0A2558,#1a3d7c);">
+                    <div class="pop-title">${c.subject || c.category || 'Complaint'}</div>
+                    <div class="pop-id">${c.complaintId || ''}</div>
                 </div>
-            `, { maxWidth: 280 });
+                <div class="pop-body">
+                    <div class="pop-row"><i class="fas fa-building"></i><span><b>Dept:</b> ${c.department || 'N/A'}</span></div>
+                    <div class="pop-row"><i class="fas fa-tag"></i><span><b>Category:</b> ${c.category || 'N/A'}</span></div>
+                    <div class="pop-row"><i class="fas fa-flag" style="color:${col};"></i><span><b>Priority:</b> ${c.priority || 'Medium'}</span></div>
+                    <div class="pop-row"><i class="fas fa-map-marker-alt"></i><span>${c.district || ''}, ${c.state || ''}</span></div>
+                    <div class="pop-status-row"><span class="pop-badge cr-badge ${sc}">${c.status || 'Submitted'}</span></div>
+                </div>
+                <div class="pop-footer" onclick="window.location.href='track.html?id=${c.complaintId}'">
+                    <i class="fas fa-search"></i> Track this Complaint
+                </div>
+            </div>
+        `, { maxWidth: 280 });
 
-            clusterGroup.addLayer(marker);
-            markers.push({ marker, complaint: c });
+        clusterGroup.addLayer(marker);
+        markers.push({ marker, complaint: c });
+    });
+
+    document.getElementById('markerCount').textContent = `${markers.length} complaint(s) plotted`;
+    if (heatmapOn) buildHeatmap(complaints);
+}
+
+// ── Heatmap ───────────────────────────────────────────────────────────────
+function toggleHeatmap(btn) {
+    heatmapOn = !heatmapOn;
+    if (heatmapOn) {
+        buildHeatmap(activeFilter === 'all' ? allComplaints : allComplaints.filter(c => matchesFilter(c)));
+        btn.classList.add('fbtn-heat-on');
+        btn.innerHTML = '<i class="fas fa-fire"></i> Heatmap On';
+    } else {
+        if (heatLayer) { map.removeLayer(heatLayer); heatLayer = null; }
+        btn.classList.remove('fbtn-heat-on');
+        btn.innerHTML = '<i class="fas fa-fire"></i> Heatmap';
+    }
+}
+
+function buildHeatmap(complaints) {
+    if (heatLayer) map.removeLayer(heatLayer);
+    const pts = complaints
+        .filter(c => c.location && c.location.lat != null)
+        .map(c => {
+            const w = { Critical:1.0, High:0.7, Medium:0.4, Low:0.2 };
+            return [c.location.lat, c.location.lng, w[c.priority] || 0.4];
         });
+    heatLayer = L.heatLayer(pts, {
+        radius: 35, blur: 25, maxZoom: 12,
+        gradient: { 0.2:'#138808', 0.5:'#FF9933', 0.8:'#C62828', 1.0:'#7b0000' }
+    }).addTo(map);
+}
 
-        document.getElementById('markerCount').textContent = markers.length + ' complaint(s) shown';
+// ── Filter ────────────────────────────────────────────────────────────────
+function matchesFilter(c) {
+    if (activeFilter === 'all') return true;
+    if (activeFilter === 'resolved') return ['resolved','closed'].includes((c.status||'').toLowerCase());
+    return (c.priority||'').toLowerCase() === activeFilter;
+}
 
-        // Refresh heatmap if it's currently on
-        if (heatmapOn) buildHeatmap(complaints);
+function applyFilter(filter, btn) {
+    activeFilter = filter;
+    document.querySelectorAll('.fbtn[data-filter]').forEach(b => {
+        b.className = b.className.replace(/active-\w+/g, '').trim();
+    });
+    btn.classList.add(`active-${filter}`);
+    const filtered = allComplaints.filter(c => matchesFilter(c));
+    renderAll(filtered);
+    renderList(filtered);
+}
+
+// ── Stats ─────────────────────────────────────────────────────────────────
+function updateStats(data) {
+    const resolved   = data.filter(c => ['resolved','closed'].includes((c.status||'').toLowerCase())).length;
+    const inProgress = data.filter(c => (c.status||'').toLowerCase() === 'in progress').length;
+    const pending    = data.filter(c => !['resolved','closed','in progress'].includes((c.status||'').toLowerCase())).length;
+    const critical   = data.filter(c => (c.priority||'').toLowerCase() === 'critical').length;
+    animateCount('statTotal',      data.length);
+    animateCount('statPending',    pending);
+    animateCount('statInProgress', inProgress);
+    animateCount('statResolved',   resolved);
+    animateCount('statCritical',   critical);
+}
+
+function animateCount(id, target) {
+    const el = document.getElementById(id);
+    let cur = 0;
+    const step = Math.max(1, Math.floor(target/30));
+    const t = setInterval(() => { cur = Math.min(cur + step, target); el.textContent = cur; if (cur >= target) clearInterval(t); }, 30);
+}
+
+// ── List ──────────────────────────────────────────────────────────────────
+function renderList(data) {
+    const list = document.getElementById('complaintList');
+    document.getElementById('listCount').textContent = `${data.length} complaint(s)`;
+
+    if (!data.length) {
+        list.innerHTML = `<div style="padding:36px;text-align:center;color:var(--text-muted);">
+            <i class="fas fa-inbox fa-2x" style="color:var(--border);"></i>
+            <p style="margin-top:12px;font-weight:500;">No complaints match this filter.</p>
+        </div>`;
+        return;
     }
 
-    // ─── Heatmap Toggle ───────────────────────────────────────────────────────────
-    function toggleHeatmap(btn) {
-        heatmapOn = !heatmapOn;
-        if (heatmapOn) {
-            buildHeatmap(allComplaints);
-            btn.innerHTML = '<i class="fas fa-fire me-1"></i>Heatmap ON';
-            btn.style.background     = '#C62828';
-            btn.style.borderColor    = '#C62828';
-            btn.style.color          = '#fff';
-        } else {
-            if (heatLayer) { map.removeLayer(heatLayer); heatLayer = null; }
-            btn.innerHTML = '<i class="fas fa-fire me-1"></i>Heatmap OFF';
-            btn.style.background  = '#1a3a5c';
-            btn.style.borderColor = '#1a3a5c';
-        }
-    }
-
-    function buildHeatmap(complaints) {
-        if (heatLayer) map.removeLayer(heatLayer);
-        const points = complaints
-            .filter(c => c.location && c.location.lat != null)
-            .map(c => {
-                // Weight by priority: Critical=1.0, High=0.7, Medium=0.4, Low=0.2
-                const w = { Critical:1.0, High:0.7, Medium:0.4, Low:0.2 };
-                return [c.location.lat, c.location.lng, w[c.priority] || 0.4];
-            });
-        heatLayer = L.heatLayer(points, {
-            radius: 35,
-            blur: 25,
-            maxZoom: 12,
-            gradient: { 0.2:'#138808', 0.5:'#FF9933', 0.8:'#C62828', 1.0:'#7b0000' }
-        }).addTo(map);
-    }
-
-    // ─── Filter ───────────────────────────────────────────────────────────────────
-    function applyFilter(filter, btn) {
-        activeFilter = filter;
-
-        // Update button states
-        document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-
-        let filtered;
-        if (filter === 'all') {
-            filtered = allComplaints;
-        } else if (filter === 'resolved') {
-            filtered = allComplaints.filter(c =>
-                (c.status || '').toLowerCase() === 'resolved' || (c.status || '').toLowerCase() === 'closed'
-            );
-        } else {
-            filtered = allComplaints.filter(c =>
-                (c.priority || 'medium').toLowerCase() === filter
-            );
-        }
-
-        renderAll(filtered);
-        renderList(filtered);
-    }
-
-    // ─── Stats ────────────────────────────────────────────────────────────────────
-    function updateStats(data) {
-        const total      = data.length;
-        const resolved   = data.filter(c => ['resolved','closed'].includes((c.status||'').toLowerCase())).length;
-        const inProgress = data.filter(c => (c.status||'').toLowerCase() === 'in progress').length;
-        const pending    = data.filter(c => !['resolved','closed','in progress'].includes((c.status||'').toLowerCase())).length;
-        const critical   = data.filter(c => (c.priority||'').toLowerCase() === 'critical').length;
-
-        animateCount('statTotal',      total);
-        animateCount('statPending',    pending);
-        animateCount('statInProgress', inProgress);
-        animateCount('statResolved',   resolved);
-        animateCount('statCritical',   critical);
-    }
-
-    function animateCount(id, target) {
-        const el   = document.getElementById(id);
-        let current = 0;
-        const step  = Math.max(1, Math.floor(target / 30));
-        const timer = setInterval(() => {
-            current = Math.min(current + step, target);
-            el.textContent = current;
-            if (current >= target) clearInterval(timer);
-        }, 30);
-    }
-
-    // ─── Complaints List ──────────────────────────────────────────────────────────
-    function renderList(data) {
-        const list = document.getElementById('complaintList');
-        document.getElementById('listCount').textContent = data.length + ' complaint(s)';
-
-        if (data.length === 0) {
-            list.innerHTML = '<div style="padding:30px; text-align:center; color:#aaa;"><i class="fas fa-inbox fa-2x"></i><p style="margin-top:10px;">No complaints match this filter.</p></div>';
-            return;
-        }
-
-        list.innerHTML = data.map((c, idx) => {
-            const col         = markerColor(c);
-            const statusClass = 's-' + (c.status || 'submitted').toLowerCase().replace(/\s+/g, '-');
-            const hasGps      = c.location && c.location.lat != null;
-            const gpsBadge    = hasGps
-                ? '<span style="font-size:10px;color:var(--success);margin-left:6px;"><i class="fas fa-map-marker-alt"></i> GPS</span>'
-                : '<span style="font-size:10px;color:#aaa;margin-left:6px;"><i class="fas fa-map-marker-alt"></i> No GPS</span>';
-            return `
-            <div class="complaint-row" onclick="focusMarker(${idx}, ${hasGps ? c.location.lat : 'null'}, ${hasGps ? c.location.lng : 'null'})">
-                <div class="marker-dot" style="background:${col}; opacity:${hasGps ? 1 : 0.35};"></div>
-                <div class="info">
-                    <div class="subject">${c.subject || c.category || 'Complaint'} ${gpsBadge}</div>
-                    <div class="meta">
-                        <i class="fas fa-building me-1"></i>${c.department || 'N/A'} &nbsp;·&nbsp;
-                        <i class="fas fa-map-marker-alt me-1"></i>${c.district || ''}, ${c.state || ''}
-                    </div>
+    list.innerHTML = data.map((c, idx) => {
+        const col     = markerColor(c);
+        const sc      = STATUS_CLASS[c.status] || 's-submitted';
+        const hasGps  = c.location && c.location.lat != null;
+        const gpsBadge = hasGps
+            ? `<span style="font-size:11px;color:var(--green);margin-left:6px;font-weight:600;"><i class="fas fa-map-marker-alt"></i> GPS</span>`
+            : `<span style="font-size:11px;color:var(--text-muted);margin-left:6px;"><i class="fas fa-map-marker-alt"></i> No GPS</span>`;
+        return `
+        <div class="complaint-row" onclick="focusMarker(${hasGps ? c.location.lat : 'null'}, ${hasGps ? c.location.lng : 'null'}, '${c.complaintId}')">
+            <div class="cr-dot" style="background:${col};opacity:${hasGps ? 1 : 0.3};"></div>
+            <div class="cr-info">
+                <div class="cr-subject">${c.subject || c.category || 'Complaint'} ${gpsBadge}</div>
+                <div class="cr-meta">
+                    <i class="fas fa-building me-1"></i>${c.department || 'N/A'} &nbsp;·&nbsp;
+                    <i class="fas fa-map-marker-alt me-1"></i>${c.district || ''}, ${c.state || ''}
                 </div>
-                <span class="row-status ${statusClass}">${c.status || 'Submitted'}</span>
-            </div>`;
-        }).join('');
-    }
+            </div>
+            <span class="cr-badge ${sc}">${c.status || 'Submitted'}</span>
+        </div>`;
+    }).join('');
+}
 
-    function focusMarker(idx, lat, lng) {
-        if (lat == null || lng == null) return;
-        map.setView([lat, lng], 13, { animate: true });
-        // Find & open the popup for this marker
-        const found = markers.find(m =>
-            Math.abs(m.complaint.location.lat - lat) < 0.0001 &&
-            Math.abs(m.complaint.location.lng - lng) < 0.0001
-        );
-        if (found) found.marker.openPopup();
-    }
+function focusMarker(lat, lng, id) {
+    if (lat == null) return;
+    map.setView([lat, lng], 13, { animate: true });
+    const found = markers.find(m =>
+        Math.abs(m.complaint.location.lat - lat) < 0.0001 &&
+        Math.abs(m.complaint.location.lng - lng) < 0.0001
+    );
+    if (found) found.marker.openPopup();
+}
 
-    function centerIndia() {
-        map.setView([22.5, 80.0], 5, { animate: true });
-    }
+function centerIndia() { map.setView([22.5, 80.0], 5, { animate: true }); }
 
-    // ─── Demo Data (fallback when API unavailable — fixed real coords, no random) ─
-    function generateDemoData() {
-        const seed = [
-            { state:'Delhi',         district:'New Delhi',    lat:28.6139, lng:77.2090, subject:'Road damaged near Connaught Place',      dept:'Public Works',      cat:'Infrastructure',   pri:'High',     status:'In Progress'  },
-            { state:'Punjab',        district:'Ludhiana',     lat:30.9010, lng:75.8573, subject:'Water pipe burst near Model Town',        dept:'Water Supply',      cat:'Water Issue',      pri:'Critical', status:'Assigned'     },
-            { state:'Maharashtra',   district:'Mumbai',       lat:19.0760, lng:72.8777, subject:'Street light not working at Bandra',      dept:'Electricity Board', cat:'Power Issue',      pri:'Medium',   status:'Submitted'    },
-            { state:'Karnataka',     district:'Bengaluru',    lat:12.9716, lng:77.5946, subject:'Pothole on MG Road causing accidents',    dept:'Public Works',      cat:'Infrastructure',   pri:'Critical', status:'Under Review' },
-            { state:'Tamil Nadu',    district:'Chennai',      lat:13.0827, lng:80.2707, subject:'Hospital delay in emergency services',    dept:'Health',            cat:'Medical',          pri:'High',     status:'In Progress'  },
-            { state:'West Bengal',   district:'Kolkata',      lat:22.5726, lng:88.3639, subject:'School building roof collapsed',          dept:'Education',         cat:'Education Issue',  pri:'Critical', status:'Assigned'     },
-            { state:'Rajasthan',     district:'Jaipur',       lat:26.9124, lng:75.7873, subject:'Electricity outage for 3 days',           dept:'Electricity Board', cat:'Power Issue',      pri:'High',     status:'Resolved'     },
-            { state:'Gujarat',       district:'Ahmedabad',    lat:23.0225, lng:72.5714, subject:'Sewage overflow near residential area',   dept:'Water Supply',      cat:'Water Issue',      pri:'High',     status:'In Progress'  },
-            { state:'Uttar Pradesh', district:'Lucknow',      lat:26.8467, lng:80.9462, subject:'Land document issue at Revenue office',   dept:'Revenue',           cat:'Document Issue',   pri:'Medium',   status:'Under Review' },
-            { state:'Telangana',     district:'Hyderabad',    lat:17.3850, lng:78.4867, subject:'Bus route discontinued without notice',   dept:'Transport',         cat:'Transport Issue',  pri:'Low',      status:'Submitted'    },
-            { state:'Kerala',        district:'Kochi',        lat:9.9312,  lng:76.2673, subject:'Doctor absent from PHC for a week',       dept:'Health',            cat:'Medical',          pri:'High',     status:'Resolved'     },
-            { state:'Madhya Pradesh',district:'Bhopal',       lat:23.2599, lng:77.4126, subject:'Police inaction on theft complaint',      dept:'Police',            cat:'Law & Order',      pri:'High',     status:'Assigned'     },
-        ];
-        return seed.map((s, i) => ({
-            complaintId: 'CMP' + String(1001 + i).padStart(6, '0'),
-            subject:     s.subject,
-            department:  s.dept,
-            category:    s.cat,
-            priority:    s.pri,
-            status:      s.status,
-            state:       s.state,
-            district:    s.district,
-            location:    { lat: s.lat, lng: s.lng },
-            createdAt:   new Date(Date.now() - i * 86400000 * 2).toISOString(),
-        }));
-    }
+// ── Demo Data ─────────────────────────────────────────────────────────────
+function generateDemoData() {
+    const seed = [
+        { state:'Delhi',          district:'New Delhi',  lat:28.6139, lng:77.2090, subject:'Road damaged near Connaught Place',    dept:'Public Works',      cat:'Infrastructure', pri:'High',     status:'In Progress'  },
+        { state:'Punjab',         district:'Ludhiana',   lat:30.9010, lng:75.8573, subject:'Water pipe burst near Model Town',      dept:'Water Supply',      cat:'Water Issue',    pri:'Critical', status:'Assigned'     },
+        { state:'Maharashtra',    district:'Mumbai',     lat:19.0760, lng:72.8777, subject:'Street light not working at Bandra',    dept:'Electricity Board', cat:'Power Issue',    pri:'Medium',   status:'Submitted'    },
+        { state:'Karnataka',      district:'Bengaluru',  lat:12.9716, lng:77.5946, subject:'Pothole on MG Road causing accidents',  dept:'Public Works',      cat:'Infrastructure', pri:'Critical', status:'Under Review' },
+        { state:'Tamil Nadu',     district:'Chennai',    lat:13.0827, lng:80.2707, subject:'Hospital delay in emergency services',  dept:'Health',            cat:'Medical',        pri:'High',     status:'In Progress'  },
+        { state:'West Bengal',    district:'Kolkata',    lat:22.5726, lng:88.3639, subject:'School building roof collapsed',        dept:'Education',         cat:'Education Issue',pri:'Critical', status:'Assigned'     },
+        { state:'Rajasthan',      district:'Jaipur',     lat:26.9124, lng:75.7873, subject:'Electricity outage for 3 days',         dept:'Electricity Board', cat:'Power Issue',    pri:'High',     status:'Resolved'     },
+        { state:'Gujarat',        district:'Ahmedabad',  lat:23.0225, lng:72.5714, subject:'Sewage overflow near residential area', dept:'Water Supply',      cat:'Water Issue',    pri:'High',     status:'In Progress'  },
+        { state:'Uttar Pradesh',  district:'Lucknow',    lat:26.8467, lng:80.9462, subject:'Land document issue at Revenue office', dept:'Revenue',           cat:'Document Issue', pri:'Medium',   status:'Under Review' },
+        { state:'Telangana',      district:'Hyderabad',  lat:17.3850, lng:78.4867, subject:'Bus route discontinued without notice', dept:'Transport',         cat:'Transport Issue',pri:'Low',      status:'Submitted'    },
+        { state:'Kerala',         district:'Kochi',      lat:9.9312,  lng:76.2673, subject:'Doctor absent from PHC for a week',     dept:'Health',            cat:'Medical',        pri:'High',     status:'Resolved'     },
+        { state:'Madhya Pradesh', district:'Bhopal',     lat:23.2599, lng:77.4126, subject:'Police inaction on theft complaint',    dept:'Police',            cat:'Law & Order',    pri:'High',     status:'Assigned'     },
+    ];
+    return seed.map((s, i) => ({
+        complaintId: 'CMP' + String(1001+i).padStart(6,'0'),
+        subject: s.subject, department: s.dept, category: s.cat,
+        priority: s.pri, status: s.status, state: s.state, district: s.district,
+        location: { lat: s.lat, lng: s.lng },
+        createdAt: new Date(Date.now() - i * 86400000 * 2).toISOString(),
+    }));
+}
 
-    // ─── Boot ─────────────────────────────────────────────────────────────────────
-    loadComplaints();
-
+// ── Boot ──────────────────────────────────────────────────────────────────
+loadComplaints();
 </script>
 </body>
 </html>
