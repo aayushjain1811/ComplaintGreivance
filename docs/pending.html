@@ -474,7 +474,7 @@
     <div class="modal view-modal">
         <div class="modal-head">
             <h5><i class="fas fa-file-alt" style="margin-right:8px"></i>Complaint Details</h5>
-            <button class="modal-x" onclick="close('viewOverlay')">&times;</button>
+            <button class="modal-x" onclick="closeModal('viewOverlay')">&times;</button>
         </div>
         <div class="modal-body">
             <div class="detail-grid" id="viewGrid"></div>
@@ -484,7 +484,7 @@
             </div>
         </div>
         <div class="modal-foot">
-            <button class="btn btn-ghost" onclick="close('viewOverlay')">Close</button>
+            <button class="btn btn-ghost" onclick="closeModal('viewOverlay')">Close</button>
             <button class="btn btn-primary" id="viewToStatus"><i class="fas fa-sync"></i> Update Status</button>
         </div>
     </div>
@@ -495,7 +495,7 @@
     <div class="modal status-modal">
         <div class="modal-head">
             <h5><i class="fas fa-sync" style="margin-right:8px"></i>Update Status</h5>
-            <button class="modal-x" onclick="close('statusOverlay')">&times;</button>
+            <button class="modal-x" onclick="closeModal('statusOverlay')">&times;</button>
         </div>
         <div class="modal-body">
             <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">Complaint: <strong id="statusId">—</strong></p>
@@ -511,7 +511,7 @@
             <textarea class="remarks-area" id="remarks" placeholder="Add notes about this update…"></textarea>
         </div>
         <div class="modal-foot">
-            <button class="btn btn-ghost" onclick="close('statusOverlay')">Cancel</button>
+            <button class="btn btn-ghost" onclick="closeModal('statusOverlay')">Cancel</button>
             <button class="btn btn-primary" onclick="saveStatus()"><i class="fas fa-check"></i> Save</button>
         </div>
     </div>
@@ -522,7 +522,7 @@
     <div class="modal assign-modal">
         <div class="modal-head">
             <h5><i class="fas fa-user-plus" style="margin-right:8px"></i>Assign Officer</h5>
-            <button class="modal-x" onclick="close('assignOverlay')">&times;</button>
+            <button class="modal-x" onclick="closeModal('assignOverlay')">&times;</button>
         </div>
         <div class="modal-body">
             <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">Complaint: <strong id="assignId">—</strong></p>
@@ -808,8 +808,8 @@ function openView(id) {
         `<div class="di"><label>${l}</label><span>${v}</span></div>`
     ).join('');
     document.getElementById('viewDesc').textContent = c.description || c.subject || 'No description.';
-    document.getElementById('viewToStatus').onclick = () => { close('viewOverlay'); openStatus(id); };
-    open('viewOverlay');
+    document.getElementById('viewToStatus').onclick = () => { closeModal('viewOverlay'); openStatus(id); };
+    openModal('viewOverlay');
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -824,7 +824,7 @@ function openStatus(id) {
     document.querySelectorAll('.s-opt').forEach(el =>
         el.classList.toggle('sel', el.dataset.s === selStatus)
     );
-    open('statusOverlay');
+    openModal('statusOverlay');
 }
 
 function pickStatus(el) {
@@ -835,7 +835,7 @@ function pickStatus(el) {
 
 async function saveStatus() {
     if (!selStatus) { toast('Select a status first', 'warn'); return; }
-    close('statusOverlay');
+    closeModal('statusOverlay');
 
     try {
         await fetch(API_UPDATE, {
@@ -871,49 +871,84 @@ async function quickResolve(id) {
 // ─────────────────────────────────────────────────────────────
 // 13. ASSIGN MODAL (Level 2+ only)
 // ─────────────────────────────────────────────────────────────
-function openAssign(id) {
-    if (level < 2) { toast('Assignment requires Senior Officer access', 'warn'); return; }
-    activeId     = id;
-    selOfficer   = null;
-    document.getElementById('assignId').textContent = id;
-    document.getElementById('officerList').innerHTML = OFFICERS.map(o => `
-        <div class="officer-card" data-id="${o.id}" onclick="pickOfficer(this,'${o.id}')">
-            <div class="off-av">${o.name.charAt(0)}</div>
-            <div style="flex:1">
-                <div class="off-name">${o.name}</div>
-                <div class="off-dept">${o.dept}</div>
-            </div>
-            <span class="off-badge">${o.load} active</span>
-        </div>`).join('');
-    open('assignOverlay');
+const OFFICERS_API = "https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/admin/officers";
+let officersCache = [];
+
+async function loadOfficers() {
+    try {
+        const res = await fetch(OFFICERS_API, {
+            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
+        });
+        if (!res.ok) throw new Error('Status ' + res.status);
+        const data = await res.json();
+        officersCache = Array.isArray(data) ? data : (data.officers || data.items || data.data || []);
+    } catch (e) {
+        console.warn('Could not load officers from API:', e);
+        officersCache = [];
+    }
 }
 
-function pickOfficer(el, id) {
+async function openAssign(id) {
+    if (level < 2) { toast('Assignment requires Senior Officer access', 'warn'); return; }
+    activeId   = id;
+    selOfficer = null;
+    document.getElementById('assignId').textContent = id;
+
+    const listEl = document.getElementById('officerList');
+    listEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted)"><div class="spinner" style="margin:0 auto 8px"></div>Loading officers…</div>';
+    openModal('assignOverlay');
+
+    // Fetch fresh each time
+    await loadOfficers();
+
+    if (!officersCache.length) {
+        listEl.innerHTML = '<div style="text-align:center;padding:20px;color:var(--text-muted);font-size:13px">No officers found. Please add officers first.</div>';
+        return;
+    }
+
+    listEl.innerHTML = officersCache.map(o => {
+        const name   = o.name || o.officerName || o['cognito:username'] || o.username || '—';
+        const deptTxt= o.department || o.dept || o['custom:department'] || '—';
+        const initial= name.charAt(0).toUpperCase();
+        const load   = o.activeComplaints ?? o.load ?? '';
+        const loadBadge = load !== '' ? `<span class="off-badge">${load} active</span>` : '';
+        return `
+        <div class="officer-card" data-id="${o.id||o.officerId||o.sub||name}" onclick="pickOfficer(this,'${o.id||o.officerId||o.sub||name}','${name}')">
+            <div class="off-av">${initial}</div>
+            <div style="flex:1">
+                <div class="off-name">${name}</div>
+                <div class="off-dept">${deptTxt}</div>
+            </div>
+            ${loadBadge}
+        </div>`;
+    }).join('');
+}
+
+function pickOfficer(el, id, name) {
     document.querySelectorAll('.officer-card').forEach(o => o.classList.remove('sel'));
     el.classList.add('sel');
-    selOfficer = id;
+    selOfficer = { id, name };
 }
 
 async function saveAssign() {
     if (!selOfficer) { toast('Select an officer first', 'warn'); return; }
-    const officer = OFFICERS.find(o => o.id === selOfficer);
-    close('assignOverlay');
+    closeModal('assignOverlay');
 
     try {
         await fetch(API_UPDATE, {
             method: 'PUT',
             headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ complaintId: activeId, assignedTo: officer.name, status: 'Under Review' })
+            body: JSON.stringify({ complaintId: activeId, assignedTo: selOfficer.name, status: 'Under Review' })
         });
     } catch (e) { console.warn('API warn:', e); }
 
     const idx = allPending.findIndex(c => (c.complaintId||c.id) === activeId);
     if (idx > -1) {
-        allPending[idx].assignedTo = officer.name;
+        allPending[idx].assignedTo = selOfficer.name;
         allPending[idx].status     = 'Under Review';
     }
     updateStats(); applyFilters();
-    toast(`Assigned to ${officer.name} — status: Under Review ✓`);
+    toast(`Assigned to ${selOfficer.name} — status: Under Review ✓`);
 }
 
 // ─────────────────────────────────────────────────────────────
@@ -943,8 +978,8 @@ function exportCSV() {
 // 15. HELPERS
 // ─────────────────────────────────────────────────────────────
 function find(id) { return allPending.find(c => (c.complaintId||c.id) === id) || null; }
-function open(id)  { document.getElementById(id).classList.add('open'); }
-function close(id) { document.getElementById(id).classList.remove('open'); }
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
 
 document.querySelectorAll('.overlay').forEach(o => {
     o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
