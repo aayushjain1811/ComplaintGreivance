@@ -70,28 +70,9 @@
         .stat-label { font-size: 13px; color: #666; }
 
         /* Section Heading */
-        .section-heading {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 20px;
-        }
-        .section-heading h3 {
-            font-size: 20px;
-            font-weight: 700;
-            color: var(--primary);
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .section-heading h3::after {
-            content: '';
-            display: block;
-            width: 40px;
-            height: 3px;
-            background: var(--accent);
-            border-radius: 2px;
-        }
+        .section-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+        .section-heading h3 { font-size: 20px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 10px; }
+        .section-heading h3::after { content: ''; display: block; width: 40px; height: 3px; background: var(--accent); border-radius: 2px; }
 
         /* Search */
         .search-bar { background-color: var(--white); padding: 16px 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 25px; }
@@ -140,143 +121,63 @@
         .no-results i { font-size: 48px; margin-bottom: 16px; display: block; }
 
         /* ── Officer Management Panel ───────────────────────────────────────── */
-        .officer-panel {
-            background: var(--white);
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            margin-bottom: 30px;
-            overflow: hidden;
-        }
-
-        .officer-panel-header {
-            background: linear-gradient(135deg, var(--primary), #1a4d8f);
-            color: var(--white);
-            padding: 18px 25px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-
+        .officer-panel { background: var(--white); border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 30px; overflow: hidden; }
+        .officer-panel-header { background: linear-gradient(135deg, var(--primary), #1a4d8f); color: var(--white); padding: 18px 25px; display: flex; align-items: center; justify-content: space-between; }
         .officer-panel-header h4 { margin: 0; font-size: 17px; font-weight: 700; }
-
         .officer-panel-body { padding: 25px; }
 
         /* Create Officer Form */
-        .create-officer-form {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 16px;
-            margin-bottom: 10px;
-        }
-
+        .create-officer-form { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 10px; }
         .form-group { display: flex; flex-direction: column; gap: 6px; }
         .form-group label { font-size: 13px; font-weight: 600; color: #555; }
         .form-group input,
-        .form-group select {
-            border: 1.5px solid #ddd;
-            border-radius: 7px;
-            padding: 10px 13px;
-            font-size: 14px;
-            font-family: inherit;
-            transition: border-color 0.3s;
-            background: var(--white);
-        }
+        .form-group select { border: 1.5px solid #ddd; border-radius: 7px; padding: 10px 13px; font-size: 14px; font-family: inherit; transition: border-color 0.3s; background: var(--white); }
         .form-group input:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--primary);
-            box-shadow: 0 0 0 3px rgba(10,46,92,0.1);
-        }
-
+        .form-group select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(10,46,92,0.1); }
         .form-group.full { grid-column: 1 / -1; }
 
-        .btn-create-officer {
-            background: var(--success);
-            color: #fff;
-            border: none;
-            padding: 11px 28px;
-            border-radius: 7px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.3s;
+        /* Temp password info box */
+        .temp-pw-info {
+            background: #e8f5e9;
+            border: 1px solid #a5d6a7;
+            border-radius: 8px;
+            padding: 12px 16px;
+            font-size: 13px;
+            color: #2e7d32;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            grid-column: 1 / -1;
         }
-        .btn-create-officer:hover:not(:disabled) {
-            background: #0f6605;
-            transform: translateY(-2px);
-            box-shadow: 0 4px 14px rgba(19,136,8,0.3);
-        }
+        .temp-pw-info strong { font-weight: 700; letter-spacing: 0.5px; }
+
+        .btn-create-officer { background: var(--success); color: #fff; border: none; padding: 11px 28px; border-radius: 7px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
+        .btn-create-officer:hover:not(:disabled) { background: #0f6605; transform: translateY(-2px); box-shadow: 0 4px 14px rgba(19,136,8,0.3); }
         .btn-create-officer:disabled { opacity: 0.6; cursor: not-allowed; }
 
         /* Officers Table */
         .officers-table-wrap { overflow-x: auto; margin-top: 28px; }
-
-        .officers-table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 13px;
-        }
-        .officers-table th {
-            background: var(--primary);
-            color: var(--white);
-            padding: 11px 14px;
-            text-align: left;
-            white-space: nowrap;
-            font-weight: 600;
-        }
-        .officers-table td {
-            padding: 11px 14px;
-            border-bottom: 1px solid #f0f0f0;
-            vertical-align: middle;
-        }
+        .officers-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .officers-table th { background: var(--primary); color: var(--white); padding: 11px 14px; text-align: left; white-space: nowrap; font-weight: 600; }
+        .officers-table td { padding: 11px 14px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
         .officers-table tr:hover { background: #f8f9fa; }
         .officers-table tr:last-child td { border-bottom: none; }
 
-        .role-badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 700;
-            text-transform: capitalize;
-        }
+        .role-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: capitalize; }
         .role-officer  { background: #e3f2fd; color: #0d6efd; }
         .role-senior   { background: #fff3e0; color: #e65100; }
         .role-head     { background: #fce4ec; color: #c62828; }
 
-        .officer-status-badge {
-            display: inline-block;
-            padding: 3px 10px;
-            border-radius: 20px;
-            font-size: 11px;
-            font-weight: 600;
-        }
+        .officer-status-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
         .officer-active   { background: #e8f5e9; color: #2e7d32; }
         .officer-inactive { background: #eee; color: #777; }
 
-        .btn-icon-action {
-            background: none;
-            border: 1px solid #ddd;
-            border-radius: 6px;
-            padding: 5px 9px;
-            cursor: pointer;
-            font-size: 12px;
-            transition: all 0.2s;
-            color: #555;
-        }
+        .btn-icon-action { background: none; border: 1px solid #ddd; border-radius: 6px; padding: 5px 9px; cursor: pointer; font-size: 12px; transition: all 0.2s; color: #555; }
         .btn-icon-action:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
         .btn-icon-action.danger:hover { background: var(--error); border-color: var(--error); }
 
         /* Officers loading / empty */
-        .officers-loading {
-            text-align: center;
-            padding: 30px;
-            color: #aaa;
-            font-size: 14px;
-        }
+        .officers-loading { text-align: center; padding: 30px; color: #aaa; font-size: 14px; }
 
         /* Modal */
         .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
@@ -460,6 +361,7 @@
                     <h3 style="font-size:16px;"><i class="fas fa-user-plus me-2"></i>Create New Officer</h3>
                 </div>
 
+                <!-- ✅ NEW: No password field — Lambda auto-sets Temp@123 -->
                 <form id="createOfficerForm" onsubmit="createOfficer(event)">
                     <div class="create-officer-form">
                         <div class="form-group">
@@ -496,16 +398,23 @@
                                 <option value="head">Head Officer</option>
                             </select>
                         </div>
-                        <div class="form-group">
+                        <!-- ✅ NEW: Email is now required for Cognito user creation -->
+                        <div class="form-group full">
                             <label>Email Address <span style="color:var(--error);">*</span></label>
                             <input type="email" id="officerEmail" placeholder="officer@gov.in" required>
                         </div>
-                        <div class="form-group">
-                            <label>Temporary Password <span style="color:var(--error);">*</span></label>
-                            <input type="password" id="officerPassword" placeholder="Min 8 characters" minlength="8" required>
+
+                        <!-- ✅ INFO BOX: replaces the old manual password field -->
+                        <div class="temp-pw-info">
+                            <i class="fas fa-info-circle" style="font-size:16px;flex-shrink:0;"></i>
+                            <span>
+                                A Cognito account will be auto-created. The officer's temporary password will be
+                                <strong>Temp@123</strong> — they will be prompted to change it on first login.
+                            </span>
                         </div>
                     </div>
-                    <div style="display:flex; align-items:center; gap:14px; margin-top:6px; flex-wrap:wrap;">
+
+                    <div style="display:flex; align-items:center; gap:14px; margin-top:16px; flex-wrap:wrap;">
                         <button type="submit" class="btn-create-officer" id="createOfficerBtn">
                             <i class="fas fa-user-plus"></i> Create Officer
                         </button>
@@ -617,6 +526,7 @@
     const API_BASE        = "https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod";
     const COMPLAINTS_API  = `${API_BASE}/admin/complaints`;
     const OFFICERS_API    = `${API_BASE}/officers`;
+    // ✅ UPDATED: points to the new create-officer Lambda endpoint
     const CREATE_OFF_API  = `${API_BASE}/create-officer`;
 
     const AUTH_HEADERS = {
@@ -774,13 +684,12 @@
             allOfficers = Array.isArray(data) ? data : (data.officers || data.items || []);
         } catch (err) {
             console.warn('Officers API error:', err);
-            allOfficers = [];   // graceful degradation — table will show empty
+            allOfficers = [];
         }
 
         document.getElementById('totalOfficers').textContent = allOfficers.length;
         renderOfficersTable(allOfficers);
 
-        // Re-render dept cards to show officer counts
         if (Object.keys(departmentData).length > 0) {
             renderDepartments(Object.keys(departmentData));
         }
@@ -799,7 +708,7 @@
         }
 
         const rows = list.map((o, idx) => {
-            const roleClass = `role-${(o.role || 'officer').toLowerCase()}`;
+            const roleClass   = `role-${(o.role || 'officer').toLowerCase()}`;
             const statusClass = o.active === false ? 'officer-inactive' : 'officer-active';
             const statusLabel = o.active === false ? 'Inactive' : 'Active';
             return `
@@ -857,22 +766,19 @@
     }
 
     // ── 7. CREATE OFFICER ─────────────────────────────────────────────────────
+    // ✅ UPDATED: Sends employeeId, name, department, role, email to Lambda.
+    //            Lambda handles Cognito creation with Temp@123 + DynamoDB storage.
     async function createOfficer(e) {
         e.preventDefault();
 
-        const empId    = document.getElementById('empId').value.trim();
-        const name     = document.getElementById('officerName').value.trim();
-        const dept     = document.getElementById('officerDept').value;
-        const role     = document.getElementById('officerRole').value;
-        const email    = document.getElementById('officerEmail').value.trim();
-        const password = document.getElementById('officerPassword').value;
+        const empId = document.getElementById('empId').value.trim();
+        const name  = document.getElementById('officerName').value.trim();
+        const dept  = document.getElementById('officerDept').value;
+        const role  = document.getElementById('officerRole').value;
+        const email = document.getElementById('officerEmail').value.trim();
 
-        if (!empId || !name || !dept || !role || !email || !password) {
+        if (!empId || !name || !dept || !role || !email) {
             setOfficerMsg('Please fill in all required fields.', 'var(--error)');
-            return;
-        }
-        if (password.length < 8) {
-            setOfficerMsg('Password must be at least 8 characters.', 'var(--error)');
             return;
         }
 
@@ -881,14 +787,13 @@
         btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating…';
         setOfficerMsg('', '');
 
+        // ✅ Payload matches Lambda expectations — no password sent from frontend
         const payload = {
             employeeId: empId,
             name,
             department: dept,
             role,
-            level:      ROLE_LEVEL[role] || 1,
-            email,
-            password
+            email
         };
 
         try {
@@ -903,10 +808,13 @@
                 throw new Error(err.message || err.error || `HTTP ${res.status}`);
             }
 
-            showToast(`Officer "${name}" created successfully ✓`, 'success');
-            setOfficerMsg('✅ Officer created successfully!', 'var(--success)');
+            const result = await res.json();
+            const tempPw = result.tempPassword || 'Temp@123';
+
+            showToast(`Officer "${name}" created ✓  Temp password: ${tempPw}`, 'success');
+            setOfficerMsg(`✅ Officer created! Username: ${empId} | Temp password: ${tempPw}`, 'var(--success)');
             document.getElementById('createOfficerForm').reset();
-            loadOfficers();   // refresh list
+            loadOfficers();
 
         } catch (err) {
             console.error('Create officer error:', err);
@@ -920,14 +828,14 @@
 
     function setOfficerMsg(msg, color) {
         const el = document.getElementById('officerFormMsg');
-        el.textContent  = msg;
-        el.style.color  = color;
+        el.textContent = msg;
+        el.style.color = color;
     }
 
-    // ── 8. TOGGLE OFFICER STATUS (deactivate / reactivate) ───────────────────
+    // ── 8. TOGGLE OFFICER STATUS ──────────────────────────────────────────────
     async function toggleOfficerStatus(idx, btn) {
         const officer  = allOfficers[idx];
-        const newState = officer.active === false;   // toggle
+        const newState = officer.active === false;
         const label    = newState ? 'activate' : 'deactivate';
 
         if (!confirm(`Are you sure you want to ${label} officer "${officer.name}"?`)) return;
@@ -947,16 +855,14 @@
         }
     }
 
-    // ── 9. EDIT OFFICER (opens pre-filled form at top, simple approach) ───────
+    // ── 9. EDIT OFFICER ───────────────────────────────────────────────────────
     function openEditOfficer(idx) {
         const o = allOfficers[idx];
-        document.getElementById('empId').value           = o.employeeId || o.id || '';
-        document.getElementById('officerName').value     = o.name || '';
-        document.getElementById('officerDept').value     = o.department || '';
-        document.getElementById('officerRole').value     = o.role || 'officer';
-        document.getElementById('officerEmail').value    = o.email || '';
-        document.getElementById('officerPassword').value = '';   // clear for security
-        document.getElementById('officerPassword').removeAttribute('required');  // editing doesn't require new pw
+        document.getElementById('empId').value        = o.employeeId || o.id || '';
+        document.getElementById('officerName').value  = o.name || '';
+        document.getElementById('officerDept').value  = o.department || '';
+        document.getElementById('officerRole').value  = o.role || 'officer';
+        document.getElementById('officerEmail').value = o.email || '';
         setOfficerMsg('Editing officer — update fields and submit.', '#0d6efd');
         document.getElementById('empId').scrollIntoView({ behavior: 'smooth', block: 'center' });
     }
@@ -1075,7 +981,7 @@
         const icons = { success: '✅', warning: '⚠️', error: '❌' };
         toast.innerHTML = `<span>${icons[type] || '✅'}</span><span>${msg}</span>`;
         c.appendChild(toast);
-        setTimeout(() => toast.remove(), 3500);
+        setTimeout(() => toast.remove(), 4000);
     }
 
     function showError(msg) { document.getElementById('errorBannerMsg').textContent = msg; document.getElementById('errorBanner').classList.add('show'); }
