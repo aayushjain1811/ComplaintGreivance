@@ -877,8 +877,9 @@ let officersCache = [];
 
 async function loadOfficers() {
     try {
-        // No Authorization header needed — Lambda handles CORS + public GET
-        const res = await fetch(OFFICERS_API);
+        const res = await fetch(OFFICERS_API, {
+            headers: { 'Authorization': 'Bearer ' + token }
+        });
         if (!res.ok) throw new Error('Status ' + res.status);
         const raw  = await res.json();
         const all  = Array.isArray(raw) ? raw : (raw.officers || raw.items || raw.data || []);
