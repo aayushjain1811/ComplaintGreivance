@@ -3,1051 +3,829 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Complaints - Digital Grievance Portal</title>
+    <title>All Complaints – Digital Grievance Redressal Platform</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #0A2E5C;
-            --background: #F2F2F2;
-            --accent: #FF9933;
-            --success: #138808;
-            --error: #C62828;
-            --white: #FFFFFF;
-            --sidebar-width: 260px;
+            --primary:#0A2558; --primary-dark:#06173a; --primary-light:#1a3d7c;
+            --accent:#E8842A; --green:#0e7c3b; --white:#FFFFFF;
+            --bg:#F0F2F8; --text:#1c2b4a; --text-muted:#6b7a99;
+            --border:#e2e8f0; --sidebar-w:272px; --error-clr:#C62828;
+            --card-shadow:0 4px 24px rgba(10,37,88,0.09);
+            --card-shadow-hover:0 12px 40px rgba(10,37,88,0.16);
         }
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+        html{scroll-behavior:smooth;}
+        body{font-family:'DM Sans','Noto Sans Devanagari',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;}
+        a{text-decoration:none;color:inherit;}
+                /* ── PAGE LOADER ──────────────────────────────────────────── */
+        #page-loader {
+            position:fixed; inset:0; z-index:9999;
+            background:var(--primary-dk);
+            display:flex; flex-direction:column; align-items:center; justify-content:center;
+            transition:opacity .55s ease, visibility .55s ease;
+        }
+        #page-loader.out { opacity:0; visibility:hidden; }
+        .chakra-svg { width:72px; height:72px; animation:chakra-spin 1.1s linear infinite; }
+        @keyframes chakra-spin { to { transform:rotate(360deg); } }
+        .loader-label {
+            margin-top:18px; color:rgba(255,255,255,.7);
+            font-size:13px; font-weight:500; letter-spacing:2.5px; text-transform:uppercase;
+        }
+        .loader-dots { display:flex; gap:6px; margin-top:14px; }
+        .loader-dot {
+            width:7px; height:7px; border-radius:50%; background:var(--accent);
+            animation:dot-bounce .9s ease-in-out infinite;
+        }
+        .loader-dot:nth-child(2) { animation-delay:.15s; }
+        .loader-dot:nth-child(3) { animation-delay:.3s;  }
+        @keyframes dot-bounce { 0%,80%,100%{transform:scale(.6);opacity:.4} 40%{transform:scale(1);opacity:1} }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+        .tricolor{height:5px;background:linear-gradient(to right,#FF9933 0%,#FF9933 33.33%,#fff 33.33%,#fff 66.66%,#138808 66.66%,#138808 100%);position:fixed;top:0;left:0;right:0;z-index:1100;}
 
-        body {
-            font-family: 'Roboto', 'Noto Sans Devanagari', sans-serif;
-            background-color: var(--background);
-            color: #333;
-            overflow-x: hidden;
-        }
+        /* SIDEBAR */
+        .sidebar{position:fixed;left:0;top:5px;bottom:0;width:var(--sidebar-w);background:linear-gradient(180deg,var(--primary-dark) 0%,var(--primary) 60%,var(--primary-light) 100%);color:#fff;z-index:1000;overflow-y:auto;overflow-x:hidden;display:flex;flex-direction:column;box-shadow:4px 0 30px rgba(0,0,0,0.18);transition:transform 0.3s ease;}
+        .sidebar::-webkit-scrollbar{width:4px;}
+        .sidebar::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.12);border-radius:2px;}
+        .sidebar::before{content:'';position:absolute;inset:0;pointer-events:none;background:url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M0 40L40 0H20L0 20M40 40V20L20 40'/%3E%3C/g%3E%3C/svg%3E");}
+        .sidebar-logo{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:12px;position:relative;}
+        .sidebar-logo-icon{width:44px;height:44px;border-radius:12px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--accent);flex-shrink:0;}
+        .sidebar-logo-text h4{font-family:'Playfair Display',serif;font-size:14px;font-weight:700;color:#fff;line-height:1.2;}
+        .sidebar-logo-text p{font-size:10px;color:rgba(255,255,255,0.5);margin-top:2px;}
+        .sidebar-section-label{font-size:10px;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;color:rgba(255,255,255,0.35);padding:18px 20px 8px;}
+        .sidebar-nav{list-style:none;padding:8px 12px;}
+        .sidebar-nav li{margin-bottom:3px;}
+        .sidebar-nav a{display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:10px;color:rgba(255,255,255,0.75);font-size:14px;font-weight:500;transition:all 0.25s;position:relative;overflow:hidden;}
+        .sidebar-nav a i{width:20px;text-align:center;font-size:15px;flex-shrink:0;}
+        .sidebar-nav a:hover{background:rgba(255,255,255,0.08);color:#fff;}
+        .sidebar-nav a.active{background:rgba(232,132,42,0.18);color:#fff;border:1px solid rgba(232,132,42,0.25);}
+        .sidebar-nav a.active i{color:var(--accent);}
+        .sidebar-nav a.active::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:3px;background:var(--accent);border-radius:0 2px 2px 0;}
+        .sidebar-logout{padding:12px;border-top:1px solid rgba(255,255,255,0.08);}
+        .sidebar-logout a{display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:10px;color:rgba(255,255,255,0.6);font-size:14px;transition:all 0.25s;}
+        .sidebar-logout a:hover{background:rgba(198,40,40,0.15);color:#ef9a9a;}
+        .user-panel{padding:16px 20px;border-top:1px solid rgba(255,255,255,0.08);display:flex;align-items:center;gap:12px;}
+        .user-avatar{width:40px;height:40px;border-radius:10px;background:linear-gradient(135deg,var(--accent),#d6741e);display:flex;align-items:center;justify-content:center;font-size:17px;font-weight:700;color:#fff;flex-shrink:0;}
+        .user-name{font-size:13px;font-weight:700;color:#fff;}
+        .user-role-txt{font-size:11px;color:rgba(255,255,255,0.5);margin-top:1px;}
 
-        .tricolor-strip {
-            height: 5px;
-            background: linear-gradient(to right, #FF9933 0%, #FF9933 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #138808 66.66%, #138808 100%);
-            position: fixed; top: 0; left: 0; right: 0; z-index: 1001;
-        }
+        /* MAIN */
+        .main{margin-left:var(--sidebar-w);min-height:100vh;padding:24px;margin-top:5px;}
 
-        /* ── Sidebar ── */
-        .sidebar {
-            position: fixed; left: 0; top: 5px; bottom: 0;
-            width: var(--sidebar-width);
-            background: linear-gradient(180deg, var(--primary) 0%, #1a4d8f 100%);
-            color: var(--white); padding: 20px 0;
-            transition: all 0.3s ease; z-index: 1000; overflow-y: auto;
-        }
-        .sidebar-header { padding: 0 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
-        .sidebar-header h4 { font-size: 18px; font-weight: 700; margin-bottom: 5px; }
-        .sidebar-header p { font-size: 12px; opacity: 0.8; margin: 0; }
-        .sidebar-menu { list-style: none; padding: 0; }
-        .sidebar-menu li { margin-bottom: 5px; }
-        .sidebar-menu a {
-            display: flex; align-items: center; padding: 12px 20px;
-            color: var(--white); text-decoration: none; transition: all 0.3s ease; position: relative;
-        }
-        .sidebar-menu a::before {
-            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
-            background-color: var(--accent); transform: scaleY(0); transition: transform 0.3s ease;
-        }
-        .sidebar-menu a:hover, .sidebar-menu a.active { background-color: rgba(255,255,255,0.1); }
-        .sidebar-menu a.active::before { transform: scaleY(1); }
-        .sidebar-menu a i { width: 25px; margin-right: 10px; font-size: 16px; }
-        .user-profile { padding: 20px; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
-        .user-profile-content { display: flex; align-items: center; gap: 10px; }
-        .user-avatar {
-            width: 40px; height: 40px; border-radius: 50%; background-color: var(--accent);
-            display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700;
-        }
-        .user-info .name { font-size: 14px; font-weight: 600; }
-        .user-info .role { font-size: 11px; opacity: 0.7; }
+        /* TOP BAR */
+        .topbar{background:#fff;border-radius:16px;padding:18px 24px;box-shadow:var(--card-shadow);margin-bottom:22px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;}
+        .topbar-left h2{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--primary);margin-bottom:3px;}
+        .topbar-left p{font-size:13px;color:var(--text-muted);}
+        .topbar-right{display:flex;align-items:center;gap:10px;flex-wrap:wrap;}
+        .btn-topbar{padding:9px 20px;border:none;border-radius:9px;font-size:13px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center;gap:7px;font-family:'DM Sans',sans-serif;transition:all 0.25s;}
+        .btn-secondary-t{background:var(--bg);color:var(--text);border:1.5px solid var(--border);}
+        .btn-secondary-t:hover{background:#e8edf5;}
+        .btn-primary-t{background:linear-gradient(135deg,var(--accent),#d6741e);color:#fff;box-shadow:0 3px 14px rgba(232,132,42,0.35);}
+        .btn-primary-t:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(232,132,42,0.45);}
 
-        /* ── Main ── */
-        .main-content { margin-left: var(--sidebar-width); padding: 25px; min-height: 100vh; margin-top: 5px; }
+        /* ERROR BANNER */
+        .error-banner{background:#fff0f0;border:1px solid #ffcdd2;color:var(--error-clr);border-radius:12px;padding:13px 18px;margin-bottom:20px;display:none;align-items:center;gap:12px;font-size:13.5px;}
+        .error-banner.show{display:flex;}
+        .btn-retry{margin-left:auto;background:none;border:1px solid var(--error-clr);color:var(--error-clr);padding:4px 12px;border-radius:6px;cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+        .btn-retry:hover{background:var(--error-clr);color:#fff;}
 
-        .top-bar {
-            background-color: var(--white); padding: 20px 25px; border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 25px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .welcome-text h2 { font-size: 24px; font-weight: 700; color: var(--primary); margin-bottom: 5px; }
-        .welcome-text p { font-size: 14px; color: #666; margin: 0; }
-        .top-actions { display: flex; gap: 10px; }
+        /* FILTERS CARD */
+        .filters-card{background:#fff;border-radius:16px;padding:20px 22px;box-shadow:var(--card-shadow);margin-bottom:22px;}
+        .filters-title{font-size:13px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1px;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+        .filters-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:14px;margin-bottom:16px;}
+        .filter-grp label{font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:0.5px;text-transform:uppercase;margin-bottom:6px;display:block;}
+        .filter-ctrl{width:100%;border:1.5px solid var(--border);border-radius:9px;padding:10px 36px 10px 14px;font-size:13.5px;font-family:'DM Sans',sans-serif;color:var(--text);background:var(--bg);outline:none;transition:all 0.25s;-webkit-appearance:none;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b7a99' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center;}
+        .filter-ctrl:focus{border-color:var(--primary);background-color:#fff;box-shadow:0 0 0 3px rgba(10,37,88,0.07);}
+        .filter-ctrl-input{background-image:none;padding-right:14px;}
+        .bulk-row{display:flex;gap:10px;flex-wrap:wrap;padding-top:16px;border-top:1px solid var(--border);}
 
-        .btn-action {
-            padding: 8px 20px; border: none; border-radius: 5px;
-            font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;
-        }
-        .btn-primary-action { background-color: var(--accent); color: var(--white); }
-        .btn-primary-action:hover { background-color: #e68a2e; transform: translateY(-2px); }
-        .btn-secondary-action { background-color: var(--background); color: var(--primary); }
-        .btn-secondary-action:hover { background-color: #e0e0e0; }
+        /* TABLE CARD */
+        .table-card{background:#fff;border-radius:16px;padding:22px;box-shadow:var(--card-shadow);margin-bottom:22px;}
+        .table-card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:18px;flex-wrap:wrap;gap:12px;}
+        .table-card-title{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:var(--primary);}
+        .table-info-row{display:flex;align-items:center;gap:12px;}
+        .table-count-pill{font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px;background:#f0f4ff;color:var(--primary);border:1px solid #d4deff;}
+        .table-wrap{overflow-x:auto;border-radius:10px;border:1px solid var(--border);}
+        table{width:100%;border-collapse:collapse;}
+        thead tr{background:linear-gradient(135deg,var(--primary),var(--primary-light));}
+        thead th{padding:13px 14px;text-align:left;font-size:11px;font-weight:700;color:rgba(255,255,255,0.9);white-space:nowrap;letter-spacing:0.5px;text-transform:uppercase;}
+        thead th input[type="checkbox"]{accent-color:var(--accent);width:15px;height:15px;}
+        tbody tr{border-bottom:1px solid var(--border);transition:background 0.2s;}
+        tbody tr:last-child{border-bottom:none;}
+        tbody tr:hover{background:#f7f9ff;}
+        tbody tr.selected-row{background:#fff8f0;}
+        tbody td{padding:12px 14px;font-size:13.5px;vertical-align:middle;}
+        .complaint-id{font-weight:700;color:var(--primary);font-size:12px;}
 
-        /* ── Error Banner ── */
-        .error-banner {
-            background-color: #ffebee; border: 1px solid #ef9a9a; color: var(--error);
-            padding: 12px 16px; border-radius: 8px; margin-bottom: 20px;
-            display: none; align-items: center; gap: 10px; font-size: 14px;
-        }
-        .error-banner.show { display: flex; }
+        /* BADGES */
+        .status-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap;}
+        .s-submitted{background:#e3f2fd;color:#0d47a1;border:1px solid #bbdefb;}
+        .s-under-review{background:#fff8e1;color:#e65100;border:1px solid #ffe082;}
+        .s-in-progress{background:#e8eaf6;color:#283593;border:1px solid #c5cae9;}
+        .s-resolved{background:#e8f5e9;color:#1b5e20;border:1px solid #c8e6c9;}
+        .s-closed{background:#f3f4f6;color:#4b5563;border:1px solid #d1d5db;}
+        .priority-badge{display:inline-block;padding:4px 12px;border-radius:20px;font-size:11px;font-weight:700;}
+        .p-low{background:#e8f5e9;color:#2e7d32;border:1px solid #c8e6c9;}
+        .p-medium{background:#fff3e0;color:#e65100;border:1px solid #ffe082;}
+        .p-high{background:#ffebee;color:#b71c1c;border:1px solid #ffcdd2;}
+        .p-critical{background:#b71c1c;color:#fff;}
 
-        /* ── Filters ── */
-        .filters-section {
-            background-color: var(--white); padding: 20px; border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 25px;
-        }
-        .filters-row {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px; margin-bottom: 15px;
-        }
-        .filter-group label { font-size: 13px; font-weight: 600; color: #666; margin-bottom: 5px; display: block; }
-        .filter-group select, .filter-group input {
-            width: 100%; padding: 8px 12px; border: 1px solid #ddd;
-            border-radius: 5px; font-size: 14px; transition: all 0.3s ease;
-        }
-        .filter-group select:focus, .filter-group input:focus { outline: none; border-color: var(--primary); }
-        .bulk-actions { display: flex; gap: 10px; padding-top: 15px; border-top: 1px solid #eee; flex-wrap: wrap; }
+        /* ACTION BUTTONS */
+        .action-btns{display:flex;gap:6px;}
+        .btn-act{width:30px;height:30px;border:none;border-radius:8px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;transition:all 0.2s;}
+        .btn-act:hover{transform:scale(1.12);}
+        .btn-view-a{background:#e8f0fe;color:#1a73e8;}
+        .btn-view-a:hover{background:#1a73e8;color:#fff;}
+        .btn-edit-a{background:#fff3e0;color:var(--accent);}
+        .btn-edit-a:hover{background:var(--accent);color:#fff;}
+        .btn-del-a{background:#ffebee;color:var(--error-clr);}
+        .btn-del-a:hover{background:var(--error-clr);color:#fff;}
 
-        /* ── Table ── */
-        .table-section {
-            background-color: var(--white); padding: 25px; border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 25px;
-        }
-        .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .table-header h5 { font-size: 18px; font-weight: 700; color: var(--primary); margin: 0; }
-        .table-info { display: flex; align-items: center; gap: 15px; font-size: 13px; color: #666; }
-        .table-responsive { overflow-x: auto; }
-        .complaints-table { width: 100%; border-collapse: collapse; }
-        .complaints-table th {
-            background-color: var(--primary); color: var(--white);
-            padding: 12px; text-align: left; font-size: 13px; font-weight: 600; white-space: nowrap;
-        }
-        .complaints-table td { padding: 12px; border-bottom: 1px solid #eee; font-size: 13px; vertical-align: middle; }
-        .complaints-table tr:hover { background-color: #f8f9fa; }
+        /* PAGINATION */
+        .pagination-row{display:flex;justify-content:center;align-items:center;gap:10px;margin-top:20px;flex-wrap:wrap;}
+        .pagination-row button{padding:8px 16px;border:1.5px solid var(--border);background:#fff;color:var(--primary);border-radius:8px;cursor:pointer;font-size:13px;font-weight:600;font-family:'DM Sans',sans-serif;transition:all 0.25s;}
+        .pagination-row button:hover:not(:disabled){background:var(--primary);color:#fff;border-color:var(--primary);}
+        .pagination-row button:disabled{opacity:0.45;cursor:not-allowed;}
+        .page-info-txt{font-size:13px;color:var(--text-muted);font-weight:500;}
 
-        .status-badge {
-            display: inline-block; padding: 4px 12px; border-radius: 20px;
-            font-size: 11px; font-weight: 600; white-space: nowrap;
-        }
-        .status-submitted { background-color: #0dcaf0; color: #000; }
-        .status-under-review { background-color: #ffc107; color: #000; }
-        .status-in-progress { background-color: #0d6efd; color: #fff; }
-        .status-resolved { background-color: var(--success); color: #fff; }
-        .status-closed { background-color: #6c757d; color: #fff; }
+        /* LOADING */
+        .spinner-wrap{display:flex;align-items:center;justify-content:center;gap:12px;padding:50px;color:var(--text-muted);font-size:14px;}
+        .spinner{width:24px;height:24px;border:3px solid #ddd;border-top-color:var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;flex-shrink:0;}
+        @keyframes spin{to{transform:rotate(360deg)}}
+        .table-msg{text-align:center;padding:50px 20px;color:var(--text-muted);}
+        .table-msg-icon{width:64px;height:64px;border-radius:50%;background:#f0f4ff;display:flex;align-items:center;justify-content:center;font-size:26px;color:var(--primary);margin:0 auto 14px;}
 
-        .priority-badge {
-            display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600;
-        }
-        .priority-low { background-color: #e8f5e9; color: #2e7d32; }
-        .priority-medium { background-color: #fff3e0; color: #e65100; }
-        .priority-high { background-color: #ffebee; color: #c62828; }
-        .priority-critical { background-color: #b71c1c; color: #fff; }
+        /* MODAL BASE */
+        .modal-overlay{position:fixed;inset:0;background:rgba(6,23,58,0.65);backdrop-filter:blur(4px);z-index:2000;display:none;align-items:center;justify-content:center;padding:20px;}
+        .modal-overlay.open{display:flex;}
+        .modal-box{background:#fff;border-radius:20px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 30px 80px rgba(0,0,0,0.3);animation:modal-in 0.3s ease;}
+        @keyframes modal-in{from{opacity:0;transform:scale(0.94) translateY(-12px)}to{opacity:1;transform:scale(1) translateY(0)}}
+        .modal-header{background:linear-gradient(135deg,var(--primary),var(--primary-light));padding:22px 26px;border-radius:20px 20px 0 0;display:flex;align-items:center;justify-content:space-between;}
+        .modal-header h5{font-family:'Playfair Display',serif;font-size:18px;font-weight:700;color:#fff;margin:0;}
+        .modal-close-btn{background:rgba(255,255,255,0.12);border:none;width:34px;height:34px;border-radius:8px;color:#fff;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s;}
+        .modal-close-btn:hover{background:rgba(255,255,255,0.22);}
+        .modal-body{padding:26px;}
+        .modal-footer{padding:16px 26px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end;}
+        .btn-modal-close{padding:10px 22px;border:1.5px solid var(--border);border-radius:9px;background:#fff;color:var(--text);font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.2s;}
+        .btn-modal-close:hover{background:var(--bg);}
+        .btn-modal-primary{padding:10px 22px;border:none;border-radius:9px;background:linear-gradient(135deg,var(--accent),#d6741e);color:#fff;font-size:13px;font-weight:700;cursor:pointer;font-family:'DM Sans',sans-serif;transition:all 0.25s;display:inline-flex;align-items:center;gap:7px;box-shadow:0 3px 12px rgba(232,132,42,0.35);}
+        .btn-modal-primary:hover{transform:translateY(-2px);box-shadow:0 6px 20px rgba(232,132,42,0.45);}
 
-        .action-buttons { display: flex; gap: 5px; }
-        .btn-icon {
-            width: 30px; height: 30px; border: none; border-radius: 5px;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.3s ease; font-size: 12px;
-        }
-        .btn-view { background-color: #0d6efd; color: var(--white); }
-        .btn-view:hover { background-color: #0b5ed7; }
-        .btn-edit { background-color: var(--accent); color: var(--white); }
-        .btn-edit:hover { background-color: #e68a2e; }
-        .btn-delete { background-color: var(--error); color: var(--white); }
-        .btn-delete:hover { background-color: #a71d2a; }
+        /* VIEW MODAL */
+        .view-modal-box{max-width:720px;}
+        .detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px;}
+        .detail-item label{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.6px;display:block;margin-bottom:4px;}
+        .detail-item span{font-size:14px;color:var(--text);font-weight:500;}
+        .detail-full{grid-column:1/-1;}
+        .description-box{background:var(--bg);border-radius:10px;padding:14px 16px;font-size:14px;line-height:1.75;color:var(--text);border-left:4px solid var(--accent);}
+        .timeline{margin-top:8px;display:flex;flex-direction:column;gap:12px;}
+        .timeline-item{display:flex;gap:12px;align-items:flex-start;}
+        .timeline-dot{width:10px;height:10px;border-radius:50%;background:var(--accent);margin-top:4px;flex-shrink:0;}
+        .timeline-text{font-size:13px;color:var(--text-muted);line-height:1.6;}
+        .timeline-text strong{color:var(--text);}
 
-        /* ── Pagination ── */
-        .pagination { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 20px; }
-        .pagination button {
-            padding: 8px 12px; border: 1px solid #ddd; background-color: var(--white);
-            color: var(--primary); border-radius: 5px; cursor: pointer; transition: all 0.3s ease;
-        }
-        .pagination button:hover:not(:disabled) { background-color: var(--primary); color: var(--white); }
-        .pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
-        .pagination .page-info { font-size: 14px; color: #666; }
+        /* STATUS MODAL */
+        .status-modal-box{max-width:460px;}
+        .status-options{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:20px;}
+        .status-option{padding:14px;border:2px solid var(--border);border-radius:10px;cursor:pointer;text-align:center;font-size:13px;font-weight:600;transition:all 0.2s;color:var(--text);}
+        .status-option:hover{border-color:var(--primary);background:#f0f4ff;}
+        .status-option.selected{border-color:var(--primary);background:var(--primary);color:#fff;}
+        .remarks-box{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;resize:vertical;min-height:80px;font-family:'DM Sans',sans-serif;color:var(--text);outline:none;transition:border-color 0.25s;background:var(--bg);}
+        .remarks-box:focus{border-color:var(--primary);background:#fff;}
 
-        /* ── Loading ── */
-        .loading-spinner {
-            display: flex; justify-content: center; align-items: center;
-            padding: 50px; gap: 12px; color: var(--primary); font-size: 14px;
-        }
-        .spinner {
-            width: 24px; height: 24px; border: 3px solid #ddd;
-            border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
+        /* ASSIGN MODAL */
+        .assign-modal-box{max-width:460px;}
+        .officer-list{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;max-height:280px;overflow-y:auto;}
+        .officer-item{display:flex;align-items:center;gap:12px;padding:13px 16px;border:2px solid var(--border);border-radius:12px;cursor:pointer;transition:all 0.2s;}
+        .officer-item:hover{border-color:var(--accent);background:#fffaf5;}
+        .officer-item.selected{border-color:var(--accent);background:#fff3e0;}
+        .officer-av{width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,var(--primary),var(--primary-light));color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;flex-shrink:0;}
+        .officer-name{font-size:14px;font-weight:700;color:var(--text);}
+        .officer-dept{font-size:12px;color:var(--text-muted);}
 
-        /* ── Modal Base ── */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.55);
-            z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px;
-        }
-        .modal-overlay.open { display: flex; }
-        .modal-box {
-            background: var(--white); border-radius: 12px; width: 100%;
-            max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            animation: modalIn 0.25s ease;
-        }
-        @keyframes modalIn { from { opacity:0; transform: scale(0.95) translateY(-10px); } to { opacity:1; transform: scale(1) translateY(0); } }
-        .modal-header {
-            background: linear-gradient(135deg, var(--primary), #1a4d8f);
-            color: var(--white); padding: 20px 25px; border-radius: 12px 12px 0 0;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .modal-header h5 { margin: 0; font-size: 18px; font-weight: 700; }
-        .modal-close {
-            background: none; border: none; color: var(--white); font-size: 22px;
-            cursor: pointer; line-height: 1; opacity: 0.8; transition: opacity 0.2s;
-        }
-        .modal-close:hover { opacity: 1; }
-        .modal-body { padding: 25px; }
-        .modal-footer { padding: 15px 25px; border-top: 1px solid #eee; display: flex; gap: 10px; justify-content: flex-end; }
+        /* TOAST */
+        .toast-wrap{position:fixed;top:24px;right:24px;z-index:3000;display:flex;flex-direction:column;gap:10px;}
+        .toast-item{background:#fff;border-radius:12px;padding:14px 18px;box-shadow:0 8px 30px rgba(0,0,0,0.15);display:flex;align-items:center;gap:12px;font-size:13.5px;min-width:280px;border-left:4px solid var(--green);animation:toast-in 0.35s ease;}
+        .toast-item.warning{border-left-color:var(--accent);}
+        .toast-item.error{border-left-color:var(--error-clr);}
+        @keyframes toast-in{from{opacity:0;transform:translateX(40px)}to{opacity:1;transform:translateX(0)}}
 
-        /* ── View Modal specific ── */
-        .view-modal-box { max-width: 700px; }
-        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-        .detail-item label { font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px; }
-        .detail-item span { font-size: 14px; color: #333; font-weight: 500; }
-        .detail-full { grid-column: 1 / -1; }
-        .description-box {
-            background: #f8f9fa; border-radius: 8px; padding: 15px;
-            font-size: 14px; line-height: 1.7; color: #444; border-left: 4px solid var(--accent);
-        }
-        .timeline { margin-top: 10px; }
-        .timeline-item { display: flex; gap: 12px; margin-bottom: 14px; }
-        .timeline-dot {
-            width: 10px; height: 10px; border-radius: 50%; background: var(--accent);
-            margin-top: 4px; flex-shrink: 0;
-        }
-        .timeline-text { font-size: 13px; color: #555; }
-        .timeline-text strong { color: #333; }
-
-        /* ── Status Update Modal ── */
-        .status-modal-box { max-width: 450px; }
-        .status-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .status-option {
-            padding: 14px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer;
-            text-align: center; font-size: 13px; font-weight: 600; transition: all 0.2s;
-        }
-        .status-option:hover { border-color: var(--primary); background: #f0f4ff; }
-        .status-option.selected { border-color: var(--primary); background: var(--primary); color: var(--white); }
-        .remarks-box {
-            width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px;
-            font-size: 14px; resize: vertical; min-height: 80px; font-family: inherit;
-        }
-        .remarks-box:focus { outline: none; border-color: var(--primary); }
-
-        /* ── Assign Modal ── */
-        .assign-modal-box { max-width: 450px; }
-        .officer-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; max-height: 280px; overflow-y: auto; }
-        .officer-item {
-            display: flex; align-items: center; gap: 12px; padding: 12px;
-            border: 2px solid #ddd; border-radius: 8px; cursor: pointer; transition: all 0.2s;
-        }
-        .officer-item:hover { border-color: var(--accent); background: #fffaf5; }
-        .officer-item.selected { border-color: var(--accent); background: #fff3e0; }
-        .officer-avatar {
-            width: 36px; height: 36px; border-radius: 50%; background: var(--primary);
-            color: var(--white); display: flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: 14px; flex-shrink: 0;
-        }
-        .officer-name { font-size: 14px; font-weight: 600; }
-        .officer-dept { font-size: 12px; color: #888; }
-
-        /* ── Toast ── */
-        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 10px; }
-        .toast {
-            background: var(--white); border-radius: 8px; padding: 14px 18px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px;
-            font-size: 14px; min-width: 280px; animation: toastIn 0.3s ease;
-            border-left: 4px solid var(--success);
-        }
-        .toast.error { border-left-color: var(--error); }
-        .toast.warning { border-left-color: var(--accent); }
-        @keyframes toastIn { from { opacity:0; transform: translateX(40px); } to { opacity:1; transform: translateX(0); } }
-
-        @media (max-width: 992px) {
-            .sidebar { transform: translateX(-100%); }
-            .main-content { margin-left: 0; }
-            .top-bar { flex-direction: column; align-items: flex-start; gap: 15px; }
-        }
-        @media (max-width: 768px) {
-            .filters-row { grid-template-columns: 1fr; }
-            .detail-grid { grid-template-columns: 1fr; }
-            .status-options { grid-template-columns: 1fr; }
-        }
+        /* MOBILE TOGGLE */
+        .sidebar-toggle{display:none;position:fixed;top:13px;left:14px;z-index:1200;width:38px;height:38px;border-radius:9px;background:var(--primary);border:none;color:#fff;font-size:16px;cursor:pointer;align-items:center;justify-content:center;}
+        @media(max-width:992px){.sidebar{transform:translateX(-100%)}.sidebar.open{transform:translateX(0)}.main{margin-left:0}.sidebar-toggle{display:flex}}
+        @media(max-width:768px){.filters-grid{grid-template-columns:1fr}.detail-grid{grid-template-columns:1fr}.status-options{grid-template-columns:1fr}.main{padding:14px}}
     </style>
 </head>
 <body>
-    <div class="tricolor-strip"></div>
+<!-- PAGE LOADER -->
+<div id="page-loader">
+    <svg class="chakra-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="46" stroke="#FF9933" stroke-width="4" fill="none"/>
+        <circle cx="50" cy="50" r="8" fill="#138808"/>
+        <g stroke="#003580" stroke-width="1.8">
+            <line x1="50" y1="50" x2="50" y2="6"/>       <line x1="50" y1="50" x2="66" y2="9"/>
+            <line x1="50" y1="50" x2="79" y2="21"/>      <line x1="50" y1="50" x2="86" y2="34"/>
+            <line x1="50" y1="50" x2="89" y2="50"/>      <line x1="50" y1="50" x2="86" y2="66"/>
+            <line x1="50" y1="50" x2="79" y2="79"/>      <line x1="50" y1="50" x2="66" y2="91"/>
+            <line x1="50" y1="50" x2="50" y2="94"/>      <line x1="50" y1="50" x2="34" y2="91"/>
+            <line x1="50" y1="50" x2="21" y2="79"/>      <line x1="50" y1="50" x2="14" y2="66"/>
+            <line x1="50" y1="50" x2="11" y2="50"/>      <line x1="50" y1="50" x2="14" y2="34"/>
+            <line x1="50" y1="50" x2="21" y2="21"/>      <line x1="50" y1="50" x2="34" y2="9"/>
+            <line x1="50" y1="50" x2="58" y2="7.5"/>     <line x1="50" y1="50" x2="73" y2="14"/>
+            <line x1="50" y1="50" x2="83" y2="27"/>      <line x1="50" y1="50" x2="88" y2="42"/>
+            <line x1="50" y1="50" x2="88" y2="58"/>      <line x1="50" y1="50" x2="83" y2="73"/>
+            <line x1="50" y1="50" x2="73" y2="86"/>      <line x1="50" y1="50" x2="58" y2="92.5"/>
+        </g>
+        <circle cx="50" cy="50" r="4" fill="#FF9933"/>
+    </svg>
+    <p class="loader-label">Complaints</p>
+    <div class="loader-dots">
+        <div class="loader-dot"></div>
+        <div class="loader-dot"></div>
+        <div class="loader-dot"></div>
+    </div>
+</div>
 
-    <!-- Toast Container -->
-    <div class="toast-container" id="toastContainer"></div>
+<div class="tricolor"></div>
+<div class="toast-wrap" id="toasts"></div>
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <h4><i class="fas fa-landmark"></i> Gov Portal</h4>
-            <p>Complaint Management System</p>
+<button class="sidebar-toggle" onclick="document.getElementById('sidebar').classList.toggle('open')">
+    <i class="fas fa-bars"></i>
+</button>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+        <div class="sidebar-logo-icon"><i class="fas fa-landmark"></i></div>
+        <div class="sidebar-logo-text">
+            <h4>Gov Portal</h4>
+            <p>Grievance Management System</p>
         </div>
-        <ul class="sidebar-menu">
-            <li><a href="dashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a></li>
-            <li><a href="all-complaints.html" class="active"><i class="fas fa-file-alt"></i><span>All Complaints</span></a></li>
-            <li><a href="pending.html"><i class="fas fa-clock"></i><span>Pending</span></a></li>
-            <li><a href="resolved.html"><i class="fas fa-check-circle"></i><span>Resolved</span></a></li>
-            <li><a href="admin-departments.html"><i class="fas fa-building"></i><span>Departments</span></a></li>
-            <li><a href="analytics.html"><i class="fas fa-chart-bar"></i><span>Analytics</span></a></li>
-            <li><a href="notification.html"><i class="fas fa-bell"></i><span>Notifications</span></a></li>
-            <li><a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a></li>
-            <li><a href="login.html" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
-        </ul>
-        <div class="user-profile">
-            <div class="user-profile-content">
-                <div class="user-avatar" id="userAvatarLetter">A</div>
-                <div class="user-info">
-                    <div class="name" id="userName">Officer</div>
-                    <div class="role">System Administrator</div>
-                </div>
-            </div>
+    </div>
+    <div class="sidebar-section-label">Main Navigation</div>
+    <ul class="sidebar-nav">
+        <li><a href="dashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a></li>
+        <li><a href="all-complaints.html" class="active"><i class="fas fa-file-alt"></i><span>All Complaints</span></a></li>
+        <li><a href="pending.html"><i class="fas fa-clock"></i><span>Pending</span></a></li>
+        <li><a href="resolved.html"><i class="fas fa-check-circle"></i><span>Resolved</span></a></li>
+    </ul>
+    <div class="sidebar-section-label">Management</div>
+    <ul class="sidebar-nav">
+        <li><a href="admin-departments.html"><i class="fas fa-building"></i><span>Departments</span></a></li>
+        <li><a href="analytics.html"><i class="fas fa-chart-bar"></i><span>Analytics</span></a></li>
+        <li><a href="notification.html"><i class="fas fa-bell"></i><span>Notifications</span></a></li>
+        <li><a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a></li>
+    </ul>
+    <div style="flex:1;"></div>
+    <div class="user-panel">
+        <div class="user-avatar" id="userAvatarLetter">A</div>
+        <div>
+            <div class="user-name" id="userName">Officer</div>
+            <div class="user-role-txt">System Administrator</div>
         </div>
-    </aside>
+    </div>
+    <div class="sidebar-logout">
+        <a href="login.html" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a>
+    </div>
+</aside>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <div class="top-bar">
-            <div class="welcome-text">
-                <h2>All Complaints</h2>
-                <p>Manage and track all grievances submitted by citizens</p>
-            </div>
-            <div class="top-actions">
-                <button class="btn-action btn-secondary-action" onclick="exportData()">
-                    <i class="fas fa-download"></i> Export CSV
-                </button>
-                <button class="btn-action btn-primary-action" onclick="window.location.href='register.html'">
-                    <i class="fas fa-plus"></i> New Complaint
-                </button>
-            </div>
+<!-- MAIN -->
+<main class="main">
+
+    <!-- TOP BAR -->
+    <div class="topbar">
+        <div class="topbar-left">
+            <h2>All Complaints</h2>
+            <p>Manage and track all grievances submitted by citizens</p>
         </div>
-
-        <!-- Error Banner -->
-        <div class="error-banner" id="errorBanner">
-            <i class="fas fa-exclamation-circle"></i>
-            <span id="errorBannerMsg">Unable to load complaints.</span>
-            <button onclick="loadComplaints()" style="margin-left:auto;background:none;border:1px solid var(--error);color:var(--error);padding:4px 10px;border-radius:4px;cursor:pointer;font-size:12px;">
-                Retry
+        <div class="topbar-right">
+            <button class="btn-topbar btn-secondary-t" onclick="exportData()">
+                <i class="fas fa-download"></i> Export CSV
+            </button>
+            <button class="btn-topbar btn-primary-t" onclick="window.location.href='register.html'">
+                <i class="fas fa-plus"></i> New Complaint
             </button>
         </div>
+    </div>
 
-        <!-- Filters -->
-        <div class="filters-section">
-            <div class="filters-row">
-                <div class="filter-group">
-                    <label>Status</label>
-                    <select id="filterStatus">
-                        <option value="">All Status</option>
-                        <option value="Submitted">Submitted</option>
-                        <option value="Under Review">Under Review</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Resolved">Resolved</option>
-                        <option value="Closed">Closed</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label>Department</label>
-                    <select id="filterDepartment">
-                        <option value="">All Departments</option>
-                        <option value="Public Works">Public Works</option>
-                        <option value="Health">Health</option>
-                        <option value="Education">Education</option>
-                        <option value="Police">Police</option>
-                        <option value="Revenue">Revenue</option>
-                        <option value="Water Supply">Water Supply</option>
-                        <option value="Electricity">Electricity</option>
-                        <option value="Sanitation">Sanitation</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label>Priority</label>
-                    <select id="filterPriority">
-                        <option value="">All Priorities</option>
-                        <option value="Low">Low</option>
-                        <option value="Medium">Medium</option>
-                        <option value="High">High</option>
-                        <option value="Critical">Critical</option>
-                    </select>
-                </div>
-                <div class="filter-group">
-                    <label>Search</label>
-                    <input type="text" id="searchInput" placeholder="Search by ID, name, or subject...">
-                </div>
+    <!-- ERROR BANNER -->
+    <div class="error-banner" id="errorBanner">
+        <i class="fas fa-exclamation-circle"></i>
+        <span id="errorBannerMsg">Unable to load complaints.</span>
+        <button class="btn-retry" onclick="loadComplaints()">Retry</button>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="filters-card">
+        <div class="filters-title"><i class="fas fa-filter" style="color:var(--accent);"></i> Filter &amp; Search</div>
+        <div class="filters-grid">
+            <div class="filter-grp">
+                <label>Status</label>
+                <select class="filter-ctrl" id="filterStatus">
+                    <option value="">All Status</option>
+                    <option value="Submitted">Submitted</option>
+                    <option value="Under Review">Under Review</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Resolved">Resolved</option>
+                    <option value="Closed">Closed</option>
+                </select>
             </div>
-            <div class="bulk-actions">
-                <button class="btn-action btn-secondary-action" onclick="selectAll()">
-                    <i class="fas fa-check-square"></i> Select All
-                </button>
-                <button class="btn-action btn-secondary-action" onclick="openBulkAssign()">
-                    <i class="fas fa-user-plus"></i> Bulk Assign
-                </button>
-                <button class="btn-action btn-secondary-action" onclick="openBulkStatus()">
-                    <i class="fas fa-sync"></i> Update Status
-                </button>
+            <div class="filter-grp">
+                <label>Department</label>
+                <select class="filter-ctrl" id="filterDepartment">
+                    <option value="">All Departments</option>
+                    <option value="Public Works">Public Works</option>
+                    <option value="Health">Health</option>
+                    <option value="Education">Education</option>
+                    <option value="Police">Police</option>
+                    <option value="Revenue">Revenue</option>
+                    <option value="Water Supply">Water Supply</option>
+                    <option value="Electricity">Electricity</option>
+                    <option value="Sanitation">Sanitation</option>
+                </select>
+            </div>
+            <div class="filter-grp">
+                <label>Priority</label>
+                <select class="filter-ctrl" id="filterPriority">
+                    <option value="">All Priorities</option>
+                    <option value="Low">Low</option>
+                    <option value="Medium">Medium</option>
+                    <option value="High">High</option>
+                    <option value="Critical">Critical</option>
+                </select>
+            </div>
+            <div class="filter-grp">
+                <label>Search</label>
+                <input type="text" class="filter-ctrl filter-ctrl-input" id="searchInput" placeholder="ID, name, subject…">
             </div>
         </div>
-
-        <!-- Table -->
-        <div class="table-section">
-            <div class="table-header">
-                <h5>All Complaints (<span id="totalCount">0</span>)</h5>
-                <div class="table-info">
-                    <span id="showingInfo">Showing 0–0 of 0</span>
-                    <button class="btn-action btn-secondary-action" onclick="loadComplaints()">
-                        <i class="fas fa-sync-alt"></i> Refresh
-                    </button>
-                </div>
-            </div>
-            <div class="table-responsive">
-                <table class="complaints-table">
-                    <thead>
-                        <tr>
-                            <th><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"></th>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Mobile</th>
-                            <th>Department</th>
-                            <th>Category</th>
-                            <th>Priority</th>
-                            <th>Status</th>
-                            <th>Submitted</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody id="complaintsTableBody">
-                        <tr>
-                            <td colspan="10">
-                                <div class="loading-spinner">
-                                    <div class="spinner"></div>
-                                    <span>Loading complaints from server...</span>
-                                </div>
-                            </td>
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div class="pagination">
-                <button onclick="previousPage()" id="prevBtn" disabled>
-                    <i class="fas fa-chevron-left"></i> Previous
-                </button>
-                <span class="page-info">Page <span id="currentPage">1</span> of <span id="totalPages">1</span></span>
-                <button onclick="nextPage()" id="nextBtn" disabled>
-                    Next <i class="fas fa-chevron-right"></i>
-                </button>
-            </div>
-        </div>
-    </main>
-
-    <!-- ════════════════════════════════════════════
-         VIEW COMPLAINT MODAL
-    ════════════════════════════════════════════ -->
-    <div class="modal-overlay" id="viewModal">
-        <div class="modal-box view-modal-box">
-            <div class="modal-header">
-                <h5><i class="fas fa-file-alt me-2"></i> Complaint Details</h5>
-                <button class="modal-close" onclick="closeModal('viewModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="detail-grid" id="viewDetailGrid"><!-- filled by JS --></div>
-                <div class="mb-3">
-                    <label style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;">Description</label>
-                    <div class="description-box" id="viewDescription">—</div>
-                </div>
-                <div>
-                    <label style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:10px;">Activity Timeline</label>
-                    <div class="timeline" id="viewTimeline"><!-- filled by JS --></div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-action btn-secondary-action" onclick="closeModal('viewModal')">Close</button>
-                <button class="btn-action btn-primary-action" id="viewModalEditBtn">
-                    <i class="fas fa-edit"></i> Update Status
-                </button>
-            </div>
+        <div class="bulk-row">
+            <button class="btn-topbar btn-secondary-t" onclick="selectAll()"><i class="fas fa-check-square"></i> Select All</button>
+            <button class="btn-topbar btn-secondary-t" onclick="openBulkAssign()"><i class="fas fa-user-plus"></i> Bulk Assign</button>
+            <button class="btn-topbar btn-secondary-t" onclick="openBulkStatus()"><i class="fas fa-sync"></i> Bulk Status</button>
         </div>
     </div>
 
-    <!-- ════════════════════════════════════════════
-         UPDATE STATUS MODAL
-    ════════════════════════════════════════════ -->
-    <div class="modal-overlay" id="statusModal">
-        <div class="modal-box status-modal-box">
-            <div class="modal-header">
-                <h5><i class="fas fa-sync me-2"></i> Update Status</h5>
-                <button class="modal-close" onclick="closeModal('statusModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p style="font-size:13px;color:#666;margin-bottom:16px;">
-                    Complaint ID: <strong id="statusComplaintId">—</strong>
-                </p>
-                <label style="font-size:13px;font-weight:600;color:#333;display:block;margin-bottom:10px;">Select New Status</label>
-                <div class="status-options" id="statusOptions">
-                    <div class="status-option" data-status="Submitted" onclick="selectStatus(this)">📋 Submitted</div>
-                    <div class="status-option" data-status="Under Review" onclick="selectStatus(this)">🔍 Under Review</div>
-                    <div class="status-option" data-status="In Progress" onclick="selectStatus(this)">⚙️ In Progress</div>
-                    <div class="status-option" data-status="Resolved" onclick="selectStatus(this)">✅ Resolved</div>
-                    <div class="status-option" data-status="Closed" onclick="selectStatus(this)">🔒 Closed</div>
-                </div>
-                <label style="font-size:13px;font-weight:600;color:#333;display:block;margin-bottom:8px;">Remarks (Optional)</label>
-                <textarea class="remarks-box" id="statusRemarks" placeholder="Add remarks or notes about this status change..."></textarea>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-action btn-secondary-action" onclick="closeModal('statusModal')">Cancel</button>
-                <button class="btn-action btn-primary-action" onclick="submitStatusUpdate()">
-                    <i class="fas fa-check"></i> Save Status
+    <!-- TABLE -->
+    <div class="table-card">
+        <div class="table-card-header">
+            <div class="table-card-title">All Complaints (<span id="totalCount">0</span>)</div>
+            <div class="table-info-row">
+                <span class="table-count-pill" id="showingInfo">Showing 0–0 of 0</span>
+                <button class="btn-topbar btn-secondary-t" style="padding:7px 14px;font-size:12px;" onclick="loadComplaints()">
+                    <i class="fas fa-sync-alt"></i> Refresh
                 </button>
             </div>
         </div>
-    </div>
-
-    <!-- ════════════════════════════════════════════
-         ASSIGN OFFICER MODAL
-    ════════════════════════════════════════════ -->
-    <div class="modal-overlay" id="assignModal">
-        <div class="modal-box assign-modal-box">
-            <div class="modal-header">
-                <h5><i class="fas fa-user-plus me-2"></i> Assign Officer</h5>
-                <button class="modal-close" onclick="closeModal('assignModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p style="font-size:13px;color:#666;margin-bottom:16px;">
-                    Complaint ID: <strong id="assignComplaintId">—</strong>
-                </p>
-                <label style="font-size:13px;font-weight:600;color:#333;display:block;margin-bottom:10px;">Select Officer</label>
-                <div class="officer-list" id="officerList"><!-- filled by JS --></div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-action btn-secondary-action" onclick="closeModal('assignModal')">Cancel</button>
-                <button class="btn-action btn-primary-action" onclick="submitAssignment()">
-                    <i class="fas fa-check"></i> Assign
-                </button>
-            </div>
+        <div class="table-wrap">
+            <table id="complaintsTable">
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"></th>
+                        <th>ID</th><th>Name</th><th>Mobile</th><th>Department</th>
+                        <th>Category</th><th>Priority</th><th>Status</th><th>Submitted</th><th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="complaintsTableBody">
+                    <tr><td colspan="10"><div class="spinner-wrap"><div class="spinner"></div><span>Loading complaints from server…</span></div></td></tr>
+                </tbody>
+            </table>
+        </div>
+        <div class="pagination-row">
+            <button onclick="previousPage()" id="prevBtn" disabled><i class="fas fa-chevron-left"></i> Previous</button>
+            <span class="page-info-txt">Page <span id="currentPage">1</span> of <span id="totalPages">1</span></span>
+            <button onclick="nextPage()" id="nextBtn" disabled>Next <i class="fas fa-chevron-right"></i></button>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
+</main>
 
-    // ══════════════════════════════════════════════════════
-    // 1. AUTH GUARD — decode Cognito JWT for username
-    // ══════════════════════════════════════════════════════
-    const officerToken = localStorage.getItem("officerToken");
-    if (!officerToken) {
-        window.location.href = "login.html";
-    }
+<!-- VIEW MODAL -->
+<div class="modal-overlay" id="viewModal">
+    <div class="modal-box view-modal-box">
+        <div class="modal-header">
+            <h5><i class="fas fa-file-alt me-2"></i>Complaint Details</h5>
+            <button class="modal-close-btn" onclick="closeModal('viewModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div class="detail-grid" id="viewDetailGrid"></div>
+            <div class="mb-4">
+                <label style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.6px;display:block;margin-bottom:8px;">Description</label>
+                <div class="description-box" id="viewDescription">—</div>
+            </div>
+            <div>
+                <label style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.6px;display:block;margin-bottom:10px;">Activity Timeline</label>
+                <div class="timeline" id="viewTimeline"></div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-modal-close" onclick="closeModal('viewModal')">Close</button>
+            <button class="btn-modal-primary" id="viewModalEditBtn"><i class="fas fa-sync"></i> Update Status</button>
+        </div>
+    </div>
+</div>
 
-    function parseJwt(token) {
-        try { return JSON.parse(atob(token.split('.')[1])); } catch (e) { return null; }
-    }
+<!-- STATUS MODAL -->
+<div class="modal-overlay" id="statusModal">
+    <div class="modal-box status-modal-box">
+        <div class="modal-header">
+            <h5><i class="fas fa-sync me-2"></i>Update Status</h5>
+            <button class="modal-close-btn" onclick="closeModal('statusModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div style="background:var(--bg);border-radius:10px;padding:12px 16px;margin-bottom:18px;font-size:13.5px;">
+                Complaint ID: <strong id="statusComplaintId">—</strong>
+            </div>
+            <label style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.6px;display:block;margin-bottom:10px;">Select New Status</label>
+            <div class="status-options" id="statusOptions">
+                <div class="status-option" data-status="Submitted" onclick="selectStatus(this)">📋 Submitted</div>
+                <div class="status-option" data-status="Under Review" onclick="selectStatus(this)">🔍 Under Review</div>
+                <div class="status-option" data-status="In Progress" onclick="selectStatus(this)">⚙️ In Progress</div>
+                <div class="status-option" data-status="Resolved" onclick="selectStatus(this)">✅ Resolved</div>
+                <div class="status-option" data-status="Closed" onclick="selectStatus(this)">🔒 Closed</div>
+            </div>
+            <label style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.6px;display:block;margin-bottom:8px;">Remarks (Optional)</label>
+            <textarea class="remarks-box" id="statusRemarks" placeholder="Add remarks or notes about this status change…"></textarea>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-modal-close" onclick="closeModal('statusModal')">Cancel</button>
+            <button class="btn-modal-primary" onclick="submitStatusUpdate()"><i class="fas fa-check"></i> Save Status</button>
+        </div>
+    </div>
+</div>
 
-    const tokenPayload = parseJwt(officerToken);
-    const displayName  = tokenPayload?.['cognito:username']
-                      || tokenPayload?.['name']
-                      || tokenPayload?.['email']
-                      || 'Officer';
-    document.getElementById('userName').textContent         = displayName;
-    document.getElementById('userAvatarLetter').textContent = displayName.charAt(0).toUpperCase();
+<!-- ASSIGN MODAL -->
+<div class="modal-overlay" id="assignModal">
+    <div class="modal-box assign-modal-box">
+        <div class="modal-header">
+            <h5><i class="fas fa-user-plus me-2"></i>Assign Officer</h5>
+            <button class="modal-close-btn" onclick="closeModal('assignModal')">&times;</button>
+        </div>
+        <div class="modal-body">
+            <div style="background:var(--bg);border-radius:10px;padding:12px 16px;margin-bottom:18px;font-size:13.5px;">
+                Complaint ID: <strong id="assignComplaintId">—</strong>
+            </div>
+            <label style="font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.6px;display:block;margin-bottom:10px;">Select Officer</label>
+            <div class="officer-list" id="officerList"></div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-modal-close" onclick="closeModal('assignModal')">Cancel</button>
+            <button class="btn-modal-primary" onclick="submitAssignment()"><i class="fas fa-check"></i> Assign</button>
+        </div>
+    </div>
+</div>
 
-    // ══════════════════════════════════════════════════════
-    // 2. CONFIG
-    // ══════════════════════════════════════════════════════
-    const API_URL = "https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/admin/complaints";
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ── 1. AUTH ───────────────────────────────────────────────
+const officerToken = localStorage.getItem("officerToken");
+if (!officerToken) window.location.href = "login.html";
 
-    // Sample officers list (replace with your own API call if you have one)
-    const OFFICERS = [
-        { id: "OFF001", name: "Rajesh Kumar",   dept: "Public Works"  },
-        { id: "OFF002", name: "Priya Sharma",   dept: "Health"        },
-        { id: "OFF003", name: "Amit Singh",     dept: "Education"     },
-        { id: "OFF004", name: "Sunita Verma",   dept: "Revenue"       },
-        { id: "OFF005", name: "Vikram Patel",   dept: "Police"        },
-        { id: "OFF006", name: "Meena Joshi",    dept: "Water Supply"  },
-    ];
+function parseJwt(t) { try { return JSON.parse(atob(t.split('.')[1])); } catch(e) { return null; } }
+const tokenPayload = parseJwt(officerToken);
+const displayName  = tokenPayload?.['cognito:username'] || tokenPayload?.['name'] || tokenPayload?.['email'] || 'Officer';
+document.getElementById('userName').textContent         = displayName;
+document.getElementById('userAvatarLetter').textContent = displayName.charAt(0).toUpperCase();
+// ── PAGE LOADER ───────────────────────────────────────────────
+window.addEventListener('load', () => {
+    setTimeout(() => document.getElementById('page-loader').classList.add('out'), 900);
+});
 
-    // ══════════════════════════════════════════════════════
-    // 3. STATE
-    // ══════════════════════════════════════════════════════
-    let allComplaints    = [];
-    let filteredList     = [];
-    let currentPage      = 1;
-    const PER_PAGE       = 10;
-    let selectedIds      = new Set();
-    let activeComplaintId = null;
-    let selectedStatus   = null;
-    let selectedOfficer  = null;
 
-    // ══════════════════════════════════════════════════════
-    // 4. LOAD FROM API GATEWAY → LAMBDA → DYNAMODB
-    // ══════════════════════════════════════════════════════
-    async function loadComplaints() {
-        showTableLoading();
-        hideError();
+// ── 2. CONFIG ─────────────────────────────────────────────
+const API_URL = "https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/admin/complaints";
+const OFFICERS = [
+    { id:"OFF001", name:"Rajesh Kumar",  dept:"Public Works" },
+    { id:"OFF002", name:"Priya Sharma",  dept:"Health"       },
+    { id:"OFF003", name:"Amit Singh",    dept:"Education"    },
+    { id:"OFF004", name:"Sunita Verma",  dept:"Revenue"      },
+    { id:"OFF005", name:"Vikram Patel",  dept:"Police"       },
+    { id:"OFF006", name:"Meena Joshi",   dept:"Water Supply" },
+];
 
-        try {
-            const res = await fetch(API_URL, {
-                method: "GET",
-                headers: {
-                    "Authorization": "Bearer " + officerToken,
-                    "Content-Type": "application/json"
-                }
-            });
+// ── 3. STATE ──────────────────────────────────────────────
+let allComplaints    = [];
+let filteredList     = [];
+let currentPage      = 1;
+const PER_PAGE       = 10;
+let selectedIds      = new Set();
+let activeComplaintId= null;
+let selectedStatus   = null;
+let selectedOfficer  = null;
 
-            if (res.status === 401 || res.status === 403) { logout(); return; }
-            if (!res.ok) throw new Error(`Server responded with ${res.status}`);
-
-            const data = await res.json();
-            allComplaints = Array.isArray(data)
-                ? data
-                : (data.complaints || data.items || data.data || []);
-
-            currentPage = 1;
-            applyFilters();
-
-        } catch (err) {
-            console.error("Load error:", err);
-            showError("Unable to load complaints: " + err.message);
-            showTableError();
-        }
-    }
-
-    function showTableLoading() {
-        document.getElementById('complaintsTableBody').innerHTML = `
-            <tr><td colspan="10">
-                <div class="loading-spinner">
-                    <div class="spinner"></div>
-                    <span>Loading complaints from server...</span>
-                </div>
-            </td></tr>`;
-    }
-
-    function showTableError() {
-        document.getElementById('complaintsTableBody').innerHTML =
-            '<tr><td colspan="10" style="text-align:center;padding:40px;color:#999;">Could not fetch data. Click Refresh to try again.</td></tr>';
-    }
-
-    // ══════════════════════════════════════════════════════
-    // 5. FILTER
-    // ══════════════════════════════════════════════════════
-    function applyFilters() {
-        const statusF  = document.getElementById('filterStatus').value;
-        const deptF    = document.getElementById('filterDepartment').value;
-        const prioF    = document.getElementById('filterPriority').value;
-        const search   = document.getElementById('searchInput').value.toLowerCase().trim();
-
-        filteredList = allComplaints.filter(c => {
-            const id   = (c.complaintId || c.id || '').toLowerCase();
-            const name = (c.name || c.citizenName || '').toLowerCase();
-            const subj = (c.description || c.subject || c.title || '').toLowerCase();
-            const cat  = (c.category || '').toLowerCase();
-
-            if (statusF && c.status !== statusF) return false;
-            if (deptF   && c.department !== deptF) return false;
-            if (prioF   && (c.priority || 'Medium') !== prioF) return false;
-            if (search  && !id.includes(search) && !name.includes(search) && !subj.includes(search) && !cat.includes(search)) return false;
-            return true;
+// ── 4. LOAD ───────────────────────────────────────────────
+async function loadComplaints() {
+    document.getElementById('complaintsTableBody').innerHTML =
+        '<tr><td colspan="10"><div class="spinner-wrap"><div class="spinner"></div><span>Loading complaints from server…</span></div></td></tr>';
+    hideError();
+    try {
+        const res = await fetch(API_URL, {
+            headers: { "Authorization":"Bearer " + officerToken, "Content-Type":"application/json" }
         });
-
+        if (res.status === 401 || res.status === 403) { logout(); return; }
+        if (!res.ok) throw new Error(`Server responded with ${res.status}`);
+        const data = await res.json();
+        allComplaints = Array.isArray(data) ? data : (data.complaints || data.items || data.data || []);
         currentPage = 1;
-        renderTable();
-    }
-
-    // ══════════════════════════════════════════════════════
-    // 6. RENDER TABLE
-    // ══════════════════════════════════════════════════════
-    function renderTable() {
-        const tbody = document.getElementById('complaintsTableBody');
-        tbody.innerHTML = '';
-
-        const total      = filteredList.length;
-        const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
-        if (currentPage > totalPages) currentPage = totalPages;
-
-        document.getElementById('totalCount').textContent  = total;
-        document.getElementById('totalPages').textContent  = totalPages;
-        document.getElementById('currentPage').textContent = currentPage;
-
-        const start = (currentPage - 1) * PER_PAGE;
-        const end   = Math.min(start + PER_PAGE, total);
-
-        document.getElementById('showingInfo').textContent =
-            total === 0 ? 'Showing 0–0 of 0' : `Showing ${start + 1}–${end} of ${total}`;
-        document.getElementById('prevBtn').disabled = currentPage <= 1;
-        document.getElementById('nextBtn').disabled = currentPage >= totalPages || total === 0;
-
-        if (total === 0) {
-            tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:40px;color:#999;">No complaints found</td></tr>';
-            return;
-        }
-
-        const page = filteredList.slice(start, end);
-        page.forEach(c => {
-            const id       = c.complaintId || c.id || '—';
-            const name     = c.name || c.citizenName || '—';
-            const mobile   = c.mobile || c.phone || '—';
-            const dept     = c.department || '—';
-            const category = c.category || '—';
-            const priority = c.priority || 'Medium';
-            const status   = c.status || 'Submitted';
-            const dateStr  = c.createdAt || c.date || c.submittedAt;
-            const date     = dateStr ? new Date(dateStr).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }) : '—';
-
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td><input type="checkbox" class="complaint-checkbox" data-id="${id}" ${selectedIds.has(id)?'checked':''} onchange="toggleOne('${id}')"></td>
-                <td><strong>${id}</strong></td>
-                <td>${name}</td>
-                <td>${mobile}</td>
-                <td>${dept}</td>
-                <td>${category}</td>
-                <td><span class="priority-badge priority-${priority.toLowerCase()}">${priority}</span></td>
-                <td><span class="status-badge status-${status.toLowerCase().replace(/\s+/g,'-')}">${status}</span></td>
-                <td>${date}</td>
-                <td>
-                    <div class="action-buttons">
-                        <button class="btn-icon btn-view"   onclick="openViewModal('${id}')"   title="View Details"><i class="fas fa-eye"></i></button>
-                        <button class="btn-icon btn-edit"   onclick="openStatusModal('${id}')" title="Update Status"><i class="fas fa-sync"></i></button>
-                        <button class="btn-icon btn-delete" onclick="deleteComplaint('${id}')" title="Delete"><i class="fas fa-trash"></i></button>
-                    </div>
-                </td>`;
-            tbody.appendChild(row);
-        });
-    }
-
-    // ══════════════════════════════════════════════════════
-    // 7. PAGINATION
-    // ══════════════════════════════════════════════════════
-    function previousPage() { if (currentPage > 1) { currentPage--; renderTable(); } }
-    function nextPage()     { const tp = Math.ceil(filteredList.length / PER_PAGE); if (currentPage < tp) { currentPage++; renderTable(); } }
-
-    // ══════════════════════════════════════════════════════
-    // 8. SELECTION
-    // ══════════════════════════════════════════════════════
-    function toggleOne(id) {
-        if (selectedIds.has(id)) selectedIds.delete(id);
-        else selectedIds.add(id);
-    }
-
-    function toggleSelectAll() {
-        const checked = document.getElementById('selectAllCheckbox').checked;
-        document.querySelectorAll('.complaint-checkbox').forEach(cb => {
-            cb.checked = checked;
-            if (checked) selectedIds.add(cb.dataset.id);
-            else selectedIds.delete(cb.dataset.id);
-        });
-    }
-
-    function selectAll() {
-        document.getElementById('selectAllCheckbox').checked = true;
-        toggleSelectAll();
-    }
-
-    // ══════════════════════════════════════════════════════
-    // 9. VIEW MODAL
-    // ══════════════════════════════════════════════════════
-    function openViewModal(id) {
-        const c = findComplaint(id);
-        if (!c) return;
-        activeComplaintId = id;
-
-        const fields = [
-            { label: 'Complaint ID', value: c.complaintId || c.id || '—' },
-            { label: 'Submitted By', value: c.name || c.citizenName || '—' },
-            { label: 'Mobile',       value: c.mobile || '—' },
-            { label: 'Email',        value: c.email || '—' },
-            { label: 'State',        value: c.state || '—' },
-            { label: 'District',     value: c.district || '—' },
-            { label: 'Department',   value: c.department || '—' },
-            { label: 'Category',     value: c.category || '—' },
-            { label: 'Priority',     value: c.priority || 'Medium' },
-            { label: 'Status',       value: c.status || 'Submitted' },
-            { label: 'Submitted On', value: c.createdAt ? new Date(c.createdAt).toLocaleString('en-IN') : '—' },
-            { label: 'Assigned To',  value: c.assignedTo || 'Unassigned' },
-        ];
-
-        const grid = document.getElementById('viewDetailGrid');
-        grid.innerHTML = fields.map(f => `
-            <div class="detail-item">
-                <label>${f.label}</label>
-                <span>${f.value}</span>
-            </div>`).join('');
-
-        document.getElementById('viewDescription').textContent = c.description || c.subject || 'No description provided.';
-
-        const timeline = document.getElementById('viewTimeline');
-        const history  = c.history || [];
-        if (history.length === 0) {
-            timeline.innerHTML = `<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-text"><strong>Submitted</strong> — ${c.createdAt ? new Date(c.createdAt).toLocaleString('en-IN') : 'Unknown date'}</div></div>`;
-        } else {
-            timeline.innerHTML = history.map(h => `
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-text"><strong>${h.status}</strong> — ${h.timestamp ? new Date(h.timestamp).toLocaleString('en-IN') : ''} ${h.remarks ? '<br>' + h.remarks : ''}</div>
-                </div>`).join('');
-        }
-
-        document.getElementById('viewModalEditBtn').onclick = () => { closeModal('viewModal'); openStatusModal(id); };
-        openModal('viewModal');
-    }
-
-    // ══════════════════════════════════════════════════════
-    // 10. STATUS UPDATE MODAL
-    // ══════════════════════════════════════════════════════
-    function openStatusModal(id) {
-        const c = findComplaint(id);
-        if (!c) return;
-        activeComplaintId = id;
-        selectedStatus    = null;
-
-        document.getElementById('statusComplaintId').textContent = id;
-        document.getElementById('statusRemarks').value = '';
-        document.querySelectorAll('.status-option').forEach(el => {
-            el.classList.toggle('selected', el.dataset.status === (c.status || 'Submitted'));
-            if (el.dataset.status === (c.status || 'Submitted')) selectedStatus = el.dataset.status;
-        });
-        openModal('statusModal');
-    }
-
-    function selectStatus(el) {
-        document.querySelectorAll('.status-option').forEach(o => o.classList.remove('selected'));
-        el.classList.add('selected');
-        selectedStatus = el.dataset.status;
-    }
-
-    async function submitStatusUpdate() {
-        if (!selectedStatus) { showToast('Please select a status', 'warning'); return; }
-
-        const remarks = document.getElementById('statusRemarks').value.trim();
-        closeModal('statusModal');
-        showToast('Updating status...', 'info');
-
-        try {
-            const res = await fetch("https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/admin/update-status", {
-                method: "PUT",
-                headers: {
-                    "Authorization": "Bearer " + officerToken,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ complaintId: activeId, status: selectedStatus })
-            });
-
-            if (!res.ok) throw new Error(`Server responded with ${res.status}`);
-
-            // Update local data
-            const idx = allComplaints.findIndex(c => (c.complaintId || c.id) === activeComplaintId);
-            if (idx > -1) {
-                allComplaints[idx].status = selectedStatus;
-                if (!allComplaints[idx].history) allComplaints[idx].history = [];
-                allComplaints[idx].history.push({ status: selectedStatus, timestamp: new Date().toISOString(), remarks });
-            }
-
-            applyFilters();
-            showToast(`Status updated to "${selectedStatus}" ✓`, 'success');
-
-        } catch (err) {
-            console.error(err);
-            // Still update locally so UI reflects change even if API fails
-            const idx = allComplaints.findIndex(c => (c.complaintId || c.id) === activeComplaintId);
-            if (idx > -1) allComplaints[idx].status = selectedStatus;
-            applyFilters();
-            showToast('Status updated locally (API error: ' + err.message + ')', 'warning');
-        }
-    }
-
-    // ══════════════════════════════════════════════════════
-    // 11. ASSIGN MODAL
-    // ══════════════════════════════════════════════════════
-    function openAssignModal(id) {
-        activeComplaintId = id;
-        selectedOfficer   = null;
-        document.getElementById('assignComplaintId').textContent = id;
-
-        const list = document.getElementById('officerList');
-        list.innerHTML = OFFICERS.map(o => `
-            <div class="officer-item" data-id="${o.id}" onclick="selectOfficer(this, '${o.id}')">
-                <div class="officer-avatar">${o.name.charAt(0)}</div>
-                <div>
-                    <div class="officer-name">${o.name}</div>
-                    <div class="officer-dept">${o.dept}</div>
-                </div>
-            </div>`).join('');
-
-        openModal('assignModal');
-    }
-
-    function openBulkAssign() {
-        if (selectedIds.size === 0) { showToast('Please select at least one complaint', 'warning'); return; }
-        openAssignModal([...selectedIds].join(', '));
-    }
-
-    function openBulkStatus() {
-        if (selectedIds.size === 0) { showToast('Please select at least one complaint', 'warning'); return; }
-        activeComplaintId = [...selectedIds].join(', ');
-        selectedStatus = null;
-        document.getElementById('statusComplaintId').textContent = `${selectedIds.size} complaints`;
-        document.getElementById('statusRemarks').value = '';
-        document.querySelectorAll('.status-option').forEach(o => o.classList.remove('selected'));
-        openModal('statusModal');
-    }
-
-    function selectOfficer(el, officerId) {
-        document.querySelectorAll('.officer-item').forEach(o => o.classList.remove('selected'));
-        el.classList.add('selected');
-        selectedOfficer = officerId;
-    }
-
-    async function submitAssignment() {
-        if (!selectedOfficer) { showToast('Please select an officer', 'warning'); return; }
-        const officer = OFFICERS.find(o => o.id === selectedOfficer);
-        closeModal('assignModal');
-
-        try {
-            const ids = activeComplaintId.includes(',')
-                ? activeComplaintId.split(',').map(s => s.trim())
-                : [activeComplaintId];
-
-            // For each complaint, call the update API
-            await Promise.all(ids.map(id =>
-                fetch("https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/admin/update-status", {
-                    method: "PUT",
-                    headers: { "Authorization": "Bearer " + officerToken, "Content-Type": "application/json" },
-                    body: JSON.stringify({ complaintId: activeId, status: "Under Review" })
-                }).catch(() => {})
-            ));
-
-            // Update local
-            ids.forEach(id => {
-                const idx = allComplaints.findIndex(c => (c.complaintId || c.id) === id);
-                if (idx > -1) allComplaints[idx].assignedTo = officer.name;
-            });
-
-            applyFilters();
-            showToast(`Assigned to ${officer.name} ✓`, 'success');
-        } catch (err) {
-            showToast('Assignment saved locally (API error)', 'warning');
-        }
-    }
-
-    // ══════════════════════════════════════════════════════
-    // 12. DELETE
-    // ══════════════════════════════════════════════════════
-    async function deleteComplaint(id) {
-        if (!confirm(`Delete complaint ${id}? This cannot be undone.`)) return;
-
-        try {
-            await fetch(`${API_URL}/${id}`, {
-                method: "DELETE",
-                headers: { "Authorization": "Bearer " + officerToken }
-            });
-        } catch (err) {
-            console.warn('Delete API error (removing locally):', err);
-        }
-
-        allComplaints = allComplaints.filter(c => (c.complaintId || c.id) !== id);
-        selectedIds.delete(id);
         applyFilters();
-        showToast(`Complaint ${id} deleted`, 'success');
+    } catch (err) {
+        showError("Unable to load complaints: " + err.message);
+        document.getElementById('complaintsTableBody').innerHTML =
+            '<tr><td colspan="10"><div class="table-msg"><div class="table-msg-icon"><i class="fas fa-wifi"></i></div><p>Could not fetch data. Click Refresh to try again.</p></div></td></tr>';
     }
+}
 
-    // ══════════════════════════════════════════════════════
-    // 13. EXPORT CSV
-    // ══════════════════════════════════════════════════════
-    function exportData() {
-        if (filteredList.length === 0) { showToast('No data to export', 'warning'); return; }
-
-        const headers = ['ID','Name','Mobile','Email','State','District','Department','Category','Priority','Status','Submitted'];
-        const rows = filteredList.map(c => [
-            c.complaintId || c.id || '',
-            c.name || '',
-            c.mobile || '',
-            c.email || '',
-            c.state || '',
-            c.district || '',
-            c.department || '',
-            c.category || '',
-            c.priority || '',
-            c.status || '',
-            c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-IN') : ''
-        ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(','));
-
-        const csv  = [headers.join(','), ...rows].join('\n');
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url  = URL.createObjectURL(blob);
-        const a    = document.createElement('a');
-        a.href     = url;
-        a.download = `complaints_${new Date().toISOString().slice(0,10)}.csv`;
-        a.click();
-        URL.revokeObjectURL(url);
-        showToast('CSV exported ✓', 'success');
-    }
-
-    // ══════════════════════════════════════════════════════
-    // 14. MODAL HELPERS
-    // ══════════════════════════════════════════════════════
-    function openModal(id)  { document.getElementById(id).classList.add('open'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-    // Close on backdrop click
-    document.querySelectorAll('.modal-overlay').forEach(overlay => {
-        overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+// ── 5. FILTER ─────────────────────────────────────────────
+function applyFilters() {
+    const statusF = document.getElementById('filterStatus').value;
+    const deptF   = document.getElementById('filterDepartment').value;
+    const prioF   = document.getElementById('filterPriority').value;
+    const search  = document.getElementById('searchInput').value.toLowerCase().trim();
+    filteredList = allComplaints.filter(c => {
+        const id   = (c.complaintId||c.id||'').toLowerCase();
+        const name = (c.name||c.citizenName||'').toLowerCase();
+        const subj = (c.description||c.subject||c.title||'').toLowerCase();
+        if (statusF && c.status !== statusF) return false;
+        if (deptF   && c.department !== deptF) return false;
+        if (prioF   && (c.priority||'Medium') !== prioF) return false;
+        if (search  && !id.includes(search) && !name.includes(search) && !subj.includes(search)) return false;
+        return true;
     });
+    currentPage = 1;
+    renderTable();
+}
 
-    // ══════════════════════════════════════════════════════
-    // 15. TOAST
-    // ══════════════════════════════════════════════════════
-    function showToast(msg, type = 'success') {
-        const container = document.getElementById('toastContainer');
-        const toast = document.createElement('div');
-        toast.className = `toast ${type === 'error' ? 'error' : type === 'warning' ? 'warning' : ''}`;
-        const icon = type === 'success' ? '✅' : type === 'warning' ? '⚠️' : type === 'error' ? '❌' : 'ℹ️';
-        toast.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
-        container.appendChild(toast);
-        setTimeout(() => toast.remove(), 3500);
+// ── 6. RENDER ─────────────────────────────────────────────
+function renderTable() {
+    const tbody = document.getElementById('complaintsTableBody');
+    tbody.innerHTML = '';
+    const total      = filteredList.length;
+    const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
+    if (currentPage > totalPages) currentPage = totalPages;
+    document.getElementById('totalCount').textContent  = total;
+    document.getElementById('totalPages').textContent  = totalPages;
+    document.getElementById('currentPage').textContent = currentPage;
+    const start = (currentPage - 1) * PER_PAGE;
+    const end   = Math.min(start + PER_PAGE, total);
+    document.getElementById('showingInfo').textContent = total === 0 ? 'Showing 0–0 of 0' : `Showing ${start+1}–${end} of ${total}`;
+    document.getElementById('prevBtn').disabled = currentPage <= 1;
+    document.getElementById('nextBtn').disabled = currentPage >= totalPages || total === 0;
+    if (total === 0) {
+        tbody.innerHTML = '<tr><td colspan="10"><div class="table-msg"><div class="table-msg-icon"><i class="fas fa-search"></i></div><p>No complaints found matching your filters.</p></div></td></tr>';
+        return;
     }
+    filteredList.slice(start, end).forEach(c => {
+        const id       = c.complaintId || c.id || '—';
+        const name     = c.name || c.citizenName || '—';
+        const mobile   = c.mobile || c.phone || '—';
+        const dept     = c.department || '—';
+        const category = c.category || '—';
+        const priority = (c.priority || 'Medium');
+        const status   = c.status || 'Submitted';
+        const statusKey= status.toLowerCase().replace(/\s+/g,'-');
+        const dateStr  = c.createdAt || c.date || c.submittedAt;
+        const date     = dateStr ? new Date(dateStr).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '—';
+        const row = document.createElement('tr');
+        if (selectedIds.has(id)) row.classList.add('selected-row');
+        row.innerHTML = `
+            <td><input type="checkbox" class="complaint-checkbox" data-id="${id}" ${selectedIds.has(id)?'checked':''} onchange="toggleOne('${id}',this)"></td>
+            <td><span class="complaint-id">${id}</span></td>
+            <td>${name}</td>
+            <td style="color:var(--text-muted);font-size:13px;">${mobile}</td>
+            <td>${dept}</td>
+            <td style="color:var(--text-muted);font-size:13px;">${category}</td>
+            <td><span class="priority-badge p-${priority.toLowerCase()}">${priority}</span></td>
+            <td><span class="status-badge s-${statusKey}">${status}</span></td>
+            <td style="color:var(--text-muted);font-size:13px;white-space:nowrap;">${date}</td>
+            <td>
+                <div class="action-btns">
+                    <button class="btn-act btn-view-a" onclick="openViewModal('${id}')" title="View"><i class="fas fa-eye"></i></button>
+                    <button class="btn-act btn-edit-a" onclick="openStatusModal('${id}')" title="Update Status"><i class="fas fa-sync"></i></button>
+                    <button class="btn-act btn-del-a" onclick="deleteComplaint('${id}')" title="Delete"><i class="fas fa-trash"></i></button>
+                </div>
+            </td>`;
+        tbody.appendChild(row);
+    });
+}
 
-    // ══════════════════════════════════════════════════════
-    // 16. ERROR BANNER
-    // ══════════════════════════════════════════════════════
-    function showError(msg) {
-        document.getElementById('errorBannerMsg').textContent = msg;
-        document.getElementById('errorBanner').classList.add('show');
+// ── 7. PAGINATION ─────────────────────────────────────────
+function previousPage() { if (currentPage > 1) { currentPage--; renderTable(); } }
+function nextPage()     { const tp = Math.ceil(filteredList.length/PER_PAGE); if (currentPage < tp) { currentPage++; renderTable(); } }
+
+// ── 8. SELECTION ──────────────────────────────────────────
+function toggleOne(id, cb) {
+    if (cb.checked) { selectedIds.add(id); cb.closest('tr').classList.add('selected-row'); }
+    else            { selectedIds.delete(id); cb.closest('tr').classList.remove('selected-row'); }
+}
+function toggleSelectAll() {
+    const checked = document.getElementById('selectAllCheckbox').checked;
+    document.querySelectorAll('.complaint-checkbox').forEach(cb => {
+        cb.checked = checked;
+        const id = cb.dataset.id;
+        if (checked) { selectedIds.add(id); cb.closest('tr').classList.add('selected-row'); }
+        else         { selectedIds.delete(id); cb.closest('tr').classList.remove('selected-row'); }
+    });
+}
+function selectAll() { document.getElementById('selectAllCheckbox').checked = true; toggleSelectAll(); }
+
+// ── 9. VIEW MODAL ─────────────────────────────────────────
+function openViewModal(id) {
+    const c = findComplaint(id);
+    if (!c) return;
+    activeComplaintId = id;
+    const fields = [
+        {label:'Complaint ID',  value:c.complaintId||c.id||'—'},
+        {label:'Submitted By',  value:c.name||c.citizenName||'—'},
+        {label:'Mobile',        value:c.mobile||'—'},
+        {label:'Email',         value:c.email||'—'},
+        {label:'State',         value:c.state||'—'},
+        {label:'District',      value:c.district||'—'},
+        {label:'Department',    value:c.department||'—'},
+        {label:'Category',      value:c.category||'—'},
+        {label:'Priority',      value:c.priority||'Medium'},
+        {label:'Status',        value:c.status||'Submitted'},
+        {label:'Submitted On',  value:c.createdAt?new Date(c.createdAt).toLocaleString('en-IN'):'—'},
+        {label:'Assigned To',   value:c.assignedTo||'Unassigned'},
+    ];
+    document.getElementById('viewDetailGrid').innerHTML = fields.map(f=>`
+        <div class="detail-item"><label>${f.label}</label><span>${f.value}</span></div>`).join('');
+    document.getElementById('viewDescription').textContent = c.description||c.subject||'No description provided.';
+    const history = c.history||[];
+    const tl = document.getElementById('viewTimeline');
+    if (history.length===0) {
+        tl.innerHTML = `<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-text"><strong>Submitted</strong> — ${c.createdAt?new Date(c.createdAt).toLocaleString('en-IN'):'Unknown date'}</div></div>`;
+    } else {
+        tl.innerHTML = history.map(h=>`<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-text"><strong>${h.status}</strong> — ${h.timestamp?new Date(h.timestamp).toLocaleString('en-IN'):''}${h.remarks?'<br><span style="color:var(--text-muted);">'+h.remarks+'</span>':''}</div></div>`).join('');
     }
-    function hideError() { document.getElementById('errorBanner').classList.remove('show'); }
+    document.getElementById('viewModalEditBtn').onclick = ()=>{ closeModal('viewModal'); openStatusModal(id); };
+    openModal('viewModal');
+}
 
-    // ══════════════════════════════════════════════════════
-    // 17. HELPERS
-    // ══════════════════════════════════════════════════════
-    function findComplaint(id) {
-        return allComplaints.find(c => (c.complaintId || c.id) === id) || null;
+// ── 10. STATUS MODAL ──────────────────────────────────────
+function openStatusModal(id) {
+    const c = findComplaint(id);
+    if (!c) return;
+    activeComplaintId = id;
+    selectedStatus    = null;
+    document.getElementById('statusComplaintId').textContent = id;
+    document.getElementById('statusRemarks').value = '';
+    document.querySelectorAll('.status-option').forEach(el => {
+        el.classList.toggle('selected', el.dataset.status === (c.status||'Submitted'));
+        if (el.dataset.status === (c.status||'Submitted')) selectedStatus = el.dataset.status;
+    });
+    openModal('statusModal');
+}
+function selectStatus(el) {
+    document.querySelectorAll('.status-option').forEach(o=>o.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedStatus = el.dataset.status;
+}
+async function submitStatusUpdate() {
+    if (!selectedStatus) { showToast('Please select a status','warning'); return; }
+    const remarks = document.getElementById('statusRemarks').value.trim();
+    closeModal('statusModal');
+    try {
+        const res = await fetch("https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/admin/update-status", {
+            method:"PUT",
+            headers:{"Authorization":"Bearer "+officerToken,"Content-Type":"application/json"},
+            body:JSON.stringify({complaintId:activeComplaintId, status:selectedStatus})
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        updateLocalStatus(activeComplaintId, selectedStatus, remarks);
+        showToast(`Status updated to "${selectedStatus}"`, 'success');
+    } catch(err) {
+        updateLocalStatus(activeComplaintId, selectedStatus, remarks);
+        showToast('Status updated locally (API: '+err.message+')', 'warning');
     }
-
-    function logout() {
-        localStorage.removeItem("officerToken");
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        sessionStorage.clear();
-        window.location.href = "login.html";
+}
+function updateLocalStatus(id, status, remarks) {
+    const idx = allComplaints.findIndex(c=>(c.complaintId||c.id)===id);
+    if (idx>-1) {
+        allComplaints[idx].status = status;
+        if (!allComplaints[idx].history) allComplaints[idx].history=[];
+        allComplaints[idx].history.push({status,timestamp:new Date().toISOString(),remarks});
     }
+    applyFilters();
+}
 
-    // ══════════════════════════════════════════════════════
-    // 18. EVENT LISTENERS & BOOT
-    // ══════════════════════════════════════════════════════
-    document.getElementById('filterStatus').addEventListener('change', applyFilters);
-    document.getElementById('filterDepartment').addEventListener('change', applyFilters);
-    document.getElementById('filterPriority').addEventListener('change', applyFilters);
-    document.getElementById('searchInput').addEventListener('input', applyFilters);
+// ── 11. ASSIGN MODAL ──────────────────────────────────────
+function openAssignModal(id) {
+    activeComplaintId = id;
+    selectedOfficer   = null;
+    document.getElementById('assignComplaintId').textContent = id;
+    document.getElementById('officerList').innerHTML = OFFICERS.map(o=>`
+        <div class="officer-item" data-id="${o.id}" onclick="selectOfficer(this,'${o.id}')">
+            <div class="officer-av">${o.name.charAt(0)}</div>
+            <div><div class="officer-name">${o.name}</div><div class="officer-dept">${o.dept}</div></div>
+        </div>`).join('');
+    openModal('assignModal');
+}
+function openBulkAssign() {
+    if (selectedIds.size===0) { showToast('Please select at least one complaint','warning'); return; }
+    openAssignModal([...selectedIds].join(', '));
+}
+function openBulkStatus() {
+    if (selectedIds.size===0) { showToast('Please select at least one complaint','warning'); return; }
+    activeComplaintId = [...selectedIds].join(', ');
+    selectedStatus    = null;
+    document.getElementById('statusComplaintId').textContent = `${selectedIds.size} complaints`;
+    document.getElementById('statusRemarks').value = '';
+    document.querySelectorAll('.status-option').forEach(o=>o.classList.remove('selected'));
+    openModal('statusModal');
+}
+function selectOfficer(el, officerId) {
+    document.querySelectorAll('.officer-item').forEach(o=>o.classList.remove('selected'));
+    el.classList.add('selected');
+    selectedOfficer = officerId;
+}
+async function submitAssignment() {
+    if (!selectedOfficer) { showToast('Please select an officer','warning'); return; }
+    const officer = OFFICERS.find(o=>o.id===selectedOfficer);
+    closeModal('assignModal');
+    try {
+        const ids = activeComplaintId.includes(',') ? activeComplaintId.split(',').map(s=>s.trim()) : [activeComplaintId];
+        await Promise.all(ids.map(id=>
+            fetch("https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/admin/update-status",{
+                method:"PUT", headers:{"Authorization":"Bearer "+officerToken,"Content-Type":"application/json"},
+                body:JSON.stringify({complaintId:id,status:"Under Review"})
+            }).catch(()=>{})
+        ));
+        ids.forEach(id=>{
+            const idx=allComplaints.findIndex(c=>(c.complaintId||c.id)===id);
+            if(idx>-1) allComplaints[idx].assignedTo=officer.name;
+        });
+        applyFilters();
+        showToast(`Assigned to ${officer.name}`, 'success');
+    } catch(err) {
+        showToast('Assignment saved locally (API error)', 'warning');
+    }
+}
 
-    loadComplaints();
+// ── 12. DELETE ────────────────────────────────────────────
+async function deleteComplaint(id) {
+    if (!confirm(`Delete complaint ${id}? This cannot be undone.`)) return;
+    try {
+        await fetch(`${API_URL}/${id}`, {method:"DELETE", headers:{"Authorization":"Bearer "+officerToken}});
+    } catch(err) { console.warn('Delete API error:', err); }
+    allComplaints = allComplaints.filter(c=>(c.complaintId||c.id)!==id);
+    selectedIds.delete(id);
+    applyFilters();
+    showToast(`Complaint ${id} deleted`, 'success');
+}
 
-    </script>
+// ── 13. EXPORT CSV ────────────────────────────────────────
+function exportData() {
+    if (filteredList.length===0) { showToast('No data to export','warning'); return; }
+    const headers=['ID','Name','Mobile','Email','State','District','Department','Category','Priority','Status','Submitted'];
+    const rows=filteredList.map(c=>[
+        c.complaintId||c.id||'', c.name||'', c.mobile||'', c.email||'',
+        c.state||'', c.district||'', c.department||'', c.category||'',
+        c.priority||'', c.status||'',
+        c.createdAt?new Date(c.createdAt).toLocaleDateString('en-IN'):''
+    ].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','));
+    const csv  = [headers.join(','),...rows].join('\n');
+    const blob = new Blob([csv],{type:'text/csv'});
+    const url  = URL.createObjectURL(blob);
+    const a    = document.createElement('a');
+    a.href=url; a.download=`complaints_${new Date().toISOString().slice(0,10)}.csv`; a.click();
+    URL.revokeObjectURL(url);
+    showToast('CSV exported','success');
+}
+
+// ── 14. MODAL HELPERS ─────────────────────────────────────
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(o=>o.addEventListener('click',e=>{ if(e.target===o) o.classList.remove('open'); }));
+
+// ── 15. TOAST ─────────────────────────────────────────────
+function showToast(msg, type='success') {
+    const wrap  = document.getElementById('toastWrap');
+    const toast = document.createElement('div');
+    toast.className=`toast-item${type!=='success'?' '+type:''}`;
+    const icons={success:'✅',warning:'⚠️',error:'❌'};
+    toast.innerHTML=`<span>${icons[type]||'✅'}</span><span>${msg}</span>`;
+    wrap.appendChild(toast);
+    setTimeout(()=>toast.remove(),3500);
+}
+
+// ── 16. ERROR BANNER ──────────────────────────────────────
+function showError(msg) { document.getElementById('errorBannerMsg').textContent=msg; document.getElementById('errorBanner').classList.add('show'); }
+function hideError()    { document.getElementById('errorBanner').classList.remove('show'); }
+
+// ── 17. HELPERS ───────────────────────────────────────────
+function findComplaint(id) { return allComplaints.find(c=>(c.complaintId||c.id)===id)||null; }
+function logout() {
+    localStorage.removeItem("officerToken"); localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken"); sessionStorage.clear();
+    window.location.href="login.html";
+}
+
+// ── 18. EVENT LISTENERS + BOOT ────────────────────────────
+['filterStatus','filterDepartment','filterPriority'].forEach(id=>document.getElementById(id).addEventListener('change',applyFilters));
+document.getElementById('searchInput').addEventListener('input',applyFilters);
+loadComplaints();
+</script>
 </body>
 </html>

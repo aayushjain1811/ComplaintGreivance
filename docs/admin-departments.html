@@ -3,1002 +3,1247 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Departments - Digital Grievance Portal</title>
+    <title>Departments – Officer Portal | Digital Grievance Platform</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #0A2E5C;
-            --background: #F2F2F2;
-            --accent: #FF9933;
-            --success: #138808;
-            --error: #C62828;
+            --primary: #0A2558;
+            --primary-dark: #06173a;
+            --primary-light: #1a3d7c;
+            --accent: #E8842A;
+            --accent-light: #f4a355;
+            --green: #0e7c3b;
+            --green-light: #16a34a;
             --white: #FFFFFF;
-            --sidebar-width: 260px;
+            --bg: #F0F2F8;
+            --text: #1c2b4a;
+            --text-muted: #6b7a99;
+            --border: #e2e8f0;
+            --error: #C62828;
+            --sidebar-w: 270px;
+            --card-shadow: 0 4px 24px rgba(10,37,88,0.09);
+            --card-shadow-hover: 0 12px 40px rgba(10,37,88,0.16);
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Roboto', 'Noto Sans Devanagari', sans-serif; background-color: var(--background); color: #333; overflow-x: hidden; }
 
-        .tricolor-strip { height: 5px; background: linear-gradient(to right, #FF9933 0%, #FF9933 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #138808 66.66%, #138808 100%); position: fixed; top: 0; left: 0; right: 0; z-index: 1001; }
+        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'DM Sans', 'Noto Sans Devanagari', sans-serif;
+            background: var(--bg); color: var(--text); overflow-x: hidden;
+        }
+        a { text-decoration: none; color: inherit; }
+                /* ── PAGE LOADER ──────────────────────────────────────────── */
+        #page-loader {
+            position:fixed; inset:0; z-index:9999;
+            background:var(--primary-dk);
+            display:flex; flex-direction:column; align-items:center; justify-content:center;
+            transition:opacity .55s ease, visibility .55s ease;
+        }
+        #page-loader.out { opacity:0; visibility:hidden; }
+        .chakra-svg { width:72px; height:72px; animation:chakra-spin 1.1s linear infinite; }
+        @keyframes chakra-spin { to { transform:rotate(360deg); } }
+        .loader-label {
+            margin-top:18px; color:rgba(255,255,255,.7);
+            font-size:13px; font-weight:500; letter-spacing:2.5px; text-transform:uppercase;
+        }
+        .loader-dots { display:flex; gap:6px; margin-top:14px; }
+        .loader-dot {
+            width:7px; height:7px; border-radius:50%; background:var(--accent);
+            animation:dot-bounce .9s ease-in-out infinite;
+        }
+        .loader-dot:nth-child(2) { animation-delay:.15s; }
+        .loader-dot:nth-child(3) { animation-delay:.3s;  }
+        @keyframes dot-bounce { 0%,80%,100%{transform:scale(.6);opacity:.4} 40%{transform:scale(1);opacity:1} }
 
-        /* Sidebar */
-        .sidebar { position: fixed; left: 0; top: 5px; bottom: 0; width: var(--sidebar-width); background: linear-gradient(180deg, var(--primary) 0%, #1a4d8f 100%); color: var(--white); padding: 20px 0; z-index: 1000; overflow-y: auto; }
-        .sidebar-header { padding: 0 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
-        .sidebar-header h4 { font-size: 18px; font-weight: 700; margin-bottom: 5px; }
-        .sidebar-header p { font-size: 12px; opacity: 0.8; margin: 0; }
-        .sidebar-menu { list-style: none; padding: 0; }
-        .sidebar-menu li { margin-bottom: 5px; }
-        .sidebar-menu a { display: flex; align-items: center; padding: 12px 20px; color: var(--white); text-decoration: none; transition: all 0.3s ease; position: relative; }
-        .sidebar-menu a::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background-color: var(--accent); transform: scaleY(0); transition: transform 0.3s ease; }
-        .sidebar-menu a:hover, .sidebar-menu a.active { background-color: rgba(255,255,255,0.1); }
-        .sidebar-menu a.active::before { transform: scaleY(1); }
-        .sidebar-menu a i { width: 25px; margin-right: 10px; font-size: 16px; }
-        .user-profile { padding: 20px; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
-        .user-profile-content { display: flex; align-items: center; gap: 10px; }
-        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background-color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; }
-        .user-info .name { font-size: 14px; font-weight: 600; }
-        .user-info .role { font-size: 11px; opacity: 0.7; }
+        /* ── TRICOLOR ── */
+        .tricolor {
+            height: 5px; position: fixed; top: 0; left: 0; right: 0; z-index: 2000;
+            background: linear-gradient(to right, #FF9933 0%, #FF9933 33.33%, #fff 33.33%, #fff 66.66%, #138808 66.66%, #138808 100%);
+        }
 
-        /* Main */
-        .main-content { margin-left: var(--sidebar-width); padding: 25px; min-height: 100vh; margin-top: 5px; }
-        .top-bar { background-color: var(--white); padding: 20px 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
-        .welcome-text h2 { font-size: 24px; font-weight: 700; color: var(--primary); margin-bottom: 5px; }
-        .welcome-text p { font-size: 14px; color: #666; margin: 0; }
-        .top-actions { display: flex; gap: 10px; }
-        .btn-action { padding: 8px 20px; border: none; border-radius: 5px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
-        .btn-primary-action { background-color: var(--accent); color: var(--white); }
-        .btn-primary-action:hover { background-color: #e68a2e; transform: translateY(-2px); }
-        .btn-secondary-action { background-color: var(--background); color: var(--primary); }
-        .btn-secondary-action:hover { background-color: #e0e0e0; }
+        /* ── SIDEBAR ── */
+        .sidebar {
+            position: fixed; left: 0; top: 5px; bottom: 0;
+            width: var(--sidebar-w);
+            background: linear-gradient(180deg, #061728 0%, var(--primary) 50%, #1a3d7c 100%);
+            color: #fff; z-index: 1000; overflow-y: auto;
+            display: flex; flex-direction: column;
+            box-shadow: 4px 0 24px rgba(6,23,40,0.35);
+        }
+        .sidebar::-webkit-scrollbar { width: 4px; }
+        .sidebar::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 2px; }
 
-        /* Error Banner */
-        .error-banner { background-color: #ffebee; border: 1px solid #ef9a9a; color: var(--error); padding: 12px 16px; border-radius: 8px; margin-bottom: 20px; display: none; align-items: center; gap: 10px; font-size: 14px; }
+        .sidebar-brand {
+            padding: 24px 22px 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+            display: flex; align-items: center; gap: 13px;
+        }
+        .sidebar-brand-icon {
+            width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+            background: linear-gradient(135deg, var(--accent), #d6741e);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 20px; color: #fff;
+            box-shadow: 0 4px 14px rgba(232,132,42,0.4);
+        }
+        .sidebar-brand-text h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 15px; font-weight: 700; color: #fff; line-height: 1.2;
+        }
+        .sidebar-brand-text p { font-size: 11px; opacity: 0.55; margin: 0; }
+
+        .sidebar-section-label {
+            font-size: 10px; font-weight: 700; letter-spacing: 2px;
+            text-transform: uppercase; opacity: 0.4;
+            padding: 18px 22px 8px; color: #fff;
+        }
+
+        .sidebar-menu { list-style: none; padding: 0 12px; flex: 1; }
+        .sidebar-menu li { margin-bottom: 3px; }
+        .sidebar-menu a {
+            display: flex; align-items: center; gap: 12px;
+            padding: 11px 14px; border-radius: 10px;
+            color: rgba(255,255,255,0.75); font-size: 14px; font-weight: 500;
+            transition: all 0.25s; position: relative;
+        }
+        .sidebar-menu a:hover { background: rgba(255,255,255,0.07); color: #fff; }
+        .sidebar-menu a.active {
+            background: linear-gradient(135deg, rgba(232,132,42,0.18), rgba(232,132,42,0.08));
+            color: #fff; border: 1px solid rgba(232,132,42,0.25);
+        }
+        .sidebar-menu a.active .menu-icon { color: var(--accent); }
+        .menu-icon { width: 18px; text-align: center; font-size: 15px; flex-shrink: 0; }
+        .menu-badge {
+            margin-left: auto; background: var(--accent); color: #fff;
+            font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 10px;
+        }
+
+        .sidebar-divider { height: 1px; background: rgba(255,255,255,0.07); margin: 10px 22px; }
+
+        .sidebar-user {
+            padding: 18px 22px; border-top: 1px solid rgba(255,255,255,0.08);
+            display: flex; align-items: center; gap: 12px;
+        }
+        .user-avatar {
+            width: 40px; height: 40px; border-radius: 50%; flex-shrink: 0;
+            background: linear-gradient(135deg, var(--accent), #d6741e);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; font-weight: 700; color: #fff;
+        }
+        .user-info .uname { font-size: 14px; font-weight: 600; color: #fff; }
+        .user-info .urole { font-size: 11px; opacity: 0.55; }
+        .logout-btn {
+            margin-left: auto; background: none; border: 1px solid rgba(255,255,255,0.15);
+            color: rgba(255,255,255,0.6); width: 32px; height: 32px; border-radius: 8px;
+            cursor: pointer; transition: all 0.25s; font-size: 14px;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .logout-btn:hover { background: rgba(198,40,40,0.2); border-color: rgba(198,40,40,0.4); color: #ef9a9a; }
+
+        /* ── MAIN CONTENT ── */
+        .main {
+            margin-left: var(--sidebar-w);
+            padding: 36px 32px 60px;
+            min-height: 100vh;
+            margin-top: 5px;
+        }
+
+        /* ── TOP BAR ── */
+        .top-bar {
+            display: flex; align-items: center; justify-content: space-between; gap: 20px;
+            margin-bottom: 32px; flex-wrap: wrap;
+        }
+        .top-bar-left h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 28px; font-weight: 800; color: var(--primary); line-height: 1.2;
+        }
+        .top-bar-left p { font-size: 14px; color: var(--text-muted); margin-top: 4px; }
+        .top-bar-actions { display: flex; gap: 10px; }
+        .btn-topbar {
+            display: inline-flex; align-items: center; gap: 8px;
+            padding: 10px 22px; border-radius: 10px;
+            font-size: 14px; font-weight: 700; font-family: 'DM Sans', sans-serif;
+            cursor: pointer; transition: all 0.3s; border: none;
+        }
+        .btn-topbar-primary {
+            background: linear-gradient(135deg, var(--accent), #d6741e);
+            color: #fff; box-shadow: 0 4px 16px rgba(232,132,42,0.35);
+        }
+        .btn-topbar-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(232,132,42,0.45); }
+        .btn-topbar-secondary {
+            background: #fff; color: var(--text); border: 1.5px solid var(--border);
+        }
+        .btn-topbar-secondary:hover { background: #f0f4ff; border-color: var(--primary); color: var(--primary); }
+
+        /* ── ERROR BANNER ── */
+        .error-banner {
+            background: #fff0f0; border: 1px solid #fca5a5; color: var(--error);
+            padding: 12px 18px; border-radius: 12px; margin-bottom: 22px;
+            display: none; align-items: center; gap: 10px; font-size: 14px;
+        }
         .error-banner.show { display: flex; }
 
-        /* Summary Stats */
-        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-bottom: 25px; }
-        .stat-card { background-color: var(--white); padding: 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); transition: all 0.3s ease; }
-        .stat-card:hover { transform: translateY(-5px); box-shadow: 0 5px 20px rgba(0,0,0,0.15); }
-        .stat-icon { width: 45px; height: 45px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: var(--white); margin-bottom: 10px; }
-        .stat-icon.blue   { background-color: #0d6efd; }
-        .stat-icon.orange { background-color: var(--accent); }
-        .stat-icon.green  { background-color: var(--success); }
-        .stat-icon.purple { background-color: #6f42c1; }
-        .stat-icon.teal   { background-color: #0d9488; }
-        .stat-value { font-size: 28px; font-weight: 700; color: var(--primary); margin-bottom: 5px; }
-        .stat-label { font-size: 13px; color: #666; }
+        /* ── STATS STRIP ── */
+        .stats-strip {
+            display: grid; grid-template-columns: repeat(5,1fr);
+            gap: 16px; margin-bottom: 30px;
+        }
+        .stat-pill {
+            background: #fff; border-radius: 16px; padding: 20px 20px 18px;
+            box-shadow: var(--card-shadow); border: 1px solid var(--border);
+            border-top: 4px solid var(--accent);
+            transition: all 0.3s;
+        }
+        .stat-pill:hover { transform: translateY(-4px); box-shadow: var(--card-shadow-hover); }
+        .stat-pill:nth-child(1) { border-top-color: #8b5cf6; }
+        .stat-pill:nth-child(2) { border-top-color: var(--primary); }
+        .stat-pill:nth-child(3) { border-top-color: var(--accent); }
+        .stat-pill:nth-child(4) { border-top-color: var(--green); }
+        .stat-pill:nth-child(5) { border-top-color: #0891b2; }
+        .stat-pill-icon { font-size: 19px; color: var(--border); margin-bottom: 10px; }
+        .stat-pill-num {
+            font-family: 'Playfair Display', serif;
+            font-size: 34px; font-weight: 700; color: var(--primary); line-height: 1;
+        }
+        .stat-pill-lbl { font-size: 12px; color: var(--text-muted); font-weight: 500; margin-top: 5px; }
 
-        /* Section Heading */
-        .section-heading { display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
-        .section-heading h3 { font-size: 20px; font-weight: 700; color: var(--primary); display: flex; align-items: center; gap: 10px; }
-        .section-heading h3::after { content: ''; display: block; width: 40px; height: 3px; background: var(--accent); border-radius: 2px; }
+        /* ── SEARCH BAR ── */
+        .search-wrap {
+            background: #fff; border-radius: 14px; padding: 14px 20px;
+            box-shadow: var(--card-shadow); border: 1px solid var(--border);
+            margin-bottom: 28px; display: flex; align-items: center; gap: 12px;
+        }
+        .search-wrap i { color: var(--text-muted); font-size: 15px; }
+        .search-wrap input {
+            flex: 1; border: none; outline: none; font-size: 14px;
+            color: var(--text); font-family: 'DM Sans', sans-serif; background: transparent;
+        }
+        .search-wrap input::placeholder { color: #a0aec0; }
 
-        /* Search */
-        .search-bar { background-color: var(--white); padding: 16px 20px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 25px; }
-        .search-input { width: 100%; border: 2px solid #ddd; border-radius: 8px; padding: 10px 15px; font-size: 14px; transition: all 0.3s ease; font-family: inherit; }
-        .search-input:focus { outline: none; border-color: var(--primary); }
+        /* ── SECTION HEADER ── */
+        .sec-head {
+            display: flex; align-items: center; justify-content: space-between;
+            margin-bottom: 20px; flex-wrap: wrap; gap: 12px;
+        }
+        .sec-head-left { display: flex; align-items: center; gap: 12px; }
+        .sec-head-icon {
+            width: 38px; height: 38px; border-radius: 10px;
+            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 16px; color: var(--accent);
+        }
+        .sec-head-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px; font-weight: 700; color: var(--primary);
+        }
 
-        /* Department Cards Grid */
-        .departments-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 20px; margin-bottom: 25px; }
+        /* ── DEPT CARDS GRID ── */
+        .depts-grid {
+            display: grid; grid-template-columns: repeat(auto-fill, minmax(330px,1fr));
+            gap: 20px; margin-bottom: 32px;
+        }
 
-        /* Loading */
-        .loading-spinner { display: flex; justify-content: center; align-items: center; padding: 60px; gap: 12px; color: var(--primary); font-size: 14px; grid-column: 1 / -1; }
-        .spinner { width: 24px; height: 24px; border: 3px solid #ddd; border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        .loading-block {
+            grid-column: 1/-1; display: flex; align-items: center; justify-content: center;
+            gap: 12px; padding: 60px; color: var(--text-muted); font-size: 14px;
+        }
+        .spin-ring {
+            width: 26px; height: 26px; border: 3px solid var(--border);
+            border-top-color: var(--primary); border-radius: 50%;
+            animation: spin 0.8s linear infinite; flex-shrink: 0;
+        }
         @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* Department Card */
-        .dept-card { background-color: var(--white); border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); overflow: hidden; transition: all 0.3s ease; animation: fadeIn 0.5s ease; }
-        .dept-card:hover { transform: translateY(-4px); box-shadow: 0 8px 25px rgba(0,0,0,0.15); }
-        @keyframes fadeIn { from { opacity:0; transform: translateY(15px); } to { opacity:1; transform:translateY(0); } }
-
-        .dept-card-header { padding: 20px; display: flex; align-items: flex-start; gap: 15px; border-bottom: 1px solid #f0f0f0; }
-        .dept-icon { width: 50px; height: 50px; border-radius: 10px; background: linear-gradient(135deg, var(--primary), #1a4d8f); display: flex; align-items: center; justify-content: center; font-size: 22px; color: var(--white); flex-shrink: 0; }
-        .dept-name { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 3px; }
-        .dept-contact { font-size: 12px; color: #888; }
-
-        .dept-card-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; padding: 16px 20px; gap: 8px; }
-        .dept-stat { text-align: center; padding: 10px 6px; background: #f8f9fa; border-radius: 8px; }
-        .dept-stat-val { font-size: 20px; font-weight: 700; color: var(--primary); }
-        .dept-stat-val.orange { color: var(--accent); }
-        .dept-stat-val.green  { color: var(--success); }
-        .dept-stat-val.red    { color: var(--error); }
-        .dept-stat-lbl { font-size: 10px; color: #888; font-weight: 600; text-transform: uppercase; margin-top: 2px; }
-
-        .dept-card-footer { padding: 14px 20px; border-top: 1px solid #f0f0f0; }
-        .progress-label { display: flex; justify-content: space-between; font-size: 12px; color: #888; margin-bottom: 6px; }
-        .progress-bar-bg { height: 6px; background: #e9ecef; border-radius: 3px; overflow: hidden; }
-        .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--success), #2dba3c); border-radius: 3px; transition: width 0.8s ease; }
-
-        .dept-card-actions { padding: 14px 20px; display: flex; gap: 8px; border-top: 1px solid #f0f0f0; }
-        .btn-dept { flex: 1; padding: 8px; border: none; border-radius: 6px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-        .btn-dept-view   { background: var(--primary); color: var(--white); }
-        .btn-dept-view:hover   { background: #1a4d8f; }
-        .btn-dept-export { background: var(--background); color: var(--primary); border: 1px solid #ddd; }
-        .btn-dept-export:hover { background: #e0e0e0; }
-
-        .no-results { text-align: center; padding: 60px 20px; color: #999; grid-column: 1 / -1; display: none; }
-        .no-results i { font-size: 48px; margin-bottom: 16px; display: block; }
-
-        /* ── Officer Management Panel ───────────────────────────────────────── */
-        .officer-panel { background: var(--white); border-radius: 12px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 30px; overflow: hidden; }
-        .officer-panel-header { background: linear-gradient(135deg, var(--primary), #1a4d8f); color: var(--white); padding: 18px 25px; display: flex; align-items: center; justify-content: space-between; }
-        .officer-panel-header h4 { margin: 0; font-size: 17px; font-weight: 700; }
-        .officer-panel-body { padding: 25px; }
-
-        /* Create Officer Form */
-        .create-officer-form { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 10px; }
-        .form-group { display: flex; flex-direction: column; gap: 6px; }
-        .form-group label { font-size: 13px; font-weight: 600; color: #555; }
-        .form-group input,
-        .form-group select { border: 1.5px solid #ddd; border-radius: 7px; padding: 10px 13px; font-size: 14px; font-family: inherit; transition: border-color 0.3s; background: var(--white); }
-        .form-group input:focus,
-        .form-group select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(10,46,92,0.1); }
-        .form-group.full { grid-column: 1 / -1; }
-
-        /* Temp password info box */
-        .temp-pw-info {
-            background: #e8f5e9;
-            border: 1px solid #a5d6a7;
-            border-radius: 8px;
-            padding: 12px 16px;
-            font-size: 13px;
-            color: #2e7d32;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            grid-column: 1 / -1;
+        .no-results {
+            grid-column: 1/-1; text-align: center; padding: 60px 20px;
+            color: var(--text-muted); display: none;
         }
-        .temp-pw-info strong { font-weight: 700; letter-spacing: 0.5px; }
+        .no-results i { font-size: 44px; color: var(--border); margin-bottom: 14px; display: block; }
 
-        .btn-create-officer { background: var(--success); color: #fff; border: none; padding: 11px 28px; border-radius: 7px; font-size: 14px; font-weight: 700; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; gap: 8px; }
-        .btn-create-officer:hover:not(:disabled) { background: #0f6605; transform: translateY(-2px); box-shadow: 0 4px 14px rgba(19,136,8,0.3); }
-        .btn-create-officer:disabled { opacity: 0.6; cursor: not-allowed; }
+        /* Dept card */
+        .dept-card {
+            background: #fff; border-radius: 18px;
+            box-shadow: var(--card-shadow); border: 1px solid var(--border);
+            overflow: hidden; transition: all 0.3s;
+            animation: card-in 0.5s ease both;
+        }
+        @keyframes card-in { from{opacity:0;transform:translateY(14px)} to{opacity:1;transform:translateY(0)} }
+        .dept-card:hover { transform: translateY(-6px); box-shadow: var(--card-shadow-hover); }
 
-        /* Officers Table */
-        .officers-table-wrap { overflow-x: auto; margin-top: 28px; }
-        .officers-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        .officers-table th { background: var(--primary); color: var(--white); padding: 11px 14px; text-align: left; white-space: nowrap; font-weight: 600; }
-        .officers-table td { padding: 11px 14px; border-bottom: 1px solid #f0f0f0; vertical-align: middle; }
-        .officers-table tr:hover { background: #f8f9fa; }
-        .officers-table tr:last-child td { border-bottom: none; }
+        .dept-card-head {
+            padding: 22px 22px 18px; display: flex; align-items: flex-start; gap: 15px;
+            border-bottom: 1px solid #f4f6fa;
+        }
+        .dept-icon-wrap {
+            width: 52px; height: 52px; border-radius: 14px; flex-shrink: 0;
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            display: flex; align-items: center; justify-content: center;
+            font-size: 22px; color: #fff;
+            box-shadow: 0 4px 14px rgba(10,37,88,0.25);
+            transition: all 0.3s;
+        }
+        .dept-card:hover .dept-icon-wrap {
+            background: linear-gradient(135deg, var(--accent), #d6741e);
+            box-shadow: 0 6px 20px rgba(232,132,42,0.4);
+        }
+        .dept-card-info { flex: 1; }
+        .dept-card-name { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 5px; }
+        .dept-card-meta { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 5px; margin-bottom: 3px; }
+        .dept-card-meta i { font-size: 11px; color: var(--accent); }
 
-        .role-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; text-transform: capitalize; }
-        .role-officer  { background: #e3f2fd; color: #0d6efd; }
-        .role-senior   { background: #fff3e0; color: #e65100; }
-        .role-head     { background: #fce4ec; color: #c62828; }
+        .dept-card-stats { display: grid; grid-template-columns: 1fr 1fr 1fr; padding: 16px 22px; gap: 8px; }
+        .dcs { text-align: center; padding: 12px 8px; background: var(--bg); border-radius: 10px; }
+        .dcs-val {
+            font-family: 'Playfair Display', serif;
+            font-size: 22px; font-weight: 700; color: var(--primary); line-height: 1;
+        }
+        .dcs-val.orange { color: var(--accent); }
+        .dcs-val.green  { color: var(--green); }
+        .dcs-lbl { font-size: 10px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; margin-top: 4px; letter-spacing: 0.5px; }
 
-        .officer-status-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-        .officer-active   { background: #e8f5e9; color: #2e7d32; }
-        .officer-inactive { background: #eee; color: #777; }
+        .dept-card-prog { padding: 0 22px 16px; }
+        .prog-labels { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 7px; }
+        .prog-track { height: 6px; background: #e8ecf4; border-radius: 3px; overflow: hidden; }
+        .prog-fill { height: 100%; background: linear-gradient(90deg, var(--green), #16a34a); border-radius: 3px; transition: width 0.8s ease; }
+        .dept-critical-note { font-size: 11.5px; color: var(--error); font-weight: 600; margin-top: 8px; display: flex; align-items: center; gap: 5px; }
 
-        .btn-icon-action { background: none; border: 1px solid #ddd; border-radius: 6px; padding: 5px 9px; cursor: pointer; font-size: 12px; transition: all 0.2s; color: #555; }
-        .btn-icon-action:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
-        .btn-icon-action.danger:hover { background: var(--error); border-color: var(--error); }
+        .dept-card-actions { display: flex; gap: 8px; padding: 14px 22px; border-top: 1px solid #f4f6fa; }
+        .btn-dept-view, .btn-dept-export {
+            flex: 1; padding: 9px 12px; border-radius: 10px; border: none;
+            font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.25s;
+            font-family: 'DM Sans', sans-serif; display: flex; align-items: center; justify-content: center; gap: 6px;
+        }
+        .btn-dept-view { background: linear-gradient(135deg, var(--primary), var(--primary-light)); color: #fff; }
+        .btn-dept-view:hover { transform: translateY(-1px); box-shadow: 0 4px 14px rgba(10,37,88,0.3); }
+        .btn-dept-export { background: var(--bg); color: var(--text); border: 1.5px solid var(--border); }
+        .btn-dept-export:hover { background: #e8f0fe; border-color: var(--primary); color: var(--primary); }
 
-        /* Officers loading / empty */
-        .officers-loading { text-align: center; padding: 30px; color: #aaa; font-size: 14px; }
+        /* ── OFFICER PANEL ── */
+        .officer-panel {
+            background: #fff; border-radius: 20px;
+            box-shadow: var(--card-shadow); border: 1px solid var(--border);
+            overflow: hidden; margin-bottom: 32px;
+        }
+        .officer-panel-header {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: #fff; padding: 20px 28px;
+            display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 12px;
+        }
+        .officer-panel-header-left { display: flex; align-items: center; gap: 12px; }
+        .officer-panel-header-icon {
+            width: 42px; height: 42px; border-radius: 11px;
+            background: rgba(232,132,42,0.2); border: 1px solid rgba(232,132,42,0.35);
+            display: flex; align-items: center; justify-content: center;
+            font-size: 18px; color: var(--accent);
+        }
+        .officer-panel-header h4 {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px; font-weight: 700; margin: 0;
+        }
+        .officer-panel-header p { font-size: 12px; opacity: 0.6; margin: 0; }
+        .officer-panel-body { padding: 28px; }
 
-        /* Modal */
-        .modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.55); z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px; }
+        /* Create officer form */
+        .create-officer-grid {
+            display: grid; grid-template-columns: 1fr 1fr; gap: 18px; margin-bottom: 0;
+        }
+        .fg { display: flex; flex-direction: column; gap: 7px; }
+        .fg.full { grid-column: 1/-1; }
+        .fg label { font-size: 12.5px; font-weight: 700; color: var(--text); letter-spacing: 0.3px; }
+        .fg input, .fg select {
+            border: 1.5px solid var(--border); border-radius: 10px;
+            padding: 10px 14px; font-size: 14px; font-family: 'DM Sans', sans-serif;
+            color: var(--text); background: #fafbfd; transition: all 0.25s;
+        }
+        .fg input:focus, .fg select:focus {
+            outline: none; border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(10,37,88,0.08); background: #fff;
+        }
+        .fg input::placeholder { color: #a0aec0; }
+
+        .temp-pw-box {
+            grid-column: 1/-1;
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border: 1.5px solid #86efac; border-radius: 12px;
+            padding: 14px 18px; font-size: 13px; color: #15803d;
+            display: flex; align-items: center; gap: 12px;
+        }
+        .temp-pw-box i { font-size: 18px; flex-shrink: 0; }
+
+        .form-actions { display: flex; align-items: center; gap: 14px; margin-top: 22px; flex-wrap: wrap; }
+        .btn-create {
+            background: linear-gradient(135deg, var(--green), #16a34a); color: #fff; border: none;
+            padding: 12px 28px; border-radius: 10px; font-size: 14px; font-weight: 700;
+            font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.3s;
+            display: inline-flex; align-items: center; gap: 9px;
+            box-shadow: 0 4px 16px rgba(14,124,59,0.35);
+        }
+        .btn-create:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(14,124,59,0.45); }
+        .btn-create:disabled { opacity: 0.6; cursor: not-allowed; }
+        .btn-clear {
+            background: transparent; color: var(--text-muted); border: 1.5px solid var(--border);
+            padding: 11px 22px; border-radius: 10px; font-size: 14px; font-weight: 600;
+            font-family: 'DM Sans', sans-serif; cursor: pointer; transition: all 0.25s;
+            display: inline-flex; align-items: center; gap: 8px;
+        }
+        .btn-clear:hover { background: #f0f4ff; border-color: var(--primary); color: var(--primary); }
+        #officerFormMsg { font-size: 13px; }
+
+        /* Officers table section */
+        .officers-table-sec { margin-top: 36px; }
+        .officers-table-head {
+            display: flex; align-items: center; justify-content: space-between; gap: 12px;
+            margin-bottom: 16px; flex-wrap: wrap;
+        }
+        .officer-search {
+            border: 1.5px solid var(--border); border-radius: 10px;
+            padding: 8px 14px; font-size: 13px; font-family: 'DM Sans', sans-serif;
+            width: 220px; color: var(--text); background: #fafbfd; transition: all 0.25s;
+        }
+        .officer-search:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(10,37,88,0.08); }
+
+        .officers-table-wrap { overflow-x: auto; border-radius: 14px; border: 1px solid var(--border); }
+        .officers-table { width: 100%; border-collapse: collapse; font-size: 13.5px; }
+        .officers-table thead th {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: rgba(255,255,255,0.9); padding: 13px 16px;
+            text-align: left; white-space: nowrap; font-weight: 600; font-size: 12px; letter-spacing: 0.3px;
+        }
+        .officers-table thead th:first-child { border-radius: 14px 0 0 0; }
+        .officers-table thead th:last-child  { border-radius: 0 14px 0 0; }
+        .officers-table td { padding: 12px 16px; border-bottom: 1px solid #f4f6fa; vertical-align: middle; }
+        .officers-table tbody tr:last-child td { border-bottom: none; }
+        .officers-table tbody tr:hover { background: #f8faff; }
+
+        .role-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+        .role-officer  { background: #dbeafe; color: #1e40af; }
+        .role-senior   { background: #ffedd5; color: #9a3412; }
+        .role-head     { background: #fee2e2; color: #991b1b; }
+        .officer-active   { background: #dcfce7; color: #15803d; }
+        .officer-inactive { background: #f1f5f9; color: #64748b; }
+        .officer-status-badge { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+
+        .btn-icon {
+            background: #fff; border: 1.5px solid var(--border); border-radius: 8px;
+            padding: 5px 10px; cursor: pointer; font-size: 12px; color: var(--text-muted);
+            transition: all 0.2s;
+        }
+        .btn-icon:hover { background: var(--primary); color: #fff; border-color: var(--primary); }
+        .btn-icon.danger:hover { background: var(--error); border-color: var(--error); }
+        .officers-loading { text-align: center; padding: 36px; color: var(--text-muted); font-size: 14px; }
+
+        /* ── MODAL ── */
+        .modal-overlay {
+            position: fixed; inset: 0; z-index: 2000;
+            background: rgba(6,23,58,0.72); backdrop-filter: blur(6px);
+            display: none; align-items: center; justify-content: center; padding: 20px;
+        }
         .modal-overlay.open { display: flex; }
-        .modal-box { background: var(--white); border-radius: 12px; width: 100%; max-width: 850px; max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3); animation: modalIn 0.25s ease; }
-        @keyframes modalIn { from { opacity:0; transform:scale(0.95) translateY(-10px); } to { opacity:1; transform:scale(1) translateY(0); } }
-        .modal-header { background: linear-gradient(135deg, var(--primary), #1a4d8f); color: var(--white); padding: 20px 25px; border-radius: 12px 12px 0 0; display: flex; justify-content: space-between; align-items: center; }
-        .modal-header h5 { margin: 0; font-size: 18px; font-weight: 700; }
-        .modal-close { background: none; border: none; color: var(--white); font-size: 22px; cursor: pointer; opacity: 0.8; transition: opacity 0.2s; }
-        .modal-close:hover { opacity: 1; }
-        .modal-body { padding: 25px; }
-        .modal-footer { padding: 15px 25px; border-top: 1px solid #eee; display: flex; gap: 10px; justify-content: flex-end; }
+        .modal-box {
+            background: #fff; border-radius: 22px; width: 100%; max-width: 920px;
+            max-height: 92vh; overflow-y: auto;
+            box-shadow: 0 32px 80px rgba(6,23,58,0.3);
+            animation: modal-in 0.3s cubic-bezier(0.34,1.56,0.64,1);
+        }
+        @keyframes modal-in { from{opacity:0;transform:scale(0.9)} to{opacity:1;transform:scale(1)} }
+        .modal-box::-webkit-scrollbar { width: 5px; }
+        .modal-box::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
 
-        .modal-stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-bottom: 20px; }
-        .modal-stat { padding: 14px; border-radius: 8px; text-align: center; }
-        .modal-stat.blue   { background: #e3f2fd; }
-        .modal-stat.orange { background: #fff3e0; }
-        .modal-stat.green  { background: #e8f5e9; }
-        .modal-stat.red    { background: #ffebee; }
-        .modal-stat-val { font-size: 22px; font-weight: 700; }
-        .modal-stat.blue   .modal-stat-val { color: #0d6efd; }
-        .modal-stat.orange .modal-stat-val { color: #e65100; }
-        .modal-stat.green  .modal-stat-val { color: #2e7d32; }
-        .modal-stat.red    .modal-stat-val { color: #c62828; }
-        .modal-stat-lbl { font-size: 11px; color: #777; font-weight: 600; margin-top: 4px; }
+        .modal-header {
+            background: linear-gradient(135deg, var(--primary-dark), var(--primary));
+            color: #fff; padding: 22px 28px;
+            border-radius: 22px 22px 0 0;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .modal-header h5 {
+            font-family: 'Playfair Display', serif;
+            font-size: 20px; font-weight: 700; margin: 0;
+        }
+        .modal-close {
+            background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2);
+            color: #fff; font-size: 18px; cursor: pointer; width: 36px; height: 36px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            transition: all 0.25s;
+        }
+        .modal-close:hover { background: rgba(255,255,255,0.2); }
+        .modal-body { padding: 28px; }
 
-        .modal-table { width: 100%; border-collapse: collapse; font-size: 13px; }
-        .modal-table th { background: var(--primary); color: var(--white); padding: 10px 12px; text-align: left; white-space: nowrap; }
-        .modal-table td { padding: 10px 12px; border-bottom: 1px solid #eee; vertical-align: middle; }
-        .modal-table tr:hover { background: #f8f9fa; }
+        .modal-stats { display: grid; grid-template-columns: repeat(4,1fr); gap: 14px; margin-bottom: 24px; }
+        .ms {
+            border-radius: 14px; padding: 18px 16px; text-align: center;
+        }
+        .ms.blue   { background: #eff6ff; }
+        .ms.orange { background: #fff7ed; }
+        .ms.green  { background: #f0fdf4; }
+        .ms.red    { background: #fff1f2; }
+        .ms-val { font-family: 'Playfair Display', serif; font-size: 28px; font-weight: 700; line-height: 1; }
+        .ms.blue   .ms-val { color: #1d4ed8; }
+        .ms.orange .ms-val { color: #c2410c; }
+        .ms.green  .ms-val { color: #15803d; }
+        .ms.red    .ms-val { color: #be123c; }
+        .ms-lbl { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; margin-top: 5px; letter-spacing: 0.5px; }
 
-        .status-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-        .status-submitted    { background-color: #0dcaf0; color: #000; }
-        .status-under-review { background-color: #ffc107; color: #000; }
-        .status-in-progress  { background-color: #0d6efd; color: #fff; }
-        .status-resolved     { background-color: var(--success); color: #fff; }
-        .status-closed       { background-color: #6c757d; color: #fff; }
-
-        .priority-badge { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
-        .priority-low      { background-color: #e8f5e9; color: #2e7d32; }
-        .priority-medium   { background-color: #fff3e0; color: #e65100; }
-        .priority-high     { background-color: #ffebee; color: #c62828; }
-        .priority-critical { background-color: #b71c1c; color: #fff; }
-
-        .tab-btns { display: flex; gap: 8px; margin-bottom: 16px; flex-wrap: wrap; }
-        .tab-btn { padding: 6px 16px; border: 2px solid #ddd; border-radius: 20px; background: var(--white); font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; color: #555; }
+        .tab-row { display: flex; gap: 8px; margin-bottom: 18px; flex-wrap: wrap; }
+        .tab-btn {
+            padding: 7px 18px; border: 1.5px solid var(--border); border-radius: 20px;
+            background: #fff; font-size: 13px; font-weight: 600; cursor: pointer;
+            transition: all 0.2s; color: var(--text-muted); font-family: 'DM Sans', sans-serif;
+        }
         .tab-btn:hover { border-color: var(--primary); color: var(--primary); }
-        .tab-btn.active { background: var(--primary); color: var(--white); border-color: var(--primary); }
+        .tab-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); }
 
-        /* Toast */
-        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 10px; }
-        .toast { background: var(--white); border-radius: 8px; padding: 14px 18px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; font-size: 14px; min-width: 260px; animation: toastIn 0.3s ease; border-left: 4px solid var(--success); }
+        .modal-table-wrap { overflow-x: auto; border-radius: 12px; border: 1px solid var(--border); }
+        .modal-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+        .modal-table thead th {
+            background: linear-gradient(135deg, var(--primary), var(--primary-light));
+            color: rgba(255,255,255,0.9); padding: 11px 14px;
+            text-align: left; white-space: nowrap; font-size: 12px; font-weight: 600;
+        }
+        .modal-table td { padding: 11px 14px; border-bottom: 1px solid #f4f6fa; vertical-align: middle; }
+        .modal-table tbody tr:last-child td { border-bottom: none; }
+        .modal-table tbody tr:hover { background: #f8faff; }
+
+        .modal-footer {
+            padding: 18px 28px; border-top: 1px solid var(--border);
+            display: flex; gap: 10px; justify-content: flex-end;
+            background: linear-gradient(135deg, #fafbfd, #f0f4ff);
+        }
+
+        /* Status & priority badges */
+        .sb {
+            display: inline-block; padding: 4px 12px; border-radius: 20px;
+            font-size: 11px; font-weight: 700;
+        }
+        .sb-submitted    { background: #e0f2fe; color: #0369a1; }
+        .sb-under-review { background: #fef9c3; color: #92400e; }
+        .sb-in-progress  { background: #dbeafe; color: #1d4ed8; }
+        .sb-resolved     { background: #dcfce7; color: #15803d; }
+        .sb-closed       { background: #f1f5f9; color: #475569; }
+        .pb { display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+        .pb-low      { background: #dcfce7; color: #15803d; }
+        .pb-medium   { background: #fff7ed; color: #c2410c; }
+        .pb-high     { background: #fee2e2; color: #be123c; }
+        .pb-critical { background: #7f1d1d; color: #fff; }
+
+        /* ── TOAST ── */
+        .toast-container {
+            position: fixed; top: 24px; right: 24px; z-index: 3000;
+            display: flex; flex-direction: column; gap: 10px; pointer-events: none;
+        }
+        .toast {
+            background: #fff; border-radius: 12px;
+            padding: 14px 18px; min-width: 280px;
+            box-shadow: 0 8px 32px rgba(6,23,58,0.18);
+            display: flex; align-items: center; gap: 12px;
+            font-size: 14px; font-weight: 500; color: var(--text);
+            border-left: 4px solid var(--green);
+            animation: toast-in 0.35s cubic-bezier(0.34,1.56,0.64,1);
+            pointer-events: all;
+        }
         .toast.error   { border-left-color: var(--error); }
         .toast.warning { border-left-color: var(--accent); }
-        @keyframes toastIn { from { opacity:0; transform: translateX(40px); } to { opacity:1; transform:translateX(0); } }
+        @keyframes toast-in { from{opacity:0;transform:translateX(50px)} to{opacity:1;transform:translateX(0)} }
 
-        @media (max-width: 992px) { .sidebar { transform: translateX(-100%); } .main-content { margin-left: 0; } .top-bar { flex-direction: column; align-items: flex-start; gap: 15px; } }
-        @media (max-width: 768px) { .departments-grid { grid-template-columns: 1fr; } .modal-stats { grid-template-columns: 1fr 1fr; } .create-officer-form { grid-template-columns: 1fr; } }
+        /* ── RESPONSIVE ── */
+        @media (max-width: 1200px) {
+            .stats-strip { grid-template-columns: repeat(3,1fr); }
+        }
+        @media (max-width: 992px) {
+            .sidebar { transform: translateX(-100%); }
+            .main { margin-left: 0; padding: 24px 20px 50px; }
+        }
+        @media (max-width: 768px) {
+            .depts-grid { grid-template-columns: 1fr; }
+            .modal-stats { grid-template-columns: 1fr 1fr; }
+            .create-officer-grid { grid-template-columns: 1fr; }
+            .stats-strip { grid-template-columns: repeat(2,1fr); }
+        }
     </style>
 </head>
 <body>
-    <div class="tricolor-strip"></div>
-    <div class="toast-container" id="toastContainer"></div>
+<!-- PAGE LOADER -->
+<div id="page-loader">
+    <svg class="chakra-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="46" stroke="#FF9933" stroke-width="4" fill="none"/>
+        <circle cx="50" cy="50" r="8" fill="#138808"/>
+        <g stroke="#003580" stroke-width="1.8">
+            <line x1="50" y1="50" x2="50" y2="6"/>       <line x1="50" y1="50" x2="66" y2="9"/>
+            <line x1="50" y1="50" x2="79" y2="21"/>      <line x1="50" y1="50" x2="86" y2="34"/>
+            <line x1="50" y1="50" x2="89" y2="50"/>      <line x1="50" y1="50" x2="86" y2="66"/>
+            <line x1="50" y1="50" x2="79" y2="79"/>      <line x1="50" y1="50" x2="66" y2="91"/>
+            <line x1="50" y1="50" x2="50" y2="94"/>      <line x1="50" y1="50" x2="34" y2="91"/>
+            <line x1="50" y1="50" x2="21" y2="79"/>      <line x1="50" y1="50" x2="14" y2="66"/>
+            <line x1="50" y1="50" x2="11" y2="50"/>      <line x1="50" y1="50" x2="14" y2="34"/>
+            <line x1="50" y1="50" x2="21" y2="21"/>      <line x1="50" y1="50" x2="34" y2="9"/>
+            <line x1="50" y1="50" x2="58" y2="7.5"/>     <line x1="50" y1="50" x2="73" y2="14"/>
+            <line x1="50" y1="50" x2="83" y2="27"/>      <line x1="50" y1="50" x2="88" y2="42"/>
+            <line x1="50" y1="50" x2="88" y2="58"/>      <line x1="50" y1="50" x2="83" y2="73"/>
+            <line x1="50" y1="50" x2="73" y2="86"/>      <line x1="50" y1="50" x2="58" y2="92.5"/>
+        </g>
+        <circle cx="50" cy="50" r="4" fill="#FF9933"/>
+    </svg>
+    <p class="loader-label">Department</p>
+    <div class="loader-dots">
+        <div class="loader-dot"></div>
+        <div class="loader-dot"></div>
+        <div class="loader-dot"></div>
+    </div>
+</div>
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <h4><i class="fas fa-landmark"></i> Gov Portal</h4>
-            <p>Complaint Management System</p>
+<div class="tricolor"></div>
+<div class="toast-wrap" id="toasts"></div>
+
+<!-- ── SIDEBAR ── -->
+<aside class="sidebar">
+    <div class="sidebar-brand">
+        <div class="sidebar-brand-icon"><i class="fas fa-landmark"></i></div>
+        <div class="sidebar-brand-text">
+            <h4>Officer Portal</h4>
+            <p>Grievance Management System</p>
         </div>
-        <ul class="sidebar-menu">
-            <li><a href="dashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a></li>
-            <li><a href="all-complaints.html"><i class="fas fa-file-alt"></i><span>All Complaints</span></a></li>
-            <li><a href="pending.html"><i class="fas fa-clock"></i><span>Pending</span></a></li>
-            <li><a href="resolved.html"><i class="fas fa-check-circle"></i><span>Resolved</span></a></li>
-            <li><a href="admin-departments.html" class="active"><i class="fas fa-building"></i><span>Departments</span></a></li>
-            <li><a href="analytics.html"><i class="fas fa-chart-bar"></i><span>Analytics</span></a></li>
-            <li><a href="notification.html"><i class="fas fa-bell"></i><span>Notifications</span></a></li>
-            <li><a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a></li>
-            <li><a href="login.html" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
-        </ul>
-        <div class="user-profile">
-            <div class="user-profile-content">
-                <div class="user-avatar" id="userAvatarLetter">A</div>
-                <div class="user-info">
-                    <div class="name" id="userName">Officer</div>
-                    <div class="role">System Administrator</div>
-                </div>
-            </div>
+    </div>
+    <div class="sidebar-section-label">Navigation</div>
+    <ul class="sidebar-menu">
+        <li><a href="dashboard.html"><span class="menu-icon"><i class="fas fa-th-large"></i></span>Dashboard</a></li>
+        <li><a href="all-complaints.html"><span class="menu-icon"><i class="fas fa-file-alt"></i></span>All Complaints</a></li>
+        <li><a href="pending.html"><span class="menu-icon"><i class="fas fa-clock"></i></span>Pending</a></li>
+        <li><a href="resolved.html"><span class="menu-icon"><i class="fas fa-check-circle"></i></span>Resolved</a></li>
+    </ul>
+    <div class="sidebar-section-label">Management</div>
+    <ul class="sidebar-menu">
+        <li><a href="admin-departments.html" class="active"><span class="menu-icon"><i class="fas fa-building"></i></span>Departments</a></li>
+        <li><a href="analytics.html"><span class="menu-icon"><i class="fas fa-chart-bar"></i></span>Analytics</a></li>
+        <li><a href="notification.html"><span class="menu-icon"><i class="fas fa-bell"></i></span>Notifications</a></li>
+        <li><a href="settings.html"><span class="menu-icon"><i class="fas fa-cog"></i></span>Settings</a></li>
+    </ul>
+    <div class="sidebar-divider"></div>
+    <div class="sidebar-user">
+        <div class="user-avatar" id="userAvatarLetter">A</div>
+        <div class="user-info">
+            <div class="uname" id="userName">Officer</div>
+            <div class="urole">System Administrator</div>
         </div>
-    </aside>
+        <button class="logout-btn" onclick="logout()" title="Logout"><i class="fas fa-sign-out-alt"></i></button>
+    </div>
+</aside>
 
-    <!-- Main -->
-    <main class="main-content">
-        <div class="top-bar">
-            <div class="welcome-text">
-                <h2>Department Overview</h2>
-                <p>Complaint distribution, performance, and officer management by department</p>
-            </div>
-            <div class="top-actions">
-                <button class="btn-action btn-secondary-action" onclick="exportAllCSV()">
-                    <i class="fas fa-download"></i> Export All
-                </button>
-                <button class="btn-action btn-primary-action" onclick="loadComplaints()">
-                    <i class="fas fa-sync-alt"></i> Refresh
-                </button>
-            </div>
+<!-- ── MAIN ── -->
+<main class="main">
+
+    <!-- Top Bar -->
+    <div class="top-bar">
+        <div class="top-bar-left">
+            <h2>Department Overview</h2>
+            <p>Complaint distribution, performance &amp; officer management by department</p>
         </div>
-
-        <!-- Error Banner -->
-        <div class="error-banner" id="errorBanner">
-            <i class="fas fa-exclamation-circle"></i>
-            <span id="errorBannerMsg">Unable to load complaints.</span>
-            <button onclick="loadComplaints()" style="margin-left:auto;background:none;border:1px solid var(--error);color:var(--error);padding:4px 10px;border-radius:4px;cursor:pointer;font-size:12px;">Retry</button>
-        </div>
-
-        <!-- Summary Stats -->
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon purple"><i class="fas fa-building"></i></div>
-                <div class="stat-value" id="totalDepts">—</div>
-                <div class="stat-label">Active Departments</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon blue"><i class="fas fa-file-alt"></i></div>
-                <div class="stat-value" id="totalComplaints">—</div>
-                <div class="stat-label">Total Complaints</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon orange"><i class="fas fa-clock"></i></div>
-                <div class="stat-value" id="totalPending">—</div>
-                <div class="stat-label">Pending Across All</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon green"><i class="fas fa-check-circle"></i></div>
-                <div class="stat-value" id="totalResolved">—</div>
-                <div class="stat-label">Resolved Across All</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon teal"><i class="fas fa-user-tie"></i></div>
-                <div class="stat-value" id="totalOfficers">—</div>
-                <div class="stat-label">Total Officers</div>
-            </div>
-        </div>
-
-        <!-- Search -->
-        <div class="search-bar">
-            <input type="text" class="search-input" id="searchInput" placeholder="🔍  Search departments...">
-        </div>
-
-        <!-- Department Cards -->
-        <div class="section-heading">
-            <h3><i class="fas fa-building me-2"></i>Departments</h3>
-        </div>
-        <div class="departments-grid" id="departmentsGrid">
-            <div class="loading-spinner">
-                <div class="spinner"></div>
-                <span>Loading department data...</span>
-            </div>
-        </div>
-        <div class="no-results" id="noResults">
-            <i class="fas fa-building"></i>
-            <h4>No departments found</h4>
-            <p>Try a different search term</p>
-        </div>
-
-        <!-- ══════════════════════════════════════════════════════════
-             OFFICER MANAGEMENT PANEL
-        ══════════════════════════════════════════════════════════ -->
-        <div class="officer-panel">
-            <div class="officer-panel-header">
-                <h4><i class="fas fa-user-tie me-2"></i>Officer Management</h4>
-                <button class="btn-action btn-primary-action" onclick="loadOfficers()" style="padding:6px 16px;font-size:13px;">
-                    <i class="fas fa-sync-alt"></i> Refresh Officers
-                </button>
-            </div>
-            <div class="officer-panel-body">
-
-                <!-- ── Create Officer Form ─────────────────────────────── -->
-                <div class="section-heading" style="margin-bottom:16px;">
-                    <h3 style="font-size:16px;"><i class="fas fa-user-plus me-2"></i>Create New Officer</h3>
-                </div>
-
-                <!-- ✅ NEW: No password field — Lambda auto-sets Temp@123 -->
-                <form id="createOfficerForm" onsubmit="createOfficer(event)">
-                    <div class="create-officer-form">
-                        <div class="form-group">
-                            <label>Employee ID <span style="color:var(--error);">*</span></label>
-                            <input type="text" id="empId" placeholder="e.g. OFF001" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Officer Name <span style="color:var(--error);">*</span></label>
-                            <input type="text" id="officerName" placeholder="Full name" required>
-                        </div>
-                        <div class="form-group">
-                            <label>Department <span style="color:var(--error);">*</span></label>
-                            <select id="officerDept" required>
-                                <option value="">Select Department</option>
-                                <option>Public Works</option>
-                                <option>Health</option>
-                                <option>Education</option>
-                                <option>Police</option>
-                                <option>Revenue</option>
-                                <option>Water Supply</option>
-                                <option>Electricity</option>
-                                <option>Sanitation</option>
-                                <option>Transport</option>
-                                <option>Social Welfare</option>
-                                <option>Agriculture</option>
-                                <option>Housing</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label>Role <span style="color:var(--error);">*</span></label>
-                            <select id="officerRole" required>
-                                <option value="officer">Officer</option>
-                                <option value="senior">Senior Officer</option>
-                                <option value="head">Head Officer</option>
-                            </select>
-                        </div>
-                        <!-- ✅ NEW: Email is now required for Cognito user creation -->
-                        <div class="form-group full">
-                            <label>Email Address <span style="color:var(--error);">*</span></label>
-                            <input type="email" id="officerEmail" placeholder="officer@gov.in" required>
-                        </div>
-
-                        <!-- ✅ INFO BOX: replaces the old manual password field -->
-                        <div class="temp-pw-info">
-                            <i class="fas fa-info-circle" style="font-size:16px;flex-shrink:0;"></i>
-                            <span>
-                                A Cognito account will be auto-created. The officer's temporary password will be
-                                <strong>Temp@123</strong> — they will be prompted to change it on first login.
-                            </span>
-                        </div>
-                    </div>
-
-                    <div style="display:flex; align-items:center; gap:14px; margin-top:16px; flex-wrap:wrap;">
-                        <button type="submit" class="btn-create-officer" id="createOfficerBtn">
-                            <i class="fas fa-user-plus"></i> Create Officer
-                        </button>
-                        <button type="reset" style="background:none;border:1px solid #ddd;padding:10px 20px;border-radius:7px;cursor:pointer;font-size:13px;color:#666;transition:all 0.2s;">
-                            <i class="fas fa-redo"></i> Clear
-                        </button>
-                        <span id="officerFormMsg" style="font-size:13px;"></span>
-                    </div>
-                </form>
-
-                <!-- ── Officers List Table ─────────────────────────────── -->
-                <div class="officers-table-wrap">
-                    <div class="section-heading" style="margin-bottom:14px; margin-top:10px;">
-                        <h3 style="font-size:16px;"><i class="fas fa-users me-2"></i>All Officers</h3>
-                        <input type="text" id="officerSearchInput"
-                            placeholder="🔍 Search officers…"
-                            style="border:1.5px solid #ddd;border-radius:7px;padding:7px 13px;font-size:13px;width:220px;font-family:inherit;"
-                            oninput="filterOfficerTable(this.value)">
-                    </div>
-
-                    <div id="officersTableContainer">
-                        <div class="officers-loading">
-                            <i class="fas fa-spinner fa-spin me-2"></i> Loading officers…
-                        </div>
-                    </div>
-                </div>
-
-            </div>
-        </div>
-
-    </main>
-
-    <!-- DEPARTMENT COMPLAINTS MODAL -->
-    <div class="modal-overlay" id="deptModal">
-        <div class="modal-box">
-            <div class="modal-header">
-                <h5 id="modalDeptTitle"><i class="fas fa-building me-2"></i> Department</h5>
-                <button class="modal-close" onclick="closeModal('deptModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="modal-stats">
-                    <div class="modal-stat blue">
-                        <div class="modal-stat-val" id="mdTotal">0</div>
-                        <div class="modal-stat-lbl">Total</div>
-                    </div>
-                    <div class="modal-stat orange">
-                        <div class="modal-stat-val" id="mdPending">0</div>
-                        <div class="modal-stat-lbl">Pending</div>
-                    </div>
-                    <div class="modal-stat green">
-                        <div class="modal-stat-val" id="mdResolved">0</div>
-                        <div class="modal-stat-lbl">Resolved</div>
-                    </div>
-                    <div class="modal-stat red">
-                        <div class="modal-stat-val" id="mdCritical">0</div>
-                        <div class="modal-stat-lbl">Critical</div>
-                    </div>
-                </div>
-                <div class="tab-btns" id="modalTabBtns">
-                    <button class="tab-btn active" onclick="filterModal('all', this)">All</button>
-                    <button class="tab-btn" onclick="filterModal('Submitted', this)">Submitted</button>
-                    <button class="tab-btn" onclick="filterModal('Under Review', this)">Under Review</button>
-                    <button class="tab-btn" onclick="filterModal('In Progress', this)">In Progress</button>
-                    <button class="tab-btn" onclick="filterModal('Resolved', this)">Resolved</button>
-                    <button class="tab-btn" onclick="filterModal('Closed', this)">Closed</button>
-                </div>
-                <div style="overflow-x:auto;">
-                    <table class="modal-table">
-                        <thead>
-                            <tr>
-                                <th>ID</th>
-                                <th>Name</th>
-                                <th>Mobile</th>
-                                <th>Category</th>
-                                <th>Priority</th>
-                                <th>Status</th>
-                                <th>Submitted</th>
-                            </tr>
-                        </thead>
-                        <tbody id="modalTableBody"></tbody>
-                    </table>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-action btn-secondary-action" onclick="exportDeptCSV()">
-                    <i class="fas fa-download"></i> Export CSV
-                </button>
-                <button class="btn-action btn-secondary-action" onclick="closeModal('deptModal')">Close</button>
-            </div>
+        <div class="top-bar-actions">
+            <button class="btn-topbar btn-topbar-secondary" onclick="exportAllCSV()">
+                <i class="fas fa-download"></i> Export All
+            </button>
+            <button class="btn-topbar btn-topbar-primary" onclick="loadComplaints()">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
+    <!-- Error Banner -->
+    <div class="error-banner" id="errorBanner">
+        <i class="fas fa-exclamation-circle"></i>
+        <span id="errorBannerMsg">Unable to load complaints.</span>
+        <button onclick="loadComplaints()" style="margin-left:auto;background:none;border:1px solid var(--error);color:var(--error);padding:4px 12px;border-radius:7px;cursor:pointer;font-size:12px;font-family:'DM Sans',sans-serif;">Retry</button>
+    </div>
 
-    // ── 1. AUTH GUARD ──────────────────────────────────────────────────────────
-    const officerToken = localStorage.getItem("officerToken");
-    if (!officerToken) window.location.href = "login.html";
+    <!-- Stats Strip -->
+    <div class="stats-strip">
+        <div class="stat-pill">
+            <div class="stat-pill-icon"><i class="fas fa-building"></i></div>
+            <div class="stat-pill-num" id="totalDepts">—</div>
+            <div class="stat-pill-lbl">Active Departments</div>
+        </div>
+        <div class="stat-pill">
+            <div class="stat-pill-icon"><i class="fas fa-file-alt"></i></div>
+            <div class="stat-pill-num" id="totalComplaints">—</div>
+            <div class="stat-pill-lbl">Total Complaints</div>
+        </div>
+        <div class="stat-pill">
+            <div class="stat-pill-icon"><i class="fas fa-clock"></i></div>
+            <div class="stat-pill-num" id="totalPending">—</div>
+            <div class="stat-pill-lbl">Pending Across All</div>
+        </div>
+        <div class="stat-pill">
+            <div class="stat-pill-icon"><i class="fas fa-check-circle"></i></div>
+            <div class="stat-pill-num" id="totalResolved">—</div>
+            <div class="stat-pill-lbl">Resolved Across All</div>
+        </div>
+        <div class="stat-pill">
+            <div class="stat-pill-icon"><i class="fas fa-user-tie"></i></div>
+            <div class="stat-pill-num" id="totalOfficers">—</div>
+            <div class="stat-pill-lbl">Total Officers</div>
+        </div>
+    </div>
 
-    function parseJwt(t) {
-        try { return JSON.parse(atob(t.split('.')[1])); } catch(e) { return null; }
-    }
-    const payload     = parseJwt(officerToken);
-    const displayName = payload?.['cognito:username'] || payload?.['name'] || payload?.['email'] || 'Officer';
-    document.getElementById('userName').textContent         = displayName;
-    document.getElementById('userAvatarLetter').textContent = displayName.charAt(0).toUpperCase();
+    <!-- Search -->
+    <div class="search-wrap">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchInput" placeholder="Search departments by name…">
+    </div>
 
-    // ── 2. CONFIG ──────────────────────────────────────────────────────────────
-    const API_BASE        = "https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod";
-    const COMPLAINTS_API  = `${API_BASE}/admin/complaints`;
-    const OFFICERS_API    = `${API_BASE}/officers`;
-    // ✅ UPDATED: points to the new create-officer Lambda endpoint
-    const CREATE_OFF_API  = `${API_BASE}/create-officer`;
+    <!-- Departments Section -->
+    <div class="sec-head">
+        <div class="sec-head-left">
+            <div class="sec-head-icon"><i class="fas fa-building"></i></div>
+            <div class="sec-head-title">Departments</div>
+        </div>
+    </div>
+    <div class="depts-grid" id="departmentsGrid">
+        <div class="loading-block">
+            <div class="spin-ring"></div>
+            <span>Loading department data…</span>
+        </div>
+    </div>
+    <div class="no-results" id="noResults">
+        <i class="fas fa-building"></i>
+        <h5 style="color:var(--text);font-family:'Playfair Display',serif;">No departments found</h5>
+        <p>Try a different search term</p>
+    </div>
 
-    const AUTH_HEADERS = {
-        "Authorization": "Bearer " + officerToken,
-        "Content-Type":  "application/json"
-    };
+    <!-- ── OFFICER MANAGEMENT PANEL ── -->
+    <div class="officer-panel">
+        <div class="officer-panel-header">
+            <div class="officer-panel-header-left">
+                <div class="officer-panel-header-icon"><i class="fas fa-user-tie"></i></div>
+                <div>
+                    <h4>Officer Management</h4>
+                    <p>Create, manage and monitor government officers</p>
+                </div>
+            </div>
+            <button class="btn-topbar btn-topbar-secondary" onclick="loadOfficers()" style="font-size:13px;padding:8px 18px;">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+        </div>
 
-    const DEPT_META = {
-        'Public Works':   { icon: 'fa-road',                phone: '1800-111-2222', head: 'Shri Rajesh Kumar, IAS' },
-        'Health':         { icon: 'fa-heartbeat',           phone: '1800-111-3333', head: 'Dr. Priya Sharma, IAS'  },
-        'Education':      { icon: 'fa-graduation-cap',      phone: '1800-111-4444', head: 'Prof. Anil Verma'        },
-        'Police':         { icon: 'fa-shield-alt',          phone: '100',            head: 'Shri Vikram Singh, IPS' },
-        'Revenue':        { icon: 'fa-file-invoice-dollar', phone: '1800-111-6666', head: 'Shri Ramesh Gupta, IAS' },
-        'Water Supply':   { icon: 'fa-tint',                phone: '1800-111-8888', head: 'Er. Meena Patel'        },
-        'Electricity':    { icon: 'fa-bolt',                phone: '1800-111-7777', head: 'Er. Suresh Reddy'       },
-        'Sanitation':     { icon: 'fa-recycle',             phone: '1800-333-1111', head: 'Shri Arun Mishra'       },
-        'Transport':      { icon: 'fa-bus',                 phone: '1800-111-9999', head: 'Shri Ashok Kumar, IAS'  },
-        'Social Welfare': { icon: 'fa-hands-helping',       phone: '1800-222-1111', head: 'Smt. Kavita Devi, IAS'  },
-        'Agriculture':    { icon: 'fa-leaf',                phone: '1800-222-2222', head: 'Dr. Mohan Singh'        },
-        'Housing':        { icon: 'fa-city',                phone: '1800-222-3333', head: 'Shri Deepak Joshi, IAS' },
-    };
+        <div class="officer-panel-body">
 
-    const ROLE_LEVEL = { officer: 1, senior: 2, head: 3 };
+            <!-- Create Officer Form -->
+            <div class="sec-head" style="margin-bottom:20px;">
+                <div class="sec-head-left">
+                    <div class="sec-head-icon"><i class="fas fa-user-plus"></i></div>
+                    <div class="sec-head-title" style="font-size:18px;">Create New Officer</div>
+                </div>
+            </div>
 
-    // ── 3. STATE ───────────────────────────────────────────────────────────────
-    let departmentData  = {};
-    let activeDept      = null;
-    let activeDeptComps = [];
-    let modalFilter     = 'all';
-    let allOfficers     = [];
-
-    // ── 4. LOAD COMPLAINTS ─────────────────────────────────────────────────────
-    async function loadComplaints() {
-        document.getElementById('departmentsGrid').innerHTML =
-            '<div class="loading-spinner"><div class="spinner"></div><span>Loading department data...</span></div>';
-        hideError();
-
-        try {
-            const res  = await fetch(COMPLAINTS_API, { headers: AUTH_HEADERS });
-            if (res.status === 401 || res.status === 403) { logout(); return; }
-            if (!res.ok) throw new Error(`Server responded with ${res.status}`);
-
-            const data = await res.json();
-            const all  = Array.isArray(data) ? data : (data.complaints || data.items || data.data || []);
-
-            departmentData = {};
-            all.forEach(c => {
-                const dept = c.department || 'Other';
-                if (!departmentData[dept]) departmentData[dept] = [];
-                departmentData[dept].push(c);
-            });
-
-            updateSummaryStats(all);
-            renderDepartments(Object.keys(departmentData));
-
-        } catch (err) {
-            console.error(err);
-            showError("Unable to load complaints: " + err.message);
-            document.getElementById('departmentsGrid').innerHTML =
-                '<div class="loading-spinner" style="color:#999;">Could not fetch data. Click Retry.</div>';
-        }
-    }
-
-    function updateSummaryStats(all) {
-        const pending  = all.filter(c => c.status !== 'Resolved' && c.status !== 'Closed').length;
-        const resolved = all.filter(c => c.status === 'Resolved').length;
-        document.getElementById('totalDepts').textContent      = Object.keys(departmentData).length;
-        document.getElementById('totalComplaints').textContent = all.length;
-        document.getElementById('totalPending').textContent    = pending;
-        document.getElementById('totalResolved').textContent   = resolved;
-    }
-
-    // ── 5. RENDER DEPARTMENT CARDS ─────────────────────────────────────────────
-    function renderDepartments(deptNames) {
-        const grid     = document.getElementById('departmentsGrid');
-        const noResult = document.getElementById('noResults');
-        grid.innerHTML = '';
-
-        if (deptNames.length === 0) { noResult.style.display = 'block'; return; }
-        noResult.style.display = 'none';
-
-        deptNames.sort((a, b) => departmentData[b].length - departmentData[a].length);
-
-        deptNames.forEach((dept, i) => {
-            const complaints = departmentData[dept];
-            const total    = complaints.length;
-            const pending  = complaints.filter(c => c.status !== 'Resolved' && c.status !== 'Closed').length;
-            const resolved = complaints.filter(c => c.status === 'Resolved').length;
-            const critical = complaints.filter(c => (c.priority || '') === 'Critical').length;
-            const pct      = total > 0 ? Math.round((resolved / total) * 100) : 0;
-            const meta     = DEPT_META[dept] || { icon: 'fa-building', phone: '—', head: '—' };
-
-            const deptOfficers = allOfficers.filter(o => o.department === dept).length;
-
-            const card = document.createElement('div');
-            card.className = 'dept-card';
-            card.style.animationDelay = `${i * 0.05}s`;
-            card.innerHTML = `
-                <div class="dept-card-header">
-                    <div class="dept-icon"><i class="fas ${meta.icon}"></i></div>
-                    <div>
-                        <div class="dept-name">${dept}</div>
-                        <div class="dept-contact"><i class="fas fa-user" style="font-size:10px;margin-right:4px;"></i>${meta.head}</div>
-                        <div class="dept-contact" style="margin-top:2px;"><i class="fas fa-phone" style="font-size:10px;margin-right:4px;"></i>${meta.phone}</div>
-                        ${deptOfficers > 0 ? `<div class="dept-contact" style="margin-top:2px;color:#0d6efd;"><i class="fas fa-user-tie" style="font-size:10px;margin-right:4px;"></i>${deptOfficers} officer${deptOfficers > 1 ? 's' : ''} assigned</div>` : ''}
+            <form id="createOfficerForm" onsubmit="createOfficer(event)">
+                <div class="create-officer-grid">
+                    <div class="fg">
+                        <label>Employee ID <span style="color:var(--accent);">*</span></label>
+                        <input type="text" id="empId" placeholder="e.g. OFF001" required>
+                    </div>
+                    <div class="fg">
+                        <label>Officer Name <span style="color:var(--accent);">*</span></label>
+                        <input type="text" id="officerName" placeholder="Full name" required>
+                    </div>
+                    <div class="fg">
+                        <label>Department <span style="color:var(--accent);">*</span></label>
+                        <select id="officerDept" required>
+                            <option value="">Select Department</option>
+                            <option>Public Works</option><option>Health</option>
+                            <option>Education</option><option>Police</option>
+                            <option>Revenue</option><option>Water Supply</option>
+                            <option>Electricity</option><option>Sanitation</option>
+                            <option>Transport</option><option>Social Welfare</option>
+                            <option>Agriculture</option><option>Housing</option>
+                        </select>
+                    </div>
+                    <div class="fg">
+                        <label>Role <span style="color:var(--accent);">*</span></label>
+                        <select id="officerRole" required>
+                            <option value="officer">Officer</option>
+                            <option value="senior">Senior Officer</option>
+                            <option value="head">Head Officer</option>
+                        </select>
+                    </div>
+                    <div class="fg full">
+                        <label>Email Address <span style="color:var(--accent);">*</span></label>
+                        <input type="email" id="officerEmail" placeholder="officer@gov.in" required>
+                    </div>
+                    <div class="temp-pw-box">
+                        <i class="fas fa-shield-alt"></i>
+                        <span>A Cognito account will be auto-created. The officer's temporary password will be <strong>Temp@123</strong> — they will be prompted to change it on first login.</span>
                     </div>
                 </div>
-                <div class="dept-card-stats">
-                    <div class="dept-stat">
-                        <div class="dept-stat-val">${total}</div>
-                        <div class="dept-stat-lbl">Total</div>
+                <div class="form-actions">
+                    <button type="submit" class="btn-create" id="createOfficerBtn">
+                        <i class="fas fa-user-plus"></i> Create Officer
+                    </button>
+                    <button type="reset" class="btn-clear">
+                        <i class="fas fa-undo"></i> Clear
+                    </button>
+                    <span id="officerFormMsg"></span>
+                </div>
+            </form>
+
+            <!-- Officers Table -->
+            <div class="officers-table-sec">
+                <div class="officers-table-head">
+                    <div class="sec-head-left">
+                        <div class="sec-head-icon" style="width:34px;height:34px;font-size:14px;"><i class="fas fa-users"></i></div>
+                        <div class="sec-head-title" style="font-size:17px;">All Officers</div>
                     </div>
-                    <div class="dept-stat">
-                        <div class="dept-stat-val orange">${pending}</div>
-                        <div class="dept-stat-lbl">Pending</div>
-                    </div>
-                    <div class="dept-stat">
-                        <div class="dept-stat-val green">${resolved}</div>
-                        <div class="dept-stat-lbl">Resolved</div>
+                    <input type="text" class="officer-search" id="officerSearchInput"
+                        placeholder="Search officers…"
+                        oninput="filterOfficerTable(this.value)">
+                </div>
+                <div id="officersTableContainer">
+                    <div class="officers-loading">
+                        <i class="fas fa-spinner fa-spin me-2" style="color:var(--accent);"></i> Loading officers…
                     </div>
                 </div>
-                <div class="dept-card-footer">
-                    <div class="progress-label">
-                        <span>Resolution Rate</span>
-                        <span>${pct}%</span>
-                    </div>
-                    <div class="progress-bar-bg">
-                        <div class="progress-bar-fill" style="width:${pct}%"></div>
-                    </div>
-                    ${critical > 0 ? `<div style="margin-top:8px;font-size:11px;color:var(--error);font-weight:600;"><i class="fas fa-exclamation-circle"></i> ${critical} critical complaint${critical > 1 ? 's' : ''}</div>` : ''}
-                </div>
-                <div class="dept-card-actions">
-                    <button class="btn-dept btn-dept-view"   onclick="openDeptModal('${dept}')"><i class="fas fa-eye"></i> View Complaints</button>
-                    <button class="btn-dept btn-dept-export" onclick="exportSingleDept('${dept}')"><i class="fas fa-download"></i> Export</button>
-                </div>`;
-            grid.appendChild(card);
+            </div>
+
+        </div>
+    </div>
+
+</main>
+
+<!-- ── DEPARTMENT COMPLAINTS MODAL ── -->
+<div class="modal-overlay" id="deptModal">
+    <div class="modal-box">
+        <div class="modal-header">
+            <h5 id="modalDeptTitle"><i class="fas fa-building me-2"></i>Department</h5>
+            <button class="modal-close" onclick="closeModal('deptModal')"><i class="fas fa-times"></i></button>
+        </div>
+        <div class="modal-body">
+            <div class="modal-stats">
+                <div class="ms blue"><div class="ms-val" id="mdTotal">0</div><div class="ms-lbl">Total</div></div>
+                <div class="ms orange"><div class="ms-val" id="mdPending">0</div><div class="ms-lbl">Pending</div></div>
+                <div class="ms green"><div class="ms-val" id="mdResolved">0</div><div class="ms-lbl">Resolved</div></div>
+                <div class="ms red"><div class="ms-val" id="mdCritical">0</div><div class="ms-lbl">Critical</div></div>
+            </div>
+            <div class="tab-row" id="modalTabBtns">
+                <button class="tab-btn active" onclick="filterModal('all',this)">All</button>
+                <button class="tab-btn" onclick="filterModal('Submitted',this)">Submitted</button>
+                <button class="tab-btn" onclick="filterModal('Under Review',this)">Under Review</button>
+                <button class="tab-btn" onclick="filterModal('In Progress',this)">In Progress</button>
+                <button class="tab-btn" onclick="filterModal('Resolved',this)">Resolved</button>
+                <button class="tab-btn" onclick="filterModal('Closed',this)">Closed</button>
+            </div>
+            <div class="modal-table-wrap">
+                <table class="modal-table">
+                    <thead>
+                        <tr>
+                            <th>ID</th><th>Name</th><th>Mobile</th>
+                            <th>Category</th><th>Priority</th><th>Status</th><th>Submitted</th>
+                        </tr>
+                    </thead>
+                    <tbody id="modalTableBody"></tbody>
+                </table>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-topbar btn-topbar-secondary" style="font-size:13px;padding:9px 20px;" onclick="exportDeptCSV()">
+                <i class="fas fa-download"></i> Export CSV
+            </button>
+            <button class="btn-topbar btn-topbar-secondary" style="font-size:13px;padding:9px 20px;" onclick="closeModal('deptModal')">
+                Close
+            </button>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+// ── AUTH GUARD ──────────────────────────────────────────────────────────
+const officerToken = localStorage.getItem("officerToken");
+if (!officerToken) window.location.href = "login.html";
+
+function parseJwt(t) { try { return JSON.parse(atob(t.split('.')[1])); } catch(e) { return null; } }
+const payload     = parseJwt(officerToken);
+const displayName = payload?.['cognito:username'] || payload?.['name'] || payload?.['email'] || 'Officer';
+document.getElementById('userName').textContent         = displayName;
+document.getElementById('userAvatarLetter').textContent = displayName.charAt(0).toUpperCase();
+// ── PAGE LOADER ───────────────────────────────────────────────
+window.addEventListener('load', () => {
+    setTimeout(() => document.getElementById('page-loader').classList.add('out'), 900);
+});
+
+
+// ── CONFIG ────────────────────────────────────────────────────────────────
+const API_BASE       = "https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod";
+const COMPLAINTS_API = `${API_BASE}/admin/complaints`;
+const OFFICERS_API   = `${API_BASE}/officers`;
+const CREATE_OFF_API = `${API_BASE}/create-officer`;
+
+const AUTH_HEADERS = {
+    "Authorization": "Bearer " + officerToken,
+    "Content-Type":  "application/json"
+};
+
+const DEPT_META = {
+    'Public Works':   { icon: 'fa-road',                phone: '1800-111-2222', head: 'Shri Rajesh Kumar, IAS'  },
+    'Health':         { icon: 'fa-heartbeat',           phone: '1800-111-3333', head: 'Dr. Priya Sharma, IAS'   },
+    'Education':      { icon: 'fa-graduation-cap',      phone: '1800-111-4444', head: 'Prof. Anil Verma'         },
+    'Police':         { icon: 'fa-shield-alt',          phone: '100',            head: 'Shri Vikram Singh, IPS'  },
+    'Revenue':        { icon: 'fa-file-invoice-dollar', phone: '1800-111-6666', head: 'Shri Ramesh Gupta, IAS'  },
+    'Water Supply':   { icon: 'fa-tint',                phone: '1800-111-8888', head: 'Er. Meena Patel'         },
+    'Electricity':    { icon: 'fa-bolt',                phone: '1800-111-7777', head: 'Er. Suresh Reddy'        },
+    'Sanitation':     { icon: 'fa-recycle',             phone: '1800-333-1111', head: 'Shri Arun Mishra'        },
+    'Transport':      { icon: 'fa-bus',                 phone: '1800-111-9999', head: 'Shri Ashok Kumar, IAS'   },
+    'Social Welfare': { icon: 'fa-hands-helping',       phone: '1800-222-1111', head: 'Smt. Kavita Devi, IAS'   },
+    'Agriculture':    { icon: 'fa-leaf',                phone: '1800-222-2222', head: 'Dr. Mohan Singh'         },
+    'Housing':        { icon: 'fa-city',                phone: '1800-222-3333', head: 'Shri Deepak Joshi, IAS'  },
+};
+
+const ROLE_LEVEL = { officer: 1, senior: 2, head: 3 };
+
+// ── STATE ─────────────────────────────────────────────────────────────────
+let departmentData  = {};
+let activeDept      = null;
+let activeDeptComps = [];
+let modalFilter     = 'all';
+let allOfficers     = [];
+
+// ── LOAD COMPLAINTS ────────────────────────────────────────────────────────
+async function loadComplaints() {
+    document.getElementById('departmentsGrid').innerHTML =
+        '<div class="loading-block"><div class="spin-ring"></div><span>Loading department data…</span></div>';
+    hideError();
+
+    try {
+        const res  = await fetch(COMPLAINTS_API, { headers: AUTH_HEADERS });
+        if (res.status === 401 || res.status === 403) { logout(); return; }
+        if (!res.ok) throw new Error(`Server responded with ${res.status}`);
+
+        const data = await res.json();
+        const all  = Array.isArray(data) ? data : (data.complaints || data.items || data.data || []);
+
+        departmentData = {};
+        all.forEach(c => {
+            const dept = c.department || 'Other';
+            if (!departmentData[dept]) departmentData[dept] = [];
+            departmentData[dept].push(c);
         });
-    }
 
-    document.getElementById('searchInput').addEventListener('input', function() {
-        const q = this.value.toLowerCase().trim();
-        const filtered = q ? Object.keys(departmentData).filter(d => d.toLowerCase().includes(q)) : Object.keys(departmentData);
-        renderDepartments(filtered);
+        updateSummaryStats(all);
+        renderDepartments(Object.keys(departmentData));
+    } catch (err) {
+        showError("Unable to load complaints: " + err.message);
+        document.getElementById('departmentsGrid').innerHTML =
+            '<div class="loading-block" style="color:var(--text-muted);">Could not fetch data. Click Retry.</div>';
+    }
+}
+
+function updateSummaryStats(all) {
+    const pending  = all.filter(c => c.status !== 'Resolved' && c.status !== 'Closed').length;
+    const resolved = all.filter(c => c.status === 'Resolved').length;
+    animCount('totalDepts',      Object.keys(departmentData).length);
+    animCount('totalComplaints', all.length);
+    animCount('totalPending',    pending);
+    animCount('totalResolved',   resolved);
+}
+
+function animCount(id, target) {
+    const el = document.getElementById(id);
+    let cur = 0;
+    const step = Math.max(1, Math.floor(target/40));
+    const t = setInterval(() => { cur = Math.min(cur+step, target); el.textContent = cur; if (cur >= target) clearInterval(t); }, 25);
+}
+
+// ── RENDER DEPT CARDS ──────────────────────────────────────────────────────
+function renderDepartments(deptNames) {
+    const grid     = document.getElementById('departmentsGrid');
+    const noResult = document.getElementById('noResults');
+    grid.innerHTML = '';
+
+    if (deptNames.length === 0) { noResult.style.display = 'block'; return; }
+    noResult.style.display = 'none';
+
+    deptNames.sort((a, b) => departmentData[b].length - departmentData[a].length);
+
+    deptNames.forEach((dept, i) => {
+        const complaints = departmentData[dept];
+        const total    = complaints.length;
+        const pending  = complaints.filter(c => c.status !== 'Resolved' && c.status !== 'Closed').length;
+        const resolved = complaints.filter(c => c.status === 'Resolved').length;
+        const critical = complaints.filter(c => (c.priority||'') === 'Critical').length;
+        const pct      = total > 0 ? Math.round((resolved/total)*100) : 0;
+        const meta     = DEPT_META[dept] || { icon: 'fa-building', phone: '—', head: '—' };
+        const deptOff  = allOfficers.filter(o => o.department === dept).length;
+
+        const card = document.createElement('div');
+        card.className = 'dept-card';
+        card.style.animationDelay = `${i*0.05}s`;
+        card.innerHTML = `
+            <div class="dept-card-head">
+                <div class="dept-icon-wrap"><i class="fas ${meta.icon}"></i></div>
+                <div class="dept-card-info">
+                    <div class="dept-card-name">${dept}</div>
+                    <div class="dept-card-meta"><i class="fas fa-user"></i>${meta.head}</div>
+                    <div class="dept-card-meta"><i class="fas fa-phone"></i>${meta.phone}</div>
+                    ${deptOff > 0 ? `<div class="dept-card-meta" style="color:#1d4ed8;"><i class="fas fa-user-tie" style="color:#1d4ed8;"></i>${deptOff} officer${deptOff>1?'s':''} assigned</div>` : ''}
+                </div>
+            </div>
+            <div class="dept-card-stats">
+                <div class="dcs"><div class="dcs-val">${total}</div><div class="dcs-lbl">Total</div></div>
+                <div class="dcs"><div class="dcs-val orange">${pending}</div><div class="dcs-lbl">Pending</div></div>
+                <div class="dcs"><div class="dcs-val green">${resolved}</div><div class="dcs-lbl">Resolved</div></div>
+            </div>
+            <div class="dept-card-prog">
+                <div class="prog-labels"><span>Resolution Rate</span><span>${pct}%</span></div>
+                <div class="prog-track"><div class="prog-fill" style="width:${pct}%"></div></div>
+                ${critical > 0 ? `<div class="dept-critical-note"><i class="fas fa-exclamation-circle"></i>${critical} critical complaint${critical>1?'s':''}</div>` : ''}
+            </div>
+            <div class="dept-card-actions">
+                <button class="btn-dept-view" onclick="openDeptModal('${dept}')"><i class="fas fa-eye"></i> View Complaints</button>
+                <button class="btn-dept-export" onclick="exportSingleDept('${dept}')"><i class="fas fa-download"></i> Export</button>
+            </div>`;
+        grid.appendChild(card);
     });
+}
 
-    // ── 6. LOAD OFFICERS ──────────────────────────────────────────────────────
-    async function loadOfficers() {
-        document.getElementById('officersTableContainer').innerHTML =
-            '<div class="officers-loading"><i class="fas fa-spinner fa-spin me-2"></i> Loading officers…</div>';
+document.getElementById('searchInput').addEventListener('input', function() {
+    const q = this.value.toLowerCase().trim();
+    const filtered = q ? Object.keys(departmentData).filter(d => d.toLowerCase().includes(q)) : Object.keys(departmentData);
+    renderDepartments(filtered);
+});
 
-        try {
-            const res  = await fetch(OFFICERS_API, { headers: AUTH_HEADERS });
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            const data = await res.json();
-            allOfficers = Array.isArray(data) ? data : (data.officers || data.items || []);
-        } catch (err) {
-            console.warn('Officers API error:', err);
-            allOfficers = [];
-        }
-
-        document.getElementById('totalOfficers').textContent = allOfficers.length;
-        renderOfficersTable(allOfficers);
-
-        if (Object.keys(departmentData).length > 0) {
-            renderDepartments(Object.keys(departmentData));
-        }
+// ── LOAD OFFICERS ──────────────────────────────────────────────────────────
+async function loadOfficers() {
+    document.getElementById('officersTableContainer').innerHTML =
+        '<div class="officers-loading"><i class="fas fa-spinner fa-spin me-2" style="color:var(--accent);"></i> Loading officers…</div>';
+    try {
+        const res  = await fetch(OFFICERS_API, { headers: AUTH_HEADERS });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data = await res.json();
+        allOfficers = Array.isArray(data) ? data : (data.officers || data.items || []);
+    } catch (err) {
+        console.warn('Officers API error:', err);
+        allOfficers = [];
     }
+    animCount('totalOfficers', allOfficers.length);
+    renderOfficersTable(allOfficers);
+    if (Object.keys(departmentData).length > 0) renderDepartments(Object.keys(departmentData));
+}
 
-    function renderOfficersTable(list) {
-        const container = document.getElementById('officersTableContainer');
+function renderOfficersTable(list) {
+    const container = document.getElementById('officersTableContainer');
+    if (list.length === 0) {
+        container.innerHTML = `<div class="officers-loading" style="border:1px dashed var(--border);border-radius:14px;">
+            <i class="fas fa-user-slash fa-2x" style="color:var(--border);display:block;margin-bottom:12px;"></i>
+            No officers found. Create one using the form above.
+        </div>`;
+        return;
+    }
+    const rows = list.map((o, idx) => {
+        const rc = `role-${(o.role||'officer').toLowerCase()}`;
+        const sc = o.active === false ? 'officer-inactive' : 'officer-active';
+        return `<tr>
+            <td><strong>${o.employeeId||o.id||'—'}</strong></td>
+            <td><div style="font-weight:600;">${o.name||'—'}</div><div style="font-size:11px;color:var(--text-muted);">${o.email||''}</div></td>
+            <td>${o.department||'—'}</td>
+            <td><span class="role-badge ${rc}">${o.role||'officer'}</span></td>
+            <td style="text-align:center;">${o.level||ROLE_LEVEL[o.role]||1}</td>
+            <td><span class="officer-status-badge ${sc}">${o.active===false?'Inactive':'Active'}</span></td>
+            <td>
+                <button class="btn-icon" title="Edit" onclick="openEditOfficer(${idx})"><i class="fas fa-edit"></i></button>
+                <button class="btn-icon danger" title="${o.active===false?'Activate':'Deactivate'}" onclick="toggleOfficerStatus(${idx},this)" style="margin-left:5px;">
+                    <i class="fas fa-${o.active===false?'user-check':'user-slash'}"></i>
+                </button>
+            </td>
+        </tr>`;
+    }).join('');
 
-        if (list.length === 0) {
-            container.innerHTML = `
-                <div class="officers-loading" style="border:1px dashed #ddd;border-radius:8px;">
-                    <i class="fas fa-user-slash fa-2x" style="margin-bottom:10px;color:#ccc;display:block;"></i>
-                    No officers found. Create one using the form above.
-                </div>`;
-            return;
-        }
-
-        const rows = list.map((o, idx) => {
-            const roleClass   = `role-${(o.role || 'officer').toLowerCase()}`;
-            const statusClass = o.active === false ? 'officer-inactive' : 'officer-active';
-            const statusLabel = o.active === false ? 'Inactive' : 'Active';
-            return `
-            <tr>
-                <td><strong>${o.employeeId || o.id || '—'}</strong></td>
-                <td>
-                    <div style="font-weight:600;">${o.name || '—'}</div>
-                    <div style="font-size:11px;color:#888;">${o.email || ''}</div>
-                </td>
-                <td>${o.department || '—'}</td>
-                <td><span class="role-badge ${roleClass}">${o.role || 'officer'}</span></td>
-                <td style="text-align:center;">${o.level || ROLE_LEVEL[o.role] || 1}</td>
-                <td><span class="officer-status-badge ${statusClass}">${statusLabel}</span></td>
-                <td>
-                    <button class="btn-icon-action" title="Edit Officer"
-                        onclick="openEditOfficer(${idx})">
-                        <i class="fas fa-edit"></i>
-                    </button>
-                    <button class="btn-icon-action danger" title="Deactivate"
-                        onclick="toggleOfficerStatus(${idx}, this)"
-                        style="margin-left:4px;">
-                        <i class="fas fa-${o.active === false ? 'user-check' : 'user-slash'}"></i>
-                    </button>
-                </td>
-            </tr>`;
-        }).join('');
-
-        container.innerHTML = `
+    container.innerHTML = `
+        <div class="officers-table-wrap">
             <table class="officers-table">
                 <thead>
                     <tr>
-                        <th>Employee ID</th>
-                        <th>Name / Email</th>
-                        <th>Department</th>
-                        <th>Role</th>
-                        <th style="text-align:center;">Level</th>
-                        <th>Status</th>
-                        <th>Actions</th>
+                        <th>Employee ID</th><th>Name / Email</th><th>Department</th>
+                        <th>Role</th><th style="text-align:center;">Level</th><th>Status</th><th>Actions</th>
                     </tr>
                 </thead>
                 <tbody>${rows}</tbody>
-            </table>`;
-    }
+            </table>
+        </div>`;
+}
 
-    function filterOfficerTable(query) {
-        const q = query.toLowerCase().trim();
-        const filtered = q
-            ? allOfficers.filter(o =>
-                (o.name || '').toLowerCase().includes(q) ||
-                (o.employeeId || '').toLowerCase().includes(q) ||
-                (o.department || '').toLowerCase().includes(q) ||
-                (o.role || '').toLowerCase().includes(q))
-            : allOfficers;
-        renderOfficersTable(filtered);
-    }
+function filterOfficerTable(query) {
+    const q = query.toLowerCase().trim();
+    const filtered = q ? allOfficers.filter(o =>
+        (o.name||'').toLowerCase().includes(q) ||
+        (o.employeeId||'').toLowerCase().includes(q) ||
+        (o.department||'').toLowerCase().includes(q) ||
+        (o.role||'').toLowerCase().includes(q))
+    : allOfficers;
+    renderOfficersTable(filtered);
+}
 
-    // ── 7. CREATE OFFICER ─────────────────────────────────────────────────────
-    // ✅ UPDATED: Sends employeeId, name, department, role, email to Lambda.
-    //            Lambda handles Cognito creation with Temp@123 + DynamoDB storage.
-    async function createOfficer(e) {
-        e.preventDefault();
+// ── CREATE OFFICER ────────────────────────────────────────────────────────
+async function createOfficer(e) {
+    e.preventDefault();
+    const empId = document.getElementById('empId').value.trim();
+    const name  = document.getElementById('officerName').value.trim();
+    const dept  = document.getElementById('officerDept').value;
+    const role  = document.getElementById('officerRole').value;
+    const email = document.getElementById('officerEmail').value.trim();
 
-        const empId = document.getElementById('empId').value.trim();
-        const name  = document.getElementById('officerName').value.trim();
-        const dept  = document.getElementById('officerDept').value;
-        const role  = document.getElementById('officerRole').value;
-        const email = document.getElementById('officerEmail').value.trim();
+    if (!empId||!name||!dept||!role||!email) { setOfficerMsg('Please fill in all required fields.', 'var(--error)'); return; }
 
-        if (!empId || !name || !dept || !role || !email) {
-            setOfficerMsg('Please fill in all required fields.', 'var(--error)');
-            return;
-        }
+    const btn = document.getElementById('createOfficerBtn');
+    btn.disabled = true; btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating…';
+    setOfficerMsg('', '');
 
-        const btn = document.getElementById('createOfficerBtn');
-        btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Creating…';
-        setOfficerMsg('', '');
-
-        // ✅ Payload matches Lambda expectations — no password sent from frontend
-        const payload = {
-            employeeId: empId,
-            name,
-            department: dept,
-            role,
-            email
-        };
-
-        try {
-            const res = await fetch(CREATE_OFF_API, {
-                method:  'POST',
-                headers: AUTH_HEADERS,
-                body:    JSON.stringify(payload)
-            });
-
-            if (!res.ok) {
-                const err = await res.json().catch(() => ({}));
-                throw new Error(err.message || err.error || `HTTP ${res.status}`);
-            }
-
-            const result = await res.json();
-            const tempPw = result.tempPassword || 'Temp@123';
-
-            showToast(`Officer "${name}" created ✓  Temp password: ${tempPw}`, 'success');
-            setOfficerMsg(`✅ Officer created! Username: ${empId} | Temp password: ${tempPw}`, 'var(--success)');
-            document.getElementById('createOfficerForm').reset();
-            loadOfficers();
-
-        } catch (err) {
-            console.error('Create officer error:', err);
-            showToast('Failed to create officer: ' + err.message, 'error');
-            setOfficerMsg('❌ ' + err.message, 'var(--error)');
-        } finally {
-            btn.disabled = false;
-            btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Officer';
-        }
-    }
-
-    function setOfficerMsg(msg, color) {
-        const el = document.getElementById('officerFormMsg');
-        el.textContent = msg;
-        el.style.color = color;
-    }
-
-    // ── 8. TOGGLE OFFICER STATUS ──────────────────────────────────────────────
-    async function toggleOfficerStatus(idx, btn) {
-        const officer  = allOfficers[idx];
-        const newState = officer.active === false;
-        const label    = newState ? 'activate' : 'deactivate';
-
-        if (!confirm(`Are you sure you want to ${label} officer "${officer.name}"?`)) return;
-
-        try {
-            const res = await fetch(`${OFFICERS_API}/${officer.employeeId || officer.id}/status`, {
-                method:  'PATCH',
-                headers: AUTH_HEADERS,
-                body:    JSON.stringify({ active: newState })
-            });
-            if (!res.ok) throw new Error(`HTTP ${res.status}`);
-            allOfficers[idx].active = newState;
-            renderOfficersTable(allOfficers);
-            showToast(`Officer ${newState ? 'activated' : 'deactivated'} ✓`, 'success');
-        } catch (err) {
-            showToast('Status update failed: ' + err.message, 'error');
-        }
-    }
-
-    // ── 9. EDIT OFFICER ───────────────────────────────────────────────────────
-    function openEditOfficer(idx) {
-        const o = allOfficers[idx];
-        document.getElementById('empId').value        = o.employeeId || o.id || '';
-        document.getElementById('officerName').value  = o.name || '';
-        document.getElementById('officerDept').value  = o.department || '';
-        document.getElementById('officerRole').value  = o.role || 'officer';
-        document.getElementById('officerEmail').value = o.email || '';
-        setOfficerMsg('Editing officer — update fields and submit.', '#0d6efd');
-        document.getElementById('empId').scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-
-    // ── 10. DEPARTMENT MODAL ──────────────────────────────────────────────────
-    function openDeptModal(dept) {
-        activeDept      = dept;
-        activeDeptComps = departmentData[dept] || [];
-        modalFilter     = 'all';
-
-        document.getElementById('modalDeptTitle').innerHTML = `<i class="fas fa-building me-2"></i>${dept}`;
-
-        const total    = activeDeptComps.length;
-        const pending  = activeDeptComps.filter(c => c.status !== 'Resolved' && c.status !== 'Closed').length;
-        const resolved = activeDeptComps.filter(c => c.status === 'Resolved').length;
-        const critical = activeDeptComps.filter(c => (c.priority || '') === 'Critical').length;
-        document.getElementById('mdTotal').textContent    = total;
-        document.getElementById('mdPending').textContent  = pending;
-        document.getElementById('mdResolved').textContent = resolved;
-        document.getElementById('mdCritical').textContent = critical;
-
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.querySelector('.tab-btn').classList.add('active');
-
-        renderModalTable(activeDeptComps);
-        openModal('deptModal');
-    }
-
-    function filterModal(status, btn) {
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        btn.classList.add('active');
-        modalFilter = status;
-        const list = status === 'all' ? activeDeptComps : activeDeptComps.filter(c => c.status === status);
-        renderModalTable(list);
-    }
-
-    function renderModalTable(list) {
-        const tbody = document.getElementById('modalTableBody');
-        tbody.innerHTML = '';
-
-        if (list.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:30px;color:#999;">No complaints in this category</td></tr>';
-            return;
-        }
-
-        list.forEach(c => {
-            const id       = c.complaintId || c.id || '—';
-            const priority = c.priority || 'Medium';
-            const status   = c.status   || 'Submitted';
-            const dateStr  = c.createdAt || c.date;
-            const date     = dateStr ? new Date(dateStr).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }) : '—';
-
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td><strong>${id}</strong></td>
-                <td>${c.name || '—'}</td>
-                <td>${c.mobile || '—'}</td>
-                <td>${c.category || '—'}</td>
-                <td><span class="priority-badge priority-${priority.toLowerCase()}">${priority}</span></td>
-                <td><span class="status-badge status-${status.toLowerCase().replace(/\s+/g,'-')}">${status}</span></td>
-                <td>${date}</td>`;
-            tbody.appendChild(tr);
+    try {
+        const res = await fetch(CREATE_OFF_API, {
+            method: 'POST', headers: AUTH_HEADERS,
+            body: JSON.stringify({ employeeId: empId, name, department: dept, role, email })
         });
+        if (!res.ok) { const err = await res.json().catch(()=>({})); throw new Error(err.message||err.error||`HTTP ${res.status}`); }
+        const result = await res.json();
+        const tempPw = result.tempPassword || 'Temp@123';
+        showToast(`Officer "${name}" created ✓  Temp password: ${tempPw}`, 'success');
+        setOfficerMsg(`✅ Created! Username: ${empId} | Temp password: ${tempPw}`, 'var(--green)');
+        document.getElementById('createOfficerForm').reset();
+        loadOfficers();
+    } catch (err) {
+        showToast('Failed to create officer: ' + err.message, 'error');
+        setOfficerMsg('❌ ' + err.message, 'var(--error)');
+    } finally {
+        btn.disabled = false; btn.innerHTML = '<i class="fas fa-user-plus"></i> Create Officer';
     }
+}
 
-    // ── 11. EXPORT FUNCTIONS ──────────────────────────────────────────────────
-    function buildCSV(list) {
-        const headers = ['ID','Name','Mobile','Email','State','District','Department','Category','Priority','Status','Submitted'];
-        const rows = list.map(c => [
-            c.complaintId || c.id || '', c.name || '', c.mobile || '', c.email || '',
-            c.state || '', c.district || '', c.department || '', c.category || '',
-            c.priority || '', c.status || '',
-            c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-IN') : ''
-        ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(','));
-        return [headers.join(','), ...rows].join('\n');
+function setOfficerMsg(msg, color) { const el = document.getElementById('officerFormMsg'); el.textContent = msg; el.style.color = color; }
+
+// ── TOGGLE OFFICER STATUS ──────────────────────────────────────────────────
+async function toggleOfficerStatus(idx, btn) {
+    const o = allOfficers[idx];
+    const newState = o.active === false;
+    if (!confirm(`Are you sure you want to ${newState?'activate':'deactivate'} officer "${o.name}"?`)) return;
+    try {
+        const res = await fetch(`${OFFICERS_API}/${o.employeeId||o.id}/status`, {
+            method: 'PATCH', headers: AUTH_HEADERS, body: JSON.stringify({ active: newState })
+        });
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        allOfficers[idx].active = newState;
+        renderOfficersTable(allOfficers);
+        showToast(`Officer ${newState?'activated':'deactivated'} ✓`);
+    } catch (err) { showToast('Status update failed: ' + err.message, 'error'); }
+}
+
+function openEditOfficer(idx) {
+    const o = allOfficers[idx];
+    document.getElementById('empId').value        = o.employeeId||o.id||'';
+    document.getElementById('officerName').value  = o.name||'';
+    document.getElementById('officerDept').value  = o.department||'';
+    document.getElementById('officerRole').value  = o.role||'officer';
+    document.getElementById('officerEmail').value = o.email||'';
+    setOfficerMsg('Editing officer — update fields and submit.', '#1d4ed8');
+    document.getElementById('empId').scrollIntoView({ behavior:'smooth', block:'center' });
+}
+
+// ── DEPT MODAL ────────────────────────────────────────────────────────────
+function openDeptModal(dept) {
+    activeDept = dept; activeDeptComps = departmentData[dept]||[]; modalFilter = 'all';
+    document.getElementById('modalDeptTitle').innerHTML = `<i class="fas fa-building me-2"></i>${dept}`;
+    const total    = activeDeptComps.length;
+    const pending  = activeDeptComps.filter(c => c.status!=='Resolved'&&c.status!=='Closed').length;
+    const resolved = activeDeptComps.filter(c => c.status==='Resolved').length;
+    const critical = activeDeptComps.filter(c => (c.priority||'')==='Critical').length;
+    document.getElementById('mdTotal').textContent    = total;
+    document.getElementById('mdPending').textContent  = pending;
+    document.getElementById('mdResolved').textContent = resolved;
+    document.getElementById('mdCritical').textContent = critical;
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector('.tab-btn').classList.add('active');
+    renderModalTable(activeDeptComps);
+    openModal('deptModal');
+}
+
+function filterModal(status, btn) {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active'); modalFilter = status;
+    renderModalTable(status === 'all' ? activeDeptComps : activeDeptComps.filter(c => c.status===status));
+}
+
+function renderModalTable(list) {
+    const tbody = document.getElementById('modalTableBody');
+    if (!list.length) {
+        tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:32px;color:var(--text-muted);">No complaints in this category.</td></tr>';
+        return;
     }
+    tbody.innerHTML = list.map(c => {
+        const id  = c.complaintId||c.id||'—';
+        const pri = c.priority||'Medium';
+        const sts = c.status||'Submitted';
+        const dt  = c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '—';
+        return `<tr>
+            <td><strong>${id}</strong></td>
+            <td>${c.name||'—'}</td><td>${c.mobile||'—'}</td><td>${c.category||'—'}</td>
+            <td><span class="pb pb-${pri.toLowerCase()}">${pri}</span></td>
+            <td><span class="sb sb-${sts.toLowerCase().replace(/\s+/g,'-')}">${sts}</span></td>
+            <td>${dt}</td>
+        </tr>`;
+    }).join('');
+}
 
-    function downloadCSV(content, filename) {
-        const blob = new Blob([content], { type: 'text/csv' });
-        const url  = URL.createObjectURL(blob);
-        const a    = document.createElement('a');
-        a.href = url; a.download = filename; a.click();
-        URL.revokeObjectURL(url);
-    }
+// ── EXPORT ────────────────────────────────────────────────────────────────
+function buildCSV(list) {
+    const h = ['ID','Name','Mobile','Email','State','District','Department','Category','Priority','Status','Submitted'];
+    const r = list.map(c => [
+        c.complaintId||c.id||'', c.name||'', c.mobile||'', c.email||'',
+        c.state||'', c.district||'', c.department||'', c.category||'',
+        c.priority||'', c.status||'',
+        c.createdAt?new Date(c.createdAt).toLocaleDateString('en-IN'):''
+    ].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','));
+    return [h.join(','), ...r].join('\n');
+}
+function downloadCSV(content, filename) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(new Blob([content],{type:'text/csv'}));
+    a.download = filename; a.click();
+}
+function exportDeptCSV() {
+    if (!activeDept) return;
+    downloadCSV(buildCSV(modalFilter==='all'?activeDeptComps:activeDeptComps.filter(c=>c.status===modalFilter)),
+        `${activeDept.replace(/\s+/g,'_')}_complaints.csv`);
+    showToast(`${activeDept} CSV exported ✓`);
+}
+function exportSingleDept(dept) {
+    downloadCSV(buildCSV(departmentData[dept]||[]), `${dept.replace(/\s+/g,'_')}_complaints.csv`);
+    showToast(`${dept} CSV exported ✓`);
+}
+function exportAllCSV() {
+    const all = Object.values(departmentData).flat();
+    if (!all.length) { showToast('No data to export','warning'); return; }
+    downloadCSV(buildCSV(all), `all_departments_${new Date().toISOString().slice(0,10)}.csv`);
+    showToast('All departments CSV exported ✓');
+}
 
-    function exportDeptCSV() {
-        if (!activeDept) return;
-        const list = modalFilter === 'all' ? activeDeptComps : activeDeptComps.filter(c => c.status === modalFilter);
-        downloadCSV(buildCSV(list), `${activeDept.replace(/\s+/g,'_')}_complaints.csv`);
-        showToast(`${activeDept} CSV exported ✓`);
-    }
+// ── HELPERS ───────────────────────────────────────────────────────────────
+function openModal(id)  { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(o => {
+    o.addEventListener('click', e => { if (e.target===o) o.classList.remove('open'); });
+});
 
-    function exportSingleDept(dept) {
-        downloadCSV(buildCSV(departmentData[dept] || []), `${dept.replace(/\s+/g,'_')}_complaints.csv`);
-        showToast(`${dept} CSV exported ✓`);
-    }
+function showToast(msg, type='success') {
+    const c = document.getElementById('toastContainer');
+    const t = document.createElement('div'); t.className = `toast ${type!=='success'?type:''}`;
+    const icons = {success:'✅', warning:'⚠️', error:'❌'};
+    t.innerHTML = `<span>${icons[type]||'✅'}</span><span>${msg}</span>`;
+    c.appendChild(t); setTimeout(()=>t.remove(), 4500);
+}
+function showError(msg) { document.getElementById('errorBannerMsg').textContent=msg; document.getElementById('errorBanner').classList.add('show'); }
+function hideError()    { document.getElementById('errorBanner').classList.remove('show'); }
+function logout() {
+    ['officerToken','accessToken','refreshToken'].forEach(k=>localStorage.removeItem(k));
+    sessionStorage.clear(); window.location.href='login.html';
+}
 
-    function exportAllCSV() {
-        const all = Object.values(departmentData).flat();
-        if (all.length === 0) { showToast('No data to export', 'warning'); return; }
-        downloadCSV(buildCSV(all), `all_departments_${new Date().toISOString().slice(0,10)}.csv`);
-        showToast('All departments CSV exported ✓');
-    }
-
-    // ── 12. HELPERS ───────────────────────────────────────────────────────────
-    function openModal(id)  { document.getElementById(id).classList.add('open'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-    document.querySelectorAll('.modal-overlay').forEach(o => {
-        o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
-    });
-
-    function showToast(msg, type = 'success') {
-        const c     = document.getElementById('toastContainer');
-        const toast = document.createElement('div');
-        toast.className = `toast ${type !== 'success' ? type : ''}`;
-        const icons = { success: '✅', warning: '⚠️', error: '❌' };
-        toast.innerHTML = `<span>${icons[type] || '✅'}</span><span>${msg}</span>`;
-        c.appendChild(toast);
-        setTimeout(() => toast.remove(), 4000);
-    }
-
-    function showError(msg) { document.getElementById('errorBannerMsg').textContent = msg; document.getElementById('errorBanner').classList.add('show'); }
-    function hideError()    { document.getElementById('errorBanner').classList.remove('show'); }
-
-    function logout() {
-        localStorage.removeItem("officerToken");
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        sessionStorage.clear();
-        window.location.href = "login.html";
-    }
-
-    // ── 13. BOOT ──────────────────────────────────────────────────────────────
-    loadComplaints();
-    loadOfficers();
-
-    </script>
+// ── BOOT ─────────────────────────────────────────────────────────────────
+loadComplaints();
+loadOfficers();
+</script>
 </body>
 </html>

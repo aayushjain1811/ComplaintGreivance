@@ -3,737 +3,900 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Settings - Digital Grievance Portal</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+    <title>Settings — Digital Grievance Portal</title>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://unpkg.com/amazon-cognito-identity-js@6.3.3/dist/amazon-cognito-identity.min.js"></script>
     <style>
+        /* ── TOKENS ──────────────────────────────────────────── */
         :root {
-            --primary: #0A2E5C;
-            --background: #F2F2F2;
-            --accent: #FF9933;
-            --success: #138808;
-            --error: #C62828;
-            --white: #FFFFFF;
-            --sidebar-width: 260px;
+            --primary:    #0A2558;
+            --primary-dk: #06173a;
+            --primary-lt: #1a3d7c;
+            --accent:     #E8842A;
+            --accent-dk:  #c96d1a;
+            --green:      #0e7c3b;
+            --green-lt:   #16a34a;
+            --red:        #C62828;
+            --warn:       #d97706;
+            --white:      #FFFFFF;
+            --bg:         #EEF0F5;
+            --surface:    #FFFFFF;
+            --border:     #E2E8F0;
+            --muted:      #64748B;
+            --sidebar-w:  264px;
+            --radius:     12px;
+            --shadow:     0 1px 4px rgba(0,0,0,.07), 0 4px 18px rgba(0,0,0,.06);
+            --shadow-lg:  0 8px 36px rgba(0,0,0,.13);
         }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Roboto', 'Noto Sans Devanagari', sans-serif; background-color: var(--background); color: #333; overflow-x: hidden; }
+        *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+        html { scroll-behavior:smooth; }
+        body { font-family:'DM Sans',sans-serif; background:var(--bg); color:#1E293B; overflow-x:hidden; }
+        a { text-decoration:none; color:inherit; }
 
-        .tricolor-strip { height: 5px; background: linear-gradient(to right, #FF9933 0%, #FF9933 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #138808 66.66%, #138808 100%); position: fixed; top: 0; left: 0; right: 0; z-index: 1001; }
+        /* ── PAGE LOADER ─────────────────────────────────────── */
+        #page-loader {
+            position:fixed; inset:0; z-index:9999;
+            background:var(--primary-dk);
+            display:flex; flex-direction:column; align-items:center; justify-content:center;
+            transition:opacity .55s ease, visibility .55s ease;
+        }
+        #page-loader.out { opacity:0; visibility:hidden; }
+        .chakra-svg { width:70px; height:70px; animation:chakra-spin 1.1s linear infinite; }
+        @keyframes chakra-spin { to{transform:rotate(360deg)} }
+        .loader-label { margin-top:18px; color:rgba(255,255,255,.7); font-size:13px; font-weight:500; letter-spacing:2.5px; text-transform:uppercase; }
+        .loader-dots { display:flex; gap:6px; margin-top:14px; }
+        .loader-dot { width:7px; height:7px; border-radius:50%; background:var(--accent); animation:dot-bounce .9s ease-in-out infinite; }
+        .loader-dot:nth-child(2){animation-delay:.15s}
+        .loader-dot:nth-child(3){animation-delay:.3s}
+        @keyframes dot-bounce {0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
 
-        /* Sidebar */
-        .sidebar { position: fixed; left: 0; top: 5px; bottom: 0; width: var(--sidebar-width); background: linear-gradient(180deg, var(--primary) 0%, #1a4d8f 100%); color: var(--white); padding: 20px 0; z-index: 1000; overflow-y: auto; }
-        .sidebar-header { padding: 0 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
-        .sidebar-header h4 { font-size: 18px; font-weight: 700; margin-bottom: 5px; }
-        .sidebar-header p { font-size: 12px; opacity: 0.8; margin: 0; }
-        .sidebar-menu { list-style: none; padding: 0; }
-        .sidebar-menu li { margin-bottom: 5px; }
-        .sidebar-menu a { display: flex; align-items: center; padding: 12px 20px; color: var(--white); text-decoration: none; transition: all 0.3s ease; position: relative; }
-        .sidebar-menu a::before { content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px; background-color: var(--accent); transform: scaleY(0); transition: transform 0.3s ease; }
-        .sidebar-menu a:hover, .sidebar-menu a.active { background-color: rgba(255,255,255,0.1); }
-        .sidebar-menu a.active::before { transform: scaleY(1); }
-        .sidebar-menu a i { width: 25px; margin-right: 10px; font-size: 16px; }
-        .user-profile { padding: 20px; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
-        .user-profile-content { display: flex; align-items: center; gap: 10px; }
-        .user-avatar { width: 40px; height: 40px; border-radius: 50%; background-color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700; }
-        .user-info .name { font-size: 14px; font-weight: 600; }
-        .user-info .role { font-size: 11px; opacity: 0.7; }
+        /* ── TRICOLOR ────────────────────────────────────────── */
+        .tricolor { height:5px; background:linear-gradient(to right,#FF9933 33.33%,#fff 33.33% 66.66%,#138808 66.66%); position:fixed; top:0; left:0; right:0; z-index:1100; }
 
-        /* Main */
-        .main-content { margin-left: var(--sidebar-width); padding: 25px; min-height: 100vh; margin-top: 5px; }
-        .top-bar { background-color: var(--white); padding: 20px 25px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 25px; display: flex; justify-content: space-between; align-items: center; }
-        .welcome-text h2 { font-size: 24px; font-weight: 700; color: var(--primary); margin-bottom: 5px; }
-        .welcome-text p { font-size: 14px; color: #666; margin: 0; }
+        /* ── SIDEBAR ─────────────────────────────────────────── */
+        .sidebar {
+            position:fixed; left:0; top:5px; bottom:0; width:var(--sidebar-w);
+            background:var(--primary-dk); color:#fff;
+            display:flex; flex-direction:column; z-index:1000; overflow-y:auto;
+        }
+        .sidebar::before {
+            content:''; position:absolute; inset:0; pointer-events:none;
+            background:url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M20 20c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10zm10 0c0-5.5-4.5-10-10-10s-10 4.5-10 10 4.5 10 10 10 10-4.5 10-10z'/%3E%3C/g%3E%3C/svg%3E");
+        }
+        .sb-logo { padding:22px 20px 18px; border-bottom:1px solid rgba(255,255,255,.07); display:flex; align-items:center; gap:13px; }
+        .sb-logo-icon { width:42px; height:42px; background:var(--accent); border-radius:11px; display:flex; align-items:center; justify-content:center; font-size:19px; flex-shrink:0; box-shadow:0 4px 12px rgba(232,132,42,.4); }
+        .sb-logo-txt h4 { font-family:'Playfair Display',serif; font-size:14px; font-weight:700; }
+        .sb-logo-txt p  { font-size:10.5px; opacity:.5; margin-top:2px; font-family:'Noto Sans Devanagari',sans-serif; }
+        .nav-sec  { padding:4px 12px; margin-bottom:4px; }
+        .nav-lbl  { font-size:9.5px; font-weight:700; letter-spacing:1.4px; color:rgba(255,255,255,.3); padding:12px 8px 5px; text-transform:uppercase; }
+        .nav-item {
+            display:flex; align-items:center; gap:11px;
+            padding:10px 12px; border-radius:9px; color:rgba(255,255,255,.7);
+            font-size:13.5px; font-weight:500; transition:all .2s; margin-bottom:2px; position:relative;
+        }
+        .nav-item:hover  { background:rgba(255,255,255,.07); color:#fff; }
+        .nav-item.active { background:rgba(232,132,42,.18); color:var(--accent); }
+        .nav-item.active::before { content:''; position:absolute; left:0; top:22%; bottom:22%; width:3px; background:var(--accent); border-radius:0 3px 3px 0; }
+        .nav-item i { width:17px; text-align:center; font-size:13px; }
+        .sb-foot { margin-top:auto; padding:16px 20px; border-top:1px solid rgba(255,255,255,.07); }
+        .user-row { display:flex; align-items:center; gap:12px; }
+        .user-av { width:38px; height:38px; border-radius:10px; background:linear-gradient(135deg,var(--accent),var(--accent-dk)); display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; flex-shrink:0; }
+        .user-name { font-size:13px; font-weight:600; }
+        .user-role { font-size:11px; color:rgba(255,255,255,.45); margin-top:1px; }
 
-        /* Tabs */
-        .settings-tabs { background-color: var(--white); padding: 0; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 25px; display: flex; overflow-x: auto; }
-        .tab-btn { padding: 15px 22px; border: none; background: none; font-size: 14px; font-weight: 600; color: #666; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.3s ease; white-space: nowrap; }
-        .tab-btn:hover { color: var(--primary); background-color: #f8f9fa; }
-        .tab-btn.active { color: var(--primary); border-bottom-color: var(--accent); }
-        .tab-btn i { margin-right: 6px; }
+        /* ── MAIN ────────────────────────────────────────────── */
+        .main { margin-left:var(--sidebar-w); padding:28px 30px; min-height:100vh; margin-top:5px; }
 
-        /* Settings Sections */
-        .settings-section { background-color: var(--white); padding: 30px; border-radius: 10px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); display: none; }
-        .settings-section.active { display: block; }
-        .section-header { margin-bottom: 25px; padding-bottom: 15px; border-bottom: 2px solid #eee; }
-        .section-header h4 { font-size: 18px; font-weight: 700; color: var(--primary); margin-bottom: 5px; }
-        .section-header p { font-size: 13px; color: #666; margin: 0; }
+        /* ── TOPBAR ──────────────────────────────────────────── */
+        .topbar {
+            background:var(--surface); border-radius:var(--radius);
+            box-shadow:var(--shadow); padding:20px 26px;
+            margin-bottom:22px; display:flex; justify-content:space-between; align-items:center;
+            border-left:4px solid var(--accent);
+        }
+        .pg-title h2 { font-family:'Playfair Display',serif; font-size:22px; font-weight:800; color:var(--primary); letter-spacing:-.4px; display:flex; align-items:center; gap:10px; }
+        .pg-title p  { font-size:13px; color:var(--muted); margin-top:3px; }
 
-        /* Profile Card */
-        .profile-card { background: linear-gradient(135deg, var(--primary), #1a4d8f); border-radius: 12px; padding: 25px; color: var(--white); display: flex; align-items: center; gap: 20px; margin-bottom: 25px; }
-        .profile-avatar-large { width: 70px; height: 70px; border-radius: 50%; background-color: var(--accent); display: flex; align-items: center; justify-content: center; font-size: 30px; font-weight: 700; flex-shrink: 0; border: 3px solid rgba(255,255,255,0.3); }
-        .profile-card-info h4 { font-size: 20px; font-weight: 700; margin-bottom: 4px; }
-        .profile-card-info p { font-size: 13px; opacity: 0.85; margin: 2px 0; }
+        /* ── TABS ────────────────────────────────────────────── */
+        .tabs-bar {
+            background:var(--surface); border-radius:var(--radius);
+            box-shadow:var(--shadow); padding:6px 8px;
+            margin-bottom:22px; display:flex; gap:4px; overflow-x:auto; flex-wrap:nowrap;
+        }
+        .tab-btn {
+            padding:10px 20px; border:none; background:transparent;
+            font-size:13.5px; font-weight:600; color:var(--muted);
+            cursor:pointer; border-radius:8px; white-space:nowrap;
+            transition:all .2s; display:inline-flex; align-items:center; gap:7px;
+            font-family:'DM Sans',sans-serif;
+        }
+        .tab-btn:hover  { background:#f0f4ff; color:var(--primary); }
+        .tab-btn.active { background:var(--primary); color:#fff; }
+        .tab-btn i { font-size:13px; }
 
-        /* Form */
-        .form-group { margin-bottom: 20px; }
-        .form-group label { display: block; font-size: 14px; font-weight: 600; color: #444; margin-bottom: 8px; }
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 10px 15px; border: 1px solid #ddd; border-radius: 6px; font-size: 14px; transition: all 0.3s ease; font-family: inherit; background: #fafafa; }
-        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { outline: none; border-color: var(--primary); background: var(--white); box-shadow: 0 0 0 3px rgba(10,46,92,0.08); }
-        .form-group input[readonly] { background: #f0f0f0; color: #888; cursor: not-allowed; }
-        .form-group textarea { resize: vertical; min-height: 90px; }
-        .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+        /* ── SECTION CARD ────────────────────────────────────── */
+        .section-card { background:var(--surface); border-radius:var(--radius); box-shadow:var(--shadow); padding:32px 36px; display:none; animation:fade-up .4s ease both; }
+        .section-card.active { display:block; }
+        @keyframes fade-up { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:translateY(0)} }
+        .sec-head { margin-bottom:26px; padding-bottom:18px; border-bottom:2px solid #f0f4ff; }
+        .sec-head h4 { font-family:'Playfair Display',serif; font-size:20px; font-weight:700; color:var(--primary); margin-bottom:5px; }
+        .sec-head p  { font-size:13px; color:var(--muted); margin:0; }
 
-        /* Password strength */
-        .pw-strength { height: 4px; border-radius: 2px; margin-top: 6px; transition: all 0.3s; }
-        .pw-strength.weak   { width: 33%; background: var(--error); }
-        .pw-strength.medium { width: 66%; background: var(--accent); }
-        .pw-strength.strong { width: 100%; background: var(--success); }
-        .pw-hint { font-size: 11px; color: #888; margin-top: 4px; }
+        /* ── PROFILE BANNER ──────────────────────────────────── */
+        .profile-banner {
+            background:linear-gradient(135deg,var(--primary-dk),var(--primary));
+            border-radius:14px; padding:28px 30px; color:#fff;
+            display:flex; align-items:center; gap:22px; margin-bottom:28px;
+            position:relative; overflow:hidden;
+        }
+        .profile-banner::before {
+            content:''; position:absolute; right:-60px; top:-60px;
+            width:220px; height:220px; border-radius:50%;
+            background:rgba(255,255,255,.04);
+        }
+        .profile-banner::after {
+            content:''; position:absolute; right:40px; bottom:-40px;
+            width:130px; height:130px; border-radius:50%;
+            background:rgba(232,132,42,.08);
+        }
+        .pb-avatar {
+            width:72px; height:72px; border-radius:50%;
+            background:linear-gradient(135deg,var(--accent),var(--accent-dk));
+            display:flex; align-items:center; justify-content:center;
+            font-size:30px; font-weight:700; flex-shrink:0;
+            border:3px solid rgba(255,255,255,.25);
+            box-shadow:0 6px 20px rgba(0,0,0,.25);
+            font-family:'Playfair Display',serif;
+        }
+        .pb-info h4 { font-family:'Playfair Display',serif; font-size:20px; font-weight:700; margin-bottom:5px; }
+        .pb-info p  { font-size:13px; opacity:.8; margin:3px 0; display:flex; align-items:center; gap:6px; }
+        .pb-info p i { color:var(--accent); opacity:1; }
+        .pb-sub { font-size:11px; opacity:.55; font-family:'DM Mono',monospace; }
 
-        /* Toggle switches */
-        .toggle-switch { display: flex; align-items: center; justify-content: space-between; padding: 14px 16px; background-color: #f8f9fa; border-radius: 8px; margin-bottom: 12px; border: 1px solid #eee; transition: all 0.2s; }
-        .toggle-switch:hover { background-color: #f0f4ff; border-color: #c8d8f5; }
-        .toggle-info h6 { font-size: 14px; font-weight: 600; color: var(--primary); margin-bottom: 3px; }
-        .toggle-info p { font-size: 12px; color: #888; margin: 0; }
-        .switch { position: relative; display: inline-block; width: 50px; height: 26px; flex-shrink: 0; }
-        .switch input { opacity: 0; width: 0; height: 0; }
-        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #ccc; transition: 0.3s; border-radius: 34px; }
-        .slider:before { position: absolute; content: ""; height: 20px; width: 20px; left: 3px; bottom: 3px; background-color: white; transition: 0.3s; border-radius: 50%; }
-        input:checked + .slider { background-color: var(--success); }
-        input:checked + .slider:before { transform: translateX(24px); }
+        /* ── FORM ELEMENTS ───────────────────────────────────── */
+        .form-row { display:grid; grid-template-columns:1fr 1fr; gap:20px; }
+        .form-group { margin-bottom:20px; }
+        .form-label { display:block; font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.7px; margin-bottom:7px; }
+        .form-control {
+            width:100%; padding:11px 14px; border:1.5px solid var(--border);
+            border-radius:9px; font-size:14px; font-family:'DM Sans',sans-serif;
+            background:#fafbff; color:#1E293B; transition:all .25s;
+        }
+        .form-control:focus { outline:none; border-color:var(--primary); background:#fff; box-shadow:0 0 0 4px rgba(10,37,88,.07); }
+        .form-control[readonly] { background:#f1f5f9; color:var(--muted); cursor:not-allowed; border-color:transparent; }
+        textarea.form-control { resize:vertical; min-height:100px; }
+        select.form-control { appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2364748b' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; padding-right:36px; }
 
-        /* Buttons */
-        .btn-save { padding: 10px 28px; background-color: var(--accent); color: var(--white); border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
-        .btn-save:hover { background-color: #e68a2e; transform: translateY(-2px); }
-        .btn-save:disabled { background-color: #ccc; cursor: not-allowed; transform: none; }
-        .btn-danger { padding: 10px 28px; background-color: var(--error); color: var(--white); border: none; border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
-        .btn-danger:hover { background-color: #a71d2a; }
-        .btn-outline { padding: 10px 28px; background-color: transparent; color: var(--primary); border: 2px solid var(--primary); border-radius: 6px; font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease; }
-        .btn-outline:hover { background-color: var(--primary); color: var(--white); }
+        .input-hint { font-size:11.5px; color:var(--muted); margin-top:5px; display:flex; align-items:center; gap:4px; }
+        .input-hint i { color:var(--accent); }
 
-        /* Session info */
-        .session-info { background: #f0f6ff; border: 1px solid #c8d8f5; border-radius: 8px; padding: 16px 20px; margin-bottom: 20px; font-size: 13px; color: #555; }
-        .session-info strong { color: var(--primary); }
+        /* pw strength */
+        .pw-bar-wrap { height:5px; background:#e2e8f0; border-radius:3px; margin-top:8px; overflow:hidden; }
+        .pw-bar { height:100%; border-radius:3px; width:0; transition:width .35s ease, background .35s ease; }
+        .pw-bar.weak   { width:33%; background:var(--red); }
+        .pw-bar.medium { width:66%; background:var(--warn); }
+        .pw-bar.strong { width:100%; background:var(--green); }
+        .pw-hint-txt { font-size:11.5px; color:var(--muted); margin-top:5px; }
 
-        /* Danger zone */
-        .danger-zone { border: 1px solid #ffcdd2; border-radius: 8px; padding: 20px; background: #fff8f8; margin-top: 25px; }
-        .danger-zone h5 { color: var(--error); font-size: 15px; margin-bottom: 8px; }
-        .danger-zone p { font-size: 13px; color: #888; margin-bottom: 16px; }
+        /* ── TOGGLE SWITCHES ─────────────────────────────────── */
+        .toggle-row {
+            display:flex; align-items:center; justify-content:space-between;
+            padding:16px 18px; background:#fafbff; border-radius:11px;
+            margin-bottom:10px; border:1.5px solid var(--border);
+            transition:all .2s;
+        }
+        .toggle-row:hover { background:#f0f4ff; border-color:#c5d4f5; }
+        .toggle-info h6 { font-size:14px; font-weight:600; color:var(--primary); margin-bottom:3px; }
+        .toggle-info p  { font-size:12px; color:var(--muted); margin:0; }
+        .switch { position:relative; display:inline-block; width:50px; height:26px; flex-shrink:0; }
+        .switch input { opacity:0; width:0; height:0; }
+        .slider { position:absolute; cursor:pointer; inset:0; background:#c8d0e0; transition:.3s; border-radius:34px; }
+        .slider::before { position:absolute; content:""; height:20px; width:20px; left:3px; bottom:3px; background:#fff; transition:.3s; border-radius:50%; box-shadow:0 1px 4px rgba(0,0,0,.2); }
+        input:checked + .slider { background:var(--green); }
+        input:checked + .slider::before { transform:translateX(24px); }
 
-        /* Info tags */
-        .info-tag { display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 11px; font-weight: 600; }
-        .info-tag.blue { background: #e3f2fd; color: #0d6efd; }
-        .info-tag.green { background: #e8f5e9; color: var(--success); }
+        /* ── SECTION DIVIDER ─────────────────────────────────── */
+        .sec-divider { border:none; border-top:1.5px solid #f0f4ff; margin:26px 0; }
 
-        /* Inline alert */
-        .inline-alert { padding: 10px 14px; border-radius: 6px; font-size: 13px; margin-top: 12px; display: none; }
-        .inline-alert.success { background: #e8f5e9; color: #2e7d32; border: 1px solid #a5d6a7; }
-        .inline-alert.error   { background: #ffebee; color: var(--error); border: 1px solid #ef9a9a; }
-        .inline-alert.show    { display: block; }
+        /* ── SUBSECTION HEAD ─────────────────────────────────── */
+        .sub-head { display:flex; align-items:center; gap:10px; margin-bottom:16px; }
+        .sub-head-icon { width:34px; height:34px; border-radius:9px; background:linear-gradient(135deg,var(--primary),var(--primary-lt)); display:flex; align-items:center; justify-content:center; font-size:14px; color:#fff; flex-shrink:0; }
+        .sub-head h5 { font-family:'Playfair Display',serif; font-size:16px; font-weight:700; color:var(--primary); margin:0; }
 
-        /* Toast */
-        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 10px; }
-        .toast { background: var(--white); border-radius: 8px; padding: 14px 18px; box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px; font-size: 14px; min-width: 260px; animation: toastIn 0.3s ease; border-left: 4px solid var(--success); }
-        .toast.error   { border-left-color: var(--error); }
-        .toast.warning { border-left-color: var(--accent); }
-        @keyframes toastIn { from { opacity:0; transform: translateX(40px); } to { opacity:1; transform:translateX(0); } }
+        /* ── DANGER ZONE ─────────────────────────────────────── */
+        .danger-zone {
+            border:1.5px solid #fecdd3; border-radius:12px;
+            padding:22px 24px; background:#fff5f5; margin-top:26px;
+        }
+        .danger-zone-head { display:flex; align-items:center; gap:8px; margin-bottom:8px; }
+        .danger-zone-head i { color:var(--red); font-size:16px; }
+        .danger-zone-head h5 { font-size:15px; font-weight:700; color:var(--red); margin:0; }
+        .danger-zone p { font-size:13px; color:#9f1239; margin-bottom:16px; line-height:1.6; }
 
-        hr.soft { border: none; border-top: 1px solid #eee; margin: 25px 0; }
+        /* ── BUTTONS ─────────────────────────────────────────── */
+        .btn { padding:10px 24px; border:none; border-radius:8px; font-size:14px; font-weight:600; cursor:pointer; transition:all .2s; display:inline-flex; align-items:center; gap:8px; font-family:'DM Sans',sans-serif; }
+        .btn-primary { background:linear-gradient(135deg,var(--accent),var(--accent-dk)); color:#fff; box-shadow:0 3px 12px rgba(232,132,42,.3); }
+        .btn-primary:hover { transform:translateY(-1px); box-shadow:0 6px 18px rgba(232,132,42,.4); }
+        .btn-primary:disabled { background:#c9d0e0; box-shadow:none; cursor:not-allowed; transform:none; }
+        .btn-ghost { background:var(--bg); color:var(--primary); border:1.5px solid var(--border); }
+        .btn-ghost:hover { background:#e2e8f0; }
+        .btn-danger { background:var(--red); color:#fff; box-shadow:0 3px 12px rgba(198,40,40,.25); }
+        .btn-danger:hover { background:#a31515; transform:translateY(-1px); }
+        .btn-outline { background:transparent; color:var(--primary); border:2px solid var(--primary); }
+        .btn-outline:hover { background:var(--primary); color:#fff; }
 
-        @media (max-width: 992px) { .sidebar { transform: translateX(-100%); } .main-content { margin-left: 0; } .form-row { grid-template-columns: 1fr; } }
+        /* ── SESSION INFO ────────────────────────────────────── */
+        .session-box {
+            background:#f8faff; border:1.5px solid #c5d4f5; border-radius:11px;
+            padding:18px 22px; margin-bottom:22px; font-size:13.5px; color:#334155;
+            display:grid; grid-template-columns:1fr 1fr; gap:12px 24px;
+        }
+        .session-row { display:flex; flex-direction:column; gap:2px; }
+        .session-key { font-size:10.5px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.7px; }
+        .session-val { font-weight:600; color:var(--primary); font-size:13px; font-family:'DM Mono',monospace; }
+
+        /* ── INLINE ALERT ────────────────────────────────────── */
+        .inline-alert { padding:11px 16px; border-radius:8px; font-size:13px; margin-top:14px; display:none; font-weight:500; }
+        .inline-alert.success { background:#dcfce7; color:#166534; border:1.5px solid #bbf7d0; }
+        .inline-alert.error   { background:#fee2e2; color:#991b1b; border:1.5px solid #fecaca; }
+        .inline-alert.show    { display:flex; align-items:center; gap:8px; }
+
+        /* ── TOAST ───────────────────────────────────────────── */
+        .toast-wrap { position:fixed; top:20px; right:20px; z-index:3000; display:flex; flex-direction:column; gap:8px; }
+        .toast {
+            background:#fff; border-radius:11px; padding:13px 16px;
+            box-shadow:0 4px 28px rgba(0,0,0,.13);
+            display:flex; align-items:center; gap:10px;
+            font-size:13px; font-weight:500; min-width:280px;
+            animation:toast-in .28s ease; border-left:4px solid var(--green);
+        }
+        .toast.err  { border-left-color:var(--red); }
+        .toast.warn { border-left-color:var(--warn); }
+        @keyframes toast-in { from{opacity:0;transform:translateX(32px)} to{opacity:1;transform:translateX(0)} }
+
+        /* ── SKELETON ────────────────────────────────────────── */
+        @keyframes shimmer {
+            0%  { background-position:-600px 0; }
+            100%{ background-position: 600px 0; }
+        }
+        .skeleton {
+            background:linear-gradient(90deg,#e8ecf1 25%,#f3f5f8 50%,#e8ecf1 75%);
+            background-size:600px 100%;
+            animation:shimmer 1.4s ease-in-out infinite;
+            border-radius:8px;
+        }
+
+        /* ── RESPONSIVE ──────────────────────────────────────── */
+        @media (max-width:992px) { .sidebar { transform:translateX(-100%); } .main { margin-left:0; } .form-row { grid-template-columns:1fr; } .session-box { grid-template-columns:1fr; } }
+        @media (max-width:768px) { .main { padding:16px; } .section-card { padding:22px 18px; } }
     </style>
 </head>
 <body>
-    <div class="tricolor-strip"></div>
-    <div class="toast-container" id="toastContainer"></div>
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <h4><i class="fas fa-landmark"></i> Gov Portal</h4>
-            <p>Complaint Management System</p>
+<!-- PAGE LOADER -->
+<div id="page-loader">
+    <svg class="chakra-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="46" stroke="#FF9933" stroke-width="4" fill="none"/>
+        <circle cx="50" cy="50" r="8" fill="#138808"/>
+        <g stroke="#003580" stroke-width="1.8">
+            <line x1="50" y1="50" x2="50" y2="6"/>       <line x1="50" y1="50" x2="66" y2="9"/>
+            <line x1="50" y1="50" x2="79" y2="21"/>      <line x1="50" y1="50" x2="86" y2="34"/>
+            <line x1="50" y1="50" x2="89" y2="50"/>      <line x1="50" y1="50" x2="86" y2="66"/>
+            <line x1="50" y1="50" x2="79" y2="79"/>      <line x1="50" y1="50" x2="66" y2="91"/>
+            <line x1="50" y1="50" x2="50" y2="94"/>      <line x1="50" y1="50" x2="34" y2="91"/>
+            <line x1="50" y1="50" x2="21" y2="79"/>      <line x1="50" y1="50" x2="14" y2="66"/>
+            <line x1="50" y1="50" x2="11" y2="50"/>      <line x1="50" y1="50" x2="14" y2="34"/>
+            <line x1="50" y1="50" x2="21" y2="21"/>      <line x1="50" y1="50" x2="34" y2="9"/>
+            <line x1="50" y1="50" x2="58" y2="7.5"/>     <line x1="50" y1="50" x2="73" y2="14"/>
+            <line x1="50" y1="50" x2="83" y2="27"/>      <line x1="50" y1="50" x2="88" y2="42"/>
+            <line x1="50" y1="50" x2="88" y2="58"/>      <line x1="50" y1="50" x2="83" y2="73"/>
+            <line x1="50" y1="50" x2="73" y2="86"/>      <line x1="50" y1="50" x2="58" y2="92.5"/>
+        </g>
+        <circle cx="50" cy="50" r="4" fill="#FF9933"/>
+    </svg>
+    <p class="loader-label">Settings</p>
+    <div class="loader-dots">
+        <div class="loader-dot"></div>
+        <div class="loader-dot"></div>
+        <div class="loader-dot"></div>
+    </div>
+</div>
+
+<div class="tricolor"></div>
+<div class="toast-wrap" id="toasts"></div>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+    <div class="sb-logo">
+        <div class="sb-logo-icon"><i class="fas fa-landmark" style="color:#fff;"></i></div>
+        <div class="sb-logo-txt">
+            <h4>Gov Portal</h4>
+            <p>शिकायत प्रबंधन</p>
         </div>
-        <ul class="sidebar-menu">
-            <li><a href="dashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a></li>
-            <li><a href="all-complaints.html"><i class="fas fa-file-alt"></i><span>All Complaints</span></a></li>
-            <li><a href="pending.html"><i class="fas fa-clock"></i><span>Pending</span></a></li>
-            <li><a href="resolved.html"><i class="fas fa-check-circle"></i><span>Resolved</span></a></li>
-            <li><a href="admin-departments.html"><i class="fas fa-building"></i><span>Departments</span></a></li>
-            <li><a href="analytics.html"><i class="fas fa-chart-bar"></i><span>Analytics</span></a></li>
-            <li><a href="notification.html"><i class="fas fa-bell"></i><span>Notifications</span></a></li>
-            <li><a href="settings.html" class="active"><i class="fas fa-cog"></i><span>Settings</span></a></li>
-            <li><a href="login.html" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
-        </ul>
-        <div class="user-profile">
-            <div class="user-profile-content">
-                <div class="user-avatar" id="userAvatarLetter">A</div>
-                <div class="user-info">
-                    <div class="name" id="userName">Officer</div>
-                    <div class="role">System Administrator</div>
-                </div>
+    </div>
+    <div class="nav-sec">
+        <div class="nav-lbl">Navigation</div>
+        <a href="dashboard.html"         class="nav-item"><i class="fas fa-th-large"></i> Dashboard</a>
+        <a href="all-complaints.html"    class="nav-item"><i class="fas fa-file-alt"></i> All Complaints</a>
+        <a href="pending.html"           class="nav-item"><i class="fas fa-clock"></i> Pending</a>
+        <a href="resolved.html"          class="nav-item"><i class="fas fa-check-circle"></i> Resolved</a>
+        <a href="admin-departments.html" class="nav-item"><i class="fas fa-building"></i> Departments</a>
+        <a href="analytics.html"         class="nav-item"><i class="fas fa-chart-bar"></i> Analytics</a>
+        <a href="notification.html"      class="nav-item"><i class="fas fa-bell"></i> Notifications</a>
+        <a href="settings.html"          class="nav-item active"><i class="fas fa-cog"></i> Settings</a>
+        <a href="login.html" onclick="logout()" class="nav-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+    <div class="sb-foot">
+        <div class="user-row">
+            <div class="user-av" id="userAvatarSb">A</div>
+            <div>
+                <div class="user-name" id="userNameSb">Officer</div>
+                <div class="user-role" id="userRoleSb">System Administrator</div>
             </div>
         </div>
-    </aside>
+    </div>
+</aside>
 
-    <!-- Main -->
-    <main class="main-content">
-        <div class="top-bar">
-            <div class="welcome-text">
-                <h2><i class="fas fa-cog" style="color:var(--accent);margin-right:8px;"></i>Settings</h2>
-                <p>Manage your account, preferences and security</p>
+<!-- MAIN -->
+<main class="main">
+
+    <!-- TOPBAR -->
+    <div class="topbar">
+        <div class="pg-title">
+            <h2><i class="fas fa-cog" style="color:var(--accent);font-size:20px;"></i> Settings</h2>
+            <p>Manage your account, preferences, notifications and security</p>
+        </div>
+    </div>
+
+    <!-- TABS -->
+    <div class="tabs-bar">
+        <button class="tab-btn active" onclick="switchTab('profile',this)"><i class="fas fa-user-circle"></i> Profile</button>
+        <button class="tab-btn" onclick="switchTab('security',this)"><i class="fas fa-shield-alt"></i> Security</button>
+        <button class="tab-btn" onclick="switchTab('notifications',this)"><i class="fas fa-bell"></i> Notifications</button>
+        <button class="tab-btn" onclick="switchTab('system',this)"><i class="fas fa-sliders-h"></i> System</button>
+        <button class="tab-btn" onclick="switchTab('session',this)"><i class="fas fa-history"></i> Session</button>
+    </div>
+
+    <!-- ── PROFILE TAB ────────────────────────────────────── -->
+    <div id="profile" class="section-card active">
+        <div class="sec-head">
+            <h4>Profile Information</h4>
+            <p>Your identity is read from your Cognito JWT. Display name and department are stored locally.</p>
+        </div>
+
+        <!-- Profile Banner -->
+        <div class="profile-banner">
+            <div class="pb-avatar" id="pbAvatar">A</div>
+            <div class="pb-info">
+                <h4 id="pbName">—</h4>
+                <p><i class="fas fa-envelope"></i><span id="pbEmail">—</span></p>
+                <p><i class="fas fa-id-badge"></i><span class="pb-sub" id="pbSub">—</span></p>
             </div>
         </div>
 
-        <!-- Tabs -->
-        <div class="settings-tabs">
-            <button class="tab-btn active" onclick="switchTab('profile',this)"><i class="fas fa-user"></i> Profile</button>
-            <button class="tab-btn" onclick="switchTab('security',this)"><i class="fas fa-shield-alt"></i> Security</button>
-            <button class="tab-btn" onclick="switchTab('notifications',this)"><i class="fas fa-bell"></i> Notifications</button>
-            <button class="tab-btn" onclick="switchTab('system',this)"><i class="fas fa-sliders-h"></i> System</button>
-            <button class="tab-btn" onclick="switchTab('session',this)"><i class="fas fa-history"></i> Session</button>
-        </div>
-
-        <!-- ── PROFILE TAB ── -->
-        <div id="profile" class="settings-section active">
-            <div class="section-header">
-                <h4>Profile Information</h4>
-                <p>Your identity decoded from your Cognito login token</p>
-            </div>
-
-            <!-- Profile card from JWT -->
-            <div class="profile-card">
-                <div class="profile-avatar-large" id="bigAvatar">A</div>
-                <div class="profile-card-info">
-                    <h4 id="profileNameDisplay">—</h4>
-                    <p><i class="fas fa-envelope" style="opacity:0.7;margin-right:6px;"></i><span id="profileEmailDisplay">—</span></p>
-                    <p><i class="fas fa-id-badge" style="opacity:0.7;margin-right:6px;"></i>Sub: <span id="profileSub" style="font-size:12px;opacity:0.7;">—</span></p>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Username (from Cognito)</label>
-                    <input type="text" id="fieldUsername" readonly>
-                </div>
-                <div class="form-group">
-                    <label>Email Address (from Cognito)</label>
-                    <input type="email" id="fieldEmail" readonly>
-                </div>
-            </div>
-
+        <div class="form-row">
             <div class="form-group">
-                <label>Display Name <span style="font-size:11px;color:#888;">(stored locally)</span></label>
-                <input type="text" id="fieldDisplayName" placeholder="Enter display name">
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Department</label>
-                    <select id="fieldDept">
-                        <option>System Administration</option>
-                        <option>Public Works</option>
-                        <option>Health</option>
-                        <option>Education</option>
-                        <option>Revenue</option>
-                        <option>Police</option>
-                        <option>Water Supply</option>
-                        <option>Transport</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Role</label>
-                    <select id="fieldRole">
-                        <option>System Administrator</option>
-                        <option>Department Head</option>
-                        <option>Field Officer</option>
-                        <option>Data Entry Operator</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <label>Mobile Number <span style="font-size:11px;color:#888;">(optional)</span></label>
-                <input type="tel" id="fieldMobile" placeholder="+91 98765 43210">
-            </div>
-
-            <div id="profileAlert" class="inline-alert"></div>
-            <button class="btn-save" onclick="saveProfile()"><i class="fas fa-save"></i> Save Profile</button>
-        </div>
-
-        <!-- ── SECURITY TAB ── -->
-        <div id="security" class="settings-section">
-            <div class="section-header">
-                <h4>Security Settings</h4>
-                <p>Change your Cognito password and manage account security</p>
-            </div>
-
-            <h5 style="font-size:15px;font-weight:700;color:var(--primary);margin-bottom:16px;">Change Password</h5>
-
-            <div class="form-group">
-                <label>Current Password</label>
-                <input type="password" id="oldPassword" placeholder="Enter your current password">
+                <label class="form-label">Username <span style="font-weight:400;color:var(--accent);">(Cognito)</span></label>
+                <input type="text" class="form-control" id="fieldUsername" readonly>
+                <div class="input-hint"><i class="fas fa-lock"></i> Read-only from Cognito</div>
             </div>
             <div class="form-group">
-                <label>New Password</label>
-                <input type="password" id="newPassword" placeholder="Minimum 8 characters" oninput="checkPwStrength(this.value)">
-                <div class="pw-strength" id="pwStrength" style="display:none;"></div>
-                <div class="pw-hint" id="pwHint"></div>
+                <label class="form-label">Email Address <span style="font-weight:400;color:var(--accent);">(Cognito)</span></label>
+                <input type="email" class="form-control" id="fieldEmail" readonly>
+                <div class="input-hint"><i class="fas fa-lock"></i> Read-only from Cognito</div>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Display Name <span style="font-weight:400;color:var(--muted);">(local)</span></label>
+            <input type="text" class="form-control" id="fieldDisplayName" placeholder="Enter your display name">
+        </div>
+
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Department</label>
+                <select class="form-control" id="fieldDept">
+                    <option>System Administration</option>
+                    <option>Public Works</option>
+                    <option>Health</option>
+                    <option>Education</option>
+                    <option>Revenue</option>
+                    <option>Police</option>
+                    <option>Water Supply</option>
+                    <option>Transport</option>
+                </select>
             </div>
             <div class="form-group">
-                <label>Confirm New Password</label>
-                <input type="password" id="confirmPassword" placeholder="Re-enter new password">
-            </div>
-
-            <div id="pwAlert" class="inline-alert"></div>
-            <button class="btn-save" id="pwBtn" onclick="changePassword()"><i class="fas fa-key"></i> Update Password</button>
-
-            <hr class="soft">
-
-            <h5 style="font-size:15px;font-weight:700;color:var(--primary);margin-bottom:16px;">Account Security</h5>
-
-            <div class="toggle-switch">
-                <div class="toggle-info">
-                    <h6>Login Alerts</h6>
-                    <p>Get notified of new login attempts</p>
-                </div>
-                <label class="switch">
-                    <input type="checkbox" id="sec_loginAlerts" checked onchange="saveSecurityPrefs()">
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="toggle-switch">
-                <div class="toggle-info">
-                    <h6>Two-Factor Authentication (2FA)</h6>
-                    <p>Managed via AWS Cognito MFA settings</p>
-                </div>
-                <label class="switch">
-                    <input type="checkbox" id="sec_2fa" onchange="saveSecurityPrefs()">
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <hr class="soft">
-            <div class="danger-zone">
-                <h5><i class="fas fa-exclamation-triangle"></i> Danger Zone</h5>
-                <p>Logging out will clear your session tokens from this device. You will need to log in again.</p>
-                <button class="btn-danger" onclick="confirmLogout()"><i class="fas fa-sign-out-alt"></i> Logout & Clear Session</button>
+                <label class="form-label">Role</label>
+                <select class="form-control" id="fieldRole">
+                    <option>System Administrator</option>
+                    <option>Department Head</option>
+                    <option>Field Officer</option>
+                    <option>Data Entry Operator</option>
+                </select>
             </div>
         </div>
 
-        <!-- ── NOTIFICATIONS TAB ── -->
-        <div id="notifications" class="settings-section">
-            <div class="section-header">
-                <h4>Notification Preferences</h4>
-                <p>Choose which alerts appear on your Notifications page. Saved in your browser.</p>
-            </div>
-
-            <div class="toggle-switch">
-                <div class="toggle-info">
-                    <h6>🔴 Critical / High Priority Alerts</h6>
-                    <p>Notify when a critical or high priority complaint is unresolved</p>
-                </div>
-                <label class="switch">
-                    <input type="checkbox" id="notif_critical" checked onchange="saveNotifPrefs()">
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="toggle-switch">
-                <div class="toggle-info">
-                    <h6>🆕 New Complaint Alerts</h6>
-                    <p>Notify when new complaints are submitted (last 24 hours)</p>
-                </div>
-                <label class="switch">
-                    <input type="checkbox" id="notif_new" checked onchange="saveNotifPrefs()">
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="toggle-switch">
-                <div class="toggle-info">
-                    <h6>⏳ Overdue Complaint Alerts</h6>
-                    <p>Notify when complaints have been pending for 7+ days</p>
-                </div>
-                <label class="switch">
-                    <input type="checkbox" id="notif_overdue" checked onchange="saveNotifPrefs()">
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="toggle-switch">
-                <div class="toggle-info">
-                    <h6>✅ Resolved Confirmation Alerts</h6>
-                    <p>Notify when complaints are resolved (within 48 hours)</p>
-                </div>
-                <label class="switch">
-                    <input type="checkbox" id="notif_resolved" checked onchange="saveNotifPrefs()">
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="toggle-switch">
-                <div class="toggle-info">
-                    <h6>📋 Under Review Follow-up Alerts</h6>
-                    <p>Notify when complaints stay in "Under Review" for 3+ days</p>
-                </div>
-                <label class="switch">
-                    <input type="checkbox" id="notif_pending" checked onchange="saveNotifPrefs()">
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div id="notifAlert" class="inline-alert"></div>
+        <div class="form-group">
+            <label class="form-label">Mobile Number <span style="font-weight:400;color:var(--muted);">(optional)</span></label>
+            <input type="tel" class="form-control" id="fieldMobile" placeholder="+91 98765 43210">
         </div>
 
-        <!-- ── SYSTEM TAB ── -->
-        <div id="system" class="settings-section">
-            <div class="section-header">
-                <h4>System Preferences</h4>
-                <p>Configure display and portal behaviour. Saved in your browser.</p>
-            </div>
+        <div class="inline-alert" id="profileAlert"></div>
+        <div style="margin-top:6px;">
+            <button class="btn btn-primary" onclick="saveProfile()"><i class="fas fa-save"></i> Save Profile</button>
+        </div>
+    </div>
 
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Default Language</label>
-                    <select id="sys_lang" onchange="saveSystemPrefs()">
-                        <option value="en">English</option>
-                        <option value="hi">हिन्दी (Hindi)</option>
-                        <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
-                        <option value="mr">मराठी (Marathi)</option>
-                        <option value="te">తెలుగు (Telugu)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Time Zone</label>
-                    <select id="sys_tz" onchange="saveSystemPrefs()">
-                        <option value="Asia/Kolkata">Asia/Kolkata (IST, UTC+5:30)</option>
-                        <option value="UTC">UTC</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="form-row">
-                <div class="form-group">
-                    <label>Date Format</label>
-                    <select id="sys_date" onchange="saveSystemPrefs()">
-                        <option value="DD/MM/YYYY">DD/MM/YYYY (Indian Standard)</option>
-                        <option value="MM/DD/YYYY">MM/DD/YYYY</option>
-                        <option value="YYYY-MM-DD">YYYY-MM-DD (ISO)</option>
-                    </select>
-                </div>
-                <div class="form-group">
-                    <label>Complaints Per Page</label>
-                    <select id="sys_perPage" onchange="saveSystemPrefs()">
-                        <option value="10">10 per page</option>
-                        <option value="25">25 per page</option>
-                        <option value="50">50 per page</option>
-                    </select>
-                </div>
-            </div>
-
-            <div class="toggle-switch">
-                <div class="toggle-info">
-                    <h6>Auto-assign Complaints</h6>
-                    <p>Automatically assign complaints to departments on submission</p>
-                </div>
-                <label class="switch">
-                    <input type="checkbox" id="sys_autoAssign" checked onchange="saveSystemPrefs()">
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="toggle-switch">
-                <div class="toggle-info">
-                    <h6>Public Complaint Tracking</h6>
-                    <p>Allow citizens to track their complaints via the Track page</p>
-                </div>
-                <label class="switch">
-                    <input type="checkbox" id="sys_publicTrack" checked onchange="saveSystemPrefs()">
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div class="toggle-switch">
-                <div class="toggle-info">
-                    <h6>Analytics Auto-refresh</h6>
-                    <p>Automatically refresh analytics data every 5 minutes</p>
-                </div>
-                <label class="switch">
-                    <input type="checkbox" id="sys_autoRefresh" checked onchange="saveSystemPrefs()">
-                    <span class="slider"></span>
-                </label>
-            </div>
-
-            <div id="sysAlert" class="inline-alert"></div>
+    <!-- ── SECURITY TAB ───────────────────────────────────── -->
+    <div id="security" class="section-card">
+        <div class="sec-head">
+            <h4>Security Settings</h4>
+            <p>Change your Cognito password and manage account-level security preferences.</p>
         </div>
 
-        <!-- ── SESSION TAB ── -->
-        <div id="session" class="settings-section">
-            <div class="section-header">
-                <h4>Session Information</h4>
-                <p>Details about your current login session</p>
-            </div>
+        <div class="sub-head">
+            <div class="sub-head-icon"><i class="fas fa-key"></i></div>
+            <h5>Change Password</h5>
+        </div>
 
-            <div class="session-info" id="sessionInfoBox">
-                Loading session details...
-            </div>
+        <div class="form-group">
+            <label class="form-label">Current Password</label>
+            <input type="password" class="form-control" id="oldPassword" placeholder="Enter your current password">
+        </div>
+        <div class="form-group">
+            <label class="form-label">New Password</label>
+            <input type="password" class="form-control" id="newPassword" placeholder="Minimum 8 characters" oninput="checkPwStrength(this.value)">
+            <div class="pw-bar-wrap"><div class="pw-bar" id="pwBar"></div></div>
+            <div class="pw-hint-txt" id="pwHint"></div>
+        </div>
+        <div class="form-group">
+            <label class="form-label">Confirm New Password</label>
+            <input type="password" class="form-control" id="confirmPassword" placeholder="Re-enter new password">
+        </div>
 
+        <div class="inline-alert" id="pwAlert"></div>
+        <div style="margin-top:6px;">
+            <button class="btn btn-primary" id="pwBtn" onclick="changePassword()"><i class="fas fa-key"></i> Update Password</button>
+        </div>
+
+        <hr class="sec-divider">
+
+        <div class="sub-head">
+            <div class="sub-head-icon"><i class="fas fa-shield-alt"></i></div>
+            <h5>Account Security</h5>
+        </div>
+
+        <div class="toggle-row">
+            <div class="toggle-info">
+                <h6>Login Alerts</h6>
+                <p>Receive a notification on new login attempts from unrecognised devices</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="sec_loginAlerts" checked onchange="saveSecurityPrefs()"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+            <div class="toggle-info">
+                <h6>Two-Factor Authentication (2FA)</h6>
+                <p>Managed via AWS Cognito MFA settings — requires re-authentication</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="sec_2fa" onchange="saveSecurityPrefs()"><span class="slider"></span></label>
+        </div>
+
+        <div class="danger-zone">
+            <div class="danger-zone-head"><i class="fas fa-exclamation-triangle"></i><h5>Danger Zone</h5></div>
+            <p>Logging out will clear all session tokens from this device. You will be redirected to the login page immediately.</p>
+            <button class="btn btn-danger" onclick="confirmLogout()"><i class="fas fa-sign-out-alt"></i> Logout &amp; Clear Session</button>
+        </div>
+    </div>
+
+    <!-- ── NOTIFICATIONS TAB ──────────────────────────────── -->
+    <div id="notifications" class="section-card">
+        <div class="sec-head">
+            <h4>Notification Preferences</h4>
+            <p>Choose which alert types appear on your Notifications page. Preferences saved in your browser.</p>
+        </div>
+
+        <div class="toggle-row">
+            <div class="toggle-info">
+                <h6>🔴 Critical / High Priority Alerts</h6>
+                <p>Notify when critical or high priority complaints remain unresolved</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="notif_critical" checked onchange="saveNotifPrefs()"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+            <div class="toggle-info">
+                <h6>🆕 New Complaint Alerts</h6>
+                <p>Notify when new complaints are submitted within the last 24 hours</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="notif_new" checked onchange="saveNotifPrefs()"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+            <div class="toggle-info">
+                <h6>⚠️ Overdue Complaint Alerts</h6>
+                <p>Notify when complaints have been pending for 7 or more days</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="notif_overdue" checked onchange="saveNotifPrefs()"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+            <div class="toggle-info">
+                <h6>✅ Resolved Confirmation Alerts</h6>
+                <p>Notify when complaints are resolved within the last 48 hours</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="notif_resolved" checked onchange="saveNotifPrefs()"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+            <div class="toggle-info">
+                <h6>📋 Under Review Follow-up Alerts</h6>
+                <p>Notify when complaints remain in "Under Review" status for 3+ days</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="notif_pending" checked onchange="saveNotifPrefs()"><span class="slider"></span></label>
+        </div>
+
+        <div class="inline-alert" id="notifAlert"></div>
+    </div>
+
+    <!-- ── SYSTEM TAB ─────────────────────────────────────── -->
+    <div id="system" class="section-card">
+        <div class="sec-head">
+            <h4>System Preferences</h4>
+            <p>Configure display and portal behaviour. All settings are saved in your browser.</p>
+        </div>
+
+        <div class="form-row">
             <div class="form-group">
-                <label>Raw JWT Claims (from Cognito)</label>
-                <textarea id="jwtDisplay" readonly rows="10" style="font-family:monospace;font-size:12px;background:#f8f9fa;"></textarea>
+                <label class="form-label">Default Language</label>
+                <select class="form-control" id="sys_lang" onchange="saveSystemPrefs()">
+                    <option value="en">English</option>
+                    <option value="hi">हिन्दी (Hindi)</option>
+                    <option value="pa">ਪੰਜਾਬੀ (Punjabi)</option>
+                    <option value="mr">मराठी (Marathi)</option>
+                    <option value="te">తెలుగు (Telugu)</option>
+                    <option value="ta">தமிழ் (Tamil)</option>
+                    <option value="bn">বাংলা (Bengali)</option>
+                </select>
             </div>
-
-            <div style="display:flex;gap:12px;flex-wrap:wrap;">
-                <button class="btn-outline" onclick="copyJWT()"><i class="fas fa-copy"></i> Copy Token</button>
-                <button class="btn-danger"  onclick="confirmLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+            <div class="form-group">
+                <label class="form-label">Time Zone</label>
+                <select class="form-control" id="sys_tz" onchange="saveSystemPrefs()">
+                    <option value="Asia/Kolkata">Asia/Kolkata — IST (UTC+5:30)</option>
+                    <option value="UTC">UTC</option>
+                </select>
             </div>
         </div>
-    </main>
 
-    <script>
-    // ── 1. AUTH GUARD ──────────────────────────────────────
-    const officerToken = localStorage.getItem("officerToken");
-    if (!officerToken) window.location.href = "login.html";
+        <div class="form-row">
+            <div class="form-group">
+                <label class="form-label">Date Format</label>
+                <select class="form-control" id="sys_date" onchange="saveSystemPrefs()">
+                    <option value="DD/MM/YYYY">DD/MM/YYYY (Indian Standard)</option>
+                    <option value="MM/DD/YYYY">MM/DD/YYYY</option>
+                    <option value="YYYY-MM-DD">YYYY-MM-DD (ISO 8601)</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label class="form-label">Complaints Per Page</label>
+                <select class="form-control" id="sys_perPage" onchange="saveSystemPrefs()">
+                    <option value="10">10 per page</option>
+                    <option value="25">25 per page</option>
+                    <option value="50">50 per page</option>
+                    <option value="100">100 per page</option>
+                </select>
+            </div>
+        </div>
 
-    function parseJwt(t) {
-        try { return JSON.parse(atob(t.split('.')[1])); } catch(e) { return null; }
-    }
+        <hr class="sec-divider">
 
-    // ── 2. COGNITO CONFIG ──────────────────────────────────
-    const POOL_DATA = {
-        UserPoolId: "ap-south-1_GJ7rUyUuY",
-        ClientId:   "1thh9cn56buk3lpubbu5m45orp"
+        <div class="sub-head" style="margin-bottom:14px;">
+            <div class="sub-head-icon"><i class="fas fa-sliders-h"></i></div>
+            <h5>Portal Behaviour</h5>
+        </div>
+
+        <div class="toggle-row">
+            <div class="toggle-info">
+                <h6>Auto-assign Complaints</h6>
+                <p>Automatically route complaints to relevant departments on submission</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="sys_autoAssign" checked onchange="saveSystemPrefs()"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+            <div class="toggle-info">
+                <h6>Public Complaint Tracking</h6>
+                <p>Allow citizens to track their complaints via the public Track Status page</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="sys_publicTrack" checked onchange="saveSystemPrefs()"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+            <div class="toggle-info">
+                <h6>Analytics Auto-refresh</h6>
+                <p>Automatically refresh analytics data every 5 minutes in the background</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="sys_autoRefresh" checked onchange="saveSystemPrefs()"><span class="slider"></span></label>
+        </div>
+        <div class="toggle-row">
+            <div class="toggle-info">
+                <h6>SMS Notifications to Citizens</h6>
+                <p>Send automated SMS updates to citizens on every status change</p>
+            </div>
+            <label class="switch"><input type="checkbox" id="sys_sms" checked onchange="saveSystemPrefs()"><span class="slider"></span></label>
+        </div>
+
+        <div class="inline-alert" id="sysAlert"></div>
+    </div>
+
+    <!-- ── SESSION TAB ────────────────────────────────────── -->
+    <div id="session" class="section-card">
+        <div class="sec-head">
+            <h4>Session Information</h4>
+            <p>Details about your current Cognito authentication session and JWT claims.</p>
+        </div>
+
+        <div class="session-box" id="sessionBox">
+            <div class="session-row"><div class="session-key">Logged in as</div><div class="session-val" id="sesName">—</div></div>
+            <div class="session-row"><div class="session-key">Email</div><div class="session-val" id="sesEmail">—</div></div>
+            <div class="session-row"><div class="session-key">Token Issued</div><div class="session-val" id="sesIat">—</div></div>
+            <div class="session-row"><div class="session-key">Token Expires</div><div class="session-val" id="sesExp">—</div></div>
+            <div class="session-row" style="grid-column:span 2"><div class="session-key">Cognito Sub</div><div class="session-val" id="sesSub" style="word-break:break-all;">—</div></div>
+        </div>
+
+        <div class="form-group">
+            <label class="form-label">Raw JWT Claims <span style="font-weight:400;color:var(--muted);">(from Cognito)</span></label>
+            <textarea class="form-control" id="jwtDisplay" readonly rows="12" style="font-family:'DM Mono',monospace;font-size:12px;line-height:1.6;"></textarea>
+        </div>
+
+        <div style="display:flex;gap:12px;flex-wrap:wrap;">
+            <button class="btn btn-outline" onclick="copyJWT()"><i class="fas fa-copy"></i> Copy Token</button>
+            <button class="btn btn-danger"  onclick="confirmLogout()"><i class="fas fa-sign-out-alt"></i> Logout</button>
+        </div>
+    </div>
+
+</main>
+
+<script>
+// ── AUTH ─────────────────────────────────────────────────────
+const officerToken = localStorage.getItem('officerToken');
+if (!officerToken) window.location.href = 'login.html';
+
+function parseJwt(t) {
+    try { return JSON.parse(atob(t.split('.')[1])); } catch { return null; }
+}
+
+// ── COGNITO CONFIG ────────────────────────────────────────────
+const POOL_DATA = {
+    UserPoolId: 'ap-south-1_GJ7rUyUuY',
+    ClientId:   '1thh9cn56buk3lpubbu5m45orp'
+};
+
+// ── PAGE LOADER ───────────────────────────────────────────────
+window.addEventListener('load', () => {
+    setTimeout(() => document.getElementById('page-loader').classList.add('out'), 900);
+});
+
+// ── POPULATE FROM JWT ─────────────────────────────────────────
+const payload  = parseJwt(officerToken);
+const username = payload?.['cognito:username'] || payload?.['name'] || payload?.['email'] || 'Officer';
+const email    = payload?.['email'] || '—';
+const sub      = payload?.['sub']   || '—';
+const expTime  = payload?.exp ? new Date(payload.exp * 1000).toLocaleString('en-IN') : '—';
+const iatTime  = payload?.iat ? new Date(payload.iat * 1000).toLocaleString('en-IN') : '—';
+const initial  = username.charAt(0).toUpperCase();
+
+// Sidebar
+document.getElementById('userNameSb').textContent   = username;
+document.getElementById('userAvatarSb').textContent = initial;
+
+// Profile tab
+document.getElementById('pbAvatar').textContent = initial;
+document.getElementById('pbName').textContent   = username;
+document.getElementById('pbEmail').textContent  = email;
+document.getElementById('pbSub').textContent    = sub.substring(0,24) + (sub.length > 24 ? '…' : '');
+document.getElementById('fieldUsername').value  = username;
+document.getElementById('fieldEmail').value     = email;
+
+// Session tab
+document.getElementById('sesName').textContent  = username;
+document.getElementById('sesEmail').textContent = email;
+document.getElementById('sesIat').textContent   = iatTime;
+document.getElementById('sesExp').textContent   = expTime;
+document.getElementById('sesSub').textContent   = sub;
+document.getElementById('jwtDisplay').value     = JSON.stringify(payload, null, 2);
+
+// ── LOAD SAVED PREFS ─────────────────────────────────────────
+function loadPrefs() {
+    const p = JSON.parse(localStorage.getItem('officerProfile') || '{}');
+    if (p.displayName) document.getElementById('fieldDisplayName').value = p.displayName;
+    if (p.dept)        document.getElementById('fieldDept').value        = p.dept;
+    if (p.role)        document.getElementById('fieldRole').value        = p.role;
+    if (p.mobile)      document.getElementById('fieldMobile').value      = p.mobile;
+
+    const n = JSON.parse(localStorage.getItem('notifPrefs') || '{}');
+    ['critical','new','overdue','resolved','pending'].forEach(k => {
+        const el = document.getElementById(`notif_${k}`);
+        if (el && n[k] !== undefined) el.checked = n[k];
+    });
+
+    const s = JSON.parse(localStorage.getItem('systemPrefs') || '{}');
+    if (s.lang)        document.getElementById('sys_lang').value        = s.lang;
+    if (s.tz)          document.getElementById('sys_tz').value          = s.tz;
+    if (s.date)        document.getElementById('sys_date').value        = s.date;
+    if (s.perPage)     document.getElementById('sys_perPage').value     = s.perPage;
+    if (s.autoAssign   !== undefined) document.getElementById('sys_autoAssign').checked   = s.autoAssign;
+    if (s.publicTrack  !== undefined) document.getElementById('sys_publicTrack').checked  = s.publicTrack;
+    if (s.autoRefresh  !== undefined) document.getElementById('sys_autoRefresh').checked  = s.autoRefresh;
+    if (s.sms          !== undefined) document.getElementById('sys_sms').checked          = s.sms;
+
+    const sec = JSON.parse(localStorage.getItem('securityPrefs') || '{}');
+    if (sec.loginAlerts !== undefined) document.getElementById('sec_loginAlerts').checked = sec.loginAlerts;
+    if (sec.twoFA       !== undefined) document.getElementById('sec_2fa').checked         = sec.twoFA;
+}
+loadPrefs();
+
+// ── TAB SWITCHING ─────────────────────────────────────────────
+function switchTab(name, btn) {
+    document.querySelectorAll('.section-card').forEach(s => s.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById(name).classList.add('active');
+    if (btn) btn.classList.add('active');
+}
+
+// ── SAVE PROFILE ──────────────────────────────────────────────
+function saveProfile() {
+    const p = {
+        displayName: document.getElementById('fieldDisplayName').value.trim(),
+        dept:        document.getElementById('fieldDept').value,
+        role:        document.getElementById('fieldRole').value,
+        mobile:      document.getElementById('fieldMobile').value.trim()
     };
-
-    // ── 3. POPULATE FROM JWT ───────────────────────────────
-    const payload = parseJwt(officerToken);
-    const username = payload?.['cognito:username'] || payload?.['name'] || payload?.['email'] || 'Officer';
-    const email    = payload?.['email'] || '—';
-    const sub      = payload?.['sub']   || '—';
-
-    // Sidebar
-    document.getElementById('userName').textContent         = username;
-    document.getElementById('userAvatarLetter').textContent = username.charAt(0).toUpperCase();
-
-    // Profile tab
-    document.getElementById('bigAvatar').textContent        = username.charAt(0).toUpperCase();
-    document.getElementById('profileNameDisplay').textContent = username;
-    document.getElementById('profileEmailDisplay').textContent = email;
-    document.getElementById('profileSub').textContent       = sub;
-    document.getElementById('fieldUsername').value          = username;
-    document.getElementById('fieldEmail').value             = email;
-
-    // Session tab
-    const expTime = payload?.exp ? new Date(payload.exp * 1000).toLocaleString('en-IN') : '—';
-    const iatTime = payload?.iat ? new Date(payload.iat * 1000).toLocaleString('en-IN') : '—';
-    document.getElementById('sessionInfoBox').innerHTML = `
-        <strong>Logged in as:</strong> ${username}<br>
-        <strong>Email:</strong> ${email}<br>
-        <strong>Token Issued:</strong> ${iatTime}<br>
-        <strong>Token Expires:</strong> ${expTime}<br>
-        <strong>Cognito Sub:</strong> ${sub}`;
-    document.getElementById('jwtDisplay').value = JSON.stringify(payload, null, 2);
-
-    // ── 4. LOAD SAVED PREFERENCES ──────────────────────────
-    function loadSavedPrefs() {
-        // Profile
-        const profile = JSON.parse(localStorage.getItem('officerProfile') || '{}');
-        if (profile.displayName) document.getElementById('fieldDisplayName').value = profile.displayName;
-        if (profile.dept)        document.getElementById('fieldDept').value        = profile.dept;
-        if (profile.role)        document.getElementById('fieldRole').value        = profile.role;
-        if (profile.mobile)      document.getElementById('fieldMobile').value      = profile.mobile;
-
-        // Notification prefs
-        const nPrefs = JSON.parse(localStorage.getItem('notifPrefs') || '{}');
-        ['critical','new','overdue','resolved','pending'].forEach(k => {
-            const el = document.getElementById(`notif_${k}`);
-            if (el && nPrefs[k] !== undefined) el.checked = nPrefs[k];
-        });
-
-        // System prefs
-        const sPrefs = JSON.parse(localStorage.getItem('systemPrefs') || '{}');
-        if (sPrefs.lang)        document.getElementById('sys_lang').value        = sPrefs.lang;
-        if (sPrefs.tz)          document.getElementById('sys_tz').value          = sPrefs.tz;
-        if (sPrefs.date)        document.getElementById('sys_date').value        = sPrefs.date;
-        if (sPrefs.perPage)     document.getElementById('sys_perPage').value     = sPrefs.perPage;
-        if (sPrefs.autoAssign   !== undefined) document.getElementById('sys_autoAssign').checked   = sPrefs.autoAssign;
-        if (sPrefs.publicTrack  !== undefined) document.getElementById('sys_publicTrack').checked  = sPrefs.publicTrack;
-        if (sPrefs.autoRefresh  !== undefined) document.getElementById('sys_autoRefresh').checked  = sPrefs.autoRefresh;
+    localStorage.setItem('officerProfile', JSON.stringify(p));
+    if (p.displayName) {
+        const init = p.displayName.charAt(0).toUpperCase();
+        document.getElementById('userNameSb').textContent   = p.displayName;
+        document.getElementById('userAvatarSb').textContent = init;
+        document.getElementById('pbAvatar').textContent     = init;
+        document.getElementById('pbName').textContent       = p.displayName;
     }
-    loadSavedPrefs();
+    showInlineAlert('profileAlert', 'Profile saved successfully', 'success');
+    toast('Profile saved ✓');
+}
 
-    // ── 5. TAB SWITCHING ───────────────────────────────────
-    function switchTab(tabName, btn) {
-        document.querySelectorAll('.settings-section').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-        document.getElementById(tabName).classList.add('active');
-        if (btn) btn.classList.add('active');
-        else document.querySelector(`[onclick="switchTab('${tabName}',this)"]`)?.classList.add('active');
+// ── PASSWORD STRENGTH ─────────────────────────────────────────
+function checkPwStrength(pw) {
+    const bar  = document.getElementById('pwBar');
+    const hint = document.getElementById('pwHint');
+    if (!pw) { bar.className = 'pw-bar'; hint.textContent = ''; return; }
+    if (pw.length < 6) {
+        bar.className = 'pw-bar weak';
+        hint.textContent = '⚠️ Too short — minimum 8 characters';
+        hint.style.color = 'var(--red)';
+    } else if (pw.length < 10 || !/[A-Z]/.test(pw) || !/[0-9]/.test(pw)) {
+        bar.className = 'pw-bar medium';
+        hint.textContent = '🔶 Medium — add uppercase letters and numbers';
+        hint.style.color = 'var(--warn)';
+    } else {
+        bar.className = 'pw-bar strong';
+        hint.textContent = '✅ Strong password';
+        hint.style.color = 'var(--green)';
     }
+}
 
-    // ── 6. SAVE PROFILE ────────────────────────────────────
-    function saveProfile() {
-        const profile = {
-            displayName: document.getElementById('fieldDisplayName').value.trim(),
-            dept:        document.getElementById('fieldDept').value,
-            role:        document.getElementById('fieldRole').value,
-            mobile:      document.getElementById('fieldMobile').value.trim()
-        };
-        localStorage.setItem('officerProfile', JSON.stringify(profile));
-        // Update sidebar display name if set
-        if (profile.displayName) {
-            document.getElementById('userName').textContent = profile.displayName;
-            document.getElementById('userAvatarLetter').textContent = profile.displayName.charAt(0).toUpperCase();
-            document.getElementById('bigAvatar').textContent = profile.displayName.charAt(0).toUpperCase();
-            document.getElementById('profileNameDisplay').textContent = profile.displayName;
-        }
-        showInlineAlert('profileAlert', 'Profile saved successfully ✓', 'success');
-        showToast('Profile saved ✓', 'success');
-    }
+// ── CHANGE PASSWORD ───────────────────────────────────────────
+function changePassword() {
+    const oldPw  = document.getElementById('oldPassword').value;
+    const newPw  = document.getElementById('newPassword').value;
+    const confPw = document.getElementById('confirmPassword').value;
 
-    // ── 7. CHANGE PASSWORD (COGNITO) ───────────────────────
-    function checkPwStrength(pw) {
-        const bar  = document.getElementById('pwStrength');
-        const hint = document.getElementById('pwHint');
-        bar.style.display = 'block';
-        if (pw.length < 6) {
-            bar.className = 'pw-strength weak';
-            hint.textContent = 'Too short (minimum 8 characters)';
-        } else if (pw.length < 10 || !/[A-Z]/.test(pw) || !/[0-9]/.test(pw)) {
-            bar.className = 'pw-strength medium';
-            hint.textContent = 'Medium — add uppercase & numbers for stronger password';
-        } else {
-            bar.className = 'pw-strength strong';
-            hint.textContent = 'Strong password ✓';
-        }
-    }
+    if (!oldPw || !newPw || !confPw) { showInlineAlert('pwAlert','Please fill in all password fields.','error'); return; }
+    if (newPw !== confPw)            { showInlineAlert('pwAlert','New passwords do not match.','error'); return; }
+    if (newPw.length < 8)           { showInlineAlert('pwAlert','Password must be at least 8 characters.','error'); return; }
 
-    function changePassword() {
-        const oldPw  = document.getElementById('oldPassword').value;
-        const newPw  = document.getElementById('newPassword').value;
-        const confPw = document.getElementById('confirmPassword').value;
+    const btn = document.getElementById('pwBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Updating…';
 
-        if (!oldPw || !newPw || !confPw) {
-            showInlineAlert('pwAlert', 'Please fill in all password fields.', 'error'); return;
-        }
-        if (newPw !== confPw) {
-            showInlineAlert('pwAlert', 'New passwords do not match.', 'error'); return;
-        }
-        if (newPw.length < 8) {
-            showInlineAlert('pwAlert', 'New password must be at least 8 characters.', 'error'); return;
+    try {
+        const userPool    = new AmazonCognitoIdentity.CognitoUserPool(POOL_DATA);
+        const cognitoUser = userPool.getCurrentUser();
+
+        if (!cognitoUser) {
+            showInlineAlert('pwAlert','Session expired. Please log in again.','error');
+            btn.disabled = false; btn.innerHTML = '<i class="fas fa-key"></i> Update Password';
+            return;
         }
 
-        const btn = document.getElementById('pwBtn');
-        btn.disabled = true;
-        btn.textContent = 'Updating...';
-        showInlineAlert('pwAlert', '', '');
-
-        try {
-            const userPool   = new AmazonCognitoIdentity.CognitoUserPool(POOL_DATA);
-            const cognitoUser = userPool.getCurrentUser();
-
-            if (!cognitoUser) {
-                showInlineAlert('pwAlert', 'Session expired. Please log in again.', 'error');
+        cognitoUser.getSession((err) => {
+            if (err) {
+                showInlineAlert('pwAlert','Session error: ' + err.message,'error');
                 btn.disabled = false; btn.innerHTML = '<i class="fas fa-key"></i> Update Password';
                 return;
             }
-
-            cognitoUser.getSession(function(err, session) {
-                if (err) {
-                    showInlineAlert('pwAlert', 'Session error: ' + err.message, 'error');
-                    btn.disabled = false; btn.innerHTML = '<i class="fas fa-key"></i> Update Password';
-                    return;
+            cognitoUser.changePassword(oldPw, newPw, (err2) => {
+                btn.disabled = false; btn.innerHTML = '<i class="fas fa-key"></i> Update Password';
+                if (err2) {
+                    showInlineAlert('pwAlert','Error: ' + err2.message,'error');
+                } else {
+                    showInlineAlert('pwAlert','Password updated successfully! You may need to re-login on other devices.','success');
+                    toast('Password updated ✓');
+                    ['oldPassword','newPassword','confirmPassword'].forEach(id => document.getElementById(id).value = '');
+                    document.getElementById('pwBar').className = 'pw-bar';
+                    document.getElementById('pwHint').textContent = '';
                 }
-
-                cognitoUser.changePassword(oldPw, newPw, function(err, result) {
-                    btn.disabled = false; btn.innerHTML = '<i class="fas fa-key"></i> Update Password';
-                    if (err) {
-                        showInlineAlert('pwAlert', 'Error: ' + err.message, 'error');
-                    } else {
-                        showInlineAlert('pwAlert', 'Password updated successfully! You may need to log in again on other devices.', 'success');
-                        showToast('Password updated ✓', 'success');
-                        document.getElementById('oldPassword').value = '';
-                        document.getElementById('newPassword').value = '';
-                        document.getElementById('confirmPassword').value = '';
-                        document.getElementById('pwStrength').style.display = 'none';
-                        document.getElementById('pwHint').textContent = '';
-                    }
-                });
             });
-        } catch(e) {
-            showInlineAlert('pwAlert', 'Cognito SDK error: ' + e.message, 'error');
-            btn.disabled = false; btn.innerHTML = '<i class="fas fa-key"></i> Update Password';
-        }
-    }
-
-    // ── 8. NOTIFICATION PREFS ──────────────────────────────
-    function saveNotifPrefs() {
-        const prefs = {};
-        ['critical','new','overdue','resolved','pending'].forEach(k => {
-            prefs[k] = document.getElementById(`notif_${k}`).checked;
         });
-        localStorage.setItem('notifPrefs', JSON.stringify(prefs));
-        showInlineAlert('notifAlert', 'Notification preferences saved ✓', 'success');
+    } catch(e) {
+        showInlineAlert('pwAlert','SDK error: ' + e.message,'error');
+        btn.disabled = false; btn.innerHTML = '<i class="fas fa-key"></i> Update Password';
     }
+}
 
-    // ── 9. SYSTEM PREFS ────────────────────────────────────
-    function saveSystemPrefs() {
-        const prefs = {
-            lang:        document.getElementById('sys_lang').value,
-            tz:          document.getElementById('sys_tz').value,
-            date:        document.getElementById('sys_date').value,
-            perPage:     document.getElementById('sys_perPage').value,
-            autoAssign:  document.getElementById('sys_autoAssign').checked,
-            publicTrack: document.getElementById('sys_publicTrack').checked,
-            autoRefresh: document.getElementById('sys_autoRefresh').checked
-        };
-        localStorage.setItem('systemPrefs', JSON.stringify(prefs));
-        showInlineAlert('sysAlert', 'System preferences saved ✓', 'success');
-    }
+// ── NOTIFICATION PREFS ────────────────────────────────────────
+function saveNotifPrefs() {
+    const prefs = {};
+    ['critical','new','overdue','resolved','pending'].forEach(k => {
+        prefs[k] = document.getElementById(`notif_${k}`).checked;
+    });
+    localStorage.setItem('notifPrefs', JSON.stringify(prefs));
+    showInlineAlert('notifAlert','Notification preferences saved','success');
+}
 
-    // ── 10. SECURITY PREFS ─────────────────────────────────
-    function saveSecurityPrefs() {
-        const prefs = {
-            loginAlerts: document.getElementById('sec_loginAlerts').checked,
-            twoFA:       document.getElementById('sec_2fa').checked
-        };
-        localStorage.setItem('securityPrefs', JSON.stringify(prefs));
-        showToast('Security preferences saved ✓', 'success');
-    }
-    // Load security prefs
-    const secPrefs = JSON.parse(localStorage.getItem('securityPrefs') || '{}');
-    if (secPrefs.loginAlerts !== undefined) document.getElementById('sec_loginAlerts').checked = secPrefs.loginAlerts;
-    if (secPrefs.twoFA       !== undefined) document.getElementById('sec_2fa').checked         = secPrefs.twoFA;
+// ── SYSTEM PREFS ─────────────────────────────────────────────
+function saveSystemPrefs() {
+    const prefs = {
+        lang:        document.getElementById('sys_lang').value,
+        tz:          document.getElementById('sys_tz').value,
+        date:        document.getElementById('sys_date').value,
+        perPage:     document.getElementById('sys_perPage').value,
+        autoAssign:  document.getElementById('sys_autoAssign').checked,
+        publicTrack: document.getElementById('sys_publicTrack').checked,
+        autoRefresh: document.getElementById('sys_autoRefresh').checked,
+        sms:         document.getElementById('sys_sms').checked,
+    };
+    localStorage.setItem('systemPrefs', JSON.stringify(prefs));
+    showInlineAlert('sysAlert','System preferences saved','success');
+}
 
-    // ── 11. SESSION / COPY ─────────────────────────────────
-    function copyJWT() {
-        navigator.clipboard.writeText(officerToken)
-            .then(() => showToast('Token copied to clipboard ✓', 'success'))
-            .catch(() => showToast('Copy failed — use Ctrl+A in the textarea', 'warning'));
-    }
+// ── SECURITY PREFS ────────────────────────────────────────────
+function saveSecurityPrefs() {
+    const prefs = {
+        loginAlerts: document.getElementById('sec_loginAlerts').checked,
+        twoFA:       document.getElementById('sec_2fa').checked
+    };
+    localStorage.setItem('securityPrefs', JSON.stringify(prefs));
+    toast('Security preferences saved ✓');
+}
 
-    // ── 12. LOGOUT ─────────────────────────────────────────
-    function confirmLogout() {
-        if (confirm('Are you sure you want to log out and clear your session?')) logout();
-    }
+// ── SESSION / COPY ────────────────────────────────────────────
+function copyJWT() {
+    navigator.clipboard.writeText(officerToken)
+        .then(() => toast('Token copied to clipboard ✓'))
+        .catch(() => toast('Copy failed — use Ctrl+A in the textarea','warn'));
+}
 
-    function logout() {
-        localStorage.removeItem("officerToken");
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        sessionStorage.clear();
-        window.location.href = "login.html";
-    }
+// ── LOGOUT ────────────────────────────────────────────────────
+function confirmLogout() {
+    if (confirm('Are you sure you want to log out and clear your session?')) logout();
+}
+function logout() {
+    ['officerToken','accessToken','refreshToken'].forEach(k => localStorage.removeItem(k));
+    sessionStorage.clear();
+    window.location.href = 'login.html';
+}
 
-    // ── 13. HELPERS ────────────────────────────────────────
-    function showInlineAlert(id, msg, type) {
-        const el = document.getElementById(id);
-        el.className = `inline-alert ${type} ${msg ? 'show' : ''}`;
-        el.innerHTML = msg ? (type === 'success' ? '✅ ' : '❌ ') + msg : '';
-        if (msg) setTimeout(() => el.classList.remove('show'), 4000);
-    }
+// ── HELPERS ───────────────────────────────────────────────────
+function showInlineAlert(id, msg, type) {
+    const el = document.getElementById(id);
+    el.className = `inline-alert ${type} ${msg ? 'show' : ''}`;
+    el.innerHTML = msg ? (type==='success' ? '<i class="fas fa-check-circle"></i> ' : '<i class="fas fa-times-circle"></i> ') + msg : '';
+    if (msg) setTimeout(() => el.classList.remove('show'), 4500);
+}
 
-    function showToast(msg, type = 'success') {
-        const c = document.getElementById('toastContainer');
-        const t = document.createElement('div');
-        t.className = `toast ${type}`;
-        t.innerHTML = `<span>${type === 'success' ? '✅' : type === 'error' ? '❌' : '⚠️'}</span><span>${msg}</span>`;
-        c.appendChild(t); setTimeout(() => t.remove(), 3500);
-    }
-    </script>
+function toast(msg, type) {
+    const w = document.getElementById('toasts');
+    const d = document.createElement('div');
+    d.className = 'toast' + (type ? ' '+type : '');
+    d.innerHTML = `<span>${type==='err'?'❌':type==='warn'?'⚠️':'✅'}</span><span>${msg}</span>`;
+    w.appendChild(d);
+    setTimeout(() => { d.style.transition='opacity .3s'; d.style.opacity='0'; setTimeout(()=>d.remove(),300); }, 3500);
+}
+</script>
 </body>
 </html>
