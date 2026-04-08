@@ -796,129 +796,55 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// ── DATA ────────────────────────────────────────────────
-const departments = [
-    {
-        name: 'Public Works Department',
-        icon: 'fa-road',
-        head: 'Shri Rajesh Kumar, IAS',
-        email: 'pwd@gov.in',
-        phone: '1800-111-2222',
-        address: 'PWD Bhawan, New Delhi',
-        workingHours: 'Mon–Fri: 9:00 AM – 6:00 PM',
-        category: 'infrastructure'
-    },
-    {
-        name: 'Health & Family Welfare',
-        icon: 'fa-heartbeat',
-        head: 'Dr. Priya Sharma, IAS',
-        email: 'health@gov.in',
-        phone: '1800-111-3333',
-        address: 'Health Ministry, Nirman Bhawan',
-        workingHours: 'Mon–Sat: 8:00 AM – 8:00 PM',
-        category: 'welfare'
-    },
-    {
-        name: 'Education Department',
-        icon: 'fa-graduation-cap',
-        head: 'Prof. Anil Verma',
-        email: 'education@gov.in',
-        phone: '1800-111-4444',
-        address: 'Shiksha Bhawan, Delhi',
-        workingHours: 'Mon–Fri: 9:00 AM – 5:00 PM',
-        category: 'welfare'
-    },
-    {
-        name: 'Police Department',
-        icon: 'fa-shield-alt',
-        head: 'Shri Vikram Singh, IPS',
-        email: 'police@gov.in',
-        phone: '100 / 1800-111-5555',
-        address: 'Police Headquarters, State',
-        workingHours: '24/7 Emergency Services',
-        category: 'admin'
-    },
-    {
-        name: 'Revenue Department',
-        icon: 'fa-file-invoice-dollar',
-        head: 'Shri Ramesh Gupta, IAS',
-        email: 'revenue@gov.in',
-        phone: '1800-111-6666',
-        address: 'Revenue Bhawan, Civil Lines',
-        workingHours: 'Mon–Fri: 10:00 AM – 5:00 PM',
-        category: 'admin'
-    },
-    {
-        name: 'Electricity Board',
-        icon: 'fa-bolt',
-        head: 'Er. Suresh Reddy',
-        email: 'electricity@gov.in',
-        phone: '1800-111-7777',
-        address: 'Power House, Sector 12',
-        workingHours: '24/7 Complaint Centre',
-        category: 'utilities'
-    },
-    {
-        name: 'Water Supply Department',
-        icon: 'fa-tint',
-        head: 'Er. Meena Patel',
-        email: 'water@gov.in',
-        phone: '1800-111-8888',
-        address: 'Jal Bhawan, City Centre',
-        workingHours: 'Mon–Sat: 8:00 AM – 6:00 PM',
-        category: 'utilities'
-    },
-    {
-        name: 'Transport Department',
-        icon: 'fa-bus',
-        head: 'Shri Ashok Kumar, IAS',
-        email: 'transport@gov.in',
-        phone: '1800-111-9999',
-        address: 'Transport Nagar, Main Road',
-        workingHours: 'Mon–Fri: 9:00 AM – 5:00 PM',
-        category: 'infrastructure'
-    },
-    {
-        name: 'Social Welfare Department',
-        icon: 'fa-hands-helping',
-        head: 'Smt. Kavita Devi, IAS',
-        email: 'socialwelfare@gov.in',
-        phone: '1800-222-1111',
-        address: 'Welfare Bhawan, Gandhi Nagar',
-        workingHours: 'Mon–Fri: 9:00 AM – 6:00 PM',
-        category: 'welfare'
-    },
-    {
-        name: 'Agriculture Department',
-        icon: 'fa-leaf',
-        head: 'Dr. Mohan Singh',
-        email: 'agriculture@gov.in',
-        phone: '1800-222-2222',
-        address: 'Krishi Bhawan, Pusa Complex',
-        workingHours: 'Mon–Sat: 9:00 AM – 5:00 PM',
-        category: 'welfare'
-    },
-    {
-        name: 'Housing & Urban Development',
-        icon: 'fa-city',
-        head: 'Shri Deepak Joshi, IAS',
-        email: 'housing@gov.in',
-        phone: '1800-222-3333',
-        address: 'Urban Development Office',
-        workingHours: 'Mon–Fri: 10:00 AM – 6:00 PM',
-        category: 'infrastructure'
-    },
-    {
-        name: 'Labour & Employment',
-        icon: 'fa-briefcase',
-        head: 'Shri Vinod Sharma',
-        email: 'labour@gov.in',
-        phone: '1800-222-4444',
-        address: 'Shram Shakti Bhawan',
-        workingHours: 'Mon–Fri: 9:00 AM – 5:00 PM',
-        category: 'admin'
+const API_URL = "https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/departments";
+
+let departments = [];
+
+async function loadDepartments() {
+    try {
+        const res = await fetch(API_URL);
+
+        if (!res.ok) throw new Error("Failed to fetch");
+
+        const data = await res.json();
+
+        // Map DynamoDB data to your UI format
+        departments = data.map(d => ({
+            name: d.name || d.departmentName,
+            icon: d.icon || "fa-building",
+            head: d.head || "Not Assigned",
+            email: d.email || "N/A",
+            phone: d.phone || "N/A",
+            address: d.address || "N/A",
+            workingHours: d.workingHours || "N/A",
+            category: d.category || "admin"
+        }));
+
+        render();
+
+    } catch (err) {
+        console.error("Error loading departments:", err);
     }
-];
+}
+const STATS_API = "https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/public/stats";
+
+async function loadStats() {
+    try {
+        const res = await fetch(STATS_API);
+        const data = await res.json();
+
+        animateCount('s1', data.departments);      // departments
+        animateCount('s2', data.officers);         // officers
+
+        // OPTIONAL extra stats
+        console.log("Total:", data.totalComplaints);
+        console.log("Resolved:", data.resolved);
+        console.log("Pending:", data.pending);
+
+    } catch (err) {
+        console.error("Stats error:", err);
+    }
+}
 
 // ── CARD TEMPLATE ────────────────────────────────────────
 function createCard(dept, index) {
@@ -1029,8 +955,7 @@ function animateCount(id, target, suffix = '') {
         if (cur >= target) clearInterval(t);
     }, 20);
 }
-animateCount('s1', 12);
-animateCount('s2', 156);
+
 
 // ── LOADER ───────────────────────────────────────────────
 window.addEventListener('load', () => {
@@ -1073,7 +998,8 @@ window.addEventListener('scroll', () => scrollBtn.classList.toggle('show', scrol
 scrollBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
 
 // ── INIT ─────────────────────────────────────────────────
-render();
+loadDepartments();
+loadStats();
 </script>
 </body>
 </html>

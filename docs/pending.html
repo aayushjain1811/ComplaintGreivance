@@ -3,1023 +3,826 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pending Complaints - Digital Grievance Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <title>Pending Complaints – Digital Grievance Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #0A2E5C;
-            --primary-light: #1a4d8f;
-            --accent: #FF9933;
-            --accent-dark: #e68a2e;
-            --success: #138808;
-            --error: #C62828;
-            --warning: #F59E0B;
-            --white: #FFFFFF;
-            --bg: #F0F2F5;
-            --surface: #FFFFFF;
-            --border: #E2E8F0;
-            --text-muted: #64748B;
-            --sidebar-width: 260px;
-            --radius: 12px;
-            --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 4px 16px rgba(0,0,0,0.06);
-            --shadow-lg: 0 8px 32px rgba(0,0,0,0.12);
-        }
+    /* ══════════════════════════════════════
+       TOKENS
+    ══════════════════════════════════════ */
+    :root {
+        --primary:    #0A2558;
+        --primary-dk: #06173a;
+        --primary-lt: #1a3d7c;
+        --accent:     #E8842A;
+        --green:      #0e7c3b;
+        --white:      #fff;
+        --bg:         #F0F2F8;
+        --text:       #1c2b4a;
+        --muted:      #6b7a99;
+        --border:     #e2e8f0;
+        --shadow:     0 4px 24px rgba(10,37,88,.09);
+        --shadow-lg:  0 14px 44px rgba(10,37,88,.16);
+        --sw:         270px;
+        --sw-col:     70px;
+        --th:         66px;
+        --strip:      5px;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{font-family:'DM Sans','Noto Sans Devanagari',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: #1E293B; overflow-x: hidden; }
+    /* ── LOADER ─────────────────────────── */
+    #loader{position:fixed;inset:0;z-index:9999;background:var(--primary-dk);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .65s ease,visibility .65s ease}
+    #loader.gone{opacity:0;visibility:hidden;pointer-events:none}
+    .ckr{width:88px;height:88px;animation:spin-ck 1.2s linear infinite}
+    .ckr svg{width:100%;height:100%}
+    @keyframes spin-ck{to{transform:rotate(360deg)}}
+    .ldr-txt{margin-top:22px;color:rgba(255,255,255,.72);font-size:12px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;animation:ldr-p 1.5s ease-in-out infinite}
+    @keyframes ldr-p{0%,100%{opacity:1}50%{opacity:.3}}
 
-        /* ── TRICOLOR ── */
-        .tricolor { height: 4px; background: linear-gradient(to right, #FF9933 33.33%, #fff 33.33% 66.66%, #138808 66.66%); position: fixed; top: 0; left: 0; right: 0; z-index: 1100; }
+    /* ── TRICOLOR ───────────────────────── */
+    .tricolor{height:var(--strip);background:linear-gradient(to right,#FF9933 0%,#FF9933 33.33%,#fff 33.33%,#fff 66.66%,#138808 66.66%,#138808 100%);position:fixed;top:0;left:0;right:0;z-index:1200}
 
-        /* ── SIDEBAR ── */
-        .sidebar {
-            position: fixed; left: 0; top: 4px; bottom: 0; width: var(--sidebar-width);
-            background: var(--primary); color: var(--white);
-            padding: 0; z-index: 1000; overflow-y: auto; display: flex; flex-direction: column;
-        }
-        .sidebar-logo {
-            padding: 24px 20px 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.08);
-            display: flex; align-items: center; gap: 12px;
-        }
-        .logo-icon {
-            width: 40px; height: 40px; background: var(--accent); border-radius: 10px;
-            display: flex; align-items: center; justify-content: center; font-size: 18px; flex-shrink: 0;
-        }
-        .logo-text h4 { font-size: 15px; font-weight: 700; letter-spacing: -0.3px; }
-        .logo-text p { font-size: 11px; opacity: 0.6; margin-top: 2px; }
+    /* ── SIDEBAR ────────────────────────── */
+    .sidebar{position:fixed;top:var(--strip);left:0;bottom:0;width:var(--sw);background:linear-gradient(180deg,var(--primary-dk) 0%,var(--primary) 60%,#1a4d8f 100%);color:#fff;z-index:1000;display:flex;flex-direction:column;overflow:hidden;box-shadow:4px 0 28px rgba(6,23,58,.32);transition:width .34s cubic-bezier(.4,0,.2,1)}
+    .sidebar::after{content:'';position:absolute;inset:0;pointer-events:none;background:url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.022'%3E%3Cpath d='M20 18v-2h-2v2h-2v2h2v2h2v-2h2v-2h-2z'/%3E%3C/g%3E%3C/svg%3E")}
 
-        .role-chip {
-            margin: 16px 20px 8px;
-            padding: 8px 14px; border-radius: 8px;
-            font-size: 12px; font-weight: 600;
-            display: flex; align-items: center; gap: 8px;
-        }
-        .role-chip.level-1 { background: rgba(19,136,8,0.15); color: #4ade80; border: 1px solid rgba(74,222,128,0.2); }
-        .role-chip.level-2 { background: rgba(245,158,11,0.15); color: #fbbf24; border: 1px solid rgba(251,191,36,0.2); }
-        .role-chip.level-3 { background: rgba(239,68,68,0.15); color: #f87171; border: 1px solid rgba(248,113,113,0.2); }
+    body.sb-col .sidebar{width:var(--sw-col)}
+    body.sb-col .sb-head{padding:18px 0;justify-content:center;gap:0}
+    body.sb-col .sb-head-text{display:none}
+    body.sb-col .sb-foot{padding:14px 0;justify-content:center;gap:0}
+    body.sb-col .u-info{display:none}
+    body.sb-col .nav-section-label{display:none}
+    body.sb-col .sidebar-label{display:none}
+    body.sb-col .badge-count{display:none}
+    body.sb-col .role-chip{display:none}
+    body.sb-col .nav-item-inner{padding:13px 0;justify-content:center;gap:0}
+    body.sb-col .nav-item{position:relative}
+    body.sb-col .nav-item-inner::after{content:attr(data-tip);position:fixed;left:calc(var(--sw-col)+12px);background:var(--primary-dk);color:#fff;font-size:12px;font-weight:600;padding:5px 12px;border-radius:7px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .18s;z-index:2000;box-shadow:0 4px 14px rgba(0,0,0,.28);transform:translateY(-50%)}
+    body.sb-col .nav-item:hover .nav-item-inner::after{opacity:1}
 
-        .nav-section { padding: 0 12px; margin-bottom: 8px; }
-        .nav-label { font-size: 10px; font-weight: 700; letter-spacing: 1.2px; color: rgba(255,255,255,0.35); padding: 12px 8px 6px; text-transform: uppercase; }
-        .nav-item {
-            display: flex; align-items: center; gap: 12px;
-            padding: 10px 12px; border-radius: 8px; color: rgba(255,255,255,0.75);
-            text-decoration: none; font-size: 14px; font-weight: 500;
-            transition: all 0.2s; margin-bottom: 2px; position: relative;
-        }
-        .nav-item:hover { background: rgba(255,255,255,0.08); color: var(--white); }
-        .nav-item.active { background: rgba(255,153,51,0.2); color: var(--accent); }
-        .nav-item.active::before { content: ''; position: absolute; left: 0; top: 20%; bottom: 20%; width: 3px; background: var(--accent); border-radius: 0 3px 3px 0; }
-        .nav-item i { width: 18px; text-align: center; font-size: 14px; }
-        .nav-badge { margin-left: auto; background: var(--accent); color: var(--white); font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 20px; }
+    @media(max-width:991px){.sidebar{transform:translateX(-100%);width:var(--sw) !important;transition:transform .32s cubic-bezier(.4,0,.2,1)}body.sb-open .sidebar{transform:translateX(0)}body.sb-open .sb-backdrop{display:block}.main{margin-left:0 !important}}
+    .sb-backdrop{display:none;position:fixed;inset:0;z-index:999;background:rgba(6,23,58,.52);backdrop-filter:blur(2px);animation:bdfade .25s ease}
+    @keyframes bdfade{from{opacity:0}to{opacity:1}}
 
-        .sidebar-footer {
-            margin-top: auto; padding: 16px 20px;
-            border-top: 1px solid rgba(255,255,255,0.08);
-        }
-        .user-card { display: flex; align-items: center; gap: 12px; }
-        .user-avatar {
-            width: 36px; height: 36px; border-radius: 10px;
-            background: var(--accent); display: flex; align-items: center;
-            justify-content: center; font-size: 15px; font-weight: 700; flex-shrink: 0;
-        }
-        .user-name { font-size: 13px; font-weight: 600; }
-        .user-dept { font-size: 11px; color: rgba(255,255,255,0.5); margin-top: 1px; }
+    .sb-tog{position:fixed;top:calc(var(--strip) + var(--th)/2 - 13px);left:calc(var(--sw) - 13px);width:26px;height:26px;border-radius:50%;background:var(--accent);border:2.5px solid var(--bg);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:1100;box-shadow:0 2px 10px rgba(232,132,42,.5);transition:left .34s cubic-bezier(.4,0,.2,1),transform .2s}
+    body.sb-col .sb-tog{left:calc(var(--sw-col) - 13px)}
+    .sb-tog:hover{transform:scale(1.18)}
+    @media(max-width:991px){.sb-tog{display:none}}
 
-        /* ── MAIN ── */
-        .main { margin-left: var(--sidebar-width); padding: 28px; min-height: 100vh; margin-top: 4px; }
+    .mob-ham{display:none;position:fixed;top:calc(var(--strip) + var(--th)/2 - 18px);left:14px;width:36px;height:36px;border-radius:8px;background:var(--primary);border:none;color:#fff;font-size:15px;cursor:pointer;z-index:1100;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(10,37,88,.28);transition:background .2s}
+    .mob-ham:hover{background:var(--primary-lt)}
+    @media(max-width:991px){.mob-ham{display:flex}}
 
-        /* ── TOPBAR ── */
-        .topbar {
-            background: var(--surface); border-radius: var(--radius);
-            box-shadow: var(--shadow); padding: 20px 24px;
-            margin-bottom: 24px; display: flex; justify-content: space-between; align-items: center;
-        }
-        .page-title h2 { font-size: 22px; font-weight: 700; color: var(--primary); letter-spacing: -0.5px; }
-        .page-title p { font-size: 13px; color: var(--text-muted); margin-top: 3px; }
-        .topbar-actions { display: flex; gap: 10px; }
-        .btn { padding: 9px 18px; border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; transition: all 0.2s; display: flex; align-items: center; gap: 7px; font-family: inherit; }
-        .btn-primary { background: var(--accent); color: var(--white); }
-        .btn-primary:hover { background: var(--accent-dark); transform: translateY(-1px); box-shadow: 0 4px 12px rgba(255,153,51,0.35); }
-        .btn-ghost { background: var(--bg); color: var(--primary); }
-        .btn-ghost:hover { background: #e2e8f0; }
-        .btn-danger { background: #fee2e2; color: var(--error); }
-        .btn-danger:hover { background: #fecaca; }
+    .sb-head{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:12px;flex-shrink:0;min-height:70px;position:relative;z-index:1}
+    .sb-logo{width:36px;height:36px;flex-shrink:0;background:rgba(232,132,42,.16);border:1px solid rgba(232,132,42,.32);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--accent)}
+    .sb-head-text h4{font-size:13.5px;font-weight:700;line-height:1.2;white-space:nowrap}
+    .sb-head-text p{font-size:10px;opacity:.55;margin:0;white-space:nowrap}
 
-        /* ── ERROR BANNER ── */
-        .error-banner {
-            background: #fff1f2; border: 1px solid #fecdd3; color: var(--error);
-            padding: 12px 16px; border-radius: 10px; margin-bottom: 20px;
-            display: none; align-items: center; gap: 10px; font-size: 13px;
-        }
-        .error-banner.show { display: flex; }
+    /* role chip */
+    .role-chip{margin:10px 12px 4px;padding:8px 13px;border-radius:9px;font-size:11.5px;font-weight:700;display:flex;align-items:center;gap:8px;position:relative;z-index:1}
+    .role-chip.l1{background:rgba(19,136,8,.15);color:#4ade80;border:1px solid rgba(74,222,128,.2)}
+    .role-chip.l2{background:rgba(232,132,42,.15);color:#fbbf24;border:1px solid rgba(251,191,36,.2)}
+    .role-chip.l3{background:rgba(239,68,68,.15);color:#f87171;border:1px solid rgba(248,113,113,.2)}
 
-        /* ── ROLE NOTICE ── */
-        .role-notice {
-            background: linear-gradient(135deg, #eff6ff, #f0fdf4);
-            border: 1px solid #bfdbfe; border-radius: 10px;
-            padding: 14px 18px; margin-bottom: 20px;
-            display: flex; align-items: flex-start; gap: 12px;
-            font-size: 13px; line-height: 1.6;
-        }
-        .role-notice i { color: #3b82f6; font-size: 18px; margin-top: 1px; flex-shrink: 0; }
-        .role-notice strong { color: var(--primary); }
+    .sb-nav{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 0;position:relative;z-index:1}
+    .sb-nav::-webkit-scrollbar{width:2px}
+    .sb-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:2px}
+    .nav-section-label{display:block;font-size:9px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:rgba(255,255,255,.3);padding:14px 20px 5px;white-space:nowrap;overflow:hidden}
+    .nav-item{display:block;position:relative}
+    .nav-item-inner{display:flex;flex-direction:row;align-items:center;gap:12px;padding:11px 20px;width:100%;color:rgba(255,255,255,.78);text-decoration:none;font-size:13.5px;font-weight:500;white-space:nowrap;position:relative;overflow:hidden;transition:background .22s,color .22s}
+    .nav-item-inner::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);transform:scaleY(0);transition:transform .22s;border-radius:0 2px 2px 0}
+    .nav-item-inner:hover,.nav-item-inner.active{color:#fff;background:rgba(255,255,255,.09)}
+    .nav-item-inner.active::before,.nav-item-inner:hover::before{transform:scaleY(1)}
+    .nav-item-inner i{width:20px;min-width:20px;text-align:center;font-size:15px;flex-shrink:0;transition:color .22s}
+    .nav-item-inner.active i{color:var(--accent)}
+    .sidebar-label{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .badge-count{flex-shrink:0;background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
+    .badge-count.red{background:#c62828}
 
-        /* ── STATS ── */
-        .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-        .stat-card {
-            background: var(--surface); border-radius: var(--radius);
-            box-shadow: var(--shadow); padding: 18px 20px;
-            transition: transform 0.2s, box-shadow 0.2s;
-            display: flex; align-items: center; gap: 14px;
-        }
-        .stat-card:hover { transform: translateY(-3px); box-shadow: var(--shadow-lg); }
-        .stat-icon-wrap {
-            width: 44px; height: 44px; border-radius: 12px;
-            display: flex; align-items: center; justify-content: center;
-            font-size: 18px; flex-shrink: 0;
-        }
-        .si-orange { background: #fff3e0; color: var(--accent); }
-        .si-yellow { background: #fef9c3; color: #ca8a04; }
-        .si-blue   { background: #eff6ff; color: #3b82f6; }
-        .si-red    { background: #fee2e2; color: var(--error); }
-        .si-warn   { background: #fff7ed; color: #ea580c; }
-        .stat-val { font-size: 26px; font-weight: 700; color: var(--primary); line-height: 1; }
-        .stat-lbl { font-size: 12px; color: var(--text-muted); margin-top: 3px; font-weight: 500; }
+    .sb-foot{padding:13px 16px;border-top:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px;flex-shrink:0;position:relative;z-index:1}
+    .u-av{width:36px;height:36px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--accent),#c96818);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700}
+    .u-name{font-size:12.5px;font-weight:700;white-space:nowrap}
+    .u-role{font-size:10px;opacity:.55;white-space:nowrap}
 
-        /* ── FILTERS ── */
-        .filter-bar {
-            background: var(--surface); border-radius: var(--radius);
-            box-shadow: var(--shadow); padding: 18px 20px; margin-bottom: 20px;
-        }
-        .filter-row { display: grid; grid-template-columns: 1fr 1fr 1fr 2fr auto; gap: 12px; align-items: end; }
-        .fg label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; display: block; margin-bottom: 6px; }
-        .fg select, .fg input {
-            width: 100%; padding: 9px 12px; border: 1.5px solid var(--border);
-            border-radius: 8px; font-size: 13px; font-family: inherit;
-            background: var(--bg); color: #1E293B; transition: border-color 0.2s;
-            appearance: none;
-        }
-        .fg select:focus, .fg input:focus { outline: none; border-color: var(--primary); background: var(--white); }
-        .filter-clear { padding: 9px 14px; border: 1.5px solid var(--border); background: var(--white); border-radius: 8px; cursor: pointer; font-size: 13px; color: var(--text-muted); transition: all 0.2s; font-family: inherit; }
-        .filter-clear:hover { border-color: var(--error); color: var(--error); }
+    /* ── MAIN ───────────────────────────── */
+    .main{margin-left:var(--sw);margin-top:var(--strip);min-height:calc(100vh - var(--strip));transition:margin-left .34s cubic-bezier(.4,0,.2,1)}
+    body.sb-col .main{margin-left:var(--sw-col)}
 
-        /* ── TABLE ── */
-        .table-card {
-            background: var(--surface); border-radius: var(--radius);
-            box-shadow: var(--shadow); overflow: hidden; margin-bottom: 24px;
-        }
-        .table-card-header {
-            padding: 18px 22px; border-bottom: 1px solid var(--border);
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .table-card-header h5 { font-size: 16px; font-weight: 700; color: var(--primary); }
-        .count-chip { background: #e0e7ff; color: #4338ca; font-size: 12px; font-weight: 700; padding: 3px 10px; border-radius: 20px; }
-        table { width: 100%; border-collapse: collapse; }
-        thead tr { background: #F8FAFC; }
-        th { padding: 11px 14px; text-align: left; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; white-space: nowrap; border-bottom: 1px solid var(--border); }
-        td { padding: 13px 14px; font-size: 13px; border-bottom: 1px solid #F1F5F9; vertical-align: middle; }
-        tbody tr:hover { background: #F8FAFC; }
-        tbody tr:last-child td { border-bottom: none; }
+    /* ── TOPBAR ─────────────────────────── */
+    .topbar{background:#fff;padding:0 26px;height:var(--th);display:flex;align-items:center;justify-content:space-between;gap:14px;box-shadow:0 2px 18px rgba(10,37,88,.07);border-bottom:1px solid var(--border);position:sticky;top:var(--strip);z-index:900}
+    @media(max-width:991px){.topbar{padding-left:62px}}
+    .pg-title{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--primary);line-height:1.1}
+    .pg-sub{font-size:11.5px;color:var(--muted);margin-top:2px}
+    .tb-right{display:flex;align-items:center;gap:9px;flex-shrink:0}
+    .btn-t{padding:8px 17px;border:none;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px;font-family:inherit;transition:all .22s}
+    .btn-pri{background:var(--accent);color:#fff;box-shadow:0 3px 14px rgba(232,132,42,.32)}
+    .btn-pri:hover{background:#d07020;transform:translateY(-2px);box-shadow:0 7px 22px rgba(232,132,42,.42)}
+    .btn-sec{background:var(--bg);color:var(--primary);border:1px solid var(--border)}
+    .btn-sec:hover{background:#e0e5f4}
+    .btn-warn{background:#fff7ed;color:#c2410c;border:1px solid #fed7aa}
+    .btn-warn:hover{background:#ffedd5}
+    @media(max-width:575px){.btn-lbl{display:none}}
 
-        .id-cell { font-family: 'DM Mono', monospace; font-size: 12px; font-weight: 500; color: var(--primary); }
-        .name-cell { font-weight: 600; }
-        .mobile-cell { font-family: 'DM Mono', monospace; font-size: 12px; }
+    /* ── CONTENT ────────────────────────── */
+    .cwrap{padding:22px 26px}
+    @media(max-width:575px){.cwrap{padding:14px 12px}}
 
-        /* badges */
-        .badge { display: inline-flex; align-items: center; gap: 4px; padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; white-space: nowrap; }
-        .badge-submitted   { background: #e0f2fe; color: #0369a1; }
-        .badge-under-review{ background: #fef9c3; color: #854d0e; }
-        .badge-in-progress { background: #dbeafe; color: #1d4ed8; }
-        .badge-low      { background: #f0fdf4; color: #15803d; }
-        .badge-medium   { background: #fff7ed; color: #c2410c; }
-        .badge-high     { background: #fef2f2; color: #b91c1c; }
-        .badge-critical { background: #7f1d1d; color: #fef2f2; }
+    /* ── ERR BANNER ─────────────────────── */
+    .err-banner{display:none;align-items:center;gap:10px;padding:11px 16px;border-radius:10px;background:#ffebee;border:1px solid #ef9a9a;color:#c62828;font-size:13px;margin-bottom:18px}
+    .err-banner.show{display:flex}
 
-        .escalation-flag {
-            display: inline-flex; align-items: center; gap: 5px;
-            font-size: 11px; font-weight: 700; color: #dc2626;
-            background: #fee2e2; padding: 3px 8px; border-radius: 6px;
-        }
-        .age-cell { font-size: 12px; color: var(--text-muted); }
-        .age-cell.urgent { color: var(--error); font-weight: 700; }
+    /* ── ROLE NOTICE ────────────────────── */
+    .role-notice{background:linear-gradient(135deg,#eff6ff,#f0fdf4);border:1px solid #bfdbfe;border-radius:11px;padding:13px 18px;margin-bottom:18px;display:flex;align-items:flex-start;gap:12px;font-size:13px;line-height:1.6;animation:rise .5s ease both}
+    .role-notice i{color:#3b82f6;font-size:17px;margin-top:2px;flex-shrink:0}
+    .role-notice strong{color:var(--primary)}
+    @keyframes rise{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:translateY(0)}}
 
-        .actions { display: flex; gap: 5px; }
-        .icon-btn {
-            width: 30px; height: 30px; border: none; border-radius: 7px;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.15s; font-size: 12px;
-        }
-        .ib-view    { background: #dbeafe; color: #1d4ed8; }
-        .ib-view:hover { background: #bfdbfe; }
-        .ib-assign  { background: #fff3e0; color: #c05621; }
-        .ib-assign:hover { background: #fed7aa; }
-        .ib-resolve { background: #dcfce7; color: #15803d; }
-        .ib-resolve:hover { background: #bbf7d0; }
-        .ib-status  { background: #f3e8ff; color: #7e22ce; }
-        .ib-status:hover { background: #e9d5ff; }
+    /* ── STATS ──────────────────────────── */
+    .stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px}
+    @media(max-width:1200px){.stats-row{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:768px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:480px){.stats-row{grid-template-columns:1fr}}
 
-        /* loading */
-        .loading { display: flex; justify-content: center; align-items: center; padding: 60px; gap: 12px; color: var(--text-muted); font-size: 14px; }
-        .spinner { width: 22px; height: 22px; border: 3px solid var(--border); border-top-color: var(--primary); border-radius: 50%; animation: spin 0.7s linear infinite; }
-        @keyframes spin { to { transform: rotate(360deg); } }
-        .empty-state { text-align: center; padding: 60px 20px; color: var(--text-muted); }
-        .empty-state i { font-size: 40px; margin-bottom: 12px; opacity: 0.3; }
-        .empty-state p { font-size: 14px; }
+    .sc{background:#fff;border-radius:14px;padding:18px 16px;box-shadow:var(--shadow);border:1px solid transparent;position:relative;overflow:hidden;transition:all .28s;animation:rise .5s ease both;display:flex;align-items:center;gap:14px}
+    .sc:nth-child(1){animation-delay:.04s}.sc:nth-child(2){animation-delay:.1s}.sc:nth-child(3){animation-delay:.16s}.sc:nth-child(4){animation-delay:.22s}.sc:nth-child(5){animation-delay:.28s}
+    .sc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;transform:scaleX(0);transform-origin:left;transition:transform .35s ease}
+    .sc:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:var(--border)}
+    .sc:hover::after{transform:scaleX(1)}
+    .sc.or::after{background:var(--accent)}.sc.ye::after{background:#ca8a04}.sc.bl::after{background:#0d6efd}.sc.rd::after{background:#c62828}.sc.pu::after{background:#7c3aed}
+    .si{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;flex-shrink:0}
+    .si.or{background:linear-gradient(135deg,var(--accent),#c96818);box-shadow:0 5px 14px rgba(232,132,42,.28)}
+    .si.ye{background:linear-gradient(135deg,#ca8a04,#a16207);box-shadow:0 5px 14px rgba(202,138,4,.28)}
+    .si.bl{background:linear-gradient(135deg,#0d6efd,#0b5ed7);box-shadow:0 5px 14px rgba(13,110,253,.28)}
+    .si.rd{background:linear-gradient(135deg,#c62828,#8b0000);box-shadow:0 5px 14px rgba(198,40,40,.28)}
+    .si.pu{background:linear-gradient(135deg,#7c3aed,#6d28d9);box-shadow:0 5px 14px rgba(124,58,237,.28)}
+    .sv{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--primary);line-height:1;margin-bottom:3px}
+    .sl{font-size:12px;color:var(--muted);font-weight:500}
 
-        /* ── MODALS ── */
-        .overlay {
-            position: fixed; inset: 0; background: rgba(15,23,42,0.6);
-            backdrop-filter: blur(3px); z-index: 2000;
-            display: none; align-items: center; justify-content: center; padding: 20px;
-        }
-        .overlay.open { display: flex; }
-        .modal {
-            background: var(--white); border-radius: 16px; width: 100%;
-            max-height: 88vh; overflow-y: auto; box-shadow: 0 24px 80px rgba(0,0,0,0.25);
-            animation: mIn 0.22s ease;
-        }
-        @keyframes mIn { from { opacity:0; transform: scale(0.96) translateY(-8px); } to { opacity:1; transform: scale(1) translateY(0); } }
-        .modal-head {
-            padding: 20px 24px; background: var(--primary); color: var(--white);
-            border-radius: 16px 16px 0 0; display: flex; justify-content: space-between; align-items: center;
-        }
-        .modal-head h5 { font-size: 16px; font-weight: 700; }
-        .modal-x { background: none; border: none; color: rgba(255,255,255,0.7); font-size: 22px; cursor: pointer; line-height: 1; transition: color 0.2s; }
-        .modal-x:hover { color: var(--white); }
-        .modal-body { padding: 24px; }
-        .modal-foot { padding: 14px 24px; border-top: 1px solid var(--border); display: flex; gap: 10px; justify-content: flex-end; }
+    /* ── FILTER CARD ────────────────────── */
+    .fcard{background:#fff;border-radius:14px;padding:18px 22px;box-shadow:var(--shadow);margin-bottom:18px;animation:rise .5s .28s ease both}
+    .fcard-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .fcard-head h6{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin:0}
+    .frow{display:grid;grid-template-columns:1fr 1fr 1fr 2fr auto;gap:12px;align-items:end}
+    @media(max-width:900px){.frow{grid-template-columns:1fr 1fr}}
+    @media(max-width:600px){.frow{grid-template-columns:1fr}}
+    .fg label{font-size:10.5px;font-weight:700;color:var(--muted);margin-bottom:5px;display:block;text-transform:uppercase;letter-spacing:.5px}
+    .fg select,.fg input{width:100%;padding:8px 11px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;color:var(--text);background:#fff;-webkit-appearance:none;appearance:none;transition:border-color .2s,box-shadow .2s;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b7a99'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+    .fg input{background-image:none;padding-right:11px}
+    .fg select:focus,.fg input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(10,37,88,.07)}
+    .btn-clear{padding:8px 13px;border:1.5px solid var(--border);background:#fff;border-radius:8px;cursor:pointer;font-size:13px;color:var(--muted);transition:all .2s;font-family:inherit}
+    .btn-clear:hover{border-color:#c62828;color:#c62828}
 
-        /* view modal */
-        .view-modal { max-width: 680px; }
-        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 20px; }
-        .di label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.7px; display: block; margin-bottom: 4px; }
-        .di span { font-size: 13px; font-weight: 500; color: #1E293B; }
-        .desc-box { background: #F8FAFC; border-radius: 10px; padding: 14px; font-size: 13px; line-height: 1.7; color: #475569; border-left: 3px solid var(--accent); }
+    /* ── TABLE CARD ─────────────────────── */
+    .tcard{background:#fff;border-radius:14px;box-shadow:var(--shadow);overflow:hidden;animation:rise .5s .36s ease both}
+    .tcard-head{padding:17px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+    .tcard-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--primary)}
+    .tcard-meta{display:flex;align-items:center;gap:8px}
+    .cnt-pill{background:#e0e7ff;color:#4338ca;font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px}
 
-        /* status modal */
-        .status-modal { max-width: 440px; }
-        .status-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 18px; }
-        .s-opt {
-            padding: 13px 10px; border: 2px solid var(--border); border-radius: 10px;
-            cursor: pointer; text-align: center; font-size: 12px; font-weight: 600;
-            transition: all 0.15s; color: #475569;
-        }
-        .s-opt:hover { border-color: var(--primary); background: #f0f4ff; color: var(--primary); }
-        .s-opt.sel { border-color: var(--primary); background: var(--primary); color: var(--white); }
-        .remarks-area {
-            width: 100%; padding: 10px 12px; border: 1.5px solid var(--border); border-radius: 8px;
-            font-size: 13px; resize: vertical; min-height: 80px; font-family: inherit;
-            transition: border-color 0.2s;
-        }
-        .remarks-area:focus { outline: none; border-color: var(--primary); }
+    .tbl-wrap{overflow-x:auto}
+    .ctbl{width:100%;border-collapse:collapse}
+    .ctbl thead tr{background:#f8fafc}
+    .ctbl th{padding:11px 13px;text-align:left;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;white-space:nowrap;border-bottom:1px solid var(--border)}
+    .ctbl td{padding:12px 13px;font-size:13px;border-bottom:1px solid #f1f5f9;vertical-align:middle}
+    .ctbl tr:hover td{background:#f8fafc}
+    .ctbl tr:last-child td{border-bottom:none}
 
-        /* assign modal */
-        .assign-modal { max-width: 420px; }
-        .officer-list { display: flex; flex-direction: column; gap: 8px; max-height: 300px; overflow-y: auto; margin-bottom: 18px; }
-        .officer-card {
-            display: flex; align-items: center; gap: 12px;
-            padding: 12px 14px; border: 2px solid var(--border); border-radius: 10px;
-            cursor: pointer; transition: all 0.15s;
-        }
-        .officer-card:hover { border-color: var(--accent); background: #fffaf5; }
-        .officer-card.sel { border-color: var(--accent); background: #fff3e0; }
-        .off-av { width: 36px; height: 36px; border-radius: 10px; background: var(--primary); color: var(--white); display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px; flex-shrink: 0; }
-        .off-name { font-size: 13px; font-weight: 600; }
-        .off-dept { font-size: 11px; color: var(--text-muted); }
-        .off-badge { margin-left: auto; font-size: 10px; font-weight: 700; padding: 2px 8px; border-radius: 20px; background: #e0f2fe; color: #0369a1; }
+    .id-cell{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:var(--primary)}
+    .nm-cell{font-weight:600;color:var(--text)}
+    .mob-cell{font-family:'DM Mono',monospace;font-size:11.5px;color:var(--muted)}
 
-        /* toast */
-        .toast-wrap { position: fixed; top: 20px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 8px; }
-        .toast {
-            background: var(--white); border-radius: 10px; padding: 13px 16px;
-            box-shadow: 0 4px 24px rgba(0,0,0,0.12); display: flex; align-items: center;
-            gap: 10px; font-size: 13px; min-width: 270px; font-weight: 500;
-            animation: tIn 0.25s ease; border-left: 4px solid var(--success);
-        }
-        .toast.warn  { border-left-color: var(--warning); }
-        .toast.err   { border-left-color: var(--error); }
-        @keyframes tIn { from { opacity:0; transform: translateX(30px); } to { opacity:1; transform:translateX(0); } }
+    /* badges */
+    .badge{display:inline-block;padding:4px 11px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
+    .bs-submitted{background:#e0f7fa;color:#006064}
+    .bs-under-review{background:#fff8e1;color:#f57f17}
+    .bs-in-progress{background:#e8eaf6;color:#283593}
+    .pb{display:inline-block;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700}
+    .pb-low{background:#e8f5e9;color:#2e7d32}.pb-medium{background:#fff3e0;color:#e65100}
+    .pb-high{background:#ffebee;color:#c62828}.pb-critical{background:#b71c1c;color:#fff}
+    .dept-chip{font-size:11.5px;background:#eef1fb;padding:3px 9px;border-radius:6px;color:var(--primary);font-weight:600}
 
-        /* responsive */
-        @media (max-width: 1100px) { .stats-row { grid-template-columns: repeat(2, 1fr); } }
-        @media (max-width: 992px)  { .sidebar { transform: translateX(-100%); } .main { margin-left: 0; } }
-        @media (max-width: 768px)  { .filter-row { grid-template-columns: 1fr; } .detail-grid { grid-template-columns: 1fr; } }
+    .esc-flag{display:inline-flex;align-items:center;gap:5px;font-size:11px;font-weight:700;color:#dc2626;background:#fee2e2;padding:3px 9px;border-radius:7px}
+    .age-cell{font-size:12px;color:var(--muted)}
+    .age-cell.urgent{color:#c62828;font-weight:700}
+
+    /* action btns */
+    .abtns{display:flex;gap:5px}
+    .abtn{width:29px;height:29px;border:none;border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;transition:all .18s}
+    .abtn-view{background:#dbeafe;color:#1d4ed8}.abtn-view:hover{background:#bfdbfe;transform:scale(1.1)}
+    .abtn-assign{background:#fff3e0;color:#c05621}.abtn-assign:hover{background:#fed7aa;transform:scale(1.1)}
+    .abtn-status{background:#f3e8ff;color:#7e22ce}.abtn-status:hover{background:#e9d5ff;transform:scale(1.1)}
+    .abtn-resolve{background:#dcfce7;color:#15803d}.abtn-resolve:hover{background:#bbf7d0;transform:scale(1.1)}
+
+    /* loading */
+    .ld-row{text-align:center;padding:52px}
+    .spin-r{width:34px;height:34px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:sp .7s linear infinite;margin:0 auto 12px}
+    @keyframes sp{to{transform:rotate(360deg)}}
+    .ld-txt{font-size:13px;color:var(--muted)}
+    .empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
+    .empty-state i{font-size:40px;opacity:.25;display:block;margin-bottom:12px}
+
+    /* ── MODALS ─────────────────────────── */
+    .moverlay{position:fixed;inset:0;background:rgba(6,23,58,.52);backdrop-filter:blur(3px);z-index:2000;display:none;align-items:center;justify-content:center;padding:18px}
+    .moverlay.open{display:flex}
+    .mbox{background:#fff;border-radius:16px;width:100%;max-height:92vh;overflow-y:auto;box-shadow:0 24px 64px rgba(6,23,58,.38);animation:min-a .28s ease}
+    @keyframes min-a{from{opacity:0;transform:scale(.94) translateY(-14px)}to{opacity:1;transform:scale(1) translateY(0)}}
+    .mbox.sm{max-width:460px}.mbox.md{max-width:700px}
+    .mhdr{background:linear-gradient(135deg,var(--primary-dk),var(--primary));color:#fff;padding:19px 24px;border-radius:16px 16px 0 0;display:flex;align-items:center;justify-content:space-between}
+    .mhdr h5{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;margin:0}
+    .mclose{background:none;border:none;color:rgba(255,255,255,.8);font-size:21px;cursor:pointer;line-height:1;transition:color .2s}
+    .mclose:hover{color:#fff}
+    .mbody{padding:24px}.mfoot{padding:13px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end}
+
+    /* view modal */
+    .dgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+    @media(max-width:520px){.dgrid{grid-template-columns:1fr}}
+    .di label{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px}
+    .di span{font-size:13.5px;color:var(--text);font-weight:500}
+    .desc-box{background:var(--bg);border-radius:10px;padding:14px;font-size:13.5px;line-height:1.7;color:var(--muted);border-left:4px solid var(--accent)}
+
+    /* status modal */
+    .status-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px}
+    @media(max-width:400px){.status-grid{grid-template-columns:1fr}}
+    .sopt{padding:13px 10px;border:2px solid var(--border);border-radius:9px;cursor:pointer;text-align:center;font-size:12px;font-weight:600;transition:all .15s;color:var(--muted);font-family:inherit}
+    .sopt:hover{border-color:var(--primary);background:#f0f4ff;color:var(--primary)}
+    .sopt.sel{border-color:var(--primary);background:var(--primary);color:#fff}
+    .rmk-box{width:100%;padding:10px 12px;border:1.5px solid var(--border);border-radius:8px;font-size:13.5px;resize:vertical;min-height:80px;font-family:inherit;color:var(--text);transition:border-color .2s}
+    .rmk-box:focus{outline:none;border-color:var(--primary)}
+
+    /* assign modal */
+    .off-list{display:flex;flex-direction:column;gap:8px;max-height:300px;overflow-y:auto;margin-bottom:18px}
+    .off-card{display:flex;align-items:center;gap:12px;padding:12px 14px;border:2px solid var(--border);border-radius:10px;cursor:pointer;transition:all .15s}
+    .off-card:hover{border-color:var(--accent);background:#fffaf5}
+    .off-card.sel{border-color:var(--accent);background:#fff3e0}
+    .off-av{width:36px;height:36px;border-radius:10px;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;flex-shrink:0}
+    .off-name{font-size:13.5px;font-weight:700;color:var(--text)}
+    .off-dept{font-size:11.5px;color:var(--muted)}
+    .off-load{margin-left:auto;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:20px;background:#e0f2fe;color:#0369a1}
+
+    /* ── TOAST ──────────────────────────── */
+    .tcont{position:fixed;top:22px;right:22px;z-index:3000;display:flex;flex-direction:column;gap:9px;pointer-events:none}
+    .toast{background:#fff;border-radius:10px;padding:12px 17px;display:flex;align-items:center;gap:10px;font-size:13px;min-width:260px;box-shadow:0 6px 24px rgba(10,37,88,.16);animation:tin .3s ease;border-left:4px solid #4caf50;pointer-events:auto}
+    .toast.warning{border-left-color:var(--accent)}.toast.error{border-left-color:#c62828}
+    @keyframes tin{from{opacity:0;transform:translateX(34px)}to{opacity:1;transform:translateX(0)}}
+
+    .row-anim{animation:rf .3s ease both}
+    @keyframes rf{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
     </style>
 </head>
 <body>
+
 <div class="tricolor"></div>
-<div class="toast-wrap" id="toasts"></div>
 
-<!-- SIDEBAR -->
-<aside class="sidebar">
-    <div class="sidebar-logo">
-        <div class="logo-icon"><i class="fas fa-landmark" style="color:#fff"></i></div>
-        <div class="logo-text">
-            <h4>Gov Portal</h4>
-            <p>Grievance Management</p>
-        </div>
+<!-- LOADER -->
+<div id="loader">
+    <div class="ckr">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="46" stroke="#FF9933" stroke-width="3.5" fill="none"/>
+            <circle cx="50" cy="50" r="8" fill="#138808"/>
+            <g stroke="#fff" stroke-width="1.6" opacity=".9">
+                <line x1="50" y1="50" x2="50" y2="6"/><line x1="50" y1="50" x2="66" y2="9"/>
+                <line x1="50" y1="50" x2="79" y2="21"/><line x1="50" y1="50" x2="86" y2="34"/>
+                <line x1="50" y1="50" x2="89" y2="50"/><line x1="50" y1="50" x2="86" y2="66"/>
+                <line x1="50" y1="50" x2="79" y2="79"/><line x1="50" y1="50" x2="66" y2="91"/>
+                <line x1="50" y1="50" x2="50" y2="94"/><line x1="50" y1="50" x2="34" y2="91"/>
+                <line x1="50" y1="50" x2="21" y2="79"/><line x1="50" y1="50" x2="14" y2="66"/>
+                <line x1="50" y1="50" x2="11" y2="50"/><line x1="50" y1="50" x2="14" y2="34"/>
+                <line x1="50" y1="50" x2="21" y2="21"/><line x1="50" y1="50" x2="34" y2="9"/>
+                <line x1="50" y1="50" x2="58" y2="7.5"/><line x1="50" y1="50" x2="73" y2="14"/>
+                <line x1="50" y1="50" x2="83" y2="27"/><line x1="50" y1="50" x2="88" y2="42"/>
+                <line x1="50" y1="50" x2="88" y2="58"/><line x1="50" y1="50" x2="83" y2="73"/>
+                <line x1="50" y1="50" x2="73" y2="86"/><line x1="50" y1="50" x2="58" y2="92.5"/>
+            </g>
+            <circle cx="50" cy="50" r="3.5" fill="#FF9933"/>
+        </svg>
+    </div>
+    <p class="ldr-txt">Loading Portal…</p>
+</div>
+
+<div class="tcont" id="tc"></div>
+<div class="sb-backdrop" id="sbd" onclick="closeMob()"></div>
+<button class="sb-tog" id="sbTog"><i class="fas fa-chevron-left" id="togIco"></i></button>
+<button class="mob-ham" onclick="openMob()"><i class="fas fa-bars"></i></button>
+
+<!-- ════════ SIDEBAR ════════ -->
+<aside class="sidebar" id="sidebar">
+    <div class="sb-head">
+        <div class="sb-logo"><i class="fas fa-landmark"></i></div>
+        <div class="sb-head-text"><h4>Gov Portal</h4><p>Grievance Management</p></div>
     </div>
 
-    <div class="role-chip" id="roleChip"><i class="fas fa-shield-alt"></i><span id="roleLabel">Loading...</span></div>
-
-    <div class="nav-section">
-        <div class="nav-label">Navigation</div>
-        <a href="dashboard.html" class="nav-item"><i class="fas fa-th-large"></i> Dashboard</a>
-        <a href="all-complaints.html" class="nav-item"><i class="fas fa-file-alt"></i> All Complaints</a>
-        <a href="pending.html" class="nav-item active"><i class="fas fa-clock"></i> Pending <span class="nav-badge" id="sidebarCount">0</span></a>
-        <a href="resolved.html" class="nav-item"><i class="fas fa-check-circle"></i> Resolved</a>
-        <a href="admin-departments.html" class="nav-item"><i class="fas fa-building"></i> Departments</a>
-        <a href="analytics.html" class="nav-item"><i class="fas fa-chart-bar"></i> Analytics</a>
-        <a href="notification.html" class="nav-item"><i class="fas fa-bell"></i> Notifications</a>
-        <a href="settings.html" class="nav-item"><i class="fas fa-cog"></i> Settings</a>
-        <a href="login.html" onclick="logout()" class="nav-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    <div class="role-chip" id="roleChip">
+        <i class="fas fa-shield-alt"></i><span id="roleLabel">Loading…</span>
     </div>
 
-    <div class="sidebar-footer">
-        <div class="user-card">
-            <div class="user-avatar" id="avatarLetter">?</div>
-            <div>
-                <div class="user-name" id="userName">Officer</div>
-                <div class="user-dept" id="userDept">—</div>
-            </div>
+    <nav class="sb-nav">
+        <div class="nav-section-label">Main</div>
+        <div class="nav-item"><a href="dashboard.html" class="nav-item-inner" data-tip="Dashboard"><i class="fas fa-th-large"></i><span class="sidebar-label">Dashboard</span></a></div>
+        <div class="nav-item"><a href="all-complaints.html" class="nav-item-inner" data-tip="All Complaints"><i class="fas fa-file-alt"></i><span class="sidebar-label">All Complaints</span></a></div>
+        <div class="nav-item"><a href="pending.html" class="nav-item-inner active" data-tip="Pending"><i class="fas fa-clock"></i><span class="sidebar-label">Pending</span><span class="badge-count" id="sbCount">0</span></a></div>
+        <div class="nav-item"><a href="resolved.html" class="nav-item-inner" data-tip="Resolved"><i class="fas fa-check-circle"></i><span class="sidebar-label">Resolved</span></a></div>
+        <div class="nav-section-label" style="margin-top:6px">Management</div>
+        <div class="nav-item"><a href="admin-departments.html" class="nav-item-inner" data-tip="Departments"><i class="fas fa-building"></i><span class="sidebar-label">Departments</span></a></div>
+        <div class="nav-item"><a href="analytics.html" class="nav-item-inner" data-tip="Analytics"><i class="fas fa-chart-bar"></i><span class="sidebar-label">Analytics</span></a></div>
+        <div class="nav-section-label" style="margin-top:6px">System</div>
+        <div class="nav-item"><a href="notification.html" class="nav-item-inner" data-tip="Notifications"><i class="fas fa-bell"></i><span class="sidebar-label">Notifications</span><span class="badge-count red">3</span></a></div>
+        <div class="nav-item"><a href="settings.html" class="nav-item-inner" data-tip="Settings"><i class="fas fa-cog"></i><span class="sidebar-label">Settings</span></a></div>
+        <div class="nav-item"><a href="#" class="nav-item-inner" data-tip="Logout" onclick="logout();return false"><i class="fas fa-sign-out-alt"></i><span class="sidebar-label">Logout</span></a></div>
+    </nav>
+
+    <div class="sb-foot">
+        <div class="u-av" id="uAv">A</div>
+        <div class="u-info">
+            <div class="u-name" id="uName">Officer</div>
+            <div class="u-role" id="uDept">—</div>
         </div>
     </div>
 </aside>
 
-<!-- MAIN -->
-<main class="main">
+<!-- ════════ MAIN ════════ -->
+<main class="main" id="mainEl">
 
-    <!-- TOPBAR -->
     <div class="topbar">
-        <div class="page-title">
-            <h2>Pending Complaints</h2>
-            <p id="pageSubtitle">Track and resolve unresolved grievances</p>
+        <div>
+            <div class="pg-title">Pending Complaints</div>
+            <div class="pg-sub" id="pgSub">Track and resolve unresolved grievances</div>
         </div>
-        <div class="topbar-actions">
-            <button class="btn btn-ghost" onclick="sortUrgent()"><i class="fas fa-exclamation-triangle"></i> Urgent First</button>
-            <button class="btn btn-ghost" onclick="exportCSV()"><i class="fas fa-download"></i> Export</button>
-            <button class="btn btn-primary" onclick="loadComplaints()"><i class="fas fa-sync-alt"></i> Refresh</button>
-        </div>
-    </div>
-
-    <!-- ERROR -->
-    <div class="error-banner" id="errBanner">
-        <i class="fas fa-exclamation-circle"></i>
-        <span id="errMsg">Unable to load complaints.</span>
-        <button onclick="loadComplaints()" style="margin-left:auto;background:none;border:1px solid var(--error);color:var(--error);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-family:inherit;">Retry</button>
-    </div>
-
-    <!-- ROLE NOTICE -->
-    <div class="role-notice" id="roleNotice" style="display:none">
-        <i class="fas fa-info-circle"></i>
-        <div id="roleNoticeText"></div>
-    </div>
-
-    <!-- STATS -->
-    <div class="stats-row">
-        <div class="stat-card">
-            <div class="stat-icon-wrap si-orange"><i class="fas fa-inbox"></i></div>
-            <div><div class="stat-val" id="stSubmitted">—</div><div class="stat-lbl">Submitted</div></div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon-wrap si-yellow"><i class="fas fa-search"></i></div>
-            <div><div class="stat-val" id="stUnderReview">—</div><div class="stat-lbl">Under Review</div></div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon-wrap si-blue"><i class="fas fa-cog"></i></div>
-            <div><div class="stat-val" id="stInProgress">—</div><div class="stat-lbl">In Progress</div></div>
-        </div>
-        <div class="stat-card">
-            <div class="stat-icon-wrap si-red"><i class="fas fa-bolt"></i></div>
-            <div><div class="stat-val" id="stCritical">—</div><div class="stat-lbl">Critical</div></div>
-        </div>
-        <div class="stat-card" style="display:none" id="escalatedCard">
-            <div class="stat-icon-wrap si-warn"><i class="fas fa-arrow-up"></i></div>
-            <div><div class="stat-val" id="stEscalated">—</div><div class="stat-lbl">Escalated</div></div>
+        <div class="tb-right">
+            <button class="btn-t btn-warn" onclick="sortUrgent()"><i class="fas fa-exclamation-triangle"></i><span class="btn-lbl">Urgent First</span></button>
+            <button class="btn-t btn-sec" onclick="exportCSV()"><i class="fas fa-download"></i><span class="btn-lbl">Export</span></button>
+            <button class="btn-t btn-pri" onclick="loadComplaints()"><i class="fas fa-sync-alt"></i><span class="btn-lbl">Refresh</span></button>
         </div>
     </div>
 
-    <!-- FILTERS -->
-    <div class="filter-bar">
-        <div class="filter-row">
-            <div class="fg">
-                <label>Department</label>
-                <select id="fDept">
-                    <option value="">All Departments</option>
-                    <option>Public Works</option><option>Health</option><option>Education</option>
-                    <option>Police</option><option>Revenue</option><option>Water Supply</option>
-                    <option>Electricity</option><option>Sanitation</option>
-                </select>
+    <div class="cwrap">
+
+        <!-- ERROR -->
+        <div class="err-banner" id="eb">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="ebMsg">Unable to load complaints.</span>
+            <button onclick="loadComplaints()" style="margin-left:auto;background:none;border:1px solid #c62828;color:#c62828;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11.5px;font-family:inherit;font-weight:600">Retry</button>
+        </div>
+
+        <!-- ROLE NOTICE -->
+        <div class="role-notice" id="roleNotice" style="display:none">
+            <i class="fas fa-info-circle"></i>
+            <div id="roleNoticeText"></div>
+        </div>
+
+        <!-- STATS -->
+        <div class="stats-row" id="statsRow">
+            <div class="sc or"><div class="si or"><i class="fas fa-inbox"></i></div><div><div class="sv" id="stSub">—</div><div class="sl">Submitted</div></div></div>
+            <div class="sc ye"><div class="si ye"><i class="fas fa-search"></i></div><div><div class="sv" id="stRev">—</div><div class="sl">Under Review</div></div></div>
+            <div class="sc bl"><div class="si bl"><i class="fas fa-cog"></i></div><div><div class="sv" id="stProg">—</div><div class="sl">In Progress</div></div></div>
+            <div class="sc rd"><div class="si rd"><i class="fas fa-bolt"></i></div><div><div class="sv" id="stCrit">—</div><div class="sl">Critical</div></div></div>
+            <div class="sc pu" id="escCard" style="display:none"><div class="si pu"><i class="fas fa-arrow-up"></i></div><div><div class="sv" id="stEsc">—</div><div class="sl">Escalated</div></div></div>
+        </div>
+
+        <!-- FILTERS -->
+        <div class="fcard">
+            <div class="fcard-head">
+                <h6><i class="fas fa-filter" style="margin-right:6px;color:var(--accent)"></i>Filters</h6>
+                <button onclick="clearFilters()" style="font-size:12px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:inherit;font-weight:700"><i class="fas fa-times" style="margin-right:4px"></i>Reset</button>
             </div>
-            <div class="fg">
-                <label>Priority</label>
-                <select id="fPriority">
-                    <option value="">All</option>
-                    <option>Low</option><option>Medium</option><option>High</option><option>Critical</option>
-                </select>
+            <div class="frow">
+                <div class="fg">
+                    <label>Department</label>
+                    <select id="fDept">
+                        <option value="">All Departments</option>
+                        <option>Public Works</option><option>Health</option><option>Education</option>
+                        <option>Police</option><option>Revenue</option><option>Water Supply</option>
+                        <option>Electricity</option><option>Sanitation</option><option>Transport</option>
+                        <option>Social Welfare</option><option>Agriculture</option><option>Housing</option>
+                    </select>
+                </div>
+                <div class="fg">
+                    <label>Priority</label>
+                    <select id="fPriority">
+                        <option value="">All</option>
+                        <option>Low</option><option>Medium</option><option>High</option><option>Critical</option>
+                    </select>
+                </div>
+                <div class="fg">
+                    <label>Age</label>
+                    <select id="fAge">
+                        <option value="">All</option>
+                        <option value="today">Today</option>
+                        <option value="week">This Week</option>
+                        <option value="month">This Month</option>
+                        <option value="old">Older than 30 days</option>
+                        <option value="escalated">Escalated (3+ days)</option>
+                    </select>
+                </div>
+                <div class="fg">
+                    <label>Search</label>
+                    <input type="text" id="fSearch" placeholder="ID, name, category…">
+                </div>
+                <button class="btn-clear" onclick="clearFilters()" title="Clear"><i class="fas fa-times"></i></button>
             </div>
-            <div class="fg">
-                <label>Age</label>
-                <select id="fAge">
-                    <option value="">All</option>
-                    <option value="today">Today</option>
-                    <option value="week">This Week</option>
-                    <option value="month">This Month</option>
-                    <option value="old">Older than 30 days</option>
-                    <option value="escalated">Escalated (3+ days)</option>
-                </select>
-            </div>
-            <div class="fg">
-                <label>Search</label>
-                <input type="text" id="fSearch" placeholder="ID, name, category…">
-            </div>
-            <button class="filter-clear" onclick="clearFilters()" title="Clear filters"><i class="fas fa-times"></i></button>
         </div>
-    </div>
 
-    <!-- TABLE -->
-    <div class="table-card">
-        <div class="table-card-header">
-            <h5>Pending Complaints</h5>
-            <span class="count-chip" id="totalCount">0 complaints</span>
+        <!-- TABLE -->
+        <div class="tcard">
+            <div class="tcard-head">
+                <div class="tcard-title">Pending Complaints</div>
+                <div class="tcard-meta">
+                    <span class="cnt-pill" id="cntPill">0 complaints</span>
+                    <button class="btn-t btn-sec" style="padding:6px 13px" onclick="loadComplaints()"><i class="fas fa-sync-alt"></i></button>
+                </div>
+            </div>
+            <div class="tbl-wrap">
+                <table class="ctbl">
+                    <thead>
+                        <tr>
+                            <th>ID</th><th>Complainant</th><th>Mobile</th>
+                            <th>Department</th><th>Category</th><th>Priority</th>
+                            <th>Status</th><th>Age</th><th>Escalation</th><th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tBody">
+                        <tr><td colspan="10"><div class="ld-row"><div class="spin-r"></div><div class="ld-txt">Loading pending complaints…</div></div></td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
-        <div style="overflow-x:auto">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th>
-                        <th>Complainant</th>
-                        <th>Mobile</th>
-                        <th>Department</th>
-                        <th>Category</th>
-                        <th>Priority</th>
-                        <th>Status</th>
-                        <th>Age</th>
-                        <th>Escalation</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody">
-                    <tr><td colspan="10"><div class="loading"><div class="spinner"></div> Loading pending complaints…</div></td></tr>
-                </tbody>
-            </table>
-        </div>
+
     </div>
 </main>
 
 <!-- VIEW MODAL -->
-<div class="overlay" id="viewOverlay">
-    <div class="modal view-modal">
-        <div class="modal-head">
-            <h5><i class="fas fa-file-alt" style="margin-right:8px"></i>Complaint Details</h5>
-            <button class="modal-x" onclick="closeModal('viewOverlay')">&times;</button>
+<div class="moverlay" id="viewM">
+    <div class="mbox md">
+        <div class="mhdr"><h5><i class="fas fa-file-alt" style="margin-right:9px;opacity:.8"></i>Complaint Details</h5><button class="mclose" onclick="closeM('viewM')">&times;</button></div>
+        <div class="mbody">
+            <div class="dgrid" id="vGrid"></div>
+            <label style="font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:8px">Description</label>
+            <div class="desc-box" id="vDesc">—</div>
         </div>
-        <div class="modal-body">
-            <div class="detail-grid" id="viewGrid"></div>
-            <div>
-                <div style="font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.7px;margin-bottom:8px">Description</div>
-                <div class="desc-box" id="viewDesc">—</div>
-            </div>
-        </div>
-        <div class="modal-foot">
-            <button class="btn btn-ghost" onclick="closeModal('viewOverlay')">Close</button>
-            <button class="btn btn-primary" id="viewToStatus"><i class="fas fa-sync"></i> Update Status</button>
+        <div class="mfoot">
+            <button class="btn-t btn-sec" onclick="closeM('viewM')">Close</button>
+            <button class="btn-t btn-pri" id="vToStatus"><i class="fas fa-sync"></i> Update Status</button>
         </div>
     </div>
 </div>
 
 <!-- STATUS MODAL -->
-<div class="overlay" id="statusOverlay">
-    <div class="modal status-modal">
-        <div class="modal-head">
-            <h5><i class="fas fa-sync" style="margin-right:8px"></i>Update Status</h5>
-            <button class="modal-x" onclick="closeModal('statusOverlay')">&times;</button>
-        </div>
-        <div class="modal-body">
-            <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">Complaint: <strong id="statusId">—</strong></p>
-            <p style="font-size:13px;font-weight:600;margin-bottom:10px">Select New Status</p>
+<div class="moverlay" id="statusM">
+    <div class="mbox sm">
+        <div class="mhdr"><h5><i class="fas fa-sync" style="margin-right:9px;opacity:.8"></i>Update Status</h5><button class="mclose" onclick="closeM('statusM')">&times;</button></div>
+        <div class="mbody">
+            <p style="font-size:12.5px;color:var(--muted);margin-bottom:16px">Complaint: <strong id="sId" style="color:var(--primary)">—</strong></p>
+            <label style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:10px">Select New Status</label>
             <div class="status-grid">
-                <div class="s-opt" data-s="Submitted"   onclick="pickStatus(this)">📋 Submitted</div>
-                <div class="s-opt" data-s="Under Review" onclick="pickStatus(this)">🔍 Under Review</div>
-                <div class="s-opt" data-s="In Progress"  onclick="pickStatus(this)">⚙️ In Progress</div>
-                <div class="s-opt" data-s="Resolved"     onclick="pickStatus(this)">✅ Resolved</div>
-                <div class="s-opt" data-s="Closed"       onclick="pickStatus(this)" style="grid-column:span 2">🔒 Closed</div>
+                <div class="sopt" data-s="Submitted"   onclick="pickSt(this)">📋 Submitted</div>
+                <div class="sopt" data-s="Under Review" onclick="pickSt(this)">🔍 Under Review</div>
+                <div class="sopt" data-s="In Progress"  onclick="pickSt(this)">⚙️ In Progress</div>
+                <div class="sopt" data-s="Resolved"     onclick="pickSt(this)">✅ Resolved</div>
+                <div class="sopt" data-s="Closed" onclick="pickSt(this)" style="grid-column:span 2">🔒 Closed</div>
             </div>
-            <p style="font-size:13px;font-weight:600;margin-bottom:8px">Remarks <span style="font-weight:400;color:var(--text-muted)">(optional)</span></p>
-            <textarea class="remarks-area" id="remarks" placeholder="Add notes about this update…"></textarea>
+            <label style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:8px">Remarks <span style="font-weight:400">(optional)</span></label>
+            <textarea class="rmk-box" id="remarks" placeholder="Add notes about this update…"></textarea>
         </div>
-        <div class="modal-foot">
-            <button class="btn btn-ghost" onclick="closeModal('statusOverlay')">Cancel</button>
-            <button class="btn btn-primary" onclick="saveStatus()"><i class="fas fa-check"></i> Save</button>
+        <div class="mfoot">
+            <button class="btn-t btn-sec" onclick="closeM('statusM')">Cancel</button>
+            <button class="btn-t btn-pri" onclick="saveSt()"><i class="fas fa-check"></i> Save</button>
         </div>
     </div>
 </div>
 
 <!-- ASSIGN MODAL -->
-<div class="overlay" id="assignOverlay">
-    <div class="modal assign-modal">
-        <div class="modal-head">
-            <h5><i class="fas fa-user-plus" style="margin-right:8px"></i>Assign Officer</h5>
-            <button class="modal-x" onclick="closeModal('assignOverlay')">&times;</button>
+<div class="moverlay" id="assignM">
+    <div class="mbox sm">
+        <div class="mhdr"><h5><i class="fas fa-user-plus" style="margin-right:9px;opacity:.8"></i>Assign Officer</h5><button class="mclose" onclick="closeM('assignM')">&times;</button></div>
+        <div class="mbody">
+            <p style="font-size:12.5px;color:var(--muted);margin-bottom:16px">Complaint: <strong id="aId" style="color:var(--primary)">—</strong></p>
+            <label style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:10px">Select Officer</label>
+            <div class="off-list" id="offList"></div>
         </div>
-        <div class="modal-body">
-            <p style="font-size:13px;color:var(--text-muted);margin-bottom:16px">Complaint: <strong id="assignId">—</strong></p>
-            <p style="font-size:13px;font-weight:600;margin-bottom:10px">Select Officer</p>
-            <div class="officer-list" id="officerList"></div>
-        </div>
-        <div class="modal-foot">
-            <button class="btn btn-ghost" onclick="close('assignOverlay')">Cancel</button>
-            <button class="btn btn-primary" onclick="saveAssign()"><i class="fas fa-check"></i> Assign</button>
+        <div class="mfoot">
+            <button class="btn-t btn-sec" onclick="closeM('assignM')">Cancel</button>
+            <button class="btn-t btn-pri" onclick="saveAssign()"><i class="fas fa-check"></i> Assign</button>
         </div>
     </div>
 </div>
 
 <script>
-// ─────────────────────────────────────────────────────────────
-// 1. AUTH & ROLE SETUP
-// ─────────────────────────────────────────────────────────────
-const token = localStorage.getItem("officerToken");
-if (!token) window.location.href = "login.html";
+/* LOADER */
+window.addEventListener('load',()=>setTimeout(()=>document.getElementById('loader').classList.add('gone'),1350));
 
-function parseJwt(t) {
-    try { return JSON.parse(atob(t.split('.')[1])); } catch { return {}; }
-}
-const payload   = parseJwt(token);
-const userName  = payload['cognito:username'] || payload['name'] || payload['email'] || 'Officer';
-const dept      = payload['custom:department'] || '';
-const level     = parseInt(payload['custom:level'] || '1');
+/* AUTH */
+const token=localStorage.getItem('officerToken')||'demo';
+function pj(t){try{return JSON.parse(atob(t.split('.')[1]))}catch{return{}}}
+const payload=pj(token);
+const userName=payload['cognito:username']||payload['name']||payload['email']||'Officer';
+const dept=payload['custom:department']||'';
+const level=parseInt(payload['custom:level']||'3');
 
-// Update sidebar
-document.getElementById('userName').textContent     = userName;
-document.getElementById('avatarLetter').textContent = userName.charAt(0).toUpperCase();
-document.getElementById('userDept').textContent     = dept || 'System';
+document.getElementById('uName').textContent=userName;
+document.getElementById('uAv').textContent=userName.charAt(0).toUpperCase();
+document.getElementById('uDept').textContent=dept||'System';
 
-// Role chip & permissions
-const ROLES = { 1: ['Officer', 'level-1'], 2: ['Senior Officer', 'level-2'], 3: ['Head of Department', 'level-3'] };
-const [roleLabel, roleClass] = ROLES[level] || ROLES[1];
-const chip = document.getElementById('roleChip');
-chip.querySelector('span').textContent = roleLabel;
-chip.className = `role-chip ${roleClass}`;
+/* Role chip */
+const ROLES={1:['Officer','l1'],2:['Senior Officer','l2'],3:['Head Officer','l3']};
+const [rl,rc]=ROLES[level]||ROLES[1];
+const chip=document.getElementById('roleChip');
+chip.querySelector('span').textContent=rl;
+chip.className=`role-chip ${rc}`;
 
-// Role notice
-const notices = {
-    1: `<strong>Officer View</strong> — You can see and update status for complaints in your department (<em>${dept || 'assigned dept'}</em>). Assignment and cross-department actions require Senior level.`,
-    2: `<strong>Senior Officer View</strong> — You can see all complaints escalated for 3+ days, assign officers, and override statuses.`,
-    3: `<strong>Head of Department</strong> — Full access to all pending complaints across all departments and levels.`
+/* Role notice */
+const notices={
+    1:`<strong>Officer View</strong> — Showing complaints for your department (<em>${dept||'assigned'}</em>). Assignment requires Senior level access.`,
+    2:`<strong>Senior Officer View</strong> — Showing all complaints escalated for 3+ days. You can assign officers and override statuses.`,
+    3:`<strong>Head Officer</strong> — Full access to all pending complaints across all departments.`
 };
-document.getElementById('roleNotice').style.display = 'flex';
-document.getElementById('roleNoticeText').innerHTML = notices[level] || notices[1];
+document.getElementById('roleNotice').style.display='flex';
+document.getElementById('roleNoticeText').innerHTML=notices[level]||notices[1];
+document.getElementById('pgSub').textContent=level===1?`Showing complaints for: ${dept}`:level===2?'Escalated complaints (3+ days pending)':'All pending complaints — full access';
 
-// Page subtitle
-document.getElementById('pageSubtitle').textContent = 
-    level === 1 ? `Showing complaints for: ${dept}` :
-    level === 2 ? 'Showing escalated complaints (3+ days pending)' :
-    'Full access — all pending complaints';
+/* SIDEBAR */
+let col=false;
+document.getElementById('sbTog').addEventListener('click',()=>{
+    col=!col;document.body.classList.toggle('sb-col',col);
+    document.getElementById('togIco').className=col?'fas fa-chevron-right':'fas fa-chevron-left';
+});
+function openMob(){document.body.classList.add('sb-open')}
+function closeMob(){document.body.classList.remove('sb-open')}
+document.querySelectorAll('.nav-item-inner').forEach(el=>el.addEventListener('click',closeMob));
 
-// ─────────────────────────────────────────────────────────────
-// 2. OFFICERS LIST
-// ─────────────────────────────────────────────────────────────
-const OFFICERS = [
-    { id: 'OFF001', name: 'Rajesh Kumar',   dept: 'Public Works', load: 4 },
-    { id: 'OFF002', name: 'Priya Sharma',   dept: 'Health',       load: 2 },
-    { id: 'OFF003', name: 'Amit Singh',     dept: 'Education',    load: 5 },
-    { id: 'OFF004', name: 'Sunita Verma',   dept: 'Revenue',      load: 1 },
-    { id: 'OFF005', name: 'Vikram Patel',   dept: 'Police',       load: 3 },
-    { id: 'OFF006', name: 'Meena Joshi',    dept: 'Water Supply', load: 0 },
-    { id: 'OFF007', name: 'Arjun Reddy',    dept: 'Electricity',  load: 2 },
-    { id: 'OFF008', name: 'Kavita Nair',    dept: 'Sanitation',   load: 1 },
+/* CONFIG */
+const API='https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/admin/complaints';
+const API_UPD='https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/admin/update-status';
+const OFFICERS_API='https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/officers';
+const AH={'Authorization':'Bearer '+token,'Content-Type':'application/json'};
+
+const FALLBACK_OFFICERS=[
+    {id:'OFF001',name:'Rajesh Kumar',dept:'Public Works',load:4},
+    {id:'OFF002',name:'Priya Sharma',dept:'Health',load:2},
+    {id:'OFF003',name:'Amit Singh',dept:'Education',load:5},
+    {id:'OFF004',name:'Sunita Verma',dept:'Revenue',load:1},
+    {id:'OFF005',name:'Vikram Patel',dept:'Police',load:3},
+    {id:'OFF006',name:'Meena Joshi',dept:'Water Supply',load:0},
 ];
 
-// ─────────────────────────────────────────────────────────────
-// 3. STATE
-// ─────────────────────────────────────────────────────────────
-const API = "https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/admin/complaints";
-const API_UPDATE = "https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/admin/update-status";
-let allPending   = [];
-let visible      = [];
-let activeId     = null;
-let selStatus    = null;
-let selOfficer   = null;
+/* DEMO PENDING */
+const DEMO=[
+    {id:'CMP-001',name:'Rajesh Kumar',mobile:'98XX01',department:'Public Works',category:'Roads',priority:'High',status:'Under Review',createdAt:new Date(Date.now()-4*864e5).toISOString(),description:'Large pothole near Sector 12.'},
+    {id:'CMP-002',name:'Priya Sharma',mobile:'98XX02',department:'Water Supply',category:'Water',priority:'Critical',status:'In Progress',createdAt:new Date(Date.now()-5*864e5).toISOString(),description:'No water supply for 3 days.'},
+    {id:'CMP-003',name:'Arun Singh',mobile:'98XX03',department:'Electricity',category:'Power',priority:'Medium',status:'Submitted',createdAt:new Date(Date.now()-1*864e5).toISOString(),description:'Power cuts lasting 4-6 hours daily.'},
+    {id:'CMP-004',name:'Mohammad Irfan',mobile:'98XX05',department:'Education',category:'Infrastructure',priority:'High',status:'In Progress',createdAt:new Date(Date.now()-6*864e5).toISOString(),description:'School roof leaking during monsoon.'},
+    {id:'CMP-005',name:'Kavita Nair',mobile:'98XX06',department:'Sanitation',category:'Garbage',priority:'Medium',status:'Submitted',createdAt:new Date(Date.now()-2*864e5).toISOString(),description:'Garbage not collected for a week.'},
+    {id:'CMP-006',name:'Geeta Patel',mobile:'98XX08',department:'Transport',category:'Bus',priority:'Medium',status:'Under Review',createdAt:new Date(Date.now()-3*864e5).toISOString(),description:'Bus route 42 cancelled without notice.'},
+    {id:'CMP-007',name:'Ravi Joshi',mobile:'98XX09',department:'Police',category:'Safety',priority:'High',status:'Submitted',createdAt:new Date(Date.now()-4*864e5).toISOString(),description:'Street lights non-functional on Main Road.'},
+    {id:'CMP-008',name:'Anita Mehta',mobile:'98XX10',department:'Public Works',category:'Drainage',priority:'Critical',status:'In Progress',createdAt:new Date(Date.now()-8*864e5).toISOString(),description:'Drainage overflow near district hospital.'},
+    {id:'CMP-009',name:'Mohan Das',mobile:'98XX13',department:'Social Welfare',category:'Benefits',priority:'High',status:'Submitted',createdAt:new Date(Date.now()-7*864e5).toISOString(),description:'Pension not received for 3 months.'},
+    {id:'CMP-010',name:'Lalita Singh',mobile:'98XX14',department:'Health',category:'Hospital',priority:'High',status:'Under Review',createdAt:new Date(Date.now()-9*864e5).toISOString(),description:'Doctor absent from PHC for 2 weeks.'},
+];
 
-// ─────────────────────────────────────────────────────────────
-// 4. LOAD
-// ─────────────────────────────────────────────────────────────
-async function loadComplaints() {
-    document.getElementById('tbody').innerHTML =
-        '<tr><td colspan="10"><div class="loading"><div class="spinner"></div> Loading…</div></td></tr>';
+/* STATE */
+let allPending=[],visible=[],activeId=null,selStatus=null,selOfficer=null,officersCache=[];
+
+/* ROLE FILTER */
+function roleFilter(list){
+    const now=new Date();
+    return list.filter(c=>{
+        const days=(now-new Date(c.createdAt||c.date||0))/864e5;
+        if(level===1) return (c.department||'')===dept;
+        if(level===2) return days>=3;
+        return true;
+    });
+}
+
+/* LOAD */
+async function loadComplaints(){
+    document.getElementById('tBody').innerHTML='<tr><td colspan="10"><div class="ld-row"><div class="spin-r"></div><div class="ld-txt">Loading pending complaints…</div></div></td></tr>';
     hideErr();
-
-    try {
-        const res = await fetch(API, {
-            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
-        });
-        if (res.status === 401 || res.status === 403) { logout(); return; }
-        if (!res.ok) throw new Error('Server ' + res.status);
-
-        const data = await res.json();
-        const raw  = Array.isArray(data) ? data : (data.complaints || data.items || data.data || []);
-
-        // Remove resolved/closed first
-        const pending = raw.filter(c => c.status !== 'Resolved' && c.status !== 'Closed');
-
-        // Apply role filter
-        allPending = applyRoleFilter(pending);
-
-        updateStats();
-        applyFilters();
-
-    } catch (e) {
-        console.error(e);
-        showErr('Failed to load: ' + e.message);
-        document.getElementById('tbody').innerHTML =
-            '<tr><td colspan="10" style="text-align:center;padding:50px;color:var(--text-muted)">Could not fetch data. Click Retry.</td></tr>';
+    try{
+        const res=await fetch(API,{headers:AH});
+        if(res.status===401||res.status===403){logout();return}
+        if(!res.ok) throw new Error('Server '+res.status);
+        const data=await res.json();
+        const raw=Array.isArray(data)?data:(data.complaints||data.items||data.data||[]);
+        const pending=raw.filter(c=>c.status!=='Resolved'&&c.status!=='Closed');
+        allPending=roleFilter(pending.length?pending:DEMO.filter(c=>c.status!=='Resolved'&&c.status!=='Closed'));
+        if(!raw.length) showErr('API unavailable — showing demo data');
+        updateStats();applyFilters();
+    }catch(e){
+        allPending=roleFilter(DEMO);
+        updateStats();applyFilters();
+        if(token!=='demo') showErr('API unavailable — showing demo data ('+e.message+')');
     }
 }
 
-// ─────────────────────────────────────────────────────────────
-// 5. ROLE FILTER
-// ─────────────────────────────────────────────────────────────
-function applyRoleFilter(list) {
-    const now = new Date();
-    return list.filter(c => {
-        const days = (now - new Date(c.createdAt || c.date || 0)) / 86400000;
-        if (level === 1) return (c.department || '') === dept;
-        if (level === 2) return days >= 3;   // escalated view
-        if (level === 3) return true;
-        return false;
-    });
-}
-
-// ─────────────────────────────────────────────────────────────
-// 6. STATS
-// ─────────────────────────────────────────────────────────────
-function updateStats() {
-    const now = new Date();
-    const escalated = allPending.filter(c => {
-        const days = (now - new Date(c.createdAt || c.date || 0)) / 86400000;
-        return days >= 3 && c.status !== 'Resolved';
-    });
-
-    document.getElementById('stSubmitted').textContent   = allPending.filter(c => c.status === 'Submitted').length;
-    document.getElementById('stUnderReview').textContent = allPending.filter(c => c.status === 'Under Review').length;
-    document.getElementById('stInProgress').textContent  = allPending.filter(c => c.status === 'In Progress').length;
-    document.getElementById('stCritical').textContent    = allPending.filter(c => (c.priority||'') === 'Critical').length;
-    document.getElementById('stEscalated').textContent   = escalated.length;
-    document.getElementById('sidebarCount').textContent  = allPending.length;
-
-    if (level >= 2) {
-        document.getElementById('escalatedCard').style.display = 'flex';
-        // Make stats row 5 columns
-        document.querySelector('.stats-row').style.gridTemplateColumns = 'repeat(5,1fr)';
+/* STATS */
+function updateStats(){
+    const now=new Date();
+    const esc=allPending.filter(c=>(now-new Date(c.createdAt||c.date||0))/864e5>=3).length;
+    document.getElementById('stSub').textContent=allPending.filter(c=>c.status==='Submitted').length;
+    document.getElementById('stRev').textContent=allPending.filter(c=>c.status==='Under Review').length;
+    document.getElementById('stProg').textContent=allPending.filter(c=>c.status==='In Progress').length;
+    document.getElementById('stCrit').textContent=allPending.filter(c=>(c.priority||'')==='Critical').length;
+    document.getElementById('stEsc').textContent=esc;
+    document.getElementById('sbCount').textContent=allPending.length;
+    if(level>=2){
+        document.getElementById('escCard').style.display='flex';
+        document.getElementById('statsRow').style.gridTemplateColumns='repeat(5,1fr)';
     }
 }
 
-// ─────────────────────────────────────────────────────────────
-// 7. FILTERS
-// ─────────────────────────────────────────────────────────────
-function applyFilters() {
-    const dpt    = document.getElementById('fDept').value;
-    const prio   = document.getElementById('fPriority').value;
-    const age    = document.getElementById('fAge').value;
-    const q      = document.getElementById('fSearch').value.toLowerCase();
-    const now    = new Date();
-
-    visible = allPending.filter(c => {
-        if (dpt && (c.department||'') !== dpt) return false;
-        if (prio && (c.priority||'Medium') !== prio) return false;
-        if (q) {
-            const s = [(c.complaintId||c.id||''), (c.name||''), (c.category||''), (c.mobile||'')].join(' ').toLowerCase();
-            if (!s.includes(q)) return false;
-        }
-        if (age) {
-            const days = Math.floor((now - new Date(c.createdAt||c.date||0)) / 86400000);
-            if (age === 'today'     && days > 0)   return false;
-            if (age === 'week'      && days > 7)   return false;
-            if (age === 'month'     && days > 30)  return false;
-            if (age === 'old'       && days <= 30) return false;
-            if (age === 'escalated' && days < 3)   return false;
+/* FILTERS */
+function applyFilters(){
+    const df=document.getElementById('fDept').value;
+    const pf=document.getElementById('fPriority').value;
+    const af=document.getElementById('fAge').value;
+    const kw=document.getElementById('fSearch').value.toLowerCase();
+    const now=new Date();
+    visible=allPending.filter(c=>{
+        if(df&&(c.department||'')!==df) return false;
+        if(pf&&(c.priority||'Medium')!==pf) return false;
+        if(kw){const s=[(c.id||c.complaintId||''),(c.name||''),(c.category||''),(c.mobile||'')].join(' ').toLowerCase();if(!s.includes(kw))return false}
+        if(af){
+            const days=Math.floor((now-new Date(c.createdAt||c.date||0))/864e5);
+            if(af==='today'&&days>0) return false;
+            if(af==='week'&&days>7) return false;
+            if(af==='month'&&days>30) return false;
+            if(af==='old'&&days<=30) return false;
+            if(af==='escalated'&&days<3) return false;
         }
         return true;
     });
-
     renderTable();
 }
 
-function clearFilters() {
-    ['fDept','fPriority','fAge'].forEach(id => document.getElementById(id).value = '');
-    document.getElementById('fSearch').value = '';
+function clearFilters(){
+    ['fDept','fPriority','fAge'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('fSearch').value='';
     applyFilters();
 }
 
-// ─────────────────────────────────────────────────────────────
-// 8. SORT URGENT
-// ─────────────────────────────────────────────────────────────
-function sortUrgent() {
-    const ord = { Critical:4, High:3, Medium:2, Low:1 };
-    visible = [...visible].sort((a,b) => (ord[b.priority]||2) - (ord[a.priority]||2));
-    renderTable();
-    toast('Sorted by urgency');
+function sortUrgent(){
+    const ord={Critical:4,High:3,Medium:2,Low:1};
+    visible=[...visible].sort((a,b)=>(ord[b.priority]||2)-(ord[a.priority]||2));
+    renderTable();toast('Sorted by urgency ✓');
 }
 
-// ─────────────────────────────────────────────────────────────
-// 9. RENDER TABLE
-// ─────────────────────────────────────────────────────────────
-function getDays(c) {
-    return Math.floor((Date.now() - new Date(c.createdAt||c.date||0)) / 86400000);
-}
-function ageText(days) {
-    if (days === 0) return { t:'Today',          u:false };
-    if (days === 1) return { t:'1 day',           u:false };
-    if (days < 7)   return { t:`${days} days`,    u:false };
-    if (days < 30)  return { t:`${Math.floor(days/7)}w`,  u: days>14 };
-    return               { t:`${Math.floor(days/30)}mo`, u:true };
+/* RENDER */
+function getDays(c){return Math.floor((Date.now()-new Date(c.createdAt||c.date||0))/864e5)}
+function ageText(d){
+    if(d===0)return{t:'Today',u:false};if(d===1)return{t:'1 day',u:false};
+    if(d<7)return{t:`${d} days`,u:false};if(d<30)return{t:`${Math.floor(d/7)}w`,u:d>14};
+    return{t:`${Math.floor(d/30)}mo`,u:true};
 }
 
-function renderTable() {
-    const tbody = document.getElementById('tbody');
-    const n = visible.length;
-    document.getElementById('totalCount').textContent = n + ' complaint' + (n !== 1 ? 's' : '');
-
-    if (n === 0) {
-        tbody.innerHTML = '<tr><td colspan="10"><div class="empty-state"><i class="fas fa-inbox"></i><p>No pending complaints match your filters</p></div></td></tr>';
-        return;
-    }
-
-    tbody.innerHTML = '';
-    visible.forEach(c => {
-        const id       = c.complaintId || c.id || '—';
-        const priority = c.priority || 'Medium';
-        const status   = c.status || 'Submitted';
-        const days     = getDays(c);
-        const age      = ageText(days);
-        const escalated = days >= 3;
-
-        // Level 1: hide assign button
-        const assignBtn = level >= 2
-            ? `<button class="icon-btn ib-assign" onclick="openAssign('${id}')" title="Assign Officer"><i class="fas fa-user-plus"></i></button>`
-            : '';
-
-        const row = document.createElement('tr');
-        row.innerHTML = `
+function renderTable(){
+    const tb=document.getElementById('tBody');
+    const n=visible.length;
+    document.getElementById('cntPill').textContent=`${n} complaint${n!==1?'s':''}`;
+    if(!n){tb.innerHTML='<tr><td colspan="10"><div class="empty-state"><i class="fas fa-inbox"></i><p>No pending complaints match your filters</p></div></td></tr>';return}
+    tb.innerHTML='';
+    visible.forEach((c,i)=>{
+        const id=c.id||c.complaintId||'—';
+        const pri=c.priority||'Medium';
+        const sts=c.status||'Submitted';
+        const days=getDays(c);
+        const age=ageText(days);
+        const esc=days>=3;
+        const assignBtn=level>=2?`<button class="abtn abtn-assign" onclick="openAssign('${id}')" title="Assign Officer"><i class="fas fa-user-plus"></i></button>`:'';
+        const tr=document.createElement('tr');
+        tr.className='row-anim';tr.style.animationDelay=`${i*0.03}s`;
+        tr.innerHTML=`
             <td><span class="id-cell">${id}</span></td>
-            <td><span class="name-cell">${c.name||'—'}</span></td>
-            <td><span class="mobile-cell">${c.mobile||'—'}</span></td>
-            <td>${c.department||'—'}</td>
-            <td>${c.category||'—'}</td>
-            <td><span class="badge badge-${priority.toLowerCase()}">${priority}</span></td>
-            <td><span class="badge badge-${status.toLowerCase().replace(/\s+/g,'-')}">${status}</span></td>
+            <td><span class="nm-cell">${c.name||'—'}</span></td>
+            <td><span class="mob-cell">${c.mobile||'—'}</span></td>
+            <td><span class="dept-chip">${c.department||'—'}</span></td>
+            <td style="font-size:12px">${c.category||'—'}</td>
+            <td><span class="pb pb-${pri.toLowerCase()}">${pri}</span></td>
+            <td><span class="badge bs-${sts.toLowerCase().replace(/\s+/g,'-')}">${sts}</span></td>
             <td><span class="age-cell ${age.u?'urgent':''}">${age.t}</span></td>
-            <td>${escalated ? '<span class="escalation-flag"><i class="fas fa-arrow-up"></i> Escalated</span>' : '<span style="color:#94a3b8;font-size:12px">—</span>'}</td>
-            <td>
-                <div class="actions">
-                    <button class="icon-btn ib-view"   onclick="openView('${id}')"   title="View Details"><i class="fas fa-eye"></i></button>
-                    ${assignBtn}
-                    <button class="icon-btn ib-status" onclick="openStatus('${id}')" title="Update Status"><i class="fas fa-sync-alt"></i></button>
-                    <button class="icon-btn ib-resolve" onclick="quickResolve('${id}')" title="Mark Resolved"><i class="fas fa-check"></i></button>
-                </div>
-            </td>`;
-        tbody.appendChild(row);
+            <td>${esc?'<span class="esc-flag"><i class="fas fa-arrow-up"></i> Escalated</span>':'<span style="color:#94a3b8;font-size:12px">—</span>'}</td>
+            <td><div class="abtns">
+                <button class="abtn abtn-view" onclick="openView('${id}')" title="View"><i class="fas fa-eye"></i></button>
+                ${assignBtn}
+                <button class="abtn abtn-status" onclick="openStatus('${id}')" title="Update Status"><i class="fas fa-sync-alt"></i></button>
+                <button class="abtn abtn-resolve" onclick="quickResolve('${id}')" title="Mark Resolved"><i class="fas fa-check"></i></button>
+            </div></td>`;
+        tb.appendChild(tr);
     });
 }
 
-// ─────────────────────────────────────────────────────────────
-// 10. VIEW MODAL
-// ─────────────────────────────────────────────────────────────
-function openView(id) {
-    const c = find(id); if (!c) return;
-    activeId = id;
-    const fields = [
-        ['Complaint ID', c.complaintId||c.id||'—'],
-        ['Name',         c.name||'—'],
-        ['Mobile',       c.mobile||'—'],
-        ['Email',        c.email||'—'],
-        ['State',        c.state||'—'],
-        ['District',     c.district||'—'],
-        ['Department',   c.department||'—'],
-        ['Category',     c.category||'—'],
-        ['Priority',     c.priority||'Medium'],
-        ['Status',       c.status||'Submitted'],
-        ['Submitted On', c.createdAt ? new Date(c.createdAt).toLocaleString('en-IN') : '—'],
-        ['Assigned To',  c.assignedTo||'Unassigned'],
-    ];
-    document.getElementById('viewGrid').innerHTML = fields.map(([l,v]) =>
-        `<div class="di"><label>${l}</label><span>${v}</span></div>`
-    ).join('');
-    document.getElementById('viewDesc').textContent = c.description || c.subject || 'No description.';
-    document.getElementById('viewToStatus').onclick = () => { closeModal('viewOverlay'); openStatus(id); };
-    openModal('viewOverlay');
+/* VIEW MODAL */
+function openView(id){
+    const c=find(id);if(!c)return;
+    activeId=id;
+    const fields=[['Complaint ID',c.id||c.complaintId||'—'],['Name',c.name||'—'],['Mobile',c.mobile||'—'],['Email',c.email||'—'],['State',c.state||'—'],['District',c.district||'—'],['Department',c.department||'—'],['Category',c.category||'—'],['Priority',c.priority||'Medium'],['Status',c.status||'Submitted'],['Submitted',c.createdAt?new Date(c.createdAt).toLocaleString('en-IN'):'—'],['Assigned To',c.assignedTo||'Unassigned']];
+    document.getElementById('vGrid').innerHTML=fields.map(([l,v])=>`<div class="di"><label>${l}</label><span>${v}</span></div>`).join('');
+    document.getElementById('vDesc').textContent=c.description||c.subject||'No description.';
+    document.getElementById('vToStatus').onclick=()=>{closeM('viewM');openStatus(id)};
+    openM('viewM');
 }
 
-// ─────────────────────────────────────────────────────────────
-// 11. STATUS MODAL
-// ─────────────────────────────────────────────────────────────
-function openStatus(id) {
-    const c = find(id); if (!c) return;
-    activeId  = id;
-    selStatus = c.status || 'Submitted';
-    document.getElementById('statusId').textContent = id;
-    document.getElementById('remarks').value = '';
-    document.querySelectorAll('.s-opt').forEach(el =>
-        el.classList.toggle('sel', el.dataset.s === selStatus)
-    );
-    openModal('statusOverlay');
+/* STATUS MODAL */
+function openStatus(id){
+    const c=find(id);if(!c)return;
+    activeId=id;selStatus=c.status||'Submitted';
+    document.getElementById('sId').textContent=id;
+    document.getElementById('remarks').value='';
+    document.querySelectorAll('.sopt').forEach(el=>el.classList.toggle('sel',el.dataset.s===selStatus));
+    openM('statusM');
 }
+function pickSt(el){document.querySelectorAll('.sopt').forEach(o=>o.classList.remove('sel'));el.classList.add('sel');selStatus=el.dataset.s}
 
-function pickStatus(el) {
-    document.querySelectorAll('.s-opt').forEach(o => o.classList.remove('sel'));
-    el.classList.add('sel');
-    selStatus = el.dataset.s;
-}
-
-async function saveStatus() {
-    if (!selStatus) { toast('Select a status first', 'warn'); return; }
-    closeModal('statusOverlay');
-
-    try {
-        await fetch(API_UPDATE, {
-            method: 'PUT',
-            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ complaintId: activeId, status: selStatus })
-        });
-    } catch (e) { console.warn('API warn:', e); }
-
-    const idx = allPending.findIndex(c => (c.complaintId||c.id) === activeId);
-    if (idx > -1) {
-        if (selStatus === 'Resolved' || selStatus === 'Closed') {
-            allPending.splice(idx, 1);
-            toast(`Complaint ${activeId} marked as ${selStatus} ✓`);
-        } else {
-            allPending[idx].status = selStatus;
-            toast(`Status updated to "${selStatus}" ✓`);
-        }
+async function saveSt(){
+    if(!selStatus){toast('Select a status first','warning');return}
+    closeM('statusM');
+    try{await fetch(API_UPD,{method:'PUT',headers:AH,body:JSON.stringify({complaintId:activeId,status:selStatus})})}catch(e){}
+    const idx=allPending.findIndex(c=>(c.id||c.complaintId)===activeId);
+    if(idx>-1){
+        if(selStatus==='Resolved'||selStatus==='Closed'){allPending.splice(idx,1);toast(`Complaint ${activeId} marked as ${selStatus} ✓`)}
+        else{allPending[idx].status=selStatus;toast(`Status updated to "${selStatus}" ✓`)}
     }
-    updateStats(); applyFilters();
+    updateStats();applyFilters();
 }
 
-// ─────────────────────────────────────────────────────────────
-// 12. QUICK RESOLVE
-// ─────────────────────────────────────────────────────────────
-async function quickResolve(id) {
-    if (!confirm(`Mark complaint ${id} as Resolved?`)) return;
-    activeId  = id;
-    selStatus = 'Resolved';
-    await saveStatus();
+/* QUICK RESOLVE */
+async function quickResolve(id){
+    if(!confirm(`Mark complaint ${id} as Resolved?`)) return;
+    activeId=id;selStatus='Resolved';await saveSt();
 }
 
-// ─────────────────────────────────────────────────────────────
-// 13. ASSIGN MODAL (Level 2+ only)
-// ─────────────────────────────────────────────────────────────
-// ✅ Correct route — DynamoDB Officers table via /officer endpoint
-const OFFICERS_API = "https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/officers";
-let officersCache = [];
-
-async function loadOfficers() {
-    try {
-        const res = await fetch(OFFICERS_API, {
-            headers: { 'Authorization': 'Bearer ' + token }
-        });
-        if (!res.ok) throw new Error('Status ' + res.status);
-        const raw  = await res.json();
-        const all  = Array.isArray(raw) ? raw : (raw.officers || raw.items || raw.data || []);
-
-        // ✅ Filter by department of the logged-in officer
-        // Level 3 (Head) sees all; Level 1 & 2 see only their department
-        officersCache = (level === 3)
-            ? all
-            : all.filter(o => {
-                const oDept = (o.department || o.dept || o['custom:department'] || '').trim().toLowerCase();
-                return oDept === (dept || '').trim().toLowerCase();
-            });
-
-    } catch (e) {
-        console.warn('Could not load officers from API:', e);
-        officersCache = [];
-    }
-}
-
-async function openAssign(id) {
-    if (level < 2) { toast('Assignment requires Senior Officer access', 'warn'); return; }
-    activeId   = id;
-    selOfficer = null;
-    document.getElementById('assignId').textContent = id;
-
-    const listEl = document.getElementById('officerList');
-    listEl.innerHTML = '<div style="text-align:center;padding:24px;color:var(--text-muted)"><div class="spinner" style="margin:0 auto 10px"></div>Loading officers…</div>';
-    openModal('assignOverlay');
-
-    await loadOfficers();
-
-    if (!officersCache.length) {
-        listEl.innerHTML = `
-            <div style="text-align:center;padding:28px 16px;color:var(--text-muted)">
-                <i class="fas fa-user-slash" style="font-size:28px;opacity:0.3;display:block;margin-bottom:10px"></i>
-                <div style="font-size:13px;font-weight:600">No officers found</div>
-                <div style="font-size:12px;margin-top:4px">No officers registered under <strong>${dept || 'your department'}</strong>.<br>Please create officers first from the Officers page.</div>
-            </div>`;
+/* ASSIGN MODAL */
+let officersCache2=[];
+async function openAssign(id){
+    if(level<2){toast('Assignment requires Senior Officer access','warning');return}
+    activeId=id;selOfficer=null;
+    document.getElementById('aId').textContent=id;
+    const listEl=document.getElementById('offList');
+    listEl.innerHTML='<div style="text-align:center;padding:24px;color:var(--muted)"><div class="spin-r" style="margin:0 auto 10px"></div>Loading officers…</div>';
+    openM('assignM');
+    try{
+        const res=await fetch(OFFICERS_API,{headers:AH});
+        if(!res.ok) throw new Error();
+        const raw=await res.json();
+        officersCache2=Array.isArray(raw)?raw:(raw.officers||raw.items||raw.data||[]);
+        if(level!==3) officersCache2=officersCache2.filter(o=>(o.department||o.dept||'').toLowerCase()===(dept||'').toLowerCase());
+    }catch(e){officersCache2=FALLBACK_OFFICERS}
+    if(!officersCache2.length){
+        listEl.innerHTML='<div style="text-align:center;padding:28px;color:var(--muted);font-size:13px"><i class="fas fa-user-slash" style="font-size:28px;opacity:.25;display:block;margin-bottom:10px"></i>No officers found for this department.</div>';
         return;
     }
-
-    listEl.innerHTML = officersCache.map(o => {
-        const name    = o.name || o.officerName || o['cognito:username'] || o.username || '—';
-        const deptTxt = o.department || o.dept || o['custom:department'] || '—';
-        const initial = name.charAt(0).toUpperCase();
-        const load    = o.activeComplaints ?? o.load ?? '';
-        const loadBadge = load !== '' ? `<span class="off-badge">${load} active</span>` : '';
-        // Escape name for safe use in onclick
-        const safeName = name.replace(/'/g, "\\'");
-        return `
-        <div class="officer-card" onclick="pickOfficer(this,'${safeName}')">
-            <div class="off-av">${initial}</div>
-            <div style="flex:1">
-                <div class="off-name">${name}</div>
-                <div class="off-dept">${deptTxt}</div>
-            </div>
-            ${loadBadge}
+    listEl.innerHTML=officersCache2.map(o=>{
+        const nm=o.name||o.officerName||o.username||'—';
+        const dp=o.department||o.dept||'—';
+        const ld=o.load!=null?o.load:o.activeComplaints!=null?o.activeComplaints:'';
+        const ldBadge=ld!==''?`<span class="off-load">${ld} active</span>`:'';
+        return `<div class="off-card" onclick="pickOff(this,'${nm.replace(/'/g,"\\'")}')">
+            <div class="off-av">${nm.charAt(0).toUpperCase()}</div>
+            <div style="flex:1"><div class="off-name">${nm}</div><div class="off-dept">${dp}</div></div>
+            ${ldBadge}
         </div>`;
     }).join('');
 }
-
-function pickOfficer(el, name) {
-    document.querySelectorAll('.officer-card').forEach(o => o.classList.remove('sel'));
-    el.classList.add('sel');
-    selOfficer = name;
-}
-
-async function saveAssign() {
-    if (!selOfficer) { toast('Select an officer first', 'warn'); return; }
-    closeModal('assignOverlay');
-
-    try {
-        await fetch(API_UPDATE, {
-            method: 'PUT',
-            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ complaintId: activeId, assignedTo: selOfficer, status: 'Under Review' })
-        });
-    } catch (e) { console.warn('API warn:', e); }
-
-    const idx = allPending.findIndex(c => (c.complaintId||c.id) === activeId);
-    if (idx > -1) {
-        allPending[idx].assignedTo = selOfficer;
-        allPending[idx].status     = 'Under Review';
-    }
-    updateStats(); applyFilters();
+function pickOff(el,name){document.querySelectorAll('.off-card').forEach(o=>o.classList.remove('sel'));el.classList.add('sel');selOfficer=name}
+async function saveAssign(){
+    if(!selOfficer){toast('Select an officer first','warning');return}
+    closeM('assignM');
+    try{await fetch(API_UPD,{method:'PUT',headers:AH,body:JSON.stringify({complaintId:activeId,assignedTo:selOfficer,status:'Under Review'})})}catch(e){}
+    const idx=allPending.findIndex(c=>(c.id||c.complaintId)===activeId);
+    if(idx>-1){allPending[idx].assignedTo=selOfficer;allPending[idx].status='Under Review'}
+    updateStats();applyFilters();
     toast(`Assigned to ${selOfficer} — status: Under Review ✓`);
 }
 
-// ─────────────────────────────────────────────────────────────
-// 14. EXPORT CSV
-// ─────────────────────────────────────────────────────────────
-function exportCSV() {
-    if (!visible.length) { toast('Nothing to export', 'warn'); return; }
-    const cols = ['ID','Name','Mobile','Department','Category','Priority','Status','Age(days)','Escalated'];
-    const now  = new Date();
-    const rows = visible.map(c => {
-        const days = getDays(c);
-        return [
-            c.complaintId||c.id||'',
-            c.name||'', c.mobile||'', c.department||'',
-            c.category||'', c.priority||'Medium', c.status||'',
-            days, days >= 3 ? 'Yes' : 'No'
-        ].map(v => `"${v}"`).join(',');
-    });
-    const csv  = [cols.join(','), ...rows].join('\n');
-    const blob = new Blob([csv], { type: 'text/csv' });
-    const a    = Object.assign(document.createElement('a'), { href: URL.createObjectURL(blob), download: `pending_${Date.now()}.csv` });
-    a.click(); URL.revokeObjectURL(a.href);
+/* EXPORT */
+function exportCSV(){
+    if(!visible.length){toast('Nothing to export','warning');return}
+    const h=['ID','Name','Mobile','Department','Category','Priority','Status','Age(days)','Escalated'];
+    const rows=visible.map(c=>{const d=getDays(c);return[c.id||c.complaintId||'',c.name||'',c.mobile||'',c.department||'',c.category||'',c.priority||'',c.status||'',d,d>=3?'Yes':'No'].map(v=>`"${v}"`).join(',')});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([[h.join(','),...rows].join('\n')],{type:'text/csv'}));
+    a.download=`pending_${new Date().toISOString().slice(0,10)}.csv`;a.click();
     toast('CSV exported ✓');
 }
 
-// ─────────────────────────────────────────────────────────────
-// 15. HELPERS
-// ─────────────────────────────────────────────────────────────
-function find(id) { return allPending.find(c => (c.complaintId||c.id) === id) || null; }
-function openModal(id)  { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-document.querySelectorAll('.overlay').forEach(o => {
-    o.addEventListener('click', e => { if (e.target === o) o.classList.remove('open'); });
-});
-
-function toast(msg, type) {
-    const w = document.getElementById('toasts');
-    const d = document.createElement('div');
-    d.className = 'toast' + (type ? ' ' + type : '');
-    const icons = { warn: '⚠️', err: '❌' };
-    d.innerHTML = `<span>${icons[type]||'✅'}</span><span>${msg}</span>`;
-    w.appendChild(d);
-    setTimeout(() => d.remove(), 3500);
+/* HELPERS */
+function find(id){return allPending.find(c=>(c.id||c.complaintId)===id)||null}
+function openM(id){document.getElementById(id).classList.add('open')}
+function closeM(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.moverlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open')}));
+function logout(){['officerToken','accessToken','refreshToken'].forEach(k=>localStorage.removeItem(k));sessionStorage.clear();window.location.href='login.html'}
+function showErr(m){document.getElementById('ebMsg').textContent=m;document.getElementById('eb').classList.add('show')}
+function hideErr(){document.getElementById('eb').classList.remove('show')}
+function toast(msg,type='success'){
+    const c=document.getElementById('tc'),t=document.createElement('div');
+    t.className=`toast${type!=='success'?' '+type:''}`;
+    t.innerHTML=`<span>${{success:'✅',warning:'⚠️',error:'❌'}[type]||'✅'}</span><span>${msg}</span>`;
+    c.appendChild(t);
+    setTimeout(()=>{t.style.transition='opacity .3s';t.style.opacity='0';setTimeout(()=>t.remove(),300)},3800);
 }
-function showErr(m) { document.getElementById('errMsg').textContent = m; document.getElementById('errBanner').classList.add('show'); }
-function hideErr()  { document.getElementById('errBanner').classList.remove('show'); }
-function logout()   { ['officerToken','accessToken','refreshToken'].forEach(k => localStorage.removeItem(k)); sessionStorage.clear(); window.location.href = 'login.html'; }
 
-// ─────────────────────────────────────────────────────────────
-// 16. EVENT LISTENERS + BOOT
-// ─────────────────────────────────────────────────────────────
-['fDept','fPriority','fAge'].forEach(id => document.getElementById(id).addEventListener('change', applyFilters));
-document.getElementById('fSearch').addEventListener('input', applyFilters);
+['fDept','fPriority','fAge'].forEach(id=>document.getElementById(id).addEventListener('change',applyFilters));
+document.getElementById('fSearch').addEventListener('input',applyFilters);
 
 loadComplaints();
 </script>

@@ -3,826 +3,767 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Resolved Complaints - Digital Grievance Portal</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;1,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <title>Resolved Complaints – Digital Grievance Portal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        :root {
-            --primary:   #0A2E5C;
-            --accent:    #FF9933;
-            --accent-dk: #e68a2e;
-            --success:   #138808;
-            --error:     #C62828;
-            --warning:   #F59E0B;
-            --white:     #FFFFFF;
-            --bg:        #F0F2F5;
-            --surface:   #FFFFFF;
-            --border:    #E2E8F0;
-            --muted:     #64748B;
-            --sidebar-w: 260px;
-            --r:         12px;
-            --sh:        0 1px 3px rgba(0,0,0,0.07), 0 4px 16px rgba(0,0,0,0.05);
-            --sh-lg:     0 8px 32px rgba(0,0,0,0.12);
-        }
-        * { margin:0; padding:0; box-sizing:border-box; }
-        body { font-family:'DM Sans',sans-serif; background:var(--bg); color:#1E293B; overflow-x:hidden; }
+    /* ══════════════════════════════════════
+       TOKENS
+    ══════════════════════════════════════ */
+    :root {
+        --primary:    #0A2558;
+        --primary-dk: #06173a;
+        --primary-lt: #1a3d7c;
+        --accent:     #E8842A;
+        --green:      #0e7c3b;
+        --green-lt:   #16a34a;
+        --white:      #fff;
+        --bg:         #F0F2F8;
+        --text:       #1c2b4a;
+        --muted:      #6b7a99;
+        --border:     #e2e8f0;
+        --shadow:     0 4px 24px rgba(10,37,88,.09);
+        --shadow-lg:  0 14px 44px rgba(10,37,88,.16);
+        --sw:         270px;
+        --sw-col:     70px;
+        --th:         66px;
+        --strip:      5px;
+    }
+    *,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{font-family:'DM Sans','Noto Sans Devanagari',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden}
 
-        .tricolor { height:4px; background:linear-gradient(to right,#FF9933 33.33%,#fff 33.33% 66.66%,#138808 66.66%); position:fixed; top:0; left:0; right:0; z-index:1100; }
+    /* ── LOADER ─────────────────────────── */
+    #loader{position:fixed;inset:0;z-index:9999;background:var(--primary-dk);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .65s ease,visibility .65s ease}
+    #loader.gone{opacity:0;visibility:hidden;pointer-events:none}
+    .ckr{width:88px;height:88px;animation:spin-ck 1.2s linear infinite}
+    .ckr svg{width:100%;height:100%}
+    @keyframes spin-ck{to{transform:rotate(360deg)}}
+    .ldr-txt{margin-top:22px;color:rgba(255,255,255,.72);font-size:12px;font-weight:600;letter-spacing:2.5px;text-transform:uppercase;animation:ldr-p 1.5s ease-in-out infinite}
+    @keyframes ldr-p{0%,100%{opacity:1}50%{opacity:.3}}
 
-        /* SIDEBAR */
-        .sidebar { position:fixed; left:0; top:4px; bottom:0; width:var(--sidebar-w); background:var(--primary); color:var(--white); z-index:1000; overflow-y:auto; display:flex; flex-direction:column; }
-        .sb-logo { padding:22px 20px 18px; border-bottom:1px solid rgba(255,255,255,0.08); display:flex; align-items:center; gap:12px; }
-        .sb-logo-icon { width:40px; height:40px; background:var(--accent); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
-        .sb-logo h4 { font-size:15px; font-weight:700; }
-        .sb-logo p  { font-size:11px; opacity:.6; margin-top:2px; }
-        .sb-nav { padding:12px; flex:1; }
-        .sb-lbl { font-size:10px; font-weight:700; letter-spacing:1.2px; color:rgba(255,255,255,.35); padding:12px 8px 6px; text-transform:uppercase; }
-        .sb-item { display:flex; align-items:center; gap:12px; padding:10px 12px; border-radius:8px; color:rgba(255,255,255,.75); text-decoration:none; font-size:14px; font-weight:500; transition:all .2s; margin-bottom:2px; position:relative; }
-        .sb-item:hover { background:rgba(255,255,255,.08); color:var(--white); }
-        .sb-item.active { background:rgba(255,153,51,.2); color:var(--accent); }
-        .sb-item.active::before { content:''; position:absolute; left:0; top:20%; bottom:20%; width:3px; background:var(--accent); border-radius:0 3px 3px 0; }
-        .sb-item i { width:18px; text-align:center; font-size:14px; }
-        .sb-foot { padding:16px 20px; border-top:1px solid rgba(255,255,255,.08); }
-        .sb-user { display:flex; align-items:center; gap:12px; }
-        .sb-av { width:36px; height:36px; border-radius:10px; background:var(--accent); display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700; flex-shrink:0; }
-        .sb-name { font-size:13px; font-weight:600; }
-        .sb-role { font-size:11px; color:rgba(255,255,255,.5); margin-top:1px; }
+    /* ── TRICOLOR ───────────────────────── */
+    .tricolor{height:var(--strip);background:linear-gradient(to right,#FF9933 0%,#FF9933 33.33%,#fff 33.33%,#fff 66.66%,#138808 66.66%,#138808 100%);position:fixed;top:0;left:0;right:0;z-index:1200}
 
-        /* MAIN */
-        .main { margin-left:var(--sidebar-w); padding:28px; min-height:100vh; margin-top:4px; }
+    /* ── SIDEBAR ────────────────────────── */
+    .sidebar{position:fixed;top:var(--strip);left:0;bottom:0;width:var(--sw);background:linear-gradient(180deg,var(--primary-dk) 0%,var(--primary) 60%,#1a4d8f 100%);color:#fff;z-index:1000;display:flex;flex-direction:column;overflow:hidden;box-shadow:4px 0 28px rgba(6,23,58,.32);transition:width .34s cubic-bezier(.4,0,.2,1)}
+    .sidebar::after{content:'';position:absolute;inset:0;pointer-events:none;background:url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.022'%3E%3Cpath d='M20 18v-2h-2v2h-2v2h2v2h2v-2h2v-2h-2z'/%3E%3C/g%3E%3C/svg%3E")}
+    body.sb-col .sidebar{width:var(--sw-col)}
+    body.sb-col .sb-head{padding:18px 0;justify-content:center;gap:0}
+    body.sb-col .sb-head-text{display:none}
+    body.sb-col .sb-foot{padding:14px 0;justify-content:center;gap:0}
+    body.sb-col .u-info{display:none}
+    body.sb-col .nav-section-label{display:none}
+    body.sb-col .sidebar-label{display:none}
+    body.sb-col .badge-count{display:none}
+    body.sb-col .nav-item-inner{padding:13px 0;justify-content:center;gap:0}
+    body.sb-col .nav-item{position:relative}
+    body.sb-col .nav-item-inner::after{content:attr(data-tip);position:fixed;left:calc(var(--sw-col)+12px);background:var(--primary-dk);color:#fff;font-size:12px;font-weight:600;padding:5px 12px;border-radius:7px;white-space:nowrap;pointer-events:none;opacity:0;transition:opacity .18s;z-index:2000;box-shadow:0 4px 14px rgba(0,0,0,.28);transform:translateY(-50%)}
+    body.sb-col .nav-item:hover .nav-item-inner::after{opacity:1}
+    @media(max-width:991px){.sidebar{transform:translateX(-100%);width:var(--sw) !important;transition:transform .32s cubic-bezier(.4,0,.2,1)}body.sb-open .sidebar{transform:translateX(0)}body.sb-open .sb-backdrop{display:block}.main{margin-left:0 !important}}
+    .sb-backdrop{display:none;position:fixed;inset:0;z-index:999;background:rgba(6,23,58,.52);backdrop-filter:blur(2px);animation:bdfade .25s ease}
+    @keyframes bdfade{from{opacity:0}to{opacity:1}}
+    .sb-tog{position:fixed;top:calc(var(--strip) + var(--th)/2 - 13px);left:calc(var(--sw) - 13px);width:26px;height:26px;border-radius:50%;background:var(--accent);border:2.5px solid var(--bg);color:#fff;font-size:10px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:1100;box-shadow:0 2px 10px rgba(232,132,42,.5);transition:left .34s cubic-bezier(.4,0,.2,1),transform .2s}
+    body.sb-col .sb-tog{left:calc(var(--sw-col) - 13px)}
+    .sb-tog:hover{transform:scale(1.18)}
+    @media(max-width:991px){.sb-tog{display:none}}
+    .mob-ham{display:none;position:fixed;top:calc(var(--strip) + var(--th)/2 - 18px);left:14px;width:36px;height:36px;border-radius:8px;background:var(--primary);border:none;color:#fff;font-size:15px;cursor:pointer;z-index:1100;align-items:center;justify-content:center;box-shadow:0 2px 12px rgba(10,37,88,.28);transition:background .2s}
+    .mob-ham:hover{background:var(--primary-lt)}
+    @media(max-width:991px){.mob-ham{display:flex}}
+    .sb-head{padding:20px 18px 16px;border-bottom:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:12px;flex-shrink:0;min-height:70px;position:relative;z-index:1}
+    .sb-logo{width:36px;height:36px;flex-shrink:0;background:rgba(232,132,42,.16);border:1px solid rgba(232,132,42,.32);border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:17px;color:var(--accent)}
+    .sb-head-text h4{font-size:13.5px;font-weight:700;line-height:1.2;white-space:nowrap}
+    .sb-head-text p{font-size:10px;opacity:.55;margin:0;white-space:nowrap}
+    .sb-nav{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 0;position:relative;z-index:1}
+    .sb-nav::-webkit-scrollbar{width:2px}
+    .sb-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:2px}
+    .nav-section-label{display:block;font-size:9px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:rgba(255,255,255,.3);padding:14px 20px 5px;white-space:nowrap;overflow:hidden}
+    .nav-item{display:block;position:relative}
+    .nav-item-inner{display:flex;flex-direction:row;align-items:center;gap:12px;padding:11px 20px;width:100%;color:rgba(255,255,255,.78);text-decoration:none;font-size:13.5px;font-weight:500;white-space:nowrap;position:relative;overflow:hidden;transition:background .22s,color .22s}
+    .nav-item-inner::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:var(--accent);transform:scaleY(0);transition:transform .22s;border-radius:0 2px 2px 0}
+    .nav-item-inner:hover,.nav-item-inner.active{color:#fff;background:rgba(255,255,255,.09)}
+    .nav-item-inner.active::before,.nav-item-inner:hover::before{transform:scaleY(1)}
+    .nav-item-inner i{width:20px;min-width:20px;text-align:center;font-size:15px;flex-shrink:0;transition:color .22s}
+    .nav-item-inner.active i{color:var(--accent)}
+    .sidebar-label{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+    .badge-count{flex-shrink:0;background:var(--accent);color:#fff;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px}
+    .badge-count.red{background:#c62828}
+    .sb-foot{padding:13px 16px;border-top:1px solid rgba(255,255,255,.1);display:flex;align-items:center;gap:10px;flex-shrink:0;position:relative;z-index:1}
+    .u-av{width:36px;height:36px;border-radius:50%;flex-shrink:0;background:linear-gradient(135deg,var(--accent),#c96818);display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:700}
+    .u-name{font-size:12.5px;font-weight:700;white-space:nowrap}
+    .u-role{font-size:10px;opacity:.55;white-space:nowrap}
 
-        /* TOPBAR */
-        .topbar { background:var(--surface); border-radius:var(--r); box-shadow:var(--sh); padding:20px 24px; margin-bottom:24px; display:flex; justify-content:space-between; align-items:center; }
-        .page-ttl h2 { font-size:22px; font-weight:700; color:var(--primary); letter-spacing:-.5px; }
-        .page-ttl p  { font-size:13px; color:var(--muted); margin-top:3px; }
-        .topbar-acts { display:flex; gap:10px; }
-        .btn { padding:9px 18px; border:none; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; transition:all .2s; display:flex; align-items:center; gap:7px; font-family:inherit; }
-        .btn-primary { background:var(--accent); color:var(--white); }
-        .btn-primary:hover { background:var(--accent-dk); transform:translateY(-1px); box-shadow:0 4px 12px rgba(255,153,51,.35); }
-        .btn-ghost { background:var(--bg); color:var(--primary); }
-        .btn-ghost:hover { background:#e2e8f0; }
+    /* ── MAIN ───────────────────────────── */
+    .main{margin-left:var(--sw);margin-top:var(--strip);min-height:calc(100vh - var(--strip));transition:margin-left .34s cubic-bezier(.4,0,.2,1)}
+    body.sb-col .main{margin-left:var(--sw-col)}
 
-        /* ERROR */
-        .err-banner { background:#fff1f2; border:1px solid #fecdd3; color:var(--error); padding:12px 16px; border-radius:10px; margin-bottom:20px; display:none; align-items:center; gap:10px; font-size:13px; }
-        .err-banner.show { display:flex; }
+    /* ── TOPBAR ─────────────────────────── */
+    .topbar{background:#fff;padding:0 26px;height:var(--th);display:flex;align-items:center;justify-content:space-between;gap:14px;box-shadow:0 2px 18px rgba(10,37,88,.07);border-bottom:1px solid var(--border);position:sticky;top:var(--strip);z-index:900}
+    @media(max-width:991px){.topbar{padding-left:62px}}
+    .pg-title{font-family:'Playfair Display',serif;font-size:19px;font-weight:700;color:var(--primary);line-height:1.1}
+    .pg-sub{font-size:11.5px;color:var(--muted);margin-top:2px}
+    .tb-right{display:flex;align-items:center;gap:9px;flex-shrink:0}
+    .btn-t{padding:8px 17px;border:none;border-radius:7px;font-size:13px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:7px;font-family:inherit;transition:all .22s}
+    .btn-pri{background:var(--accent);color:#fff;box-shadow:0 3px 14px rgba(232,132,42,.32)}
+    .btn-pri:hover{background:#d07020;transform:translateY(-2px);box-shadow:0 7px 22px rgba(232,132,42,.42)}
+    .btn-sec{background:var(--bg);color:var(--primary);border:1px solid var(--border)}
+    .btn-sec:hover{background:#e0e5f4}
+    .btn-grn{background:#e8f5e9;color:var(--green);border:1px solid #a5d6a7}
+    .btn-grn:hover{background:#c8e6c9}
+    @media(max-width:575px){.btn-lbl{display:none}}
 
-        /* STATS */
-        .stats-row { display:grid; grid-template-columns:repeat(5,1fr); gap:16px; margin-bottom:24px; }
-        .stat-card { background:var(--surface); border-radius:var(--r); box-shadow:var(--sh); padding:18px 20px; transition:transform .2s,box-shadow .2s; display:flex; align-items:center; gap:14px; }
-        .stat-card:hover { transform:translateY(-3px); box-shadow:var(--sh-lg); }
-        .s-icon { width:44px; height:44px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:18px; flex-shrink:0; }
-        .si-green  { background:#dcfce7; color:var(--success); }
-        .si-gray   { background:#f1f5f9; color:#475569; }
-        .si-blue   { background:#dbeafe; color:#2563eb; }
-        .si-orange { background:#fff3e0; color:var(--accent); }
-        .si-teal   { background:#ccfbf1; color:#0d9488; }
-        .s-val { font-size:26px; font-weight:700; color:var(--primary); line-height:1; }
-        .s-lbl { font-size:12px; color:var(--muted); margin-top:3px; font-weight:500; }
+    /* ── CONTENT ────────────────────────── */
+    .cwrap{padding:22px 26px}
+    @media(max-width:575px){.cwrap{padding:14px 12px}}
 
-        /* ANALYTICS GRID */
-        .analytics-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:20px; margin-bottom:24px; }
-        .analytics-card { background:var(--surface); border-radius:var(--r); box-shadow:var(--sh); padding:22px; }
-        .ac-title { font-size:14px; font-weight:700; color:var(--primary); margin-bottom:16px; display:flex; align-items:center; gap:8px; }
-        .ac-title i { color:var(--accent); }
-        .chart-wrap { position:relative; height:200px; }
+    /* ── ERR BANNER ─────────────────────── */
+    .err-banner{display:none;align-items:center;gap:10px;padding:11px 16px;border-radius:10px;background:#ffebee;border:1px solid #ef9a9a;color:#c62828;font-size:13px;margin-bottom:18px}
+    .err-banner.show{display:flex}
 
-        /* SLA summary */
-        .sla-rows { display:flex; flex-direction:column; gap:8px; }
-        .sla-row { display:flex; justify-content:space-between; align-items:center; padding:10px 14px; border-radius:8px; font-size:13px; }
-        .sla-on   { background:#f0fdf4; color:#15803d; }
-        .sla-del  { background:#fff7ed; color:#c2410c; }
-        .sla-crit { background:#fef2f2; color:#b91c1c; }
-        .sla-lbl  { font-weight:600; display:flex; align-items:center; gap:7px; }
-        .sla-num  { font-weight:700; font-size:18px; }
+    /* ── STATS ──────────────────────────── */
+    .stats-row{display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-bottom:20px}
+    @media(max-width:1200px){.stats-row{grid-template-columns:repeat(3,1fr)}}
+    @media(max-width:768px){.stats-row{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:480px){.stats-row{grid-template-columns:1fr}}
+    .sc{background:#fff;border-radius:14px;padding:18px 16px;box-shadow:var(--shadow);border:1px solid transparent;position:relative;overflow:hidden;transition:all .28s;animation:rise .5s ease both;display:flex;align-items:center;gap:14px}
+    .sc:nth-child(1){animation-delay:.04s}.sc:nth-child(2){animation-delay:.1s}.sc:nth-child(3){animation-delay:.16s}.sc:nth-child(4){animation-delay:.22s}.sc:nth-child(5){animation-delay:.28s}
+    @keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:translateY(0)}}
+    .sc::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;transform:scaleX(0);transform-origin:left;transition:transform .35s ease}
+    .sc:hover{transform:translateY(-4px);box-shadow:var(--shadow-lg);border-color:var(--border)}
+    .sc:hover::after{transform:scaleX(1)}
+    .sc.gr::after{background:var(--green)}.sc.gy::after{background:var(--muted)}.sc.bl::after{background:#0d6efd}.sc.or::after{background:var(--accent)}.sc.te::after{background:#0d9488}
+    .si{width:46px;height:46px;border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;flex-shrink:0}
+    .si.gr{background:linear-gradient(135deg,#16a34a,#0e7c3b);box-shadow:0 5px 14px rgba(14,124,59,.28)}
+    .si.gy{background:linear-gradient(135deg,#6b7a99,#4a5568);box-shadow:0 5px 14px rgba(107,122,153,.28)}
+    .si.bl{background:linear-gradient(135deg,#0d6efd,#0b5ed7);box-shadow:0 5px 14px rgba(13,110,253,.28)}
+    .si.or{background:linear-gradient(135deg,var(--accent),#c96818);box-shadow:0 5px 14px rgba(232,132,42,.28)}
+    .si.te{background:linear-gradient(135deg,#0d9488,#0f766e);box-shadow:0 5px 14px rgba(13,148,136,.28)}
+    .sv{font-family:'Playfair Display',serif;font-size:30px;font-weight:700;color:var(--primary);line-height:1;margin-bottom:3px}
+    .sl{font-size:12px;color:var(--muted);font-weight:500}
 
-        /* Officer perf */
-        .perf-list { display:flex; flex-direction:column; gap:10px; margin-top:18px; }
-        .perf-item { display:flex; align-items:center; gap:10px; }
-        .perf-av { width:32px; height:32px; border-radius:8px; background:var(--primary); color:var(--white); display:flex; align-items:center; justify-content:center; font-size:12px; font-weight:700; flex-shrink:0; }
-        .perf-bw { flex:1; }
-        .perf-nm  { font-size:12px; font-weight:600; margin-bottom:3px; display:flex; justify-content:space-between; }
-        .perf-bg  { height:6px; background:#F1F5F9; border-radius:3px; overflow:hidden; }
-        .perf-bar { height:100%; border-radius:3px; background:linear-gradient(90deg,var(--success),#22c55e); transition:width .8s ease; }
-        .perf-cnt { font-size:11px; font-weight:700; color:var(--success); }
+    /* ── ANALYTICS GRID ─────────────────── */
+    .analytics-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:18px;margin-bottom:20px}
+    @media(max-width:1200px){.analytics-grid{grid-template-columns:1fr 1fr}}
+    @media(max-width:768px){.analytics-grid{grid-template-columns:1fr}}
 
-        /* FILTERS */
-        .filter-bar { background:var(--surface); border-radius:var(--r); box-shadow:var(--sh); padding:18px 20px; margin-bottom:20px; }
-        .filter-row { display:grid; grid-template-columns:1fr 1fr 1fr 1fr 2fr auto; gap:12px; align-items:end; }
-        .fg label { font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.6px; display:block; margin-bottom:6px; }
-        .fg select,.fg input { width:100%; padding:9px 12px; border:1.5px solid var(--border); border-radius:8px; font-size:13px; font-family:inherit; background:var(--bg); color:#1E293B; transition:border-color .2s; appearance:none; }
-        .fg select:focus,.fg input:focus { outline:none; border-color:var(--primary); background:var(--white); }
-        .btn-clear { padding:9px 14px; border:1.5px solid var(--border); background:var(--white); border-radius:8px; cursor:pointer; font-size:13px; color:var(--muted); font-family:inherit; transition:all .2s; }
-        .btn-clear:hover { border-color:var(--error); color:var(--error); }
+    .ac{background:#fff;border-radius:14px;padding:22px;box-shadow:var(--shadow);animation:rise .5s .3s ease both}
+    .ac-title{font-family:'Playfair Display',serif;font-size:15px;font-weight:700;color:var(--primary);margin-bottom:16px;display:flex;align-items:center;gap:8px}
+    .ac-title i{color:var(--accent);font-size:14px}
+    .chart-wrap{position:relative;height:210px}
 
-        /* TABLE */
-        .table-card { background:var(--surface); border-radius:var(--r); box-shadow:var(--sh); overflow:hidden; margin-bottom:24px; }
-        .table-head { padding:18px 22px; border-bottom:1px solid var(--border); display:flex; justify-content:space-between; align-items:center; }
-        .table-head h5 { font-size:16px; font-weight:700; color:var(--primary); }
-        .count-chip { background:#dcfce7; color:#15803d; font-size:12px; font-weight:700; padding:3px 10px; border-radius:20px; }
-        table { width:100%; border-collapse:collapse; }
-        thead tr { background:#F8FAFC; }
-        th { padding:11px 14px; text-align:left; font-size:11px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.6px; white-space:nowrap; border-bottom:1px solid var(--border); }
-        td { padding:13px 14px; font-size:13px; border-bottom:1px solid #F1F5F9; vertical-align:middle; }
-        tbody tr:hover { background:#F8FAFC; }
-        tbody tr:last-child td { border-bottom:none; }
+    /* SLA rows */
+    .sla-rows{display:flex;flex-direction:column;gap:8px}
+    .sla-row{display:flex;justify-content:space-between;align-items:center;padding:11px 14px;border-radius:9px;font-size:13px}
+    .sla-on  {background:#f0fdf4;color:#15803d}
+    .sla-del {background:#fff7ed;color:#c2410c}
+    .sla-crit{background:#fef2f2;color:#b91c1c}
+    .sla-lbl{font-weight:600;display:flex;align-items:center;gap:7px}
+    .sla-num{font-family:'Playfair Display',serif;font-size:20px;font-weight:700}
 
-        .id-mono { font-family:'DM Mono',monospace; font-size:12px; font-weight:500; color:var(--primary); }
-        .nm-bold { font-weight:600; }
-        .mob-mono { font-family:'DM Mono',monospace; font-size:12px; }
+    /* officer performance */
+    .perf-list{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+    .perf-item{display:flex;align-items:center;gap:10px}
+    .perf-av{width:32px;height:32px;border-radius:9px;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0}
+    .perf-bw{flex:1}
+    .perf-nm{font-size:12px;font-weight:600;margin-bottom:3px;display:flex;justify-content:space-between}
+    .perf-bg{height:6px;background:var(--bg);border-radius:3px;overflow:hidden}
+    .perf-bar{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--green),#22c55e);transition:width .8s ease}
+    .perf-cnt{font-size:11px;font-weight:700;color:var(--green)}
 
-        .badge { display:inline-flex; align-items:center; gap:4px; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:600; white-space:nowrap; }
-        .b-resolved { background:#dcfce7; color:#15803d; }
-        .b-closed   { background:#f1f5f9; color:#475569; }
-        .b-low      { background:#f0fdf4; color:#15803d; }
-        .b-medium   { background:#fff7ed; color:#c2410c; }
-        .b-high     { background:#fef2f2; color:#b91c1c; }
-        .b-critical { background:#7f1d1d; color:#fef2f2; }
+    /* ── FILTER CARD ────────────────────── */
+    .fcard{background:#fff;border-radius:14px;padding:18px 22px;box-shadow:var(--shadow);margin-bottom:18px;animation:rise .5s .36s ease both}
+    .fcard-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .fcard-head h6{font-size:12px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin:0}
+    .frow{display:grid;grid-template-columns:1fr 1fr 1fr 1fr 2fr auto;gap:12px;align-items:end}
+    @media(max-width:1000px){.frow{grid-template-columns:1fr 1fr 1fr}}
+    @media(max-width:600px){.frow{grid-template-columns:1fr}}
+    .fg label{font-size:10.5px;font-weight:700;color:var(--muted);margin-bottom:5px;display:block;text-transform:uppercase;letter-spacing:.5px}
+    .fg select,.fg input{width:100%;padding:8px 11px;border:1.5px solid var(--border);border-radius:8px;font-size:13px;font-family:inherit;color:var(--text);background:#fff;-webkit-appearance:none;appearance:none;transition:border-color .2s,box-shadow .2s;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b7a99'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:28px}
+    .fg input{background-image:none;padding-right:11px}
+    .fg select:focus,.fg input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(10,37,88,.07)}
+    .btn-clear{padding:8px 13px;border:1.5px solid var(--border);background:#fff;border-radius:8px;cursor:pointer;font-size:13px;color:var(--muted);transition:all .2s;font-family:inherit}
+    .btn-clear:hover{border-color:#c62828;color:#c62828}
 
-        .res-time { font-size:12px; font-weight:600; }
-        .rt-fast { color:var(--success); }
-        .rt-ok   { color:#0369a1; }
-        .rt-slow { color:var(--error); }
+    /* ── TABLE CARD ─────────────────────── */
+    .tcard{background:#fff;border-radius:14px;box-shadow:var(--shadow);overflow:hidden;animation:rise .5s .42s ease both}
+    .tcard-head{padding:17px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px}
+    .tcard-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--primary)}
+    .cnt-pill{background:#dcfce7;color:#15803d;font-size:12px;font-weight:700;padding:4px 12px;border-radius:20px}
+    .tbl-wrap{overflow-x:auto}
+    .ctbl{width:100%;border-collapse:collapse}
+    .ctbl thead tr{background:#f8fafc}
+    .ctbl th{padding:11px 13px;text-align:left;font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.6px;white-space:nowrap;border-bottom:1px solid var(--border)}
+    .ctbl td{padding:12px 13px;font-size:13px;border-bottom:1px solid #f1f5f9;vertical-align:middle}
+    .ctbl tr:hover td{background:#f8fafc}
+    .ctbl tr:last-child td{border-bottom:none}
+    .id-mono{font-family:'DM Mono',monospace;font-size:12px;font-weight:500;color:var(--primary)}
+    .nm-bold{font-weight:600;color:var(--text)}
+    .mob-mono{font-family:'DM Mono',monospace;font-size:11.5px;color:var(--muted)}
+    .dept-chip{font-size:11.5px;background:#eef1fb;padding:3px 9px;border-radius:6px;color:var(--primary);font-weight:600}
 
-        .sla-badge { font-size:10px; font-weight:700; padding:3px 8px; border-radius:6px; }
-        .sla-badge-on   { background:#dcfce7; color:#15803d; }
-        .sla-badge-del  { background:#fff3e0; color:#c2410c; }
-        .sla-badge-crit { background:#fee2e2; color:#b91c1c; }
+    /* badges */
+    .badge{display:inline-block;padding:4px 11px;border-radius:20px;font-size:11px;font-weight:700;white-space:nowrap}
+    .b-resolved{background:#dcfce7;color:#15803d}
+    .b-closed  {background:#f1f5f9;color:#475569}
+    .b-low     {background:#e8f5e9;color:#2e7d32}
+    .b-medium  {background:#fff3e0;color:#e65100}
+    .b-high    {background:#ffebee;color:#c62828}
+    .b-critical{background:#b71c1c;color:#fff}
 
-        .acts { display:flex; gap:5px; }
-        .ib { width:30px; height:30px; border:none; border-radius:7px; display:flex; align-items:center; justify-content:center; cursor:pointer; transition:all .15s; font-size:12px; }
-        .ib-view:hover { background:#bfdbfe; }
-        .ib-view   { background:#dbeafe; color:#1d4ed8; }
-        .ib-dl     { background:#dcfce7; color:#15803d; }
-        .ib-dl:hover { background:#bbf7d0; }
-        .ib-reopen { background:#fff3e0; color:#c05621; }
-        .ib-reopen:hover { background:#fed7aa; }
+    .res-time{font-size:12px;font-weight:700}
+    .rt-fast{color:var(--green)}.rt-ok{color:#0369a1}.rt-slow{color:#c62828}
 
-        .loading { display:flex; justify-content:center; align-items:center; padding:60px; gap:12px; color:var(--muted); font-size:14px; }
-        .spinner { width:22px; height:22px; border:3px solid var(--border); border-top-color:var(--primary); border-radius:50%; animation:spin .7s linear infinite; }
-        @keyframes spin { to { transform:rotate(360deg); } }
-        .empty { text-align:center; padding:60px 20px; color:var(--muted); }
-        .empty i { font-size:40px; opacity:.25; display:block; margin-bottom:12px; }
+    .sla-badge{font-size:10.5px;font-weight:700;padding:3px 9px;border-radius:7px;white-space:nowrap}
+    .sla-badge-on  {background:#dcfce7;color:#15803d}
+    .sla-badge-del {background:#fff3e0;color:#c2410c}
+    .sla-badge-crit{background:#fee2e2;color:#b91c1c}
 
-        /* MODAL */
-        .overlay { position:fixed; inset:0; background:rgba(15,23,42,.6); backdrop-filter:blur(3px); z-index:2000; display:none; align-items:center; justify-content:center; padding:20px; }
-        .overlay.open { display:flex; }
-        .modal { background:var(--white); border-radius:16px; width:100%; max-width:680px; max-height:88vh; overflow-y:auto; box-shadow:0 24px 80px rgba(0,0,0,.25); animation:mIn .22s ease; }
-        @keyframes mIn { from{opacity:0;transform:scale(.96) translateY(-8px)} to{opacity:1;transform:scale(1) translateY(0)} }
-        .m-head { padding:20px 24px; background:var(--success); color:var(--white); border-radius:16px 16px 0 0; display:flex; justify-content:space-between; align-items:center; }
-        .m-head h5 { font-size:16px; font-weight:700; }
-        .m-x { background:none; border:none; color:rgba(255,255,255,.8); font-size:22px; cursor:pointer; line-height:1; transition:color .2s; }
-        .m-x:hover { color:var(--white); }
-        .m-body { padding:24px; }
-        .m-foot { padding:14px 24px; border-top:1px solid var(--border); display:flex; gap:10px; justify-content:flex-end; }
+    /* action btns */
+    .abtns{display:flex;gap:5px}
+    .abtn{width:29px;height:29px;border:none;border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:12px;transition:all .18s}
+    .abtn-view  {background:#dbeafe;color:#1d4ed8}.abtn-view:hover  {background:#bfdbfe;transform:scale(1.1)}
+    .abtn-dl    {background:#dcfce7;color:#15803d}.abtn-dl:hover    {background:#bbf7d0;transform:scale(1.1)}
+    .abtn-reopen{background:#fff3e0;color:#c05621}.abtn-reopen:hover{background:#fed7aa;transform:scale(1.1)}
 
-        .res-banner { background:linear-gradient(135deg,#f0fdf4,#dcfce7); border-radius:10px; padding:14px 18px; display:flex; align-items:center; gap:14px; margin-bottom:20px; }
-        .res-banner i { font-size:28px; color:var(--success); }
-        .rb-title { font-size:14px; font-weight:700; color:#15803d; }
-        .rb-sub   { font-size:12px; color:#475569; margin-top:2px; }
+    /* loading */
+    .ld-row{text-align:center;padding:52px}
+    .spin-r{width:34px;height:34px;border:3px solid var(--border);border-top-color:var(--primary);border-radius:50%;animation:sp .7s linear infinite;margin:0 auto 12px}
+    @keyframes sp{to{transform:rotate(360deg)}}
+    .ld-txt{font-size:13px;color:var(--muted)}
+    .empty-state{text-align:center;padding:60px 20px;color:var(--muted)}
+    .empty-state i{font-size:40px;opacity:.25;display:block;margin-bottom:12px}
 
-        .detail-grid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:20px; }
-        .di label { font-size:10px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.7px; display:block; margin-bottom:4px; }
-        .di span  { font-size:13px; font-weight:500; color:#1E293B; }
-        .desc-box { background:#F8FAFC; border-radius:10px; padding:14px; font-size:13px; line-height:1.7; color:#475569; border-left:3px solid var(--success); }
+    /* ── MODAL ──────────────────────────── */
+    .moverlay{position:fixed;inset:0;background:rgba(6,23,58,.52);backdrop-filter:blur(3px);z-index:2000;display:none;align-items:center;justify-content:center;padding:18px}
+    .moverlay.open{display:flex}
+    .mbox{background:#fff;border-radius:16px;width:100%;max-width:700px;max-height:92vh;overflow-y:auto;box-shadow:0 24px 64px rgba(6,23,58,.38);animation:min-a .28s ease}
+    @keyframes min-a{from{opacity:0;transform:scale(.94) translateY(-14px)}to{opacity:1;transform:scale(1) translateY(0)}}
+    .mhdr{background:linear-gradient(135deg,var(--green),#16a34a);color:#fff;padding:19px 24px;border-radius:16px 16px 0 0;display:flex;align-items:center;justify-content:space-between}
+    .mhdr h5{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;margin:0}
+    .mclose{background:none;border:none;color:rgba(255,255,255,.8);font-size:21px;cursor:pointer;line-height:1;transition:color .2s}
+    .mclose:hover{color:#fff}
+    .mbody{padding:24px}.mfoot{padding:13px 24px;border-top:1px solid var(--border);display:flex;gap:10px;justify-content:flex-end}
 
-        .toast-wrap { position:fixed; top:20px; right:20px; z-index:3000; display:flex; flex-direction:column; gap:8px; }
-        .toast { background:var(--white); border-radius:10px; padding:13px 16px; box-shadow:0 4px 24px rgba(0,0,0,.12); display:flex; align-items:center; gap:10px; font-size:13px; min-width:270px; font-weight:500; animation:tIn .25s ease; border-left:4px solid var(--success); }
-        .toast.warn { border-left-color:var(--warning); }
-        .toast.err  { border-left-color:var(--error); }
-        @keyframes tIn { from{opacity:0;transform:translateX(30px)} to{opacity:1;transform:translateX(0)} }
+    /* resolution banner */
+    .res-banner{background:linear-gradient(135deg,#f0fdf4,#dcfce7);border-radius:11px;padding:14px 18px;display:flex;align-items:center;gap:14px;margin-bottom:20px}
+    .res-banner i{font-size:28px;color:var(--green)}
+    .rb-title{font-size:14px;font-weight:700;color:#15803d}
+    .rb-sub{font-size:12px;color:var(--muted);margin-top:2px}
 
-        @media(max-width:1200px) { .stats-row { grid-template-columns:repeat(3,1fr); } .analytics-grid { grid-template-columns:1fr 1fr; } }
-        @media(max-width:992px)  { .sidebar { transform:translateX(-100%); } .main { margin-left:0; } }
-        @media(max-width:768px)  { .filter-row { grid-template-columns:1fr; } .detail-grid { grid-template-columns:1fr; } .analytics-grid { grid-template-columns:1fr; } }
+    /* detail grid */
+    .dgrid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:20px}
+    @media(max-width:520px){.dgrid{grid-column:1fr}}
+    .di label{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:3px}
+    .di span{font-size:13.5px;color:var(--text);font-weight:500}
+    .desc-box{background:var(--bg);border-radius:10px;padding:14px;font-size:13.5px;line-height:1.7;color:var(--muted);border-left:4px solid var(--green)}
+
+    /* ── TOAST ──────────────────────────── */
+    .tcont{position:fixed;top:22px;right:22px;z-index:3000;display:flex;flex-direction:column;gap:9px;pointer-events:none}
+    .toast{background:#fff;border-radius:10px;padding:12px 17px;display:flex;align-items:center;gap:10px;font-size:13px;min-width:260px;box-shadow:0 6px 24px rgba(10,37,88,.16);animation:tin .3s ease;border-left:4px solid #4caf50;pointer-events:auto}
+    .toast.warning{border-left-color:var(--accent)}.toast.error{border-left-color:#c62828}
+    @keyframes tin{from{opacity:0;transform:translateX(34px)}to{opacity:1;transform:translateX(0)}}
+    .row-anim{animation:rf .3s ease both}
+    @keyframes rf{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
     </style>
 </head>
 <body>
-<div class="tricolor"></div>
-<div class="toast-wrap" id="toasts"></div>
 
-<!-- SIDEBAR -->
-<aside class="sidebar">
-    <div class="sb-logo">
-        <div class="sb-logo-icon"><i class="fas fa-landmark" style="color:#fff"></i></div>
-        <div><h4>Gov Portal</h4><p>Grievance Management</p></div>
+<div class="tricolor"></div>
+
+<!-- LOADER -->
+<div id="loader">
+    <div class="ckr">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="46" stroke="#FF9933" stroke-width="3.5" fill="none"/>
+            <circle cx="50" cy="50" r="8" fill="#138808"/>
+            <g stroke="#fff" stroke-width="1.6" opacity=".9">
+                <line x1="50" y1="50" x2="50" y2="6"/><line x1="50" y1="50" x2="66" y2="9"/>
+                <line x1="50" y1="50" x2="79" y2="21"/><line x1="50" y1="50" x2="86" y2="34"/>
+                <line x1="50" y1="50" x2="89" y2="50"/><line x1="50" y1="50" x2="86" y2="66"/>
+                <line x1="50" y1="50" x2="79" y2="79"/><line x1="50" y1="50" x2="66" y2="91"/>
+                <line x1="50" y1="50" x2="50" y2="94"/><line x1="50" y1="50" x2="34" y2="91"/>
+                <line x1="50" y1="50" x2="21" y2="79"/><line x1="50" y1="50" x2="14" y2="66"/>
+                <line x1="50" y1="50" x2="11" y2="50"/><line x1="50" y1="50" x2="14" y2="34"/>
+                <line x1="50" y1="50" x2="21" y2="21"/><line x1="50" y1="50" x2="34" y2="9"/>
+                <line x1="50" y1="50" x2="58" y2="7.5"/><line x1="50" y1="50" x2="73" y2="14"/>
+                <line x1="50" y1="50" x2="83" y2="27"/><line x1="50" y1="50" x2="88" y2="42"/>
+                <line x1="50" y1="50" x2="88" y2="58"/><line x1="50" y1="50" x2="83" y2="73"/>
+                <line x1="50" y1="50" x2="73" y2="86"/><line x1="50" y1="50" x2="58" y2="92.5"/>
+            </g>
+            <circle cx="50" cy="50" r="3.5" fill="#FF9933"/>
+        </svg>
     </div>
-    <div class="sb-nav">
-        <div class="sb-lbl">Navigation</div>
-        <a href="dashboard.html"         class="sb-item"><i class="fas fa-th-large"></i> Dashboard</a>
-        <a href="all-complaints.html"    class="sb-item"><i class="fas fa-file-alt"></i> All Complaints</a>
-        <a href="pending.html"           class="sb-item"><i class="fas fa-clock"></i> Pending</a>
-        <a href="resolved.html"          class="sb-item active"><i class="fas fa-check-circle"></i> Resolved</a>
-        <a href="admin-departments.html" class="sb-item"><i class="fas fa-building"></i> Departments</a>
-        <a href="analytics.html"         class="sb-item"><i class="fas fa-chart-bar"></i> Analytics</a>
-        <a href="notification.html"      class="sb-item"><i class="fas fa-bell"></i> Notifications</a>
-        <a href="settings.html"          class="sb-item"><i class="fas fa-cog"></i> Settings</a>
-        <a href="login.html" onclick="logout()" class="sb-item"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    <p class="ldr-txt">Loading Portal…</p>
+</div>
+
+<div class="tcont" id="tc"></div>
+<div class="sb-backdrop" id="sbd" onclick="closeMob()"></div>
+<button class="sb-tog" id="sbTog"><i class="fas fa-chevron-left" id="togIco"></i></button>
+<button class="mob-ham" onclick="openMob()"><i class="fas fa-bars"></i></button>
+
+<!-- ════════ SIDEBAR ════════ -->
+<aside class="sidebar" id="sidebar">
+    <div class="sb-head">
+        <div class="sb-logo"><i class="fas fa-landmark"></i></div>
+        <div class="sb-head-text"><h4>Gov Portal</h4><p>Grievance Management</p></div>
     </div>
+    <nav class="sb-nav">
+        <div class="nav-section-label">Main</div>
+        <div class="nav-item"><a href="dashboard.html" class="nav-item-inner" data-tip="Dashboard"><i class="fas fa-th-large"></i><span class="sidebar-label">Dashboard</span></a></div>
+        <div class="nav-item"><a href="all-complaints.html" class="nav-item-inner" data-tip="All Complaints"><i class="fas fa-file-alt"></i><span class="sidebar-label">All Complaints</span></a></div>
+        <div class="nav-item"><a href="pending.html" class="nav-item-inner" data-tip="Pending"><i class="fas fa-clock"></i><span class="sidebar-label">Pending</span></a></div>
+        <div class="nav-item"><a href="resolved.html" class="nav-item-inner active" data-tip="Resolved"><i class="fas fa-check-circle"></i><span class="sidebar-label">Resolved</span></a></div>
+        <div class="nav-section-label" style="margin-top:6px">Management</div>
+        <div class="nav-item"><a href="admin-departments.html" class="nav-item-inner" data-tip="Departments"><i class="fas fa-building"></i><span class="sidebar-label">Departments</span></a></div>
+        <div class="nav-item"><a href="analytics.html" class="nav-item-inner" data-tip="Analytics"><i class="fas fa-chart-bar"></i><span class="sidebar-label">Analytics</span></a></div>
+        <div class="nav-section-label" style="margin-top:6px">System</div>
+        <div class="nav-item"><a href="notification.html" class="nav-item-inner" data-tip="Notifications"><i class="fas fa-bell"></i><span class="sidebar-label">Notifications</span><span class="badge-count red">3</span></a></div>
+        <div class="nav-item"><a href="settings.html" class="nav-item-inner" data-tip="Settings"><i class="fas fa-cog"></i><span class="sidebar-label">Settings</span></a></div>
+        <div class="nav-item"><a href="#" class="nav-item-inner" data-tip="Logout" onclick="logout();return false"><i class="fas fa-sign-out-alt"></i><span class="sidebar-label">Logout</span></a></div>
+    </nav>
     <div class="sb-foot">
-        <div class="sb-user">
-            <div class="sb-av" id="avatarLetter">?</div>
-            <div><div class="sb-name" id="userName">Officer</div><div class="sb-role" id="userRole">—</div></div>
+        <div class="u-av" id="uAv">A</div>
+        <div class="u-info">
+            <div class="u-name" id="uName">Officer</div>
+            <div class="u-role" id="uRole">—</div>
         </div>
     </div>
 </aside>
 
-<!-- MAIN -->
-<main class="main">
+<!-- ════════ MAIN ════════ -->
+<main class="main" id="mainEl">
 
     <div class="topbar">
-        <div class="page-ttl">
-            <h2>Resolved Complaints</h2>
-            <p>Analytics, SLA tracking &amp; officer performance</p>
+        <div>
+            <div class="pg-title">Resolved Complaints</div>
+            <div class="pg-sub">Analytics, SLA tracking &amp; officer performance</div>
         </div>
-        <div class="topbar-acts">
-            <button class="btn btn-ghost"   onclick="exportCSV()"><i class="fas fa-download"></i> Export CSV</button>
-            <button class="btn btn-ghost"   onclick="bulkReport()"><i class="fas fa-file-alt"></i> Bulk Report</button>
-            <button class="btn btn-primary" onclick="loadComplaints()"><i class="fas fa-sync-alt"></i> Refresh</button>
+        <div class="tb-right">
+            <button class="btn-t btn-sec" onclick="exportCSV()"><i class="fas fa-download"></i><span class="btn-lbl">Export CSV</span></button>
+            <button class="btn-t btn-sec" onclick="bulkReport()"><i class="fas fa-file-alt"></i><span class="btn-lbl">Bulk Report</span></button>
+            <button class="btn-t btn-pri" onclick="loadComplaints()"><i class="fas fa-sync-alt"></i><span class="btn-lbl">Refresh</span></button>
         </div>
     </div>
 
-    <div class="err-banner" id="errBanner">
-        <i class="fas fa-exclamation-circle"></i>
-        <span id="errMsg">Unable to load.</span>
-        <button onclick="loadComplaints()" style="margin-left:auto;background:none;border:1px solid var(--error);color:var(--error);padding:4px 10px;border-radius:6px;cursor:pointer;font-size:12px;font-family:inherit;">Retry</button>
-    </div>
+    <div class="cwrap">
 
-    <!-- STATS -->
-    <div class="stats-row">
-        <div class="stat-card"><div class="s-icon si-green"><i class="fas fa-check-circle"></i></div><div><div class="s-val" id="stTotal">—</div><div class="s-lbl">Total Resolved</div></div></div>
-        <div class="stat-card"><div class="s-icon si-gray"><i class="fas fa-archive"></i></div><div><div class="s-val" id="stClosed">—</div><div class="s-lbl">Closed</div></div></div>
-        <div class="stat-card"><div class="s-icon si-blue"><i class="fas fa-calendar-week"></i></div><div><div class="s-val" id="stWeek">—</div><div class="s-lbl">This Week</div></div></div>
-        <div class="stat-card"><div class="s-icon si-orange"><i class="fas fa-stopwatch"></i></div><div><div class="s-val" id="stAvg">—</div><div class="s-lbl">Avg Resolution</div></div></div>
-        <div class="stat-card"><div class="s-icon si-teal"><i class="fas fa-tachometer-alt"></i></div><div><div class="s-val" id="stSLA">—</div><div class="s-lbl">SLA On-Time %</div></div></div>
-    </div>
-
-    <!-- ANALYTICS -->
-    <div class="analytics-grid">
-
-        <div class="analytics-card">
-            <div class="ac-title"><i class="fas fa-chart-bar"></i> Resolutions by Department</div>
-            <div class="chart-wrap"><canvas id="deptChart"></canvas></div>
+        <!-- ERROR -->
+        <div class="err-banner" id="eb">
+            <i class="fas fa-exclamation-circle"></i>
+            <span id="ebMsg">Unable to load.</span>
+            <button onclick="loadComplaints()" style="margin-left:auto;background:none;border:1px solid #c62828;color:#c62828;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11.5px;font-family:inherit;font-weight:600">Retry</button>
         </div>
 
-        <div class="analytics-card">
-            <div class="ac-title"><i class="fas fa-chart-line"></i> Monthly Resolution Trend</div>
-            <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+        <!-- STATS -->
+        <div class="stats-row">
+            <div class="sc gr"><div class="si gr"><i class="fas fa-check-circle"></i></div><div><div class="sv" id="stTotal">—</div><div class="sl">Total Resolved</div></div></div>
+            <div class="sc gy"><div class="si gy"><i class="fas fa-archive"></i></div><div><div class="sv" id="stClosed">—</div><div class="sl">Closed</div></div></div>
+            <div class="sc bl"><div class="si bl"><i class="fas fa-calendar-week"></i></div><div><div class="sv" id="stWeek">—</div><div class="sl">This Week</div></div></div>
+            <div class="sc or"><div class="si or"><i class="fas fa-stopwatch"></i></div><div><div class="sv" id="stAvg">—</div><div class="sl">Avg Resolution</div></div></div>
+            <div class="sc te"><div class="si te"><i class="fas fa-tachometer-alt"></i></div><div><div class="sv" id="stSLA">—</div><div class="sl">SLA On-Time %</div></div></div>
         </div>
 
-        <div class="analytics-card">
-            <div class="ac-title"><i class="fas fa-shield-alt"></i> SLA Performance</div>
-            <div class="sla-rows">
-                <div class="sla-row sla-on">
-                    <span class="sla-lbl"><i class="fas fa-circle-check"></i> On Time (≤ 3 days)</span>
-                    <span class="sla-num" id="slaOn">—</span>
+        <!-- ANALYTICS GRID -->
+        <div class="analytics-grid">
+
+            <div class="ac">
+                <div class="ac-title"><i class="fas fa-chart-bar"></i>Resolutions by Department</div>
+                <div class="chart-wrap"><canvas id="deptChart"></canvas></div>
+            </div>
+
+            <div class="ac">
+                <div class="ac-title"><i class="fas fa-chart-line"></i>Monthly Resolution Trend</div>
+                <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+            </div>
+
+            <div class="ac">
+                <div class="ac-title"><i class="fas fa-shield-alt"></i>SLA Performance</div>
+                <div class="sla-rows">
+                    <div class="sla-row sla-on">
+                        <span class="sla-lbl"><i class="fas fa-circle-check"></i> On Time (≤ 3 days)</span>
+                        <span class="sla-num" id="slaOn">—</span>
+                    </div>
+                    <div class="sla-row sla-del">
+                        <span class="sla-lbl"><i class="fas fa-clock"></i> Delayed (4–7 days)</span>
+                        <span class="sla-num" id="slaDel">—</span>
+                    </div>
+                    <div class="sla-row sla-crit">
+                        <span class="sla-lbl"><i class="fas fa-triangle-exclamation"></i> Critical (7+ days)</span>
+                        <span class="sla-num" id="slaCrit">—</span>
+                    </div>
                 </div>
-                <div class="sla-row sla-del">
-                    <span class="sla-lbl"><i class="fas fa-clock"></i> Delayed (4–7 days)</span>
-                    <span class="sla-num" id="slaDel">—</span>
+                <div class="ac-title" style="margin-top:20px"><i class="fas fa-user-shield"></i>Officer Performance</div>
+                <div class="perf-list" id="perfList"><div style="color:var(--muted);font-size:13px">Loading…</div></div>
+            </div>
+
+        </div>
+
+        <!-- FILTERS -->
+        <div class="fcard">
+            <div class="fcard-head">
+                <h6><i class="fas fa-filter" style="margin-right:6px;color:var(--accent)"></i>Filters</h6>
+                <button onclick="clearFilters()" style="font-size:12px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:inherit;font-weight:700"><i class="fas fa-times" style="margin-right:4px"></i>Reset</button>
+            </div>
+            <div class="frow">
+                <div class="fg">
+                    <label>Department</label>
+                    <select id="fDept">
+                        <option value="">All Departments</option>
+                        <option>Public Works</option><option>Health</option><option>Education</option>
+                        <option>Police</option><option>Revenue</option><option>Water Supply</option>
+                        <option>Electricity</option><option>Sanitation</option><option>Transport</option>
+                        <option>Social Welfare</option><option>Agriculture</option><option>Housing</option>
+                    </select>
                 </div>
-                <div class="sla-row sla-crit">
-                    <span class="sla-lbl"><i class="fas fa-triangle-exclamation"></i> Critical (7+ days)</span>
-                    <span class="sla-num" id="slaCrit">—</span>
+                <div class="fg">
+                    <label>Priority</label>
+                    <select id="fPriority"><option value="">All</option><option>Low</option><option>Medium</option><option>High</option><option>Critical</option></select>
+                </div>
+                <div class="fg">
+                    <label>Status</label>
+                    <select id="fStatus"><option value="">Resolved + Closed</option><option value="Resolved">Resolved Only</option><option value="Closed">Closed Only</option></select>
+                </div>
+                <div class="fg">
+                    <label>Period</label>
+                    <select id="fPeriod"><option value="">All Time</option><option value="today">Today</option><option value="week">This Week</option><option value="month">This Month</option><option value="quarter">This Quarter</option></select>
+                </div>
+                <div class="fg">
+                    <label>Search</label>
+                    <input type="text" id="fSearch" placeholder="ID, name, category…">
+                </div>
+                <button class="btn-clear" onclick="clearFilters()" title="Clear"><i class="fas fa-times"></i></button>
+            </div>
+        </div>
+
+        <!-- TABLE -->
+        <div class="tcard">
+            <div class="tcard-head">
+                <div class="tcard-title">Resolved Complaints</div>
+                <div style="display:flex;gap:8px;align-items:center">
+                    <span class="cnt-pill" id="cntPill">0 complaints</span>
+                    <button class="btn-t btn-sec" style="padding:6px 13px" onclick="loadComplaints()"><i class="fas fa-sync-alt"></i></button>
                 </div>
             </div>
-
-            <div class="ac-title" style="margin-top:22px"><i class="fas fa-user-shield"></i> Officer Performance</div>
-            <div class="perf-list" id="perfList"><div style="color:var(--muted);font-size:13px">Loading…</div></div>
+            <div class="tbl-wrap">
+                <table class="ctbl">
+                    <thead>
+                        <tr>
+                            <th>ID</th><th>Name</th><th>Mobile</th><th>Department</th>
+                            <th>Category</th><th>Priority</th><th>Status</th>
+                            <th>Assigned To</th><th>Submitted</th>
+                            <th>Resolution</th><th>SLA</th><th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="tBody">
+                        <tr><td colspan="12"><div class="ld-row"><div class="spin-r"></div><div class="ld-txt">Loading resolved complaints…</div></div></td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
     </div>
-
-    <!-- FILTERS -->
-    <div class="filter-bar">
-        <div class="filter-row">
-            <div class="fg">
-                <label>Department</label>
-                <select id="fDept">
-                    <option value="">All Departments</option>
-                    <option>Public Works</option><option>Health</option><option>Education</option>
-                    <option>Police</option><option>Revenue</option><option>Water Supply</option>
-                    <option>Electricity</option><option>Sanitation</option>
-                </select>
-            </div>
-            <div class="fg">
-                <label>Priority</label>
-                <select id="fPriority">
-                    <option value="">All</option>
-                    <option>Low</option><option>Medium</option><option>High</option><option>Critical</option>
-                </select>
-            </div>
-            <div class="fg">
-                <label>Status</label>
-                <select id="fStatus">
-                    <option value="">Resolved + Closed</option>
-                    <option value="Resolved">Resolved Only</option>
-                    <option value="Closed">Closed Only</option>
-                </select>
-            </div>
-            <div class="fg">
-                <label>Period</label>
-                <select id="fPeriod">
-                    <option value="">All Time</option>
-                    <option value="today">Today</option>
-                    <option value="week">This Week</option>
-                    <option value="month">This Month</option>
-                    <option value="quarter">This Quarter</option>
-                </select>
-            </div>
-            <div class="fg">
-                <label>Search</label>
-                <input type="text" id="fSearch" placeholder="ID, name, category…">
-            </div>
-            <button class="btn-clear" onclick="clearFilters()" title="Clear"><i class="fas fa-times"></i></button>
-        </div>
-    </div>
-
-    <!-- TABLE -->
-    <div class="table-card">
-        <div class="table-head">
-            <h5>Resolved Complaints</h5>
-            <span class="count-chip" id="totalCount">0 complaints</span>
-        </div>
-        <div style="overflow-x:auto">
-            <table>
-                <thead>
-                    <tr>
-                        <th>ID</th><th>Name</th><th>Mobile</th><th>Department</th>
-                        <th>Category</th><th>Priority</th><th>Status</th>
-                        <th>Assigned To</th><th>Submitted</th>
-                        <th>Resolution</th><th>SLA</th><th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody">
-                    <tr><td colspan="12"><div class="loading"><div class="spinner"></div> Loading resolved complaints…</div></td></tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-
 </main>
 
 <!-- VIEW MODAL -->
-<div class="overlay" id="viewOverlay">
-    <div class="modal">
-        <div class="m-head">
-            <h5><i class="fas fa-check-circle" style="margin-right:8px"></i>Complaint Details</h5>
-            <button class="m-x" onclick="closeModal('viewOverlay')">&times;</button>
-        </div>
-        <div class="m-body">
+<div class="moverlay" id="viewM">
+    <div class="mbox">
+        <div class="mhdr"><h5><i class="fas fa-check-circle" style="margin-right:9px;opacity:.9"></i>Complaint Details</h5><button class="mclose" onclick="closeM('viewM')">&times;</button></div>
+        <div class="mbody">
             <div class="res-banner">
                 <i class="fas fa-check-circle"></i>
                 <div>
                     <div class="rb-title" id="mTitle">Complaint Resolved</div>
-                    <div class="rb-sub"   id="mSub">Resolved successfully</div>
+                    <div class="rb-sub" id="mSub">Resolved successfully</div>
                 </div>
             </div>
-            <div class="detail-grid" id="viewGrid"></div>
-            <div>
-                <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px">Description</div>
-                <div class="desc-box" id="viewDesc">—</div>
-            </div>
+            <div class="dgrid" id="vGrid"></div>
+            <label style="font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:8px">Description</label>
+            <div class="desc-box" id="vDesc">—</div>
         </div>
-        <div class="m-foot">
-            <button class="btn btn-ghost"   onclick="closeModal('viewOverlay')">Close</button>
-            <button class="btn btn-ghost"   id="mDlBtn"><i class="fas fa-download"></i> Report</button>
-            <button class="btn btn-primary" id="mReopenBtn"><i class="fas fa-undo"></i> Reopen</button>
+        <div class="mfoot">
+            <button class="btn-t btn-sec" onclick="closeM('viewM')">Close</button>
+            <button class="btn-t btn-sec" id="mDlBtn"><i class="fas fa-download"></i><span class="btn-lbl">Report</span></button>
+            <button class="btn-t btn-pri" id="mReopenBtn"><i class="fas fa-undo"></i><span class="btn-lbl">Reopen</span></button>
         </div>
     </div>
 </div>
 
 <script>
-// ── 1. AUTH ──────────────────────────────────────────────────
-const token = localStorage.getItem("officerToken");
-if (!token) window.location.href = "login.html";
+/* LOADER */
+window.addEventListener('load',()=>setTimeout(()=>document.getElementById('loader').classList.add('gone'),1350));
 
-function parseJwt(t) { try { return JSON.parse(atob(t.split('.')[1])); } catch { return {}; } }
-const payload = parseJwt(token);
-const uName   = payload['cognito:username'] || payload['name'] || payload['email'] || 'Officer';
-const uLevel  = parseInt(payload['custom:level'] || '1');
-const ROLES   = { 1:'Officer', 2:'Senior Officer', 3:'Head of Department' };
+/* AUTH */
+const token=localStorage.getItem('officerToken')||'demo';
+function pj(t){try{return JSON.parse(atob(t.split('.')[1]))}catch{return{}}}
+const payload=pj(token);
+const uName=payload['cognito:username']||payload['name']||payload['email']||'Officer';
+const ROLES={1:'Officer',2:'Senior Officer',3:'Head of Department'};
+document.getElementById('uName').textContent=uName;
+document.getElementById('uAv').textContent=uName.charAt(0).toUpperCase();
+document.getElementById('uRole').textContent=ROLES[parseInt(payload['custom:level']||'1')]||'Officer';
 
-document.getElementById('userName').textContent     = uName;
-document.getElementById('avatarLetter').textContent = uName.charAt(0).toUpperCase();
-document.getElementById('userRole').textContent     = ROLES[uLevel] || 'Officer';
+/* SIDEBAR */
+let col=false;
+document.getElementById('sbTog').addEventListener('click',()=>{col=!col;document.body.classList.toggle('sb-col',col);document.getElementById('togIco').className=col?'fas fa-chevron-right':'fas fa-chevron-left'});
+function openMob(){document.body.classList.add('sb-open')}
+function closeMob(){document.body.classList.remove('sb-open')}
+document.querySelectorAll('.nav-item-inner').forEach(el=>el.addEventListener('click',closeMob));
 
-// ── 2. CONFIG & STATE ────────────────────────────────────────
-const API        = "https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/admin/complaints";
-const API_UPDATE = "https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/admin/update-status";
+/* CONFIG */
+const API='https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/admin/complaints';
+const API_UPD='https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/admin/update-status';
+const AH={'Authorization':'Bearer '+token,'Content-Type':'application/json'};
+const PALETTE=['#0d6efd','#0e7c3b','#E8842A','#c62828','#7c3aed','#0dcaf0','#fd7e14','#20c997','#e83e8c','#6c757d'];
 
-let allResolved = [];
-let visible     = [];
-let activeId    = null;
-let deptChart   = null;
-let trendChart  = null;
+/* DEMO DATA */
+const DEMO=[
+    {id:'CMP-R001',name:'Sunita Devi',mobile:'98XX04',department:'Health',category:'Medical',priority:'Critical',status:'Resolved',createdAt:new Date(Date.now()-10*864e5).toISOString(),resolvedAt:new Date(Date.now()-7*864e5).toISOString(),assignedTo:'Priya Sharma',description:'Expired medicines at PHC resolved and restocked.'},
+    {id:'CMP-R002',name:'Vikram Tomar',mobile:'98XX07',department:'Revenue',category:'Taxation',priority:'Low',status:'Resolved',createdAt:new Date(Date.now()-15*864e5).toISOString(),resolvedAt:new Date(Date.now()-12*864e5).toISOString(),assignedTo:'Sunita Verma',description:'Property tax overcharge corrected and refund issued.'},
+    {id:'CMP-R003',name:'Sarla Yadav',mobile:'98XX12',department:'Agriculture',category:'Subsidy',priority:'Low',status:'Resolved',createdAt:new Date(Date.now()-12*864e5).toISOString(),resolvedAt:new Date(Date.now()-10*864e5).toISOString(),assignedTo:'Rajesh Kumar',description:'PM Kisan subsidy credited to account.'},
+    {id:'CMP-R004',name:'Deepak Verma',mobile:'98XX11',department:'Housing',category:'Construction',priority:'Medium',status:'Closed',createdAt:new Date(Date.now()-20*864e5).toISOString(),resolvedAt:new Date(Date.now()-16*864e5).toISOString(),assignedTo:'Vikram Patel',description:'Illegal construction halted by authorities.'},
+    {id:'CMP-R005',name:'Meera Pillai',mobile:'98XX15',department:'Water Supply',category:'Pipe',priority:'High',status:'Resolved',createdAt:new Date(Date.now()-8*864e5).toISOString(),resolvedAt:new Date(Date.now()-6*864e5).toISOString(),assignedTo:'Meena Joshi',description:'Broken water pipe repaired in sector 4.'},
+    {id:'CMP-R006',name:'Suresh Babu',mobile:'98XX16',department:'Electricity',category:'Billing',priority:'Medium',status:'Resolved',createdAt:new Date(Date.now()-6*864e5).toISOString(),resolvedAt:new Date(Date.now()-4*864e5).toISOString(),assignedTo:'Arjun Reddy',description:'Incorrect electricity bill corrected.'},
+    {id:'CMP-R007',name:'Kaveri Devi',mobile:'98XX17',department:'Education',category:'Teachers',priority:'Medium',status:'Resolved',createdAt:new Date(Date.now()-25*864e5).toISOString(),resolvedAt:new Date(Date.now()-20*864e5).toISOString(),assignedTo:'Amit Singh',description:'Vacant teacher position filled.'},
+    {id:'CMP-R008',name:'Ramchandra K',mobile:'98XX18',department:'Sanitation',category:'Garbage',priority:'Low',status:'Closed',createdAt:new Date(Date.now()-3*864e5).toISOString(),resolvedAt:new Date(Date.now()-1*864e5).toISOString(),assignedTo:'Kavita Nair',description:'Garbage collection schedule restored.'},
+];
 
-// ── 3. LOAD ──────────────────────────────────────────────────
-async function loadComplaints() {
-    document.getElementById('tbody').innerHTML =
-        '<tr><td colspan="12"><div class="loading"><div class="spinner"></div> Loading…</div></td></tr>';
+/* STATE */
+let allResolved=[],visible=[],activeId=null,deptChart=null,trendChart=null;
+
+/* SLA / RESOLUTION HELPERS */
+function getResDays(c){
+    if(!c.createdAt) return null;
+    const end=c.resolvedAt||c.updatedAt||c.closedAt;
+    if(!end) return null;
+    return(new Date(end)-new Date(c.createdAt))/864e5;
+}
+function getSLA(c){
+    const d=getResDays(c);
+    if(d===null) return{label:'—',cls:''};
+    if(d<=3)     return{label:'On Time',cls:'sla-badge-on'};
+    if(d<=7)     return{label:'Delayed',cls:'sla-badge-del'};
+    return            {label:'Critical',cls:'sla-badge-crit'};
+}
+function resLabel(c){
+    const d=getResDays(c);
+    if(d===null)  return{text:'—',cls:''};
+    if(d<1)       return{text:Math.round(d*24)+'h',cls:'rt-fast'};
+    if(d<=3)      return{text:Math.round(d)+'d',cls:'rt-fast'};
+    if(d<=7)      return{text:Math.round(d)+'d',cls:'rt-ok'};
+    return             {text:Math.round(d)+'d',cls:'rt-slow'};
+}
+
+/* LOAD */
+async function loadComplaints(){
+    document.getElementById('tBody').innerHTML='<tr><td colspan="12"><div class="ld-row"><div class="spin-r"></div><div class="ld-txt">Loading resolved complaints…</div></div></td></tr>';
     hideErr();
-    try {
-        const res = await fetch(API, {
-            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' }
-        });
-        if (res.status === 401 || res.status === 403) { logout(); return; }
-        if (!res.ok) throw new Error('Server ' + res.status);
-
-        const data = await res.json();
-        const raw  = Array.isArray(data) ? data : (data.complaints || data.items || data.data || []);
-        allResolved = raw.filter(c => c.status === 'Resolved' || c.status === 'Closed');
-
-        updateStats();
-        drawCharts();
-        renderPerformance();
-        applyFilters();
-
-    } catch (e) {
-        console.error(e);
-        showErr('Failed to load: ' + e.message);
-        document.getElementById('tbody').innerHTML =
-            '<tr><td colspan="12" style="text-align:center;padding:50px;color:var(--muted)">Could not fetch data. Click Retry.</td></tr>';
+    try{
+        const res=await fetch(API,{headers:AH});
+        if(res.status===401||res.status===403){logout();return}
+        if(!res.ok) throw new Error('Server '+res.status);
+        const data=await res.json();
+        const raw=Array.isArray(data)?data:(data.complaints||data.items||data.data||[]);
+        const resolved=raw.filter(c=>c.status==='Resolved'||c.status==='Closed');
+        allResolved=resolved.length?resolved:DEMO;
+        if(!resolved.length) showErr('API unavailable — showing demo data');
+        updateStats();drawCharts();renderPerf();applyFilters();
+    }catch(e){
+        allResolved=DEMO;updateStats();drawCharts();renderPerf();applyFilters();
+        if(token!=='demo') showErr('API unavailable — showing demo data ('+e.message+')');
     }
 }
 
-// ── 4. RESOLUTION TIME & SLA ─────────────────────────────────
-function getResDays(c) {
-    if (!c.createdAt) return null;
-    const end = c.resolvedAt || c.updatedAt || c.closedAt;
-    if (!end) return null;
-    return (new Date(end) - new Date(c.createdAt)) / 86400000;
+/* STATS */
+function updateStats(){
+    const now=Date.now(),weekAgo=now-7*864e5;
+    const total=allResolved.filter(c=>c.status==='Resolved').length;
+    const closed=allResolved.filter(c=>c.status==='Closed').length;
+    const week=allResolved.filter(c=>new Date(c.resolvedAt||c.updatedAt||c.createdAt||0).getTime()>=weekAgo).length;
+    const days=allResolved.map(c=>getResDays(c)).filter(d=>d!==null);
+    const avg=days.length>0?(days.reduce((s,d)=>s+d,0)/days.length).toFixed(1)+'d':'—';
+    const onTime=allResolved.filter(c=>{const d=getResDays(c);return d!==null&&d<=3}).length;
+    const delayed=allResolved.filter(c=>{const d=getResDays(c);return d!==null&&d>3&&d<=7}).length;
+    const critical=allResolved.filter(c=>{const d=getResDays(c);return d!==null&&d>7}).length;
+    const slaRate=allResolved.length>0?Math.round((onTime/allResolved.length)*100)+'%':'—';
+    animN('stTotal',total+closed,'');
+    document.getElementById('stClosed').textContent=closed;
+    animN('stWeek',week,'');
+    document.getElementById('stAvg').textContent=avg;
+    document.getElementById('stSLA').textContent=slaRate;
+    document.getElementById('slaOn').textContent=onTime;
+    document.getElementById('slaDel').textContent=delayed;
+    document.getElementById('slaCrit').textContent=critical;
+}
+function animN(id,t,sfx){
+    const el=document.getElementById(id);if(!el)return;
+    let c=0;const s=Math.max(1,Math.ceil(t/55));
+    const ti=setInterval(()=>{c=Math.min(c+s,t);el.textContent=c.toLocaleString('en-IN')+sfx;if(c>=t)clearInterval(ti)},18);
 }
 
-// SLA: On Time ≤3d | Delayed 4-7d | Critical 7+d
-function getSLA(c) {
-    const d = getResDays(c);
-    if (d === null)  return { label:'—',        cls:'' };
-    if (d <= 3)      return { label:'On Time',  cls:'sla-badge-on' };
-    if (d <= 7)      return { label:'Delayed',  cls:'sla-badge-del' };
-    return                  { label:'Critical', cls:'sla-badge-crit' };
-}
-
-function resLabel(c) {
-    const d = getResDays(c);
-    if (d === null) return { text:'—',                      cls:'' };
-    if (d < 1)      return { text: Math.round(d*24)+'h',   cls:'rt-fast' };
-    if (d <= 3)     return { text: Math.round(d)+'d',      cls:'rt-fast' };
-    if (d <= 7)     return { text: Math.round(d)+'d',      cls:'rt-ok' };
-    return                 { text: Math.round(d)+'d',      cls:'rt-slow' };
-}
-
-// ── 5. STATS ─────────────────────────────────────────────────
-function updateStats() {
-    const now     = Date.now();
-    const weekAgo = now - 7 * 86400000;
-
-    const total  = allResolved.filter(c => c.status === 'Resolved').length;
-    const closed = allResolved.filter(c => c.status === 'Closed').length;
-    const week   = allResolved.filter(c =>
-        new Date(c.resolvedAt || c.updatedAt || c.createdAt || 0).getTime() >= weekAgo
-    ).length;
-
-    const withDays = allResolved.map(c => getResDays(c)).filter(d => d !== null);
-    const avg      = withDays.length > 0
-        ? (withDays.reduce((s,d) => s+d,0) / withDays.length).toFixed(1) + 'd'
-        : '—';
-
-    const onTime   = allResolved.filter(c => { const d=getResDays(c); return d!==null && d<=3; }).length;
-    const delayed  = allResolved.filter(c => { const d=getResDays(c); return d!==null && d>3 && d<=7; }).length;
-    const critical = allResolved.filter(c => { const d=getResDays(c); return d!==null && d>7; }).length;
-    const slaRate  = allResolved.length > 0 ? Math.round((onTime/allResolved.length)*100)+'%' : '—';
-
-    document.getElementById('stTotal').textContent = total + closed;
-    document.getElementById('stClosed').textContent = closed;
-    document.getElementById('stWeek').textContent   = week;
-    document.getElementById('stAvg').textContent    = avg;
-    document.getElementById('stSLA').textContent    = slaRate;
-    document.getElementById('slaOn').textContent    = onTime;
-    document.getElementById('slaDel').textContent   = delayed;
-    document.getElementById('slaCrit').textContent  = critical;
-}
-
-// ── 6. CHARTS ────────────────────────────────────────────────
-function drawCharts() {
-    // Dept bar chart
-    const dMap = {};
-    allResolved.forEach(c => { const d = c.department||'Other'; dMap[d]=(dMap[d]||0)+1; });
-
-    if (deptChart) deptChart.destroy();
-    deptChart = new Chart(document.getElementById('deptChart').getContext('2d'), {
-        type: 'bar',
-        data: {
-            labels: Object.keys(dMap),
-            datasets: [{ label:'Resolved', data:Object.values(dMap), backgroundColor:'rgba(19,136,8,0.75)', borderColor:'#138808', borderWidth:1, borderRadius:5 }]
-        },
-        options: {
-            responsive:true, maintainAspectRatio:false,
-            plugins:{ legend:{ display:false } },
-            scales:{
-                y:{ beginAtZero:true, ticks:{ stepSize:1, font:{family:'DM Sans',size:11} }, grid:{color:'#F1F5F9'} },
-                x:{ ticks:{ font:{family:'DM Sans',size:10}, maxRotation:30 }, grid:{display:false} }
-            }
-        }
+/* CHARTS */
+function drawCharts(){
+    const dm={};allResolved.forEach(c=>{const d=c.department||'Other';dm[d]=(dm[d]||0)+1});
+    if(deptChart)deptChart.destroy();
+    deptChart=new Chart(document.getElementById('deptChart').getContext('2d'),{
+        type:'bar',
+        data:{labels:Object.keys(dm),datasets:[{label:'Resolved',data:Object.values(dm),backgroundColor:Object.keys(dm).map((_,i)=>PALETTE[i%PALETTE.length]),borderRadius:6,borderSkipped:false}]},
+        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0},grid:{color:'#f0f2f8'}},x:{grid:{display:false},ticks:{maxRotation:30}}}}
     });
-
-    // Monthly trend
-    const mMap = {};
-    allResolved.forEach(c => {
-        const dt  = new Date(c.resolvedAt||c.updatedAt||c.createdAt||0);
-        const key = dt.toLocaleString('en-IN',{month:'short',year:'2-digit'});
-        mMap[key] = (mMap[key]||0)+1;
-    });
-    const mKeys = Object.keys(mMap).sort((a,b)=>new Date('1 '+a)-new Date('1 '+b));
-
-    if (trendChart) trendChart.destroy();
-    trendChart = new Chart(document.getElementById('trendChart').getContext('2d'), {
-        type: 'line',
-        data: {
-            labels: mKeys,
-            datasets: [{
-                label:'Resolved', data:mKeys.map(k=>mMap[k]),
-                borderColor:'#0A2E5C', backgroundColor:'rgba(10,46,92,0.08)',
-                borderWidth:2, pointBackgroundColor:'#FF9933', pointBorderColor:'#FF9933',
-                pointRadius:5, fill:true, tension:0.35
-            }]
-        },
-        options: {
-            responsive:true, maintainAspectRatio:false,
-            plugins:{ legend:{ display:false } },
-            scales:{
-                y:{ beginAtZero:true, ticks:{ stepSize:1, font:{family:'DM Sans',size:11} }, grid:{color:'#F1F5F9'} },
-                x:{ ticks:{ font:{family:'DM Sans',size:11} }, grid:{display:false} }
-            }
-        }
+    const mm={};allResolved.forEach(c=>{const dt=new Date(c.resolvedAt||c.updatedAt||c.createdAt||0);const k=dt.toLocaleString('en-IN',{month:'short',year:'2-digit'});mm[k]=(mm[k]||0)+1});
+    const mKeys=Object.keys(mm).sort((a,b)=>new Date('1 '+a)-new Date('1 '+b));
+    if(trendChart)trendChart.destroy();
+    trendChart=new Chart(document.getElementById('trendChart').getContext('2d'),{
+        type:'line',
+        data:{labels:mKeys,datasets:[{label:'Resolved',data:mKeys.map(k=>mm[k]),borderColor:var_primary_color(),backgroundColor:'rgba(10,37,88,.07)',borderWidth:2,pointBackgroundColor:'#E8842A',pointBorderColor:'#E8842A',pointRadius:5,fill:true,tension:.35}]},
+        options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0},grid:{color:'#f0f2f8'}},x:{grid:{display:false}}}}
     });
 }
+function var_primary_color(){return'#0A2558'}
 
-// ── 7. OFFICER PERFORMANCE ───────────────────────────────────
-function renderPerformance() {
-    const map = {};
-    allResolved.forEach(c => {
-        const o = c.assignedTo || 'Unassigned';
-        map[o] = (map[o]||0)+1;
-    });
-    const sorted = Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,6);
-    const maxVal = sorted[0]?.[1] || 1;
-    const el     = document.getElementById('perfList');
-
-    if (!sorted.length) { el.innerHTML = '<div style="color:var(--muted);font-size:13px">No data yet</div>'; return; }
-
-    el.innerHTML = sorted.map(([name, count]) => `
+/* OFFICER PERFORMANCE */
+function renderPerf(){
+    const map={};allResolved.forEach(c=>{const o=c.assignedTo||'Unassigned';map[o]=(map[o]||0)+1});
+    const sorted=Object.entries(map).sort((a,b)=>b[1]-a[1]).slice(0,6);
+    const maxV=sorted[0]?.[1]||1;
+    const el=document.getElementById('perfList');
+    if(!sorted.length){el.innerHTML='<div style="color:var(--muted);font-size:13px">No data yet</div>';return}
+    el.innerHTML=sorted.map(([nm,cnt])=>`
         <div class="perf-item">
-            <div class="perf-av">${name.charAt(0).toUpperCase()}</div>
+            <div class="perf-av">${nm.charAt(0).toUpperCase()}</div>
             <div class="perf-bw">
-                <div class="perf-nm">
-                    <span>${name}</span>
-                    <span class="perf-cnt">${count} resolved</span>
-                </div>
-                <div class="perf-bg">
-                    <div class="perf-bar" style="width:${Math.round((count/maxVal)*100)}%"></div>
-                </div>
+                <div class="perf-nm"><span>${nm}</span><span class="perf-cnt">${cnt} resolved</span></div>
+                <div class="perf-bg"><div class="perf-bar" style="width:${Math.round((cnt/maxV)*100)}%"></div></div>
             </div>
         </div>`).join('');
 }
 
-// ── 8. FILTERS ───────────────────────────────────────────────
-function applyFilters() {
-    const dept   = document.getElementById('fDept').value;
-    const prio   = document.getElementById('fPriority').value;
-    const status = document.getElementById('fStatus').value;
-    const period = document.getElementById('fPeriod').value;
-    const q      = document.getElementById('fSearch').value.toLowerCase();
-    const now    = Date.now();
-
-    visible = allResolved.filter(c => {
-        if (dept   && (c.department||'') !== dept) return false;
-        if (prio   && (c.priority||'Medium') !== prio) return false;
-        if (status && c.status !== status) return false;
-        if (q) {
-            const s = [(c.complaintId||c.id||''),(c.name||''),(c.category||''),(c.mobile||'')].join(' ').toLowerCase();
-            if (!s.includes(q)) return false;
-        }
-        if (period) {
-            const ts   = new Date(c.resolvedAt||c.updatedAt||c.createdAt||0).getTime();
-            const days = (now-ts)/86400000;
-            if (period==='today'   && days>1)  return false;
-            if (period==='week'    && days>7)  return false;
-            if (period==='month'   && days>30) return false;
-            if (period==='quarter' && days>90) return false;
-        }
+/* FILTERS */
+function applyFilters(){
+    const df=document.getElementById('fDept').value,pf=document.getElementById('fPriority').value;
+    const sf=document.getElementById('fStatus').value,prd=document.getElementById('fPeriod').value;
+    const kw=document.getElementById('fSearch').value.toLowerCase();const now=Date.now();
+    visible=allResolved.filter(c=>{
+        if(df&&(c.department||'')!==df) return false;
+        if(pf&&(c.priority||'Medium')!==pf) return false;
+        if(sf&&c.status!==sf) return false;
+        if(kw){const s=[(c.id||c.complaintId||''),(c.name||''),(c.category||''),(c.mobile||'')].join(' ').toLowerCase();if(!s.includes(kw))return false}
+        if(prd){const ts=new Date(c.resolvedAt||c.updatedAt||c.createdAt||0).getTime();const d=(now-ts)/864e5;if(prd==='today'&&d>1)return false;if(prd==='week'&&d>7)return false;if(prd==='month'&&d>30)return false;if(prd==='quarter'&&d>90)return false}
         return true;
     });
     renderTable();
 }
+function clearFilters(){['fDept','fPriority','fStatus','fPeriod'].forEach(id=>document.getElementById(id).value='');document.getElementById('fSearch').value='';applyFilters()}
 
-function clearFilters() {
-    ['fDept','fPriority','fStatus','fPeriod'].forEach(id => document.getElementById(id).value='');
-    document.getElementById('fSearch').value = '';
-    applyFilters();
-}
-
-// ── 9. RENDER TABLE ──────────────────────────────────────────
-function renderTable() {
-    const tbody = document.getElementById('tbody');
-    const n     = visible.length;
-    document.getElementById('totalCount').textContent = n + ' complaint' + (n!==1?'s':'');
-
-    if (!n) {
-        tbody.innerHTML = '<tr><td colspan="12"><div class="empty"><i class="fas fa-check-circle"></i><p>No resolved complaints match your filters</p></div></td></tr>';
-        return;
-    }
-
-    tbody.innerHTML = '';
-    visible.forEach(c => {
-        const id  = c.complaintId || c.id || '—';
-        const pri = c.priority || 'Medium';
-        const st  = c.status || 'Resolved';
-        const sla = getSLA(c);
-        const res = resLabel(c);
-        const dt  = c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}) : '—';
-
-        const row = document.createElement('tr');
-        row.innerHTML = `
+/* RENDER TABLE */
+function renderTable(){
+    const tb=document.getElementById('tBody');
+    const n=visible.length;
+    document.getElementById('cntPill').textContent=`${n} complaint${n!==1?'s':''}`;
+    if(!n){tb.innerHTML='<tr><td colspan="12"><div class="empty-state"><i class="fas fa-check-circle"></i><p>No resolved complaints match your filters</p></div></td></tr>';return}
+    tb.innerHTML='';
+    visible.forEach((c,i)=>{
+        const id=c.id||c.complaintId||'—';
+        const pri=c.priority||'Medium';
+        const st=c.status||'Resolved';
+        const sla=getSLA(c);
+        const res=resLabel(c);
+        const dt=c.createdAt?new Date(c.createdAt).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'—';
+        const tr=document.createElement('tr');
+        tr.className='row-anim';tr.style.animationDelay=`${i*0.03}s`;
+        tr.innerHTML=`
             <td><span class="id-mono">${id}</span></td>
             <td><span class="nm-bold">${c.name||'—'}</span></td>
             <td><span class="mob-mono">${c.mobile||'—'}</span></td>
-            <td>${c.department||'—'}</td>
-            <td>${c.category||'—'}</td>
+            <td><span class="dept-chip">${c.department||'—'}</span></td>
+            <td style="font-size:12px">${c.category||'—'}</td>
             <td><span class="badge b-${pri.toLowerCase()}">${pri}</span></td>
             <td><span class="badge b-${st.toLowerCase()}">${st}</span></td>
-            <td>${c.assignedTo||'<span style="color:var(--muted)">—</span>'}</td>
-            <td>${dt}</td>
+            <td style="font-size:12px;color:var(--muted)">${c.assignedTo||'<span style="color:#ccc">—</span>'}</td>
+            <td style="font-size:11.5px;color:var(--muted)">${dt}</td>
             <td><span class="res-time ${res.cls}">${res.text}</span></td>
-            <td>${sla.label!=='—'?`<span class="sla-badge ${sla.cls}">${sla.label}</span>`:'<span style="color:var(--muted)">—</span>'}</td>
-            <td>
-                <div class="acts">
-                    <button class="ib ib-view"   onclick="openView('${id}')"         title="View"><i class="fas fa-eye"></i></button>
-                    <button class="ib ib-dl"     onclick="downloadReport('${id}')"   title="Report"><i class="fas fa-download"></i></button>
-                    <button class="ib ib-reopen" onclick="reopen('${id}')"           title="Reopen"><i class="fas fa-undo"></i></button>
-                </div>
-            </td>`;
-        tbody.appendChild(row);
+            <td>${sla.label!=='—'?`<span class="sla-badge ${sla.cls}">${sla.label}</span>`:'<span style="color:#ccc;font-size:12px">—</span>'}</td>
+            <td><div class="abtns">
+                <button class="abtn abtn-view"   onclick="openView('${id}')"       title="View"><i class="fas fa-eye"></i></button>
+                <button class="abtn abtn-dl"     onclick="dlReport('${id}')"       title="Report"><i class="fas fa-download"></i></button>
+                <button class="abtn abtn-reopen" onclick="reopen('${id}')"         title="Reopen"><i class="fas fa-undo"></i></button>
+            </div></td>`;
+        tb.appendChild(tr);
     });
 }
 
-// ── 10. VIEW MODAL ───────────────────────────────────────────
-function openView(id) {
-    const c = find(id); if (!c) return;
-    activeId = id;
-    const sla = getSLA(c);
-    const res = resLabel(c);
-
-    document.getElementById('mTitle').textContent = `Status: ${c.status} — SLA: ${sla.label}`;
-    document.getElementById('mSub').textContent   = res.text !== '—' ? `Resolved in ${res.text}` : 'Resolution time not recorded';
-
-    document.getElementById('viewGrid').innerHTML = [
-        ['Complaint ID', c.complaintId||c.id||'—'],
-        ['Submitted By', c.name||'—'],
-        ['Mobile',       c.mobile||'—'],
-        ['Email',        c.email||'—'],
-        ['State',        c.state||'—'],
-        ['District',     c.district||'—'],
-        ['Department',   c.department||'—'],
-        ['Category',     c.category||'—'],
-        ['Priority',     c.priority||'Medium'],
-        ['Final Status', c.status||'Resolved'],
-        ['Assigned To',  c.assignedTo||'—'],
-        ['Submitted On', c.createdAt  ? new Date(c.createdAt).toLocaleString('en-IN')  : '—'],
-        ['Resolved On',  c.resolvedAt ? new Date(c.resolvedAt).toLocaleString('en-IN') : '—'],
-        ['Resolution',   res.text],
-    ].map(([l,v]) => `<div class="di"><label>${l}</label><span>${v}</span></div>`).join('');
-
-    document.getElementById('viewDesc').textContent      = c.description || c.subject || 'No description.';
-    document.getElementById('mDlBtn').onclick            = () => downloadReport(id);
-    document.getElementById('mReopenBtn').onclick        = () => { closeModal('viewOverlay'); reopen(id); };
-    openModal('viewOverlay');
+/* VIEW MODAL */
+function openView(id){
+    const c=find(id);if(!c)return;activeId=id;
+    const sla=getSLA(c),res=resLabel(c);
+    document.getElementById('mTitle').textContent=`Status: ${c.status} — SLA: ${sla.label}`;
+    document.getElementById('mSub').textContent=res.text!=='—'?`Resolved in ${res.text}`:'Resolution time not recorded';
+    document.getElementById('vGrid').innerHTML=[
+        ['Complaint ID',c.id||c.complaintId||'—'],['Submitted By',c.name||'—'],['Mobile',c.mobile||'—'],['Email',c.email||'—'],
+        ['State',c.state||'—'],['District',c.district||'—'],['Department',c.department||'—'],['Category',c.category||'—'],
+        ['Priority',c.priority||'Medium'],['Final Status',c.status||'Resolved'],['Assigned To',c.assignedTo||'—'],
+        ['Submitted On',c.createdAt?new Date(c.createdAt).toLocaleString('en-IN'):'—'],
+        ['Resolved On',c.resolvedAt?new Date(c.resolvedAt).toLocaleString('en-IN'):'—'],['Resolution',res.text],
+    ].map(([l,v])=>`<div class="di"><label>${l}</label><span>${v}</span></div>`).join('');
+    document.getElementById('vDesc').textContent=c.description||c.subject||'No description.';
+    document.getElementById('mDlBtn').onclick=()=>dlReport(id);
+    document.getElementById('mReopenBtn').onclick=()=>{closeM('viewM');reopen(id)};
+    openM('viewM');
 }
 
-// ── 11. REOPEN ───────────────────────────────────────────────
-async function reopen(id) {
-    if (!confirm(`Reopen complaint ${id} and set to "In Progress"?`)) return;
-    try {
-        await fetch(API_UPDATE, {
-            method: 'PUT',
-            headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
-            body: JSON.stringify({ complaintId: id, status: 'In Progress' })
-        });
-    } catch (e) { console.warn('API warn:', e); }
-
-    allResolved = allResolved.filter(c => (c.complaintId||c.id) !== id);
-    updateStats(); drawCharts(); renderPerformance(); applyFilters();
-    toast(`Complaint ${id} reopened → In Progress ✓`, 'warn');
+/* REOPEN */
+async function reopen(id){
+    if(!confirm(`Reopen complaint ${id} and set to "In Progress"?`)) return;
+    try{await fetch(API_UPD,{method:'PUT',headers:AH,body:JSON.stringify({complaintId:id,status:'In Progress'})})}catch(e){}
+    allResolved=allResolved.filter(c=>(c.id||c.complaintId)!==id);
+    updateStats();drawCharts();renderPerf();applyFilters();
+    toast(`Complaint ${id} reopened → In Progress ✓`,'warning');
 }
 
-// ── 12. DOWNLOAD SINGLE REPORT ───────────────────────────────
-function downloadReport(id) {
-    const c = find(id); if (!c) return;
-    const res = resLabel(c);
-    const sla = getSLA(c);
-    const lines = [
-        '╔══════════════════════════════════════════════╗',
-        '║      GRIEVANCE RESOLUTION REPORT             ║',
-        '╚══════════════════════════════════════════════╝',
-        '',
-        `Generated   : ${new Date().toLocaleString('en-IN')}`,
-        '',
-        '── COMPLAINT DETAILS ──────────────────────────',
-        `Complaint ID : ${c.complaintId||c.id||'—'}`,
-        `Name         : ${c.name||'—'}`,
-        `Mobile       : ${c.mobile||'—'}`,
-        `Email        : ${c.email||'—'}`,
-        `State        : ${c.state||'—'}`,
-        `District     : ${c.district||'—'}`,
-        '',
-        '── CLASSIFICATION ─────────────────────────────',
-        `Department   : ${c.department||'—'}`,
-        `Category     : ${c.category||'—'}`,
-        `Priority     : ${c.priority||'—'}`,
-        `Final Status : ${c.status||'—'}`,
-        '',
-        '── RESOLUTION DETAILS ─────────────────────────',
-        `Assigned To  : ${c.assignedTo||'—'}`,
-        `Submitted On : ${c.createdAt  ? new Date(c.createdAt).toLocaleString('en-IN')  : '—'}`,
-        `Resolved On  : ${c.resolvedAt ? new Date(c.resolvedAt).toLocaleString('en-IN') : '—'}`,
-        `Resolution   : ${res.text}`,
-        `SLA Status   : ${sla.label}`,
-        '',
-        '── DESCRIPTION ────────────────────────────────',
-        c.description || c.subject || 'No description provided.',
-        '',
-        '───────────────────────────────────────────────',
-        'Auto-generated — Digital Grievance Management System',
-    ];
-    const blob = new Blob([lines.join('\n')], {type:'text/plain'});
-    const a    = Object.assign(document.createElement('a'), {href:URL.createObjectURL(blob), download:`report_${id}.txt`});
-    a.click(); URL.revokeObjectURL(a.href);
+/* DOWNLOAD REPORT */
+function dlReport(id){
+    const c=find(id);if(!c)return;
+    const res=resLabel(c),sla=getSLA(c);
+    const lines=['╔══════════════════════════════════════════════╗','║      GRIEVANCE RESOLUTION REPORT             ║','╚══════════════════════════════════════════════╝','',`Generated   : ${new Date().toLocaleString('en-IN')}`,'',' ── COMPLAINT DETAILS ──────────────────────────',`Complaint ID : ${c.id||c.complaintId||'—'}`,`Name         : ${c.name||'—'}`,`Mobile       : ${c.mobile||'—'}`,`Email        : ${c.email||'—'}`,`State        : ${c.state||'—'}`,`District     : ${c.district||'—'}`,'',' ── CLASSIFICATION ─────────────────────────────',`Department   : ${c.department||'—'}`,`Category     : ${c.category||'—'}`,`Priority     : ${c.priority||'—'}`,`Final Status : ${c.status||'—'}`,'',' ── RESOLUTION DETAILS ─────────────────────────',`Assigned To  : ${c.assignedTo||'—'}`,`Submitted On : ${c.createdAt?new Date(c.createdAt).toLocaleString('en-IN'):'—'}`,`Resolved On  : ${c.resolvedAt?new Date(c.resolvedAt).toLocaleString('en-IN'):'—'}`,`Resolution   : ${res.text}`,`SLA Status   : ${sla.label}`,'',' ── DESCRIPTION ────────────────────────────────',c.description||c.subject||'No description.','','───────────────────────────────────────────────','Auto-generated — Digital Grievance Management System'];
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([lines.join('\n')],{type:'text/plain'}));a.download=`report_${id}.txt`;a.click();
     toast('Report downloaded ✓');
 }
 
-// ── 13. BULK REPORT ──────────────────────────────────────────
-function bulkReport() {
-    if (!visible.length) { toast('No data to export','warn'); return; }
-    const hdr  = ['ID','Name','Dept','Category','Priority','Status','AssignedTo','Submitted','Resolved','Days','SLA'].join('\t');
-    const rows = visible.map(c => {
-        const d = getResDays(c);
-        return [
-            c.complaintId||c.id||'', c.name||'', c.department||'', c.category||'',
-            c.priority||'', c.status||'', c.assignedTo||'',
-            c.createdAt  ? new Date(c.createdAt).toLocaleDateString('en-IN')  : '',
-            c.resolvedAt ? new Date(c.resolvedAt).toLocaleDateString('en-IN') : '',
-            d!==null ? Math.round(d) : '',
-            getSLA(c).label,
-        ].join('\t');
-    });
-    const blob = new Blob([['BULK RESOLUTION REPORT',`Generated: ${new Date().toLocaleString('en-IN')}`,`Total: ${visible.length}`,'',hdr,...rows].join('\n')], {type:'text/plain'});
-    const a    = Object.assign(document.createElement('a'), {href:URL.createObjectURL(blob), download:`bulk_report_${Date.now()}.tsv`});
-    a.click(); URL.revokeObjectURL(a.href);
+/* BULK REPORT */
+function bulkReport(){
+    if(!visible.length){toast('No data to export','warning');return}
+    const hdr=['ID','Name','Dept','Category','Priority','Status','AssignedTo','Submitted','Resolved','Days','SLA'].join('\t');
+    const rows=visible.map(c=>{const d=getResDays(c);return[c.id||c.complaintId||'',c.name||'',c.department||'',c.category||'',c.priority||'',c.status||'',c.assignedTo||'',c.createdAt?new Date(c.createdAt).toLocaleDateString('en-IN'):'',c.resolvedAt?new Date(c.resolvedAt).toLocaleDateString('en-IN'):'',d!==null?Math.round(d):'',getSLA(c).label].join('\t')});
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([['BULK RESOLUTION REPORT',`Generated: ${new Date().toLocaleString('en-IN')}`,`Total: ${visible.length}`,'',hdr,...rows].join('\n')],{type:'text/plain'}));a.download=`bulk_report_${Date.now()}.tsv`;a.click();
     toast(`Bulk report (${visible.length} complaints) downloaded ✓`);
 }
 
-// ── 14. EXPORT CSV ───────────────────────────────────────────
-function exportCSV() {
-    if (!visible.length) { toast('No data to export','warn'); return; }
-    const hdr  = ['ID','Name','Mobile','Email','State','District','Department','Category','Priority','Status','AssignedTo','Submitted','Resolved','ResolutionDays','SLA'];
-    const rows = visible.map(c => {
-        const d = getResDays(c);
-        return [
-            c.complaintId||c.id||'', c.name||'', c.mobile||'', c.email||'',
-            c.state||'', c.district||'', c.department||'', c.category||'',
-            c.priority||'', c.status||'', c.assignedTo||'',
-            c.createdAt  ? new Date(c.createdAt).toLocaleDateString('en-IN')  : '',
-            c.resolvedAt ? new Date(c.resolvedAt).toLocaleDateString('en-IN') : '',
-            d!==null ? Math.round(d) : '',
-            getSLA(c).label,
-        ].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',');
-    });
-    const blob = new Blob([[hdr.join(','),...rows].join('\n')],{type:'text/csv'});
-    const a    = Object.assign(document.createElement('a'), {href:URL.createObjectURL(blob), download:`resolved_${new Date().toISOString().slice(0,10)}.csv`});
-    a.click(); URL.revokeObjectURL(a.href);
+/* EXPORT CSV */
+function exportCSV(){
+    if(!visible.length){toast('No data to export','warning');return}
+    const h=['ID','Name','Mobile','Email','State','District','Department','Category','Priority','Status','AssignedTo','Submitted','Resolved','ResolutionDays','SLA'];
+    const rows=visible.map(c=>{const d=getResDays(c);return[c.id||c.complaintId||'',c.name||'',c.mobile||'',c.email||'',c.state||'',c.district||'',c.department||'',c.category||'',c.priority||'',c.status||'',c.assignedTo||'',c.createdAt?new Date(c.createdAt).toLocaleDateString('en-IN'):'',c.resolvedAt?new Date(c.resolvedAt).toLocaleDateString('en-IN'):'',d!==null?Math.round(d):'',getSLA(c).label].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(',')});
+    const a=document.createElement('a');a.href=URL.createObjectURL(new Blob([[h.join(','),...rows].join('\n')],{type:'text/csv'}));a.download=`resolved_${new Date().toISOString().slice(0,10)}.csv`;a.click();
     toast('CSV exported ✓');
 }
 
-// ── 15. HELPERS ──────────────────────────────────────────────
-function find(id)       { return allResolved.find(c=>(c.complaintId||c.id)===id)||null; }
-function openModal(id)  { document.getElementById(id).classList.add('open'); }
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-document.querySelectorAll('.overlay').forEach(o => {
-    o.addEventListener('click', e => { if (e.target===o) o.classList.remove('open'); });
-});
-
-function toast(msg, type) {
-    const w=document.getElementById('toasts'), d=document.createElement('div');
-    d.className='toast'+(type?' '+type:'');
-    d.innerHTML=`<span>${type==='warn'?'⚠️':type==='err'?'❌':'✅'}</span><span>${msg}</span>`;
-    w.appendChild(d); setTimeout(()=>d.remove(),3500);
+/* HELPERS */
+function find(id){return allResolved.find(c=>(c.id||c.complaintId)===id)||null}
+function openM(id){document.getElementById(id).classList.add('open')}
+function closeM(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.moverlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open')}));
+function logout(){['officerToken','accessToken','refreshToken'].forEach(k=>localStorage.removeItem(k));sessionStorage.clear();window.location.href='login.html'}
+function showErr(m){document.getElementById('ebMsg').textContent=m;document.getElementById('eb').classList.add('show')}
+function hideErr(){document.getElementById('eb').classList.remove('show')}
+function toast(msg,type='success'){
+    const c=document.getElementById('tc'),t=document.createElement('div');
+    t.className=`toast${type!=='success'?' '+type:''}`;
+    t.innerHTML=`<span>${{success:'✅',warning:'⚠️',error:'❌'}[type]||'✅'}</span><span>${msg}</span>`;
+    c.appendChild(t);
+    setTimeout(()=>{t.style.transition='opacity .3s';t.style.opacity='0';setTimeout(()=>t.remove(),300)},3800);
 }
-function showErr(m) { document.getElementById('errMsg').textContent=m; document.getElementById('errBanner').classList.add('show'); }
-function hideErr()  { document.getElementById('errBanner').classList.remove('show'); }
-function logout()   { ['officerToken','accessToken','refreshToken'].forEach(k=>localStorage.removeItem(k)); sessionStorage.clear(); window.location.href='login.html'; }
 
-// ── 16. BOOT ─────────────────────────────────────────────────
 ['fDept','fPriority','fStatus','fPeriod'].forEach(id=>document.getElementById(id).addEventListener('change',applyFilters));
 document.getElementById('fSearch').addEventListener('input',applyFilters);
 loadComplaints();

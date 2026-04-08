@@ -3,1051 +3,956 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Complaints - Digital Grievance Portal</title>
+    <title>All Complaints – Digital Grievance Portal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;800&family=DM+Sans:wght@300;400;500;600;700&family=Noto+Sans+Devanagari:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        :root {
-            --primary: #0A2E5C;
-            --background: #F2F2F2;
-            --accent: #FF9933;
-            --success: #138808;
-            --error: #C62828;
-            --white: #FFFFFF;
-            --sidebar-width: 260px;
-        }
+    /* ═══════════════════════════════════════
+       DESIGN TOKENS
+    ═══════════════════════════════════════ */
+    :root {
+        --primary:    #0A2558;
+        --primary-dk: #06173a;
+        --primary-lt: #1a3d7c;
+        --accent:     #E8842A;
+        --green:      #0e7c3b;
+        --white:      #fff;
+        --bg:         #F0F2F8;
+        --text:       #1c2b4a;
+        --muted:      #6b7a99;
+        --border:     #e2e8f0;
+        --shadow:     0 4px 24px rgba(10,37,88,.09);
+        --shadow-lg:  0 14px 44px rgba(10,37,88,.16);
+        --sw:         270px;
+        --sw-col:     70px;
+        --th:         66px;
+        --strip:      5px;
+    }
+    *,*::before,*::after { margin:0; padding:0; box-sizing:border-box }
+    html { scroll-behavior:smooth }
+    body { font-family:'DM Sans','Noto Sans Devanagari',sans-serif; background:var(--bg); color:var(--text); overflow-x:hidden }
 
-        * { margin: 0; padding: 0; box-sizing: border-box; }
+    /* ── LOADER ────────────────────────── */
+    #loader {
+        position:fixed; inset:0; z-index:9999;
+        background:var(--primary-dk);
+        display:flex; flex-direction:column; align-items:center; justify-content:center;
+        transition:opacity .65s ease, visibility .65s ease;
+    }
+    #loader.gone { opacity:0; visibility:hidden; pointer-events:none }
+    .ckr { width:88px; height:88px; animation:spin-ck 1.2s linear infinite }
+    .ckr svg { width:100%; height:100% }
+    @keyframes spin-ck { to { transform:rotate(360deg) } }
+    .ldr-txt {
+        margin-top:22px; color:rgba(255,255,255,.72);
+        font-size:12px; font-weight:600; letter-spacing:2.5px; text-transform:uppercase;
+        animation:ldr-p 1.5s ease-in-out infinite;
+    }
+    @keyframes ldr-p { 0%,100%{opacity:1} 50%{opacity:.3} }
 
-        body {
-            font-family: 'Roboto', 'Noto Sans Devanagari', sans-serif;
-            background-color: var(--background);
-            color: #333;
-            overflow-x: hidden;
-        }
+    /* ── TRICOLOR ──────────────────────── */
+    .tricolor {
+        height:var(--strip);
+        background:linear-gradient(to right,#FF9933 0%,#FF9933 33.33%,#fff 33.33%,#fff 66.66%,#138808 66.66%,#138808 100%);
+        position:fixed; top:0; left:0; right:0; z-index:1200;
+    }
 
-        .tricolor-strip {
-            height: 5px;
-            background: linear-gradient(to right, #FF9933 0%, #FF9933 33.33%, #FFFFFF 33.33%, #FFFFFF 66.66%, #138808 66.66%, #138808 100%);
-            position: fixed; top: 0; left: 0; right: 0; z-index: 1001;
-        }
+    /* ── SIDEBAR ───────────────────────── */
+    .sidebar {
+        position:fixed; top:var(--strip); left:0; bottom:0;
+        width:var(--sw);
+        background:linear-gradient(180deg,var(--primary-dk) 0%,var(--primary) 60%,#1a4d8f 100%);
+        color:#fff; z-index:1000;
+        display:flex; flex-direction:column;
+        overflow:hidden;
+        box-shadow:4px 0 28px rgba(6,23,58,.32);
+        transition:width .34s cubic-bezier(.4,0,.2,1);
+    }
+    .sidebar::after {
+        content:''; position:absolute; inset:0; pointer-events:none;
+        background:url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23ffffff' fill-opacity='0.022'%3E%3Cpath d='M20 18v-2h-2v2h-2v2h2v2h2v-2h2v-2h-2z'/%3E%3C/g%3E%3C/svg%3E");
+    }
 
-        /* ── Sidebar ── */
-        .sidebar {
-            position: fixed; left: 0; top: 5px; bottom: 0;
-            width: var(--sidebar-width);
-            background: linear-gradient(180deg, var(--primary) 0%, #1a4d8f 100%);
-            color: var(--white); padding: 20px 0;
-            transition: all 0.3s ease; z-index: 1000; overflow-y: auto;
-        }
-        .sidebar-header { padding: 0 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.1); margin-bottom: 20px; }
-        .sidebar-header h4 { font-size: 18px; font-weight: 700; margin-bottom: 5px; }
-        .sidebar-header p { font-size: 12px; opacity: 0.8; margin: 0; }
-        .sidebar-menu { list-style: none; padding: 0; }
-        .sidebar-menu li { margin-bottom: 5px; }
-        .sidebar-menu a {
-            display: flex; align-items: center; padding: 12px 20px;
-            color: var(--white); text-decoration: none; transition: all 0.3s ease; position: relative;
-        }
-        .sidebar-menu a::before {
-            content: ''; position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
-            background-color: var(--accent); transform: scaleY(0); transition: transform 0.3s ease;
-        }
-        .sidebar-menu a:hover, .sidebar-menu a.active { background-color: rgba(255,255,255,0.1); }
-        .sidebar-menu a.active::before { transform: scaleY(1); }
-        .sidebar-menu a i { width: 25px; margin-right: 10px; font-size: 16px; }
-        .user-profile { padding: 20px; margin-top: 20px; border-top: 1px solid rgba(255,255,255,0.1); }
-        .user-profile-content { display: flex; align-items: center; gap: 10px; }
-        .user-avatar {
-            width: 40px; height: 40px; border-radius: 50%; background-color: var(--accent);
-            display: flex; align-items: center; justify-content: center; font-size: 18px; font-weight: 700;
-        }
-        .user-info .name { font-size: 14px; font-weight: 600; }
-        .user-info .role { font-size: 11px; opacity: 0.7; }
+    /* collapsed */
+    body.sb-col .sidebar { width:var(--sw-col) }
+    body.sb-col .sb-head { padding:18px 0; justify-content:center; gap:0 }
+    body.sb-col .sb-head-text { display:none }
+    body.sb-col .sb-foot { padding:14px 0; justify-content:center; gap:0 }
+    body.sb-col .u-info { display:none }
+    body.sb-col .nav-section-label { display:none }
+    body.sb-col .sidebar-label { display:none }
+    body.sb-col .badge-count { display:none }
+    body.sb-col .nav-item-inner { padding:13px 0; justify-content:center; gap:0 }
 
-        /* ── Main ── */
-        .main-content { margin-left: var(--sidebar-width); padding: 25px; min-height: 100vh; margin-top: 5px; }
+    /* tooltips when collapsed */
+    body.sb-col .nav-item { position:relative }
+    body.sb-col .nav-item-inner::after {
+        content:attr(data-tip);
+        position:fixed; left:calc(var(--sw-col)+12px);
+        background:var(--primary-dk); color:#fff;
+        font-size:12px; font-weight:600;
+        padding:5px 12px; border-radius:7px;
+        white-space:nowrap; pointer-events:none;
+        opacity:0; transition:opacity .18s;
+        z-index:2000; box-shadow:0 4px 14px rgba(0,0,0,.28);
+        transform:translateY(-50%);
+    }
+    body.sb-col .nav-item:hover .nav-item-inner::after { opacity:1 }
 
-        .top-bar {
-            background-color: var(--white); padding: 20px 25px; border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 25px;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .welcome-text h2 { font-size: 24px; font-weight: 700; color: var(--primary); margin-bottom: 5px; }
-        .welcome-text p { font-size: 14px; color: #666; margin: 0; }
-        .top-actions { display: flex; gap: 10px; }
+    /* mobile off-canvas */
+    @media(max-width:991px) {
+        .sidebar { transform:translateX(-100%); width:var(--sw) !important; transition:transform .32s cubic-bezier(.4,0,.2,1) }
+        body.sb-open .sidebar { transform:translateX(0) }
+        body.sb-open .sb-backdrop { display:block }
+        .main { margin-left:0 !important }
+    }
+    .sb-backdrop { display:none; position:fixed; inset:0; z-index:999; background:rgba(6,23,58,.52); backdrop-filter:blur(2px); animation:bdfade .25s ease }
+    @keyframes bdfade { from{opacity:0} to{opacity:1} }
 
-        .btn-action {
-            padding: 8px 20px; border: none; border-radius: 5px;
-            font-size: 14px; font-weight: 600; cursor: pointer; transition: all 0.3s ease;
-        }
-        .btn-primary-action { background-color: var(--accent); color: var(--white); }
-        .btn-primary-action:hover { background-color: #e68a2e; transform: translateY(-2px); }
-        .btn-secondary-action { background-color: var(--background); color: var(--primary); }
-        .btn-secondary-action:hover { background-color: #e0e0e0; }
+    /* desktop toggle */
+    .sb-tog {
+        position:fixed;
+        top:calc(var(--strip) + var(--th)/2 - 13px);
+        left:calc(var(--sw) - 13px);
+        width:26px; height:26px; border-radius:50%;
+        background:var(--accent); border:2.5px solid var(--bg);
+        color:#fff; font-size:10px;
+        display:flex; align-items:center; justify-content:center;
+        cursor:pointer; z-index:1100;
+        box-shadow:0 2px 10px rgba(232,132,42,.5);
+        transition:left .34s cubic-bezier(.4,0,.2,1), transform .2s;
+    }
+    body.sb-col .sb-tog { left:calc(var(--sw-col) - 13px) }
+    .sb-tog:hover { transform:scale(1.18) }
+    @media(max-width:991px) { .sb-tog { display:none } }
 
-        /* ── Error Banner ── */
-        .error-banner {
-            background-color: #ffebee; border: 1px solid #ef9a9a; color: var(--error);
-            padding: 12px 16px; border-radius: 8px; margin-bottom: 20px;
-            display: none; align-items: center; gap: 10px; font-size: 14px;
-        }
-        .error-banner.show { display: flex; }
+    /* mobile hamburger */
+    .mob-ham {
+        display:none; position:fixed;
+        top:calc(var(--strip) + var(--th)/2 - 18px); left:14px;
+        width:36px; height:36px; border-radius:8px;
+        background:var(--primary); border:none; color:#fff;
+        font-size:15px; cursor:pointer; z-index:1100;
+        align-items:center; justify-content:center;
+        box-shadow:0 2px 12px rgba(10,37,88,.28); transition:background .2s;
+    }
+    .mob-ham:hover { background:var(--primary-lt) }
+    @media(max-width:991px) { .mob-ham { display:flex } }
 
-        /* ── Filters ── */
-        .filters-section {
-            background-color: var(--white); padding: 20px; border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 25px;
-        }
-        .filters-row {
-            display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-            gap: 15px; margin-bottom: 15px;
-        }
-        .filter-group label { font-size: 13px; font-weight: 600; color: #666; margin-bottom: 5px; display: block; }
-        .filter-group select, .filter-group input {
-            width: 100%; padding: 8px 12px; border: 1px solid #ddd;
-            border-radius: 5px; font-size: 14px; transition: all 0.3s ease;
-        }
-        .filter-group select:focus, .filter-group input:focus { outline: none; border-color: var(--primary); }
-        .bulk-actions { display: flex; gap: 10px; padding-top: 15px; border-top: 1px solid #eee; flex-wrap: wrap; }
+    /* sidebar inner parts */
+    .sb-head { padding:20px 18px 16px; border-bottom:1px solid rgba(255,255,255,.1); display:flex; align-items:center; gap:12px; flex-shrink:0; min-height:70px; position:relative; z-index:1 }
+    .sb-logo { width:36px; height:36px; flex-shrink:0; background:rgba(232,132,42,.16); border:1px solid rgba(232,132,42,.32); border-radius:9px; display:flex; align-items:center; justify-content:center; font-size:17px; color:var(--accent) }
+    .sb-head-text h4 { font-size:13.5px; font-weight:700; line-height:1.2; white-space:nowrap }
+    .sb-head-text p { font-size:10px; opacity:.55; margin:0; white-space:nowrap }
 
-        /* ── Table ── */
-        .table-section {
-            background-color: var(--white); padding: 25px; border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-bottom: 25px;
-        }
-        .table-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .table-header h5 { font-size: 18px; font-weight: 700; color: var(--primary); margin: 0; }
-        .table-info { display: flex; align-items: center; gap: 15px; font-size: 13px; color: #666; }
-        .table-responsive { overflow-x: auto; }
-        .complaints-table { width: 100%; border-collapse: collapse; }
-        .complaints-table th {
-            background-color: var(--primary); color: var(--white);
-            padding: 12px; text-align: left; font-size: 13px; font-weight: 600; white-space: nowrap;
-        }
-        .complaints-table td { padding: 12px; border-bottom: 1px solid #eee; font-size: 13px; vertical-align: middle; }
-        .complaints-table tr:hover { background-color: #f8f9fa; }
+    .sb-nav { flex:1; overflow-y:auto; overflow-x:hidden; padding:8px 0; position:relative; z-index:1 }
+    .sb-nav::-webkit-scrollbar { width:2px }
+    .sb-nav::-webkit-scrollbar-thumb { background:rgba(255,255,255,.12); border-radius:2px }
 
-        .status-badge {
-            display: inline-block; padding: 4px 12px; border-radius: 20px;
-            font-size: 11px; font-weight: 600; white-space: nowrap;
-        }
-        .status-submitted { background-color: #0dcaf0; color: #000; }
-        .status-under-review { background-color: #ffc107; color: #000; }
-        .status-in-progress { background-color: #0d6efd; color: #fff; }
-        .status-resolved { background-color: var(--success); color: #fff; }
-        .status-closed { background-color: #6c757d; color: #fff; }
+    .nav-section-label { display:block; font-size:9px; font-weight:700; letter-spacing:1.8px; text-transform:uppercase; color:rgba(255,255,255,.3); padding:14px 20px 5px; white-space:nowrap; overflow:hidden }
 
-        .priority-badge {
-            display: inline-block; padding: 4px 12px; border-radius: 20px; font-size: 11px; font-weight: 600;
-        }
-        .priority-low { background-color: #e8f5e9; color: #2e7d32; }
-        .priority-medium { background-color: #fff3e0; color: #e65100; }
-        .priority-high { background-color: #ffebee; color: #c62828; }
-        .priority-critical { background-color: #b71c1c; color: #fff; }
+    .nav-item { display:block; position:relative }
+    .nav-item-inner {
+        display:flex; flex-direction:row; align-items:center; gap:12px;
+        padding:11px 20px; width:100%;
+        color:rgba(255,255,255,.78); text-decoration:none;
+        font-size:13.5px; font-weight:500; white-space:nowrap;
+        position:relative; overflow:hidden;
+        transition:background .22s, color .22s;
+    }
+    .nav-item-inner::before { content:''; position:absolute; left:0; top:0; bottom:0; width:3px; background:var(--accent); transform:scaleY(0); transition:transform .22s; border-radius:0 2px 2px 0 }
+    .nav-item-inner:hover, .nav-item-inner.active { color:#fff; background:rgba(255,255,255,.09) }
+    .nav-item-inner.active::before, .nav-item-inner:hover::before { transform:scaleY(1) }
+    .nav-item-inner i { width:20px; min-width:20px; text-align:center; font-size:15px; flex-shrink:0; transition:color .22s }
+    .nav-item-inner.active i { color:var(--accent) }
+    .sidebar-label { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap }
+    .badge-count { flex-shrink:0; background:var(--accent); color:#fff; font-size:10px; font-weight:700; padding:2px 8px; border-radius:20px; white-space:nowrap }
+    .badge-count.red { background:#c62828 }
 
-        .action-buttons { display: flex; gap: 5px; }
-        .btn-icon {
-            width: 30px; height: 30px; border: none; border-radius: 5px;
-            display: flex; align-items: center; justify-content: center;
-            cursor: pointer; transition: all 0.3s ease; font-size: 12px;
-        }
-        .btn-view { background-color: #0d6efd; color: var(--white); }
-        .btn-view:hover { background-color: #0b5ed7; }
-        .btn-edit { background-color: var(--accent); color: var(--white); }
-        .btn-edit:hover { background-color: #e68a2e; }
-        .btn-delete { background-color: var(--error); color: var(--white); }
-        .btn-delete:hover { background-color: #a71d2a; }
+    .sb-foot { padding:13px 16px; border-top:1px solid rgba(255,255,255,.1); display:flex; align-items:center; gap:10px; flex-shrink:0; position:relative; z-index:1 }
+    .u-av { width:36px; height:36px; border-radius:50%; flex-shrink:0; background:linear-gradient(135deg,var(--accent),#c96818); display:flex; align-items:center; justify-content:center; font-size:15px; font-weight:700 }
+    .u-name { font-size:12.5px; font-weight:700; white-space:nowrap }
+    .u-role { font-size:10px; opacity:.55; white-space:nowrap }
 
-        /* ── Pagination ── */
-        .pagination { display: flex; justify-content: center; align-items: center; gap: 10px; margin-top: 20px; }
-        .pagination button {
-            padding: 8px 12px; border: 1px solid #ddd; background-color: var(--white);
-            color: var(--primary); border-radius: 5px; cursor: pointer; transition: all 0.3s ease;
-        }
-        .pagination button:hover:not(:disabled) { background-color: var(--primary); color: var(--white); }
-        .pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
-        .pagination .page-info { font-size: 14px; color: #666; }
+    /* ── MAIN ──────────────────────────── */
+    .main { margin-left:var(--sw); margin-top:var(--strip); min-height:calc(100vh - var(--strip)); transition:margin-left .34s cubic-bezier(.4,0,.2,1) }
+    body.sb-col .main { margin-left:var(--sw-col) }
 
-        /* ── Loading ── */
-        .loading-spinner {
-            display: flex; justify-content: center; align-items: center;
-            padding: 50px; gap: 12px; color: var(--primary); font-size: 14px;
-        }
-        .spinner {
-            width: 24px; height: 24px; border: 3px solid #ddd;
-            border-top-color: var(--primary); border-radius: 50%; animation: spin 0.8s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
+    /* ── TOPBAR ────────────────────────── */
+    .topbar {
+        background:#fff; padding:0 26px; height:var(--th);
+        display:flex; align-items:center; justify-content:space-between;
+        gap:14px; box-shadow:0 2px 18px rgba(10,37,88,.07);
+        border-bottom:1px solid var(--border);
+        position:sticky; top:var(--strip); z-index:900;
+    }
+    @media(max-width:991px) { .topbar { padding-left:62px } }
+    .pg-title { font-family:'Playfair Display',serif; font-size:19px; font-weight:700; color:var(--primary); line-height:1.1 }
+    .pg-sub { font-size:11.5px; color:var(--muted); margin-top:2px }
+    .tb-right { display:flex; align-items:center; gap:9px; flex-shrink:0 }
+    .btn-t { padding:8px 17px; border:none; border-radius:7px; font-size:13px; font-weight:600; cursor:pointer; display:flex; align-items:center; gap:7px; font-family:inherit; transition:all .22s }
+    .btn-pri { background:var(--accent); color:#fff; box-shadow:0 3px 14px rgba(232,132,42,.32) }
+    .btn-pri:hover { background:#d07020; transform:translateY(-2px); box-shadow:0 7px 22px rgba(232,132,42,.42) }
+    .btn-sec { background:var(--bg); color:var(--primary); border:1px solid var(--border) }
+    .btn-sec:hover { background:#e0e5f4 }
+    @media(max-width:575px) { .btn-lbl { display:none } }
 
-        /* ── Modal Base ── */
-        .modal-overlay {
-            position: fixed; inset: 0; background: rgba(0,0,0,0.55);
-            z-index: 2000; display: none; align-items: center; justify-content: center; padding: 20px;
-        }
-        .modal-overlay.open { display: flex; }
-        .modal-box {
-            background: var(--white); border-radius: 12px; width: 100%;
-            max-height: 90vh; overflow-y: auto; box-shadow: 0 20px 60px rgba(0,0,0,0.3);
-            animation: modalIn 0.25s ease;
-        }
-        @keyframes modalIn { from { opacity:0; transform: scale(0.95) translateY(-10px); } to { opacity:1; transform: scale(1) translateY(0); } }
-        .modal-header {
-            background: linear-gradient(135deg, var(--primary), #1a4d8f);
-            color: var(--white); padding: 20px 25px; border-radius: 12px 12px 0 0;
-            display: flex; justify-content: space-between; align-items: center;
-        }
-        .modal-header h5 { margin: 0; font-size: 18px; font-weight: 700; }
-        .modal-close {
-            background: none; border: none; color: var(--white); font-size: 22px;
-            cursor: pointer; line-height: 1; opacity: 0.8; transition: opacity 0.2s;
-        }
-        .modal-close:hover { opacity: 1; }
-        .modal-body { padding: 25px; }
-        .modal-footer { padding: 15px 25px; border-top: 1px solid #eee; display: flex; gap: 10px; justify-content: flex-end; }
+    /* ── CONTENT ───────────────────────── */
+    .cwrap { padding:22px 26px }
+    @media(max-width:575px) { .cwrap { padding:14px 12px } }
 
-        /* ── View Modal specific ── */
-        .view-modal-box { max-width: 700px; }
-        .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-        .detail-item label { font-size: 11px; font-weight: 700; color: #888; text-transform: uppercase; letter-spacing: 0.5px; display: block; margin-bottom: 4px; }
-        .detail-item span { font-size: 14px; color: #333; font-weight: 500; }
-        .detail-full { grid-column: 1 / -1; }
-        .description-box {
-            background: #f8f9fa; border-radius: 8px; padding: 15px;
-            font-size: 14px; line-height: 1.7; color: #444; border-left: 4px solid var(--accent);
-        }
-        .timeline { margin-top: 10px; }
-        .timeline-item { display: flex; gap: 12px; margin-bottom: 14px; }
-        .timeline-dot {
-            width: 10px; height: 10px; border-radius: 50%; background: var(--accent);
-            margin-top: 4px; flex-shrink: 0;
-        }
-        .timeline-text { font-size: 13px; color: #555; }
-        .timeline-text strong { color: #333; }
+    /* ── ERROR BANNER ──────────────────── */
+    .err-banner { display:none; align-items:center; gap:10px; padding:11px 16px; border-radius:10px; background:#ffebee; border:1px solid #ef9a9a; color:#c62828; font-size:13px; margin-bottom:18px }
+    .err-banner.show { display:flex }
 
-        /* ── Status Update Modal ── */
-        .status-modal-box { max-width: 450px; }
-        .status-options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 20px; }
-        .status-option {
-            padding: 14px; border: 2px solid #ddd; border-radius: 8px; cursor: pointer;
-            text-align: center; font-size: 13px; font-weight: 600; transition: all 0.2s;
-        }
-        .status-option:hover { border-color: var(--primary); background: #f0f4ff; }
-        .status-option.selected { border-color: var(--primary); background: var(--primary); color: var(--white); }
-        .remarks-box {
-            width: 100%; padding: 10px 12px; border: 1px solid #ddd; border-radius: 8px;
-            font-size: 14px; resize: vertical; min-height: 80px; font-family: inherit;
-        }
-        .remarks-box:focus { outline: none; border-color: var(--primary); }
+    /* ── STATS ROW ─────────────────────── */
+    .stats-row { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:20px }
+    @media(max-width:1100px) { .stats-row { grid-template-columns:repeat(2,1fr) } }
+    @media(max-width:480px)  { .stats-row { grid-template-columns:1fr } }
 
-        /* ── Assign Modal ── */
-        .assign-modal-box { max-width: 450px; }
-        .officer-list { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; max-height: 280px; overflow-y: auto; }
-        .officer-item {
-            display: flex; align-items: center; gap: 12px; padding: 12px;
-            border: 2px solid #ddd; border-radius: 8px; cursor: pointer; transition: all 0.2s;
-        }
-        .officer-item:hover { border-color: var(--accent); background: #fffaf5; }
-        .officer-item.selected { border-color: var(--accent); background: #fff3e0; }
-        .officer-avatar {
-            width: 36px; height: 36px; border-radius: 50%; background: var(--primary);
-            color: var(--white); display: flex; align-items: center; justify-content: center;
-            font-weight: 700; font-size: 14px; flex-shrink: 0;
-        }
-        .officer-name { font-size: 14px; font-weight: 600; }
-        .officer-dept { font-size: 12px; color: #888; }
+    .sc { background:#fff; border-radius:14px; padding:18px 16px; box-shadow:var(--shadow); border:1px solid transparent; position:relative; overflow:hidden; transition:all .28s ease; animation:rise .5s ease both }
+    .sc:nth-child(1){animation-delay:.04s} .sc:nth-child(2){animation-delay:.1s} .sc:nth-child(3){animation-delay:.16s} .sc:nth-child(4){animation-delay:.22s}
+    @keyframes rise { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:translateY(0)} }
+    .sc::after { content:''; position:absolute; bottom:0; left:0; right:0; height:3px; transform:scaleX(0); transform-origin:left; transition:transform .35s ease }
+    .sc:hover { transform:translateY(-5px); box-shadow:var(--shadow-lg); border-color:var(--border) }
+    .sc:hover::after { transform:scaleX(1) }
+    .sc.bl::after { background:#0d6efd } .sc.or::after { background:var(--accent) } .sc.gr::after { background:var(--green) } .sc.rd::after { background:#c62828 }
+    .sc-in { display:flex; justify-content:space-between; align-items:flex-start }
+    .si { width:46px; height:46px; border-radius:12px; display:flex; align-items:center; justify-content:center; font-size:20px; color:#fff; flex-shrink:0 }
+    .si.bl { background:linear-gradient(135deg,#0d6efd,#0b5ed7); box-shadow:0 5px 16px rgba(13,110,253,.28) }
+    .si.or { background:linear-gradient(135deg,var(--accent),#c96818); box-shadow:0 5px 16px rgba(232,132,42,.28) }
+    .si.gr { background:linear-gradient(135deg,#16a34a,#0e7c3b); box-shadow:0 5px 16px rgba(14,124,59,.28) }
+    .si.rd { background:linear-gradient(135deg,#c62828,#8b0000); box-shadow:0 5px 16px rgba(198,40,40,.28) }
+    .sv { font-family:'Playfair Display',serif; font-size:32px; font-weight:700; color:var(--primary); line-height:1; margin-bottom:4px }
+    .sl { font-size:12.5px; color:var(--muted); font-weight:500 }
 
-        /* ── Toast ── */
-        .toast-container { position: fixed; top: 20px; right: 20px; z-index: 3000; display: flex; flex-direction: column; gap: 10px; }
-        .toast {
-            background: var(--white); border-radius: 8px; padding: 14px 18px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.15); display: flex; align-items: center; gap: 10px;
-            font-size: 14px; min-width: 280px; animation: toastIn 0.3s ease;
-            border-left: 4px solid var(--success);
-        }
-        .toast.error { border-left-color: var(--error); }
-        .toast.warning { border-left-color: var(--accent); }
-        @keyframes toastIn { from { opacity:0; transform: translateX(40px); } to { opacity:1; transform: translateX(0); } }
+    /* ── FILTER CARD ───────────────────── */
+    .fcard { background:#fff; border-radius:14px; padding:18px 22px; box-shadow:var(--shadow); margin-bottom:18px; animation:rise .5s .28s ease both }
+    .fcard-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:14px }
+    .fcard-head h6 { font-size:12px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.7px; margin:0 }
+    .frow { display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:13px; margin-bottom:14px }
+    .fg label { font-size:10.5px; font-weight:700; color:var(--muted); margin-bottom:5px; display:block; text-transform:uppercase; letter-spacing:.5px }
+    .fg select, .fg input {
+        width:100%; padding:8px 11px;
+        border:1.5px solid var(--border); border-radius:8px;
+        font-size:13px; font-family:inherit; color:var(--text); background:#fff;
+        -webkit-appearance:none; appearance:none;
+        transition:border-color .2s, box-shadow .2s;
+        background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b7a99'/%3E%3C/svg%3E");
+        background-repeat:no-repeat; background-position:right 10px center; padding-right:28px;
+    }
+    .fg input { background-image:none; padding-right:11px }
+    .fg select:focus, .fg input:focus { outline:none; border-color:var(--primary); box-shadow:0 0 0 3px rgba(10,37,88,.07) }
 
-        @media (max-width: 992px) {
-            .sidebar { transform: translateX(-100%); }
-            .main-content { margin-left: 0; }
-            .top-bar { flex-direction: column; align-items: flex-start; gap: 15px; }
-        }
-        @media (max-width: 768px) {
-            .filters-row { grid-template-columns: 1fr; }
-            .detail-grid { grid-template-columns: 1fr; }
-            .status-options { grid-template-columns: 1fr; }
-        }
+    /* bulk actions bar */
+    .bulk-bar { display:flex; gap:8px; padding-top:13px; border-top:1px solid var(--border); flex-wrap:wrap; align-items:center }
+    .bulk-count { font-size:12px; color:var(--muted); margin-left:auto }
+
+    /* ── TABLE CARD ────────────────────── */
+    .tcard { background:#fff; border-radius:14px; padding:22px; box-shadow:var(--shadow); animation:rise .5s .36s ease both }
+    .tcard-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:18px; flex-wrap:wrap; gap:10px }
+    .tcard-title { font-family:'Playfair Display',serif; font-size:17px; font-weight:700; color:var(--primary); margin:0 }
+    .tcard-info { display:flex; align-items:center; gap:10px; font-size:12px; color:var(--muted) }
+    .tcount-pill { background:var(--bg); padding:4px 12px; border-radius:20px; font-weight:600; color:var(--primary) }
+
+    .tbl-wrap { overflow-x:auto }
+    .ctbl { width:100%; border-collapse:collapse }
+    .ctbl th { background:var(--primary); color:#fff; padding:12px 13px; text-align:left; font-size:11.5px; font-weight:700; white-space:nowrap; letter-spacing:.3px }
+    .ctbl th:first-child { border-radius:8px 0 0 0 } .ctbl th:last-child { border-radius:0 8px 0 0 }
+    .ctbl td { padding:12px 13px; border-bottom:1px solid #eef1f8; font-size:13px; vertical-align:middle }
+    .ctbl tr { transition:background .18s } .ctbl tr:hover td { background:#f5f8ff } .ctbl tr:last-child td { border-bottom:none }
+    .ctbl input[type=checkbox] { width:15px; height:15px; accent-color:var(--primary); cursor:pointer }
+
+    /* ── BADGES ────────────────────────── */
+    .badge { display:inline-block; padding:4px 11px; border-radius:20px; font-size:11px; font-weight:700; white-space:nowrap }
+    .bs-submitted    { background:#e0f7fa; color:#006064 }
+    .bs-under-review { background:#fff8e1; color:#f57f17 }
+    .bs-in-progress  { background:#e8eaf6; color:#283593 }
+    .bs-resolved     { background:#e8f5e9; color:#1b5e20 }
+    .bs-closed       { background:#f5f5f5; color:#616161 }
+    .pb { display:inline-block; padding:4px 10px; border-radius:20px; font-size:11px; font-weight:700 }
+    .pb-low      { background:#e8f5e9; color:#2e7d32 }
+    .pb-medium   { background:#fff3e0; color:#e65100 }
+    .pb-high     { background:#ffebee; color:#c62828 }
+    .pb-critical { background:#b71c1c; color:#fff }
+    .dept-chip { font-size:11.5px; background:#eef1fb; padding:3px 9px; border-radius:6px; color:var(--primary); font-weight:600 }
+
+    /* ── ACTION BUTTONS ────────────────── */
+    .abtns { display:flex; gap:5px }
+    .abtn { width:29px; height:29px; border:none; border-radius:7px; display:flex; align-items:center; justify-content:center; cursor:pointer; font-size:12px; transition:all .18s }
+    .abtn-view { background:#eef0fb; color:#283593 }
+    .abtn-view:hover { background:#0d6efd; color:#fff; transform:scale(1.1) }
+    .abtn-edit { background:#fff3e0; color:#c96818 }
+    .abtn-edit:hover { background:var(--accent); color:#fff; transform:scale(1.1) }
+    .abtn-del  { background:#ffebee; color:#c62828 }
+    .abtn-del:hover  { background:#c62828; color:#fff; transform:scale(1.1) }
+
+    /* ── LOADING ───────────────────────── */
+    .ld-row { text-align:center; padding:42px }
+    .spin-r { width:34px; height:34px; border:3px solid var(--border); border-top-color:var(--primary); border-radius:50%; animation:sp .7s linear infinite; margin:0 auto 12px }
+    @keyframes sp { to{transform:rotate(360deg)} }
+    .ld-txt { font-size:13px; color:var(--muted) }
+
+    /* ── PAGINATION ────────────────────── */
+    .pagination { display:flex; justify-content:center; align-items:center; gap:8px; margin-top:20px; flex-wrap:wrap }
+    .pg-btn { padding:7px 14px; border:1.5px solid var(--border); background:#fff; color:var(--primary); border-radius:8px; cursor:pointer; font-size:13px; font-weight:600; font-family:inherit; transition:all .2s }
+    .pg-btn:hover:not(:disabled) { background:var(--primary); color:#fff; border-color:var(--primary) }
+    .pg-btn:disabled { opacity:.45; cursor:not-allowed }
+    .pg-btn.active { background:var(--primary); color:#fff; border-color:var(--primary) }
+    .pg-info { font-size:12.5px; color:var(--muted); padding:0 6px }
+
+    /* ── MODALS ────────────────────────── */
+    .moverlay { position:fixed; inset:0; background:rgba(6,23,58,.52); backdrop-filter:blur(3px); z-index:2000; display:none; align-items:center; justify-content:center; padding:18px }
+    .moverlay.open { display:flex }
+    .mbox { background:#fff; border-radius:16px; width:100%; max-height:92vh; overflow-y:auto; box-shadow:0 24px 64px rgba(6,23,58,.38); animation:min-a .28s ease }
+    @keyframes min-a { from{opacity:0;transform:scale(.94) translateY(-14px)} to{opacity:1;transform:scale(1) translateY(0)} }
+    .mbox.sm { max-width:460px }
+    .mbox.md { max-width:720px }
+    .mhdr { background:linear-gradient(135deg,var(--primary-dk),var(--primary)); color:#fff; padding:19px 24px; border-radius:16px 16px 0 0; display:flex; align-items:center; justify-content:space-between }
+    .mhdr h5 { font-family:'Playfair Display',serif; font-size:17px; font-weight:700; margin:0 }
+    .mclose { background:none; border:none; color:rgba(255,255,255,.8); font-size:21px; cursor:pointer; line-height:1; transition:color .2s }
+    .mclose:hover { color:#fff }
+    .mbody { padding:24px }
+    .mfoot { padding:13px 24px; border-top:1px solid var(--border); display:flex; gap:10px; justify-content:flex-end }
+
+    /* view modal grid */
+    .dgrid { display:grid; grid-template-columns:1fr 1fr; gap:14px; margin-bottom:20px }
+    @media(max-width:520px) { .dgrid { grid-template-columns:1fr } }
+    .di label { font-size:10.5px; font-weight:700; color:var(--muted); text-transform:uppercase; letter-spacing:.5px; display:block; margin-bottom:3px }
+    .di span { font-size:13.5px; color:var(--text); font-weight:500 }
+    .di.full { grid-column:1/-1 }
+
+    .desc-box { background:var(--bg); border-radius:9px; padding:14px; font-size:13.5px; line-height:1.75; color:var(--text); border-left:4px solid var(--accent); margin-bottom:18px }
+
+    .timeline-wrap { margin-top:4px }
+    .tl-item { display:flex; gap:12px; margin-bottom:14px }
+    .tl-dot { width:10px; height:10px; border-radius:50%; background:var(--accent); margin-top:4px; flex-shrink:0 }
+    .tl-text { font-size:13px; color:var(--muted); line-height:1.55 }
+    .tl-text strong { color:var(--text) }
+
+    /* status modal */
+    .status-opts { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:18px }
+    @media(max-width:480px) { .status-opts { grid-template-columns:1fr } }
+    .sopt {
+        padding:13px 10px; border:2px solid var(--border); border-radius:9px;
+        cursor:pointer; text-align:center; font-size:13px; font-weight:600;
+        transition:all .2s; color:var(--text);
+    }
+    .sopt:hover { border-color:var(--primary); background:#f0f4ff }
+    .sopt.sel { border-color:var(--primary); background:var(--primary); color:#fff }
+
+    .rmk-box { width:100%; padding:10px 12px; border:1.5px solid var(--border); border-radius:8px; font-size:13.5px; resize:vertical; min-height:80px; font-family:inherit; color:var(--text); transition:border-color .2s }
+    .rmk-box:focus { outline:none; border-color:var(--primary) }
+
+    /* assign modal */
+    .officer-list { display:flex; flex-direction:column; gap:8px; margin-bottom:18px; max-height:280px; overflow-y:auto }
+    .off-item { display:flex; align-items:center; gap:12px; padding:12px; border:2px solid var(--border); border-radius:9px; cursor:pointer; transition:all .2s }
+    .off-item:hover { border-color:var(--accent); background:#fffaf5 }
+    .off-item.sel { border-color:var(--accent); background:#fff3e0 }
+    .off-av { width:36px; height:36px; border-radius:50%; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; font-weight:700; font-size:14px; flex-shrink:0 }
+    .off-name { font-size:13.5px; font-weight:700; color:var(--text) }
+    .off-dept { font-size:11.5px; color:var(--muted) }
+
+    /* ── TOAST ─────────────────────────── */
+    .tcont { position:fixed; top:22px; right:22px; z-index:3000; display:flex; flex-direction:column; gap:9px; pointer-events:none }
+    .toast { background:#fff; border-radius:10px; padding:12px 17px; display:flex; align-items:center; gap:10px; font-size:13px; min-width:260px; box-shadow:0 6px 24px rgba(10,37,88,.16); animation:tin .3s ease; border-left:4px solid #4caf50; pointer-events:auto }
+    .toast.warning { border-left-color:var(--accent) } .toast.error { border-left-color:#c62828 }
+    @keyframes tin { from{opacity:0;transform:translateX(34px)} to{opacity:1;transform:translateX(0)} }
+
+    .row-anim { animation:rf .3s ease both }
+    @keyframes rf { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:translateY(0)} }
     </style>
 </head>
 <body>
-    <div class="tricolor-strip"></div>
 
-    <!-- Toast Container -->
-    <div class="toast-container" id="toastContainer"></div>
+<div class="tricolor"></div>
 
-    <!-- Sidebar -->
-    <aside class="sidebar">
-        <div class="sidebar-header">
-            <h4><i class="fas fa-landmark"></i> Gov Portal</h4>
-            <p>Complaint Management System</p>
+<!-- LOADER -->
+<div id="loader">
+    <div class="ckr">
+        <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+            <circle cx="50" cy="50" r="46" stroke="#FF9933" stroke-width="3.5" fill="none"/>
+            <circle cx="50" cy="50" r="8" fill="#138808"/>
+            <g stroke="#fff" stroke-width="1.6" opacity=".9">
+                <line x1="50" y1="50" x2="50" y2="6"/><line x1="50" y1="50" x2="66" y2="9"/>
+                <line x1="50" y1="50" x2="79" y2="21"/><line x1="50" y1="50" x2="86" y2="34"/>
+                <line x1="50" y1="50" x2="89" y2="50"/><line x1="50" y1="50" x2="86" y2="66"/>
+                <line x1="50" y1="50" x2="79" y2="79"/><line x1="50" y1="50" x2="66" y2="91"/>
+                <line x1="50" y1="50" x2="50" y2="94"/><line x1="50" y1="50" x2="34" y2="91"/>
+                <line x1="50" y1="50" x2="21" y2="79"/><line x1="50" y1="50" x2="14" y2="66"/>
+                <line x1="50" y1="50" x2="11" y2="50"/><line x1="50" y1="50" x2="14" y2="34"/>
+                <line x1="50" y1="50" x2="21" y2="21"/><line x1="50" y1="50" x2="34" y2="9"/>
+                <line x1="50" y1="50" x2="58" y2="7.5"/><line x1="50" y1="50" x2="73" y2="14"/>
+                <line x1="50" y1="50" x2="83" y2="27"/><line x1="50" y1="50" x2="88" y2="42"/>
+                <line x1="50" y1="50" x2="88" y2="58"/><line x1="50" y1="50" x2="83" y2="73"/>
+                <line x1="50" y1="50" x2="73" y2="86"/><line x1="50" y1="50" x2="58" y2="92.5"/>
+            </g>
+            <circle cx="50" cy="50" r="3.5" fill="#FF9933"/>
+        </svg>
+    </div>
+    <p class="ldr-txt">Loading Portal…</p>
+</div>
+
+<div class="tcont" id="tc"></div>
+<div class="sb-backdrop" id="sbd" onclick="closeMob()"></div>
+
+<!-- Desktop toggle -->
+<button class="sb-tog" id="sbTog"><i class="fas fa-chevron-left" id="togIco"></i></button>
+<!-- Mobile ham -->
+<button class="mob-ham" onclick="openMob()"><i class="fas fa-bars"></i></button>
+
+<!-- ════════ SIDEBAR ════════ -->
+<aside class="sidebar" id="sidebar">
+    <div class="sb-head">
+        <div class="sb-logo"><i class="fas fa-landmark"></i></div>
+        <div class="sb-head-text"><h4>Gov Portal</h4><p>Grievance Management</p></div>
+    </div>
+    <nav class="sb-nav">
+        <div class="nav-section-label">Main</div>
+        <div class="nav-item"><a href="dashboard.html" class="nav-item-inner" data-tip="Dashboard"><i class="fas fa-th-large"></i><span class="sidebar-label">Dashboard</span></a></div>
+        <div class="nav-item"><a href="all-complaints.html" class="nav-item-inner active" data-tip="All Complaints"><i class="fas fa-file-alt"></i><span class="sidebar-label">All Complaints</span></a></div>
+        <div class="nav-item"><a href="pending.html" class="nav-item-inner" data-tip="Pending"><i class="fas fa-clock"></i><span class="sidebar-label">Pending</span></a></div>
+        <div class="nav-item"><a href="resolved.html" class="nav-item-inner" data-tip="Resolved"><i class="fas fa-check-circle"></i><span class="sidebar-label">Resolved</span></a></div>
+        <div class="nav-section-label" style="margin-top:6px">Management</div>
+        <div class="nav-item"><a href="admin-departments.html" class="nav-item-inner" data-tip="Departments"><i class="fas fa-building"></i><span class="sidebar-label">Departments</span></a></div>
+        <div class="nav-item"><a href="analytics.html" class="nav-item-inner" data-tip="Analytics"><i class="fas fa-chart-bar"></i><span class="sidebar-label">Analytics</span></a></div>
+        <div class="nav-section-label" style="margin-top:6px">System</div>
+        <div class="nav-item"><a href="notification.html" class="nav-item-inner" data-tip="Notifications"><i class="fas fa-bell"></i><span class="sidebar-label">Notifications</span><span class="badge-count red">3</span></a></div>
+        <div class="nav-item"><a href="settings.html" class="nav-item-inner" data-tip="Settings"><i class="fas fa-cog"></i><span class="sidebar-label">Settings</span></a></div>
+        <div class="nav-item"><a href="#" class="nav-item-inner" data-tip="Logout" onclick="logout();return false"><i class="fas fa-sign-out-alt"></i><span class="sidebar-label">Logout</span></a></div>
+    </nav>
+    <div class="sb-foot">
+        <div class="u-av" id="uAv">A</div>
+        <div class="u-info">
+            <div class="u-name" id="uName">Officer</div>
+            <div class="u-role">Administrator</div>
         </div>
-        <ul class="sidebar-menu">
-            <li><a href="dashboard.html"><i class="fas fa-th-large"></i><span>Dashboard</span></a></li>
-            <li><a href="all-complaints.html" class="active"><i class="fas fa-file-alt"></i><span>All Complaints</span></a></li>
-            <li><a href="pending.html"><i class="fas fa-clock"></i><span>Pending</span></a></li>
-            <li><a href="resolved.html"><i class="fas fa-check-circle"></i><span>Resolved</span></a></li>
-            <li><a href="admin-departments.html"><i class="fas fa-building"></i><span>Departments</span></a></li>
-            <li><a href="analytics.html"><i class="fas fa-chart-bar"></i><span>Analytics</span></a></li>
-            <li><a href="notification.html"><i class="fas fa-bell"></i><span>Notifications</span></a></li>
-            <li><a href="settings.html"><i class="fas fa-cog"></i><span>Settings</span></a></li>
-            <li><a href="login.html" onclick="logout()"><i class="fas fa-sign-out-alt"></i><span>Logout</span></a></li>
-        </ul>
-        <div class="user-profile">
-            <div class="user-profile-content">
-                <div class="user-avatar" id="userAvatarLetter">A</div>
-                <div class="user-info">
-                    <div class="name" id="userName">Officer</div>
-                    <div class="role">System Administrator</div>
-                </div>
-            </div>
-        </div>
-    </aside>
+    </div>
+</aside>
 
-    <!-- Main Content -->
-    <main class="main-content">
-        <div class="top-bar">
-            <div class="welcome-text">
-                <h2>All Complaints</h2>
-                <p>Manage and track all grievances submitted by citizens</p>
-            </div>
-            <div class="top-actions">
-                <button class="btn-action btn-secondary-action" onclick="exportData()">
-                    <i class="fas fa-download"></i> Export CSV
-                </button>
-                <button class="btn-action btn-primary-action" onclick="window.location.href='register.html'">
-                    <i class="fas fa-plus"></i> New Complaint
-                </button>
-            </div>
-        </div>
+<!-- ════════ MAIN ════════ -->
+<main class="main" id="mainEl">
 
-        <!-- Error Banner -->
-        <div class="error-banner" id="errorBanner">
+    <div class="topbar">
+        <div>
+            <div class="pg-title">All Complaints</div>
+            <div class="pg-sub">Manage and track all citizen grievances</div>
+        </div>
+        <div class="tb-right">
+            <button class="btn-t btn-sec" onclick="exportData()"><i class="fas fa-download"></i><span class="btn-lbl">Export CSV</span></button>
+            <button class="btn-t btn-pri" onclick="window.location.href='register.html'"><i class="fas fa-plus"></i><span class="btn-lbl">New Complaint</span></button>
+        </div>
+    </div>
+
+    <div class="cwrap">
+
+        <!-- ERROR -->
+        <div class="err-banner" id="eb">
             <i class="fas fa-exclamation-circle"></i>
-            <span id="errorBannerMsg">Unable to load complaints.</span>
-            <button onclick="loadComplaints()" style="margin-left:auto;background:none;border:1px solid var(--error);color:var(--error);padding:4px 10px;border-radius:4px;cursor:pointer;font-size:12px;">
-                Retry
-            </button>
+            <span id="ebMsg">Unable to load complaints.</span>
+            <button onclick="loadComplaints()" style="margin-left:auto;background:none;border:1px solid #c62828;color:#c62828;padding:4px 10px;border-radius:6px;cursor:pointer;font-size:11.5px;font-family:inherit;font-weight:600">Retry</button>
         </div>
 
-        <!-- Filters -->
-        <div class="filters-section">
-            <div class="filters-row">
-                <div class="filter-group">
+        <!-- STATS -->
+        <div class="stats-row">
+            <div class="sc bl"><div class="sc-in"><div><div class="sv" id="svTotal">—</div><div class="sl">Total Complaints</div></div><div class="si bl"><i class="fas fa-file-alt"></i></div></div></div>
+            <div class="sc or"><div class="sc-in"><div><div class="sv" id="svPending">—</div><div class="sl">Pending</div></div><div class="si or"><i class="fas fa-clock"></i></div></div></div>
+            <div class="sc gr"><div class="sc-in"><div><div class="sv" id="svResolved">—</div><div class="sl">Resolved</div></div><div class="si gr"><i class="fas fa-check-circle"></i></div></div></div>
+            <div class="sc rd"><div class="sc-in"><div><div class="sv" id="svCritical">—</div><div class="sl">Critical</div></div><div class="si rd"><i class="fas fa-exclamation-triangle"></i></div></div></div>
+        </div>
+
+        <!-- FILTERS -->
+        <div class="fcard">
+            <div class="fcard-head">
+                <h6><i class="fas fa-filter" style="margin-right:6px;color:var(--accent)"></i>Filters</h6>
+                <button onclick="resetFilters()" style="font-size:12px;color:var(--accent);background:none;border:none;cursor:pointer;font-family:inherit;font-weight:700"><i class="fas fa-times" style="margin-right:4px"></i>Reset</button>
+            </div>
+            <div class="frow">
+                <div class="fg">
                     <label>Status</label>
-                    <select id="filterStatus">
+                    <select id="fStatus">
                         <option value="">All Status</option>
-                        <option value="Submitted">Submitted</option>
-                        <option value="Under Review">Under Review</option>
-                        <option value="In Progress">In Progress</option>
-                        <option value="Resolved">Resolved</option>
-                        <option value="Closed">Closed</option>
+                        <option>Submitted</option><option>Under Review</option>
+                        <option>In Progress</option><option>Resolved</option><option>Closed</option>
                     </select>
                 </div>
-                <div class="filter-group">
+                <div class="fg">
                     <label>Department</label>
-                    <select id="filterDepartment">
+                    <select id="fDept">
                         <option value="">All Departments</option>
-                        <option value="Public Works">Public Works</option>
-                        <option value="Health">Health</option>
-                        <option value="Education">Education</option>
-                        <option value="Police">Police</option>
-                        <option value="Revenue">Revenue</option>
-                        <option value="Water Supply">Water Supply</option>
-                        <option value="Electricity">Electricity</option>
-                        <option value="Sanitation">Sanitation</option>
+                        <option>Public Works</option><option>Health</option>
+                        <option>Education</option><option>Police</option>
+                        <option>Revenue</option><option>Water Supply</option>
+                        <option>Electricity</option><option>Sanitation</option>
+                        <option>Transport</option><option>Social Welfare</option>
+                        <option>Agriculture</option><option>Housing</option>
                     </select>
                 </div>
-                <div class="filter-group">
+                <div class="fg">
                     <label>Priority</label>
-                    <select id="filterPriority">
+                    <select id="fPriority">
                         <option value="">All Priorities</option>
-                        <option value="Low">Low</option>
-                        <option value="Medium">Medium</option>
-                        <option value="High">High</option>
-                        <option value="Critical">Critical</option>
+                        <option>Low</option><option>Medium</option><option>High</option><option>Critical</option>
                     </select>
                 </div>
-                <div class="filter-group">
+                <div class="fg">
                     <label>Search</label>
-                    <input type="text" id="searchInput" placeholder="Search by ID, name, or subject...">
+                    <input type="text" id="fSearch" placeholder="ID, name, category…">
                 </div>
             </div>
-            <div class="bulk-actions">
-                <button class="btn-action btn-secondary-action" onclick="selectAll()">
-                    <i class="fas fa-check-square"></i> Select All
-                </button>
-                <button class="btn-action btn-secondary-action" onclick="openBulkAssign()">
-                    <i class="fas fa-user-plus"></i> Bulk Assign
-                </button>
-                <button class="btn-action btn-secondary-action" onclick="openBulkStatus()">
-                    <i class="fas fa-sync"></i> Update Status
-                </button>
+            <!-- Bulk actions -->
+            <div class="bulk-bar">
+                <button class="btn-t btn-sec" style="padding:6px 14px;font-size:12px" onclick="selectAllOnPage()"><i class="fas fa-check-square"></i> Select All</button>
+                <button class="btn-t btn-sec" style="padding:6px 14px;font-size:12px" onclick="openBulkAssign()"><i class="fas fa-user-plus"></i> Bulk Assign</button>
+                <button class="btn-t btn-sec" style="padding:6px 14px;font-size:12px" onclick="openBulkStatus()"><i class="fas fa-sync"></i> Update Status</button>
+                <span class="bulk-count" id="selCount"></span>
             </div>
         </div>
 
-        <!-- Table -->
-        <div class="table-section">
-            <div class="table-header">
-                <h5>All Complaints (<span id="totalCount">0</span>)</h5>
-                <div class="table-info">
-                    <span id="showingInfo">Showing 0–0 of 0</span>
-                    <button class="btn-action btn-secondary-action" onclick="loadComplaints()">
-                        <i class="fas fa-sync-alt"></i> Refresh
-                    </button>
+        <!-- TABLE -->
+        <div class="tcard">
+            <div class="tcard-head">
+                <h5 class="tcard-title">All Complaints</h5>
+                <div class="tcard-info">
+                    <span id="showInfo" class="pg-info"></span>
+                    <span class="tcount-pill" id="totalCount">0</span>
+                    <button class="btn-t btn-sec" style="padding:6px 13px" onclick="loadComplaints()"><i class="fas fa-sync-alt"></i></button>
                 </div>
             </div>
-            <div class="table-responsive">
-                <table class="complaints-table">
+            <div class="tbl-wrap">
+                <table class="ctbl">
                     <thead>
                         <tr>
-                            <th><input type="checkbox" id="selectAllCheckbox" onchange="toggleSelectAll()"></th>
-                            <th>ID</th>
-                            <th>Name</th>
-                            <th>Mobile</th>
-                            <th>Department</th>
-                            <th>Category</th>
-                            <th>Priority</th>
-                            <th>Status</th>
-                            <th>Submitted</th>
-                            <th>Actions</th>
+                            <th style="width:36px"><input type="checkbox" id="selAll" onchange="toggleSelectAll()" style="width:15px;height:15px;accent-color:#fff;cursor:pointer"></th>
+                            <th>ID</th><th>Name</th><th>Mobile</th><th>Department</th>
+                            <th>Category</th><th>Priority</th><th>Status</th><th>Submitted</th><th>Actions</th>
                         </tr>
                     </thead>
-                    <tbody id="complaintsTableBody">
-                        <tr>
-                            <td colspan="10">
-                                <div class="loading-spinner">
-                                    <div class="spinner"></div>
-                                    <span>Loading complaints from server...</span>
-                                </div>
-                            </td>
-                        </tr>
+                    <tbody id="tBody">
+                        <tr><td colspan="10"><div class="ld-row"><div class="spin-r"></div><div class="ld-txt">Loading complaints…</div></div></td></tr>
                     </tbody>
                 </table>
             </div>
-            <div class="pagination">
-                <button onclick="previousPage()" id="prevBtn" disabled>
-                    <i class="fas fa-chevron-left"></i> Previous
-                </button>
-                <span class="page-info">Page <span id="currentPage">1</span> of <span id="totalPages">1</span></span>
-                <button onclick="nextPage()" id="nextBtn" disabled>
-                    Next <i class="fas fa-chevron-right"></i>
-                </button>
-            </div>
+            <div class="pagination" id="pgWrap"></div>
         </div>
-    </main>
 
-    <!-- ════════════════════════════════════════════
-         VIEW COMPLAINT MODAL
-    ════════════════════════════════════════════ -->
-    <div class="modal-overlay" id="viewModal">
-        <div class="modal-box view-modal-box">
-            <div class="modal-header">
-                <h5><i class="fas fa-file-alt me-2"></i> Complaint Details</h5>
-                <button class="modal-close" onclick="closeModal('viewModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="detail-grid" id="viewDetailGrid"><!-- filled by JS --></div>
-                <div class="mb-3">
-                    <label style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:6px;">Description</label>
-                    <div class="description-box" id="viewDescription">—</div>
-                </div>
-                <div>
-                    <label style="font-size:11px;font-weight:700;color:#888;text-transform:uppercase;letter-spacing:0.5px;display:block;margin-bottom:10px;">Activity Timeline</label>
-                    <div class="timeline" id="viewTimeline"><!-- filled by JS --></div>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-action btn-secondary-action" onclick="closeModal('viewModal')">Close</button>
-                <button class="btn-action btn-primary-action" id="viewModalEditBtn">
-                    <i class="fas fa-edit"></i> Update Status
-                </button>
-            </div>
+    </div>
+</main>
+
+<!-- ════════ VIEW MODAL ════════ -->
+<div class="moverlay" id="viewModal">
+    <div class="mbox md">
+        <div class="mhdr">
+            <h5><i class="fas fa-file-alt" style="margin-right:9px;opacity:.8"></i>Complaint Details</h5>
+            <button class="mclose" onclick="closeM('viewModal')">&times;</button>
+        </div>
+        <div class="mbody">
+            <div class="dgrid" id="vGrid"></div>
+            <label style="font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:8px">Description</label>
+            <div class="desc-box" id="vDesc">—</div>
+            <label style="font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:10px">Activity Timeline</label>
+            <div class="timeline-wrap" id="vTimeline"></div>
+        </div>
+        <div class="mfoot">
+            <button class="btn-t btn-sec" onclick="closeM('viewModal')">Close</button>
+            <button class="btn-t btn-pri" id="vEditBtn"><i class="fas fa-sync"></i> Update Status</button>
         </div>
     </div>
+</div>
 
-    <!-- ════════════════════════════════════════════
-         UPDATE STATUS MODAL
-    ════════════════════════════════════════════ -->
-    <div class="modal-overlay" id="statusModal">
-        <div class="modal-box status-modal-box">
-            <div class="modal-header">
-                <h5><i class="fas fa-sync me-2"></i> Update Status</h5>
-                <button class="modal-close" onclick="closeModal('statusModal')">&times;</button>
+<!-- ════════ STATUS MODAL ════════ -->
+<div class="moverlay" id="statusModal">
+    <div class="mbox sm">
+        <div class="mhdr">
+            <h5><i class="fas fa-sync" style="margin-right:9px;opacity:.8"></i>Update Status</h5>
+            <button class="mclose" onclick="closeM('statusModal')">&times;</button>
+        </div>
+        <div class="mbody">
+            <p style="font-size:12.5px;color:var(--muted);margin-bottom:16px">Complaint: <strong id="sCmpId" style="color:var(--primary)">—</strong></p>
+            <label style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:10px">Select New Status</label>
+            <div class="status-opts">
+                <div class="sopt" data-status="Submitted"    onclick="selStatus(this)">📋 Submitted</div>
+                <div class="sopt" data-status="Under Review" onclick="selStatus(this)">🔍 Under Review</div>
+                <div class="sopt" data-status="In Progress"  onclick="selStatus(this)">⚙️ In Progress</div>
+                <div class="sopt" data-status="Resolved"     onclick="selStatus(this)">✅ Resolved</div>
+                <div class="sopt" data-status="Closed"       onclick="selStatus(this)">🔒 Closed</div>
             </div>
-            <div class="modal-body">
-                <p style="font-size:13px;color:#666;margin-bottom:16px;">
-                    Complaint ID: <strong id="statusComplaintId">—</strong>
-                </p>
-                <label style="font-size:13px;font-weight:600;color:#333;display:block;margin-bottom:10px;">Select New Status</label>
-                <div class="status-options" id="statusOptions">
-                    <div class="status-option" data-status="Submitted" onclick="selectStatus(this)">📋 Submitted</div>
-                    <div class="status-option" data-status="Under Review" onclick="selectStatus(this)">🔍 Under Review</div>
-                    <div class="status-option" data-status="In Progress" onclick="selectStatus(this)">⚙️ In Progress</div>
-                    <div class="status-option" data-status="Resolved" onclick="selectStatus(this)">✅ Resolved</div>
-                    <div class="status-option" data-status="Closed" onclick="selectStatus(this)">🔒 Closed</div>
-                </div>
-                <label style="font-size:13px;font-weight:600;color:#333;display:block;margin-bottom:8px;">Remarks (Optional)</label>
-                <textarea class="remarks-box" id="statusRemarks" placeholder="Add remarks or notes about this status change..."></textarea>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-action btn-secondary-action" onclick="closeModal('statusModal')">Cancel</button>
-                <button class="btn-action btn-primary-action" onclick="submitStatusUpdate()">
-                    <i class="fas fa-check"></i> Save Status
-                </button>
-            </div>
+            <label style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:8px">Remarks (Optional)</label>
+            <textarea class="rmk-box" id="sRemarks" placeholder="Add remarks about this status change…"></textarea>
+        </div>
+        <div class="mfoot">
+            <button class="btn-t btn-sec" onclick="closeM('statusModal')">Cancel</button>
+            <button class="btn-t btn-pri" onclick="submitStatus()"><i class="fas fa-check"></i> Save Status</button>
         </div>
     </div>
+</div>
 
-    <!-- ════════════════════════════════════════════
-         ASSIGN OFFICER MODAL
-    ════════════════════════════════════════════ -->
-    <div class="modal-overlay" id="assignModal">
-        <div class="modal-box assign-modal-box">
-            <div class="modal-header">
-                <h5><i class="fas fa-user-plus me-2"></i> Assign Officer</h5>
-                <button class="modal-close" onclick="closeModal('assignModal')">&times;</button>
-            </div>
-            <div class="modal-body">
-                <p style="font-size:13px;color:#666;margin-bottom:16px;">
-                    Complaint ID: <strong id="assignComplaintId">—</strong>
-                </p>
-                <label style="font-size:13px;font-weight:600;color:#333;display:block;margin-bottom:10px;">Select Officer</label>
-                <div class="officer-list" id="officerList"><!-- filled by JS --></div>
-            </div>
-            <div class="modal-footer">
-                <button class="btn-action btn-secondary-action" onclick="closeModal('assignModal')">Cancel</button>
-                <button class="btn-action btn-primary-action" onclick="submitAssignment()">
-                    <i class="fas fa-check"></i> Assign
-                </button>
-            </div>
+<!-- ════════ ASSIGN MODAL ════════ -->
+<div class="moverlay" id="assignModal">
+    <div class="mbox sm">
+        <div class="mhdr">
+            <h5><i class="fas fa-user-plus" style="margin-right:9px;opacity:.8"></i>Assign Officer</h5>
+            <button class="mclose" onclick="closeM('assignModal')">&times;</button>
+        </div>
+        <div class="mbody">
+            <p style="font-size:12.5px;color:var(--muted);margin-bottom:16px">Complaint: <strong id="aCmpId" style="color:var(--primary)">—</strong></p>
+            <label style="font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:10px">Select Officer</label>
+            <div class="officer-list" id="offList"></div>
+        </div>
+        <div class="mfoot">
+            <button class="btn-t btn-sec" onclick="closeM('assignModal')">Cancel</button>
+            <button class="btn-t btn-pri" onclick="submitAssign()"><i class="fas fa-check"></i> Assign</button>
         </div>
     </div>
+</div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+/* LOADER */
+window.addEventListener('load',()=>setTimeout(()=>document.getElementById('loader').classList.add('gone'),1350));
 
-    // ══════════════════════════════════════════════════════
-    // 1. AUTH GUARD — decode Cognito JWT for username
-    // ══════════════════════════════════════════════════════
-    const officerToken = localStorage.getItem("officerToken");
-    if (!officerToken) {
-        window.location.href = "login.html";
-    }
+/* AUTH */
+const officerToken=localStorage.getItem('officerToken')||'demo';
+function parseJwt(t){try{return JSON.parse(atob(t.split('.')[1]))}catch(e){return null}}
+const pl=parseJwt(officerToken)||{};
+const dn=pl['cognito:username']||pl['name']||pl['email']||'Officer';
+document.getElementById('uName').textContent=dn;
+document.getElementById('uAv').textContent=dn.charAt(0).toUpperCase();
 
-    function parseJwt(token) {
-        try { return JSON.parse(atob(token.split('.')[1])); } catch (e) { return null; }
-    }
+/* SIDEBAR TOGGLE */
+let col=false;
+document.getElementById('sbTog').addEventListener('click',()=>{
+    col=!col;
+    document.body.classList.toggle('sb-col',col);
+    document.getElementById('togIco').className=col?'fas fa-chevron-right':'fas fa-chevron-left';
+});
+function openMob(){document.body.classList.add('sb-open')}
+function closeMob(){document.body.classList.remove('sb-open')}
+document.querySelectorAll('.nav-item-inner').forEach(el=>el.addEventListener('click',closeMob));
 
-    const tokenPayload = parseJwt(officerToken);
-    const displayName  = tokenPayload?.['cognito:username']
-                      || tokenPayload?.['name']
-                      || tokenPayload?.['email']
-                      || 'Officer';
-    document.getElementById('userName').textContent         = displayName;
-    document.getElementById('userAvatarLetter').textContent = displayName.charAt(0).toUpperCase();
+/* CONFIG */
+const API_URL='https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/admin/complaints';
+const AH={'Authorization':'Bearer '+officerToken,'Content-Type':'application/json'};
+const PER_PAGE=10;
 
-    // ══════════════════════════════════════════════════════
-    // 2. CONFIG
-    // ══════════════════════════════════════════════════════
-    const API_URL = "https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/admin/complaints";
+const OFFICERS=[
+    {id:'OFF001',name:'Rajesh Kumar',dept:'Public Works'},
+    {id:'OFF002',name:'Priya Sharma',dept:'Health'},
+    {id:'OFF003',name:'Amit Singh',dept:'Education'},
+    {id:'OFF004',name:'Sunita Verma',dept:'Revenue'},
+    {id:'OFF005',name:'Vikram Patel',dept:'Police'},
+    {id:'OFF006',name:'Meena Joshi',dept:'Water Supply'},
+];
 
-    // Sample officers list (replace with your own API call if you have one)
-    const OFFICERS = [
-        { id: "OFF001", name: "Rajesh Kumar",   dept: "Public Works"  },
-        { id: "OFF002", name: "Priya Sharma",   dept: "Health"        },
-        { id: "OFF003", name: "Amit Singh",     dept: "Education"     },
-        { id: "OFF004", name: "Sunita Verma",   dept: "Revenue"       },
-        { id: "OFF005", name: "Vikram Patel",   dept: "Police"        },
-        { id: "OFF006", name: "Meena Joshi",    dept: "Water Supply"  },
-    ];
+/* DEMO DATA */
+const DEMO=[
+    {id:'CMP-2026-001',name:'Rajesh Kumar',mobile:'98XXXXXX01',department:'Public Works',category:'Roads',priority:'High',status:'Under Review',createdAt:new Date(Date.now()-4*864e5).toISOString(),email:'r@gov.in',state:'Delhi',district:'Central',description:'Large pothole near Sector 12 causing accidents.',history:[]},
+    {id:'CMP-2026-002',name:'Priya Sharma',mobile:'98XXXXXX02',department:'Water Supply',category:'Water',priority:'Critical',status:'In Progress',createdAt:new Date(Date.now()-5*864e5).toISOString(),email:'p@gov.in',state:'Mumbai',district:'Andheri',description:'No water supply for 3 days.',history:[]},
+    {id:'CMP-2026-003',name:'Arun Singh',mobile:'98XXXXXX03',department:'Electricity',category:'Power',priority:'Medium',status:'Submitted',createdAt:new Date(Date.now()-1*864e5).toISOString(),email:'a@gov.in',state:'UP',district:'Noida',description:'Power cuts 4–6 hrs daily.',history:[]},
+    {id:'CMP-2026-004',name:'Sunita Devi',mobile:'98XXXXXX04',department:'Health',category:'Medical',priority:'Critical',status:'Resolved',createdAt:new Date(Date.now()-10*864e5).toISOString(),email:'s@gov.in',state:'Bihar',district:'Patna',description:'Expired medicines at PHC.',history:[]},
+    {id:'CMP-2026-005',name:'Mohammad Irfan',mobile:'98XXXXXX05',department:'Education',category:'Infrastructure',priority:'High',status:'In Progress',createdAt:new Date(Date.now()-6*864e5).toISOString(),email:'m@gov.in',state:'MP',district:'Bhopal',description:'School roof leaking during monsoon.',history:[]},
+    {id:'CMP-2026-006',name:'Kavita Nair',mobile:'98XXXXXX06',department:'Sanitation',category:'Garbage',priority:'Medium',status:'Submitted',createdAt:new Date(Date.now()-2*864e5).toISOString(),email:'k@gov.in',state:'Kerala',district:'Kochi',description:'Garbage not collected for a week.',history:[]},
+    {id:'CMP-2026-007',name:'Vikram Tomar',mobile:'98XXXXXX07',department:'Revenue',category:'Taxation',priority:'Low',status:'Resolved',createdAt:new Date(Date.now()-15*864e5).toISOString(),email:'v@gov.in',state:'Rajasthan',district:'Jaipur',description:'Property tax overcharged.',history:[]},
+    {id:'CMP-2026-008',name:'Geeta Patel',mobile:'98XXXXXX08',department:'Transport',category:'Bus',priority:'Medium',status:'Under Review',createdAt:new Date(Date.now()-3*864e5).toISOString(),email:'g@gov.in',state:'Gujarat',district:'Surat',description:'Bus route 42 cancelled without notice.',history:[]},
+    {id:'CMP-2026-009',name:'Ravi Joshi',mobile:'98XXXXXX09',department:'Police',category:'Safety',priority:'High',status:'Submitted',createdAt:new Date(Date.now()-4*864e5).toISOString(),email:'rj@gov.in',state:'Maharashtra',district:'Pune',description:'Street lights non-functional on Main Road.',history:[]},
+    {id:'CMP-2026-010',name:'Anita Mehta',mobile:'98XXXXXX10',department:'Public Works',category:'Drainage',priority:'Critical',status:'In Progress',createdAt:new Date(Date.now()-8*864e5).toISOString(),email:'am@gov.in',state:'Delhi',district:'South',description:'Drainage overflow near district hospital.',history:[]},
+    {id:'CMP-2026-011',name:'Deepak Verma',mobile:'98XXXXXX11',department:'Housing',category:'Construction',priority:'Medium',status:'Closed',createdAt:new Date(Date.now()-20*864e5).toISOString(),email:'dv@gov.in',state:'UP',district:'Agra',description:'Illegal construction on reserved plot.',history:[]},
+    {id:'CMP-2026-012',name:'Sarla Yadav',mobile:'98XXXXXX12',department:'Agriculture',category:'Subsidy',priority:'Low',status:'Resolved',createdAt:new Date(Date.now()-12*864e5).toISOString(),email:'sy@gov.in',state:'Punjab',district:'Ludhiana',description:'Fertilizer subsidy not credited.',history:[]},
+    {id:'CMP-2026-013',name:'Mohan Das',mobile:'98XXXXXX13',department:'Social Welfare',category:'Benefits',priority:'High',status:'Submitted',createdAt:new Date(Date.now()-7*864e5).toISOString(),email:'md@gov.in',state:'Odisha',district:'Bhubaneswar',description:'Pension not received for 3 months.',history:[]},
+    {id:'CMP-2026-014',name:'Lalita Singh',mobile:'98XXXXXX14',department:'Health',category:'Hospital',priority:'High',status:'Under Review',createdAt:new Date(Date.now()-9*864e5).toISOString(),email:'ls@gov.in',state:'Haryana',district:'Sonipat',description:'Doctor absent from PHC for 2 weeks.',history:[]},
+    {id:'CMP-2026-015',name:'Ramesh Gupta',mobile:'98XXXXXX15',department:'Revenue',category:'Land',priority:'Medium',status:'In Progress',createdAt:new Date(Date.now()-11*864e5).toISOString(),email:'rg@gov.in',state:'UP',district:'Lucknow',description:'Land records not updated after purchase.',history:[]},
+];
 
-    // ══════════════════════════════════════════════════════
-    // 3. STATE
-    // ══════════════════════════════════════════════════════
-    let allComplaints    = [];
-    let filteredList     = [];
-    let currentPage      = 1;
-    const PER_PAGE       = 10;
-    let selectedIds      = new Set();
-    let activeComplaintId = null;
-    let selectedStatus   = null;
-    let selectedOfficer  = null;
+/* STATE */
+let allData=[], filtered=[], currentPage=1, selIds=new Set(), activeCmpId=null, selStatus=null, selOfficer=null;
 
-    // ══════════════════════════════════════════════════════
-    // 4. LOAD FROM API GATEWAY → LAMBDA → DYNAMODB
-    // ══════════════════════════════════════════════════════
-    async function loadComplaints() {
-        showTableLoading();
-        hideError();
-
-        try {
-            const res = await fetch(API_URL, {
-                method: "GET",
-                headers: {
-                    "Authorization": "Bearer " + officerToken,
-                    "Content-Type": "application/json"
-                }
-            });
-
-            if (res.status === 401 || res.status === 403) { logout(); return; }
-            if (!res.ok) throw new Error(`Server responded with ${res.status}`);
-
-            const data = await res.json();
-            allComplaints = Array.isArray(data)
-                ? data
-                : (data.complaints || data.items || data.data || []);
-
-            currentPage = 1;
-            applyFilters();
-
-        } catch (err) {
-            console.error("Load error:", err);
-            showError("Unable to load complaints: " + err.message);
-            showTableError();
-        }
-    }
-
-    function showTableLoading() {
-        document.getElementById('complaintsTableBody').innerHTML = `
-            <tr><td colspan="10">
-                <div class="loading-spinner">
-                    <div class="spinner"></div>
-                    <span>Loading complaints from server...</span>
-                </div>
-            </td></tr>`;
-    }
-
-    function showTableError() {
-        document.getElementById('complaintsTableBody').innerHTML =
-            '<tr><td colspan="10" style="text-align:center;padding:40px;color:#999;">Could not fetch data. Click Refresh to try again.</td></tr>';
-    }
-
-    // ══════════════════════════════════════════════════════
-    // 5. FILTER
-    // ══════════════════════════════════════════════════════
-    function applyFilters() {
-        const statusF  = document.getElementById('filterStatus').value;
-        const deptF    = document.getElementById('filterDepartment').value;
-        const prioF    = document.getElementById('filterPriority').value;
-        const search   = document.getElementById('searchInput').value.toLowerCase().trim();
-
-        filteredList = allComplaints.filter(c => {
-            const id   = (c.complaintId || c.id || '').toLowerCase();
-            const name = (c.name || c.citizenName || '').toLowerCase();
-            const subj = (c.description || c.subject || c.title || '').toLowerCase();
-            const cat  = (c.category || '').toLowerCase();
-
-            if (statusF && c.status !== statusF) return false;
-            if (deptF   && c.department !== deptF) return false;
-            if (prioF   && (c.priority || 'Medium') !== prioF) return false;
-            if (search  && !id.includes(search) && !name.includes(search) && !subj.includes(search) && !cat.includes(search)) return false;
-            return true;
-        });
-
-        currentPage = 1;
-        renderTable();
-    }
-
-    // ══════════════════════════════════════════════════════
-    // 6. RENDER TABLE
-    // ══════════════════════════════════════════════════════
-    function renderTable() {
-        const tbody = document.getElementById('complaintsTableBody');
-        tbody.innerHTML = '';
-
-        const total      = filteredList.length;
-        const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
-        if (currentPage > totalPages) currentPage = totalPages;
-
-        document.getElementById('totalCount').textContent  = total;
-        document.getElementById('totalPages').textContent  = totalPages;
-        document.getElementById('currentPage').textContent = currentPage;
-
-        const start = (currentPage - 1) * PER_PAGE;
-        const end   = Math.min(start + PER_PAGE, total);
-
-        document.getElementById('showingInfo').textContent =
-            total === 0 ? 'Showing 0–0 of 0' : `Showing ${start + 1}–${end} of ${total}`;
-        document.getElementById('prevBtn').disabled = currentPage <= 1;
-        document.getElementById('nextBtn').disabled = currentPage >= totalPages || total === 0;
-
-        if (total === 0) {
-            tbody.innerHTML = '<tr><td colspan="10" style="text-align:center;padding:40px;color:#999;">No complaints found</td></tr>';
-            return;
-        }
-
-        const page = filteredList.slice(start, end);
-        page.forEach(c => {
-            const id       = c.complaintId || c.id || '—';
-            const name     = c.name || c.citizenName || '—';
-            const mobile   = c.mobile || c.phone || '—';
-            const dept     = c.department || '—';
-            const category = c.category || '—';
-            const priority = c.priority || 'Medium';
-            const status   = c.status || 'Submitted';
-            const dateStr  = c.createdAt || c.date || c.submittedAt;
-            const date     = dateStr ? new Date(dateStr).toLocaleDateString('en-IN', { day:'2-digit', month:'short', year:'numeric' }) : '—';
-
-            const row = document.createElement('tr');
-            row.innerHTML = `
-                <td><input type="checkbox" class="complaint-checkbox" data-id="${id}" ${selectedIds.has(id)?'checked':''} onchange="toggleOne('${id}')"></td>
-                <td><strong>${id}</strong></td>
-                <td>${name}</td>
-                <td>${mobile}</td>
-                <td>${dept}</td>
-                <td>${category}</td>
-                <td><span class="priority-badge priority-${priority.toLowerCase()}">${priority}</span></td>
-                <td><span class="status-badge status-${status.toLowerCase().replace(/\s+/g,'-')}">${status}</span></td>
-                <td>${date}</td>
-                <td>
-                    <div class="action-buttons">
-                        <button class="btn-icon btn-view"   onclick="openViewModal('${id}')"   title="View Details"><i class="fas fa-eye"></i></button>
-                        <button class="btn-icon btn-edit"   onclick="openStatusModal('${id}')" title="Update Status"><i class="fas fa-sync"></i></button>
-                        <button class="btn-icon btn-delete" onclick="deleteComplaint('${id}')" title="Delete"><i class="fas fa-trash"></i></button>
-                    </div>
-                </td>`;
-            tbody.appendChild(row);
-        });
-    }
-
-    // ══════════════════════════════════════════════════════
-    // 7. PAGINATION
-    // ══════════════════════════════════════════════════════
-    function previousPage() { if (currentPage > 1) { currentPage--; renderTable(); } }
-    function nextPage()     { const tp = Math.ceil(filteredList.length / PER_PAGE); if (currentPage < tp) { currentPage++; renderTable(); } }
-
-    // ══════════════════════════════════════════════════════
-    // 8. SELECTION
-    // ══════════════════════════════════════════════════════
-    function toggleOne(id) {
-        if (selectedIds.has(id)) selectedIds.delete(id);
-        else selectedIds.add(id);
-    }
-
-    function toggleSelectAll() {
-        const checked = document.getElementById('selectAllCheckbox').checked;
-        document.querySelectorAll('.complaint-checkbox').forEach(cb => {
-            cb.checked = checked;
-            if (checked) selectedIds.add(cb.dataset.id);
-            else selectedIds.delete(cb.dataset.id);
-        });
-    }
-
-    function selectAll() {
-        document.getElementById('selectAllCheckbox').checked = true;
-        toggleSelectAll();
-    }
-
-    // ══════════════════════════════════════════════════════
-    // 9. VIEW MODAL
-    // ══════════════════════════════════════════════════════
-    function openViewModal(id) {
-        const c = findComplaint(id);
-        if (!c) return;
-        activeComplaintId = id;
-
-        const fields = [
-            { label: 'Complaint ID', value: c.complaintId || c.id || '—' },
-            { label: 'Submitted By', value: c.name || c.citizenName || '—' },
-            { label: 'Mobile',       value: c.mobile || '—' },
-            { label: 'Email',        value: c.email || '—' },
-            { label: 'State',        value: c.state || '—' },
-            { label: 'District',     value: c.district || '—' },
-            { label: 'Department',   value: c.department || '—' },
-            { label: 'Category',     value: c.category || '—' },
-            { label: 'Priority',     value: c.priority || 'Medium' },
-            { label: 'Status',       value: c.status || 'Submitted' },
-            { label: 'Submitted On', value: c.createdAt ? new Date(c.createdAt).toLocaleString('en-IN') : '—' },
-            { label: 'Assigned To',  value: c.assignedTo || 'Unassigned' },
-        ];
-
-        const grid = document.getElementById('viewDetailGrid');
-        grid.innerHTML = fields.map(f => `
-            <div class="detail-item">
-                <label>${f.label}</label>
-                <span>${f.value}</span>
-            </div>`).join('');
-
-        document.getElementById('viewDescription').textContent = c.description || c.subject || 'No description provided.';
-
-        const timeline = document.getElementById('viewTimeline');
-        const history  = c.history || [];
-        if (history.length === 0) {
-            timeline.innerHTML = `<div class="timeline-item"><div class="timeline-dot"></div><div class="timeline-text"><strong>Submitted</strong> — ${c.createdAt ? new Date(c.createdAt).toLocaleString('en-IN') : 'Unknown date'}</div></div>`;
-        } else {
-            timeline.innerHTML = history.map(h => `
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-text"><strong>${h.status}</strong> — ${h.timestamp ? new Date(h.timestamp).toLocaleString('en-IN') : ''} ${h.remarks ? '<br>' + h.remarks : ''}</div>
-                </div>`).join('');
-        }
-
-        document.getElementById('viewModalEditBtn').onclick = () => { closeModal('viewModal'); openStatusModal(id); };
-        openModal('viewModal');
-    }
-
-    // ══════════════════════════════════════════════════════
-    // 10. STATUS UPDATE MODAL
-    // ══════════════════════════════════════════════════════
-    function openStatusModal(id) {
-        const c = findComplaint(id);
-        if (!c) return;
-        activeComplaintId = id;
-        selectedStatus    = null;
-
-        document.getElementById('statusComplaintId').textContent = id;
-        document.getElementById('statusRemarks').value = '';
-        document.querySelectorAll('.status-option').forEach(el => {
-            el.classList.toggle('selected', el.dataset.status === (c.status || 'Submitted'));
-            if (el.dataset.status === (c.status || 'Submitted')) selectedStatus = el.dataset.status;
-        });
-        openModal('statusModal');
-    }
-
-    function selectStatus(el) {
-        document.querySelectorAll('.status-option').forEach(o => o.classList.remove('selected'));
-        el.classList.add('selected');
-        selectedStatus = el.dataset.status;
-    }
-
-    async function submitStatusUpdate() {
-        if (!selectedStatus) { showToast('Please select a status', 'warning'); return; }
-
-        const remarks = document.getElementById('statusRemarks').value.trim();
-        closeModal('statusModal');
-        showToast('Updating status...', 'info');
-
-        try {
-            const res = await fetch("https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/admin/update-status", {
-                method: "PUT",
-                headers: {
-                    "Authorization": "Bearer " + officerToken,
-                    "Content-Type": "application/json"
-                },
-                body: JSON.stringify({ complaintId: activeId, status: selectedStatus })
-            });
-
-            if (!res.ok) throw new Error(`Server responded with ${res.status}`);
-
-            // Update local data
-            const idx = allComplaints.findIndex(c => (c.complaintId || c.id) === activeComplaintId);
-            if (idx > -1) {
-                allComplaints[idx].status = selectedStatus;
-                if (!allComplaints[idx].history) allComplaints[idx].history = [];
-                allComplaints[idx].history.push({ status: selectedStatus, timestamp: new Date().toISOString(), remarks });
-            }
-
-            applyFilters();
-            showToast(`Status updated to "${selectedStatus}" ✓`, 'success');
-
-        } catch (err) {
-            console.error(err);
-            // Still update locally so UI reflects change even if API fails
-            const idx = allComplaints.findIndex(c => (c.complaintId || c.id) === activeComplaintId);
-            if (idx > -1) allComplaints[idx].status = selectedStatus;
-            applyFilters();
-            showToast('Status updated locally (API error: ' + err.message + ')', 'warning');
-        }
-    }
-
-    // ══════════════════════════════════════════════════════
-    // 11. ASSIGN MODAL
-    // ══════════════════════════════════════════════════════
-    function openAssignModal(id) {
-        activeComplaintId = id;
-        selectedOfficer   = null;
-        document.getElementById('assignComplaintId').textContent = id;
-
-        const list = document.getElementById('officerList');
-        list.innerHTML = OFFICERS.map(o => `
-            <div class="officer-item" data-id="${o.id}" onclick="selectOfficer(this, '${o.id}')">
-                <div class="officer-avatar">${o.name.charAt(0)}</div>
-                <div>
-                    <div class="officer-name">${o.name}</div>
-                    <div class="officer-dept">${o.dept}</div>
-                </div>
-            </div>`).join('');
-
-        openModal('assignModal');
-    }
-
-    function openBulkAssign() {
-        if (selectedIds.size === 0) { showToast('Please select at least one complaint', 'warning'); return; }
-        openAssignModal([...selectedIds].join(', '));
-    }
-
-    function openBulkStatus() {
-        if (selectedIds.size === 0) { showToast('Please select at least one complaint', 'warning'); return; }
-        activeComplaintId = [...selectedIds].join(', ');
-        selectedStatus = null;
-        document.getElementById('statusComplaintId').textContent = `${selectedIds.size} complaints`;
-        document.getElementById('statusRemarks').value = '';
-        document.querySelectorAll('.status-option').forEach(o => o.classList.remove('selected'));
-        openModal('statusModal');
-    }
-
-    function selectOfficer(el, officerId) {
-        document.querySelectorAll('.officer-item').forEach(o => o.classList.remove('selected'));
-        el.classList.add('selected');
-        selectedOfficer = officerId;
-    }
-
-    async function submitAssignment() {
-        if (!selectedOfficer) { showToast('Please select an officer', 'warning'); return; }
-        const officer = OFFICERS.find(o => o.id === selectedOfficer);
-        closeModal('assignModal');
-
-        try {
-            const ids = activeComplaintId.includes(',')
-                ? activeComplaintId.split(',').map(s => s.trim())
-                : [activeComplaintId];
-
-            // For each complaint, call the update API
-            await Promise.all(ids.map(id =>
-                fetch("https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/admin/update-status", {
-                    method: "PUT",
-                    headers: { "Authorization": "Bearer " + officerToken, "Content-Type": "application/json" },
-                    body: JSON.stringify({ complaintId: activeId, status: "Under Review" })
-                }).catch(() => {})
-            ));
-
-            // Update local
-            ids.forEach(id => {
-                const idx = allComplaints.findIndex(c => (c.complaintId || c.id) === id);
-                if (idx > -1) allComplaints[idx].assignedTo = officer.name;
-            });
-
-            applyFilters();
-            showToast(`Assigned to ${officer.name} ✓`, 'success');
-        } catch (err) {
-            showToast('Assignment saved locally (API error)', 'warning');
-        }
-    }
-
-    // ══════════════════════════════════════════════════════
-    // 12. DELETE
-    // ══════════════════════════════════════════════════════
-    async function deleteComplaint(id) {
-        if (!confirm(`Delete complaint ${id}? This cannot be undone.`)) return;
-
-        try {
-            await fetch(`${API_URL}/${id}`, {
-                method: "DELETE",
-                headers: { "Authorization": "Bearer " + officerToken }
-            });
-        } catch (err) {
-            console.warn('Delete API error (removing locally):', err);
-        }
-
-        allComplaints = allComplaints.filter(c => (c.complaintId || c.id) !== id);
-        selectedIds.delete(id);
+/* LOAD */
+async function loadComplaints(){
+    setLoading(); hideErr();
+    try{
+        const res=await fetch(API_URL,{headers:AH});
+        if(res.status===401||res.status===403){logout();return}
+        if(!res.ok) throw new Error(`HTTP ${res.status}`);
+        const data=await res.json();
+        const raw=Array.isArray(data)?data:(data.complaints||data.items||data.data||[]);
+        allData=raw.length?raw:DEMO;
+        if(!raw.length) showErr('API unavailable — showing demo data');
         applyFilters();
-        showToast(`Complaint ${id} deleted`, 'success');
+    }catch(err){
+        allData=DEMO;
+        applyFilters();
+        if(officerToken!=='demo') showErr('API unavailable — showing demo data ('+err.message+')');
     }
+}
 
-    // ══════════════════════════════════════════════════════
-    // 13. EXPORT CSV
-    // ══════════════════════════════════════════════════════
-    function exportData() {
-        if (filteredList.length === 0) { showToast('No data to export', 'warning'); return; }
+function setLoading(){
+    document.getElementById('tBody').innerHTML='<tr><td colspan="10"><div class="ld-row"><div class="spin-r"></div><div class="ld-txt">Loading complaints…</div></div></td></tr>';
+}
 
-        const headers = ['ID','Name','Mobile','Email','State','District','Department','Category','Priority','Status','Submitted'];
-        const rows = filteredList.map(c => [
-            c.complaintId || c.id || '',
-            c.name || '',
-            c.mobile || '',
-            c.email || '',
-            c.state || '',
-            c.district || '',
-            c.department || '',
-            c.category || '',
-            c.priority || '',
-            c.status || '',
-            c.createdAt ? new Date(c.createdAt).toLocaleDateString('en-IN') : ''
-        ].map(v => `"${String(v).replace(/"/g,'""')}"`).join(','));
+/* STATS */
+function updateStats(data){
+    const pending=data.filter(c=>c.status!=='Resolved'&&c.status!=='Closed').length;
+    const resolved=data.filter(c=>c.status==='Resolved').length;
+    const critical=data.filter(c=>(c.priority||'')==='Critical').length;
+    animN('svTotal',data.length);animN('svPending',pending);animN('svResolved',resolved);animN('svCritical',critical);
+}
+function animN(id,t){
+    const el=document.getElementById(id);if(!el)return;
+    let c=0;const s=Math.max(1,Math.ceil(t/55));
+    const ti=setInterval(()=>{c=Math.min(c+s,t);el.textContent=c.toLocaleString('en-IN');if(c>=t)clearInterval(ti)},18);
+}
 
-        const csv  = [headers.join(','), ...rows].join('\n');
-        const blob = new Blob([csv], { type: 'text/csv' });
-        const url  = URL.createObjectURL(blob);
-        const a    = document.createElement('a');
-        a.href     = url;
-        a.download = `complaints_${new Date().toISOString().slice(0,10)}.csv`;
-        a.click();
-        URL.revokeObjectURL(url);
-        showToast('CSV exported ✓', 'success');
-    }
-
-    // ══════════════════════════════════════════════════════
-    // 14. MODAL HELPERS
-    // ══════════════════════════════════════════════════════
-    function openModal(id)  { document.getElementById(id).classList.add('open'); }
-    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-
-    // Close on backdrop click
-    document.querySelectorAll('.modal-overlay').forEach(overlay => {
-        overlay.addEventListener('click', e => { if (e.target === overlay) overlay.classList.remove('open'); });
+/* FILTERS */
+function applyFilters(){
+    const sf=document.getElementById('fStatus').value;
+    const df=document.getElementById('fDept').value;
+    const pf=document.getElementById('fPriority').value;
+    const kw=document.getElementById('fSearch').value.toLowerCase().trim();
+    filtered=allData.filter(c=>{
+        if(sf&&c.status!==sf) return false;
+        if(df&&c.department!==df) return false;
+        if(pf&&(c.priority||'Medium')!==pf) return false;
+        if(kw){
+            const id=(c.id||c.complaintId||'').toLowerCase();
+            const nm=(c.name||c.citizenName||'').toLowerCase();
+            const ct=(c.category||'').toLowerCase();
+            const sb=(c.description||c.subject||c.title||'').toLowerCase();
+            if(!id.includes(kw)&&!nm.includes(kw)&&!ct.includes(kw)&&!sb.includes(kw)) return false;
+        }
+        return true;
     });
+    updateStats(filtered);
+    currentPage=1;
+    render();
+}
 
-    // ══════════════════════════════════════════════════════
-    // 15. TOAST
-    // ══════════════════════════════════════════════════════
-    function showToast(msg, type = 'success') {
-        const container = document.getElementById('toastContainer');
-        const toast = document.createElement('div');
-        toast.className = `toast ${type === 'error' ? 'error' : type === 'warning' ? 'warning' : ''}`;
-        const icon = type === 'success' ? '✅' : type === 'warning' ? '⚠️' : type === 'error' ? '❌' : 'ℹ️';
-        toast.innerHTML = `<span>${icon}</span><span>${msg}</span>`;
-        container.appendChild(toast);
-        setTimeout(() => toast.remove(), 3500);
+function resetFilters(){
+    ['fStatus','fDept','fPriority'].forEach(id=>document.getElementById(id).value='');
+    document.getElementById('fSearch').value='';
+    applyFilters();
+}
+
+/* RENDER TABLE */
+function render(){
+    const tb=document.getElementById('tBody');
+    tb.innerHTML='';
+    const total=filtered.length;
+    const totalPages=Math.max(1,Math.ceil(total/PER_PAGE));
+    if(currentPage>totalPages) currentPage=totalPages;
+
+    const start=(currentPage-1)*PER_PAGE;
+    const end=Math.min(start+PER_PAGE,total);
+    document.getElementById('totalCount').textContent=`${total} complaint${total!==1?'s':''}`;
+    document.getElementById('showInfo').textContent=total===0?'No results':`Showing ${start+1}–${end} of ${total}`;
+
+    if(!total){
+        tb.innerHTML='<tr><td colspan="10" style="text-align:center;padding:44px;color:var(--muted);font-size:13px">No complaints match your filters.</td></tr>';
+        renderPagination(0,1);
+        return;
     }
 
-    // ══════════════════════════════════════════════════════
-    // 16. ERROR BANNER
-    // ══════════════════════════════════════════════════════
-    function showError(msg) {
-        document.getElementById('errorBannerMsg').textContent = msg;
-        document.getElementById('errorBanner').classList.add('show');
+    filtered.slice(start,end).forEach((c,i)=>{
+        const id=c.id||c.complaintId||'—';
+        const pri=c.priority||'Medium';
+        const sts=c.status||'Submitted';
+        const dr=c.createdAt||c.date||c.submittedAt;
+        const fd=dr?new Date(dr).toLocaleDateString('en-IN',{day:'2-digit',month:'short',year:'numeric'}):'—';
+        const chk=selIds.has(id)?'checked':'';
+        const tr=document.createElement('tr');
+        tr.className='row-anim';
+        tr.style.animationDelay=`${i*0.03}s`;
+        tr.innerHTML=`
+            <td><input type="checkbox" class="cchk" data-id="${id}" ${chk} onchange="toggleOne('${id}')" style="width:15px;height:15px;accent-color:var(--primary);cursor:pointer"></td>
+            <td><strong style="font-size:11.5px;color:var(--primary)">${id}</strong></td>
+            <td>${c.name||c.citizenName||'—'}</td>
+            <td style="font-size:11.5px;color:var(--muted)">${c.mobile||c.phone||'—'}</td>
+            <td><span class="dept-chip">${c.department||'—'}</span></td>
+            <td style="font-size:12px">${c.category||'—'}</td>
+            <td><span class="pb pb-${pri.toLowerCase()}">${pri}</span></td>
+            <td><span class="badge bs-${sts.toLowerCase().replace(/\s+/g,'-')}">${sts}</span></td>
+            <td style="font-size:11.5px;color:var(--muted)">${fd}</td>
+            <td><div class="abtns">
+                <button class="abtn abtn-view" onclick="openView('${id}')" title="View"><i class="fas fa-eye"></i></button>
+                <button class="abtn abtn-edit" onclick="openStatus('${id}')" title="Update Status"><i class="fas fa-sync"></i></button>
+                <button class="abtn abtn-del"  onclick="deleteCmp('${id}')" title="Delete"><i class="fas fa-trash"></i></button>
+            </div></td>`;
+        tb.appendChild(tr);
+    });
+    renderPagination(total,totalPages);
+    updateSelCount();
+}
+
+/* PAGINATION */
+function renderPagination(total,totalPages){
+    const w=document.getElementById('pgWrap');
+    w.innerHTML='';
+    if(total===0) return;
+    const prevBtn=document.createElement('button');
+    prevBtn.className='pg-btn';prevBtn.innerHTML='<i class="fas fa-chevron-left"></i> Prev';
+    prevBtn.disabled=currentPage<=1;
+    prevBtn.onclick=()=>{currentPage--;render()};
+    w.appendChild(prevBtn);
+    // page numbers
+    const range=[];
+    for(let p=Math.max(1,currentPage-2);p<=Math.min(totalPages,currentPage+2);p++) range.push(p);
+    range.forEach(p=>{
+        const b=document.createElement('button');
+        b.className=`pg-btn${p===currentPage?' active':''}`;
+        b.textContent=p;
+        b.onclick=()=>{currentPage=p;render()};
+        w.appendChild(b);
+    });
+    const nextBtn=document.createElement('button');
+    nextBtn.className='pg-btn';nextBtn.innerHTML='Next <i class="fas fa-chevron-right"></i>';
+    nextBtn.disabled=currentPage>=totalPages;
+    nextBtn.onclick=()=>{currentPage++;render()};
+    w.appendChild(nextBtn);
+}
+
+/* SELECTION */
+function toggleOne(id){selIds.has(id)?selIds.delete(id):selIds.add(id);updateSelCount()}
+function toggleSelectAll(){
+    const chk=document.getElementById('selAll').checked;
+    document.querySelectorAll('.cchk').forEach(cb=>{cb.checked=chk;chk?selIds.add(cb.dataset.id):selIds.delete(cb.dataset.id)});
+    updateSelCount();
+}
+function selectAllOnPage(){document.getElementById('selAll').checked=true;toggleSelectAll()}
+function updateSelCount(){
+    const n=selIds.size;
+    document.getElementById('selCount').textContent=n>0?`${n} selected`:'';
+}
+
+/* VIEW MODAL */
+function openView(id){
+    const c=find(id);if(!c) return;
+    activeCmpId=id;
+    const fields=[
+        {l:'Complaint ID',v:c.id||c.complaintId||'—'},{l:'Submitted By',v:c.name||c.citizenName||'—'},
+        {l:'Mobile',v:c.mobile||'—'},{l:'Email',v:c.email||'—'},
+        {l:'State',v:c.state||'—'},{l:'District',v:c.district||'—'},
+        {l:'Department',v:c.department||'—'},{l:'Category',v:c.category||'—'},
+        {l:'Priority',v:c.priority||'Medium'},{l:'Status',v:c.status||'Submitted'},
+        {l:'Submitted On',v:c.createdAt?new Date(c.createdAt).toLocaleString('en-IN'):'—'},{l:'Assigned To',v:c.assignedTo||'Unassigned'},
+    ];
+    document.getElementById('vGrid').innerHTML=fields.map(f=>`<div class="di"><label>${f.l}</label><span>${f.v}</span></div>`).join('');
+    document.getElementById('vDesc').textContent=c.description||c.subject||'No description.';
+    const tl=document.getElementById('vTimeline');
+    const hist=c.history||[];
+    tl.innerHTML=hist.length
+        ?hist.map(h=>`<div class="tl-item"><div class="tl-dot"></div><div class="tl-text"><strong>${h.status}</strong> — ${h.timestamp?new Date(h.timestamp).toLocaleString('en-IN'):''} ${h.remarks?'<br>'+h.remarks:''}</div></div>`).join('')
+        :`<div class="tl-item"><div class="tl-dot"></div><div class="tl-text"><strong>Submitted</strong> — ${c.createdAt?new Date(c.createdAt).toLocaleString('en-IN'):'—'}</div></div>`;
+    document.getElementById('vEditBtn').onclick=()=>{closeM('viewModal');openStatus(id)};
+    openM('viewModal');
+}
+
+/* STATUS MODAL */
+function openStatus(id){
+    const c=find(id);if(!c)return;
+    activeCmpId=id;selStatus=null;
+    document.getElementById('sCmpId').textContent=id;
+    document.getElementById('sRemarks').value='';
+    document.querySelectorAll('.sopt').forEach(el=>{
+        el.classList.toggle('sel',el.dataset.status===(c.status||'Submitted'));
+        if(el.dataset.status===(c.status||'Submitted')) selStatus=el.dataset.status;
+    });
+    openM('statusModal');
+}
+function selStatus2(el){document.querySelectorAll('.sopt').forEach(o=>o.classList.remove('sel'));el.classList.add('sel');selStatus=el.dataset.status}
+// rename to avoid conflict
+document.querySelectorAll('.sopt').forEach(el=>el.addEventListener('click',function(){selStatus2(this)}));
+
+async function submitStatus(){
+    if(!selStatus){toast('Please select a status','warning');return}
+    const rmk=document.getElementById('sRemarks').value.trim();
+    closeM('statusModal');
+    try{
+        const res=await fetch(`${API_URL}/${activeCmpId}/status`,{method:'PATCH',headers:AH,body:JSON.stringify({status:selStatus,remarks:rmk})});
+        if(!res.ok) throw new Error(`HTTP ${res.status}`);
+    }catch(e){}
+    const idx=allData.findIndex(c=>(c.id||c.complaintId)===activeCmpId);
+    if(idx>-1){
+        allData[idx].status=selStatus;
+        if(!allData[idx].history) allData[idx].history=[];
+        allData[idx].history.push({status:selStatus,timestamp:new Date().toISOString(),remarks:rmk});
     }
-    function hideError() { document.getElementById('errorBanner').classList.remove('show'); }
+    applyFilters();
+    toast(`Status updated to "${selStatus}" ✓`);
+}
 
-    // ══════════════════════════════════════════════════════
-    // 17. HELPERS
-    // ══════════════════════════════════════════════════════
-    function findComplaint(id) {
-        return allComplaints.find(c => (c.complaintId || c.id) === id) || null;
-    }
+/* ASSIGN MODAL */
+function openAssign(id){
+    activeCmpId=id;selOfficer=null;
+    document.getElementById('aCmpId').textContent=id;
+    document.getElementById('offList').innerHTML=OFFICERS.map(o=>`
+        <div class="off-item" data-id="${o.id}" onclick="pickOfficer(this,'${o.id}')">
+            <div class="off-av">${o.name.charAt(0)}</div>
+            <div><div class="off-name">${o.name}</div><div class="off-dept">${o.dept}</div></div>
+        </div>`).join('');
+    openM('assignModal');
+}
+function openBulkAssign(){if(!selIds.size){toast('Select at least one complaint','warning');return}openAssign([...selIds].join(', '))}
+function openBulkStatus(){
+    if(!selIds.size){toast('Select at least one complaint','warning');return}
+    activeCmpId=[...selIds].join(', ');selStatus=null;
+    document.getElementById('sCmpId').textContent=`${selIds.size} complaints`;
+    document.getElementById('sRemarks').value='';
+    document.querySelectorAll('.sopt').forEach(o=>o.classList.remove('sel'));
+    openM('statusModal');
+}
+function pickOfficer(el,id){document.querySelectorAll('.off-item').forEach(o=>o.classList.remove('sel'));el.classList.add('sel');selOfficer=id}
+async function submitAssign(){
+    if(!selOfficer){toast('Please select an officer','warning');return}
+    const off=OFFICERS.find(o=>o.id===selOfficer);
+    closeM('assignModal');
+    const ids=activeCmpId.includes(',')?activeCmpId.split(',').map(s=>s.trim()):[activeCmpId];
+    ids.forEach(id=>{const idx=allData.findIndex(c=>(c.id||c.complaintId)===id);if(idx>-1) allData[idx].assignedTo=off.name});
+    applyFilters();
+    toast(`Assigned to ${off.name} ✓`);
+}
 
-    function logout() {
-        localStorage.removeItem("officerToken");
-        localStorage.removeItem("accessToken");
-        localStorage.removeItem("refreshToken");
-        sessionStorage.clear();
-        window.location.href = "login.html";
-    }
+/* DELETE */
+async function deleteCmp(id){
+    if(!confirm(`Delete complaint ${id}? This cannot be undone.`)) return;
+    try{await fetch(`${API_URL}/${id}`,{method:'DELETE',headers:AH})}catch(e){}
+    allData=allData.filter(c=>(c.id||c.complaintId)!==id);
+    selIds.delete(id);applyFilters();
+    toast(`Complaint ${id} deleted ✓`);
+}
 
-    // ══════════════════════════════════════════════════════
-    // 18. EVENT LISTENERS & BOOT
-    // ══════════════════════════════════════════════════════
-    document.getElementById('filterStatus').addEventListener('change', applyFilters);
-    document.getElementById('filterDepartment').addEventListener('change', applyFilters);
-    document.getElementById('filterPriority').addEventListener('change', applyFilters);
-    document.getElementById('searchInput').addEventListener('input', applyFilters);
+/* EXPORT */
+function exportData(){
+    if(!filtered.length){toast('No data to export','warning');return}
+    const h=['ID','Name','Mobile','Email','State','District','Department','Category','Priority','Status','Submitted'];
+    const rows=filtered.map(c=>[c.id||c.complaintId||'',c.name||'',c.mobile||'',c.email||'',c.state||'',c.district||'',c.department||'',c.category||'',c.priority||'',c.status||'',c.createdAt?new Date(c.createdAt).toLocaleDateString('en-IN'):''].map(v=>`"${String(v).replace(/"/g,'""')}"`).join(','));
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(new Blob([[h.join(','),...rows].join('\n')],{type:'text/csv'}));
+    a.download=`complaints_${new Date().toISOString().slice(0,10)}.csv`;a.click();
+    toast('CSV exported ✓');
+}
 
-    loadComplaints();
+/* HELPERS */
+function find(id){return allData.find(c=>(c.id||c.complaintId)===id)||null}
+function openM(id){document.getElementById(id).classList.add('open')}
+function closeM(id){document.getElementById(id).classList.remove('open')}
+document.querySelectorAll('.moverlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('open')}));
+function logout(){['officerToken','accessToken','refreshToken'].forEach(k=>localStorage.removeItem(k));sessionStorage.clear();window.location.href='login.html'}
+function showErr(m){document.getElementById('ebMsg').textContent=m;document.getElementById('eb').classList.add('show')}
+function hideErr(){document.getElementById('eb').classList.remove('show')}
+function toast(msg,type='success'){
+    const c=document.getElementById('tc'),t=document.createElement('div');
+    t.className=`toast${type!=='success'?' '+type:''}`;
+    t.innerHTML=`<span>${{success:'✅',warning:'⚠️',error:'❌'}[type]||'✅'}</span><span>${msg}</span>`;
+    c.appendChild(t);
+    setTimeout(()=>{t.style.transition='opacity .3s';t.style.opacity='0';setTimeout(()=>t.remove(),300)},3800);
+}
 
-    </script>
+/* EVENTS */
+['fStatus','fDept','fPriority'].forEach(id=>document.getElementById(id).addEventListener('change',applyFilters));
+document.getElementById('fSearch').addEventListener('input',applyFilters);
+
+/* BOOT */
+loadComplaints();
+</script>
 </body>
 </html>

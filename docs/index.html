@@ -9,638 +9,278 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
-            --primary: #0A2558;
-            --primary-dark: #06173a;
+            --primary:       #0A2558;
+            --primary-dark:  #06173a;
             --primary-light: #1a3d7c;
-            --accent: #E8842A;
-            --accent-light: #f4a355;
-            --green: #0e7c3b;
-            --green-light: #16a34a;
-            --white: #FFFFFF;
-            --bg: #F5F6FA;
-            --text: #1c2b4a;
-            --text-muted: #6b7a99;
-            --border: #e2e8f0;
-            --card-shadow: 0 4px 24px rgba(10,37,88,0.10);
-            --card-shadow-hover: 0 16px 48px rgba(10,37,88,0.18);
+            --accent:        #E8842A;
+            --green:         #0e7c3b;
+            --green-light:   #16a34a;
+            --white:         #FFFFFF;
+            --bg:            #F5F6FA;
+            --text:          #1c2b4a;
+            --text-muted:    #6b7a99;
+            --border:        #e2e8f0;
+            --card-shadow:   0 4px 24px rgba(10,37,88,.10);
+            --card-shadow-hover: 0 16px 48px rgba(10,37,88,.18);
         }
+        *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+        html{scroll-behavior:smooth;}
+        body{font-family:'DM Sans','Noto Sans Devanagari',sans-serif;background:var(--bg);color:var(--text);overflow-x:hidden;}
+        a{text-decoration:none;color:inherit;}
 
-        *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+        /* ── LOADER ─────────────────────────────────────────── */
+        #page-loader{position:fixed;inset:0;z-index:9999;background:var(--primary-dark);display:flex;flex-direction:column;align-items:center;justify-content:center;transition:opacity .6s ease,visibility .6s ease;}
+        #page-loader.hidden{opacity:0;visibility:hidden;}
+        .chakra-loader{width:80px;height:80px;animation:chakra-spin 1.2s linear infinite;}
+        .chakra-loader svg{width:100%;height:100%;}
+        @keyframes chakra-spin{to{transform:rotate(360deg)}}
+        .loader-text{margin-top:20px;color:rgba(255,255,255,.8);font-size:14px;font-weight:500;letter-spacing:2px;text-transform:uppercase;animation:loader-pulse 1.5s ease-in-out infinite;}
+        @keyframes loader-pulse{0%,100%{opacity:1}50%{opacity:.4}}
+        .loader-dots{display:flex;gap:6px;margin-top:14px;}
+        .loader-dot{width:7px;height:7px;border-radius:50%;background:var(--accent);animation:dot-b .9s ease-in-out infinite;}
+        .loader-dot:nth-child(2){animation-delay:.15s}.loader-dot:nth-child(3){animation-delay:.3s}
+        @keyframes dot-b{0%,80%,100%{transform:scale(.6);opacity:.4}40%{transform:scale(1);opacity:1}}
 
-        html { scroll-behavior: smooth; }
+        /* ── TRICOLOR ────────────────────────────────────────── */
+        .tricolor{height:6px;background:linear-gradient(to right,#FF9933 33.33%,#fff 33.33% 66.66%,#138808 66.66%);}
 
-        body {
-            font-family: 'DM Sans', 'Noto Sans Devanagari', sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            overflow-x: hidden;
-        }
+        /* ── TICKER ──────────────────────────────────────────── */
+        .ticker-bar{background:#e8f0fe;border-bottom:1px solid #c5d4f5;padding:8px 0;font-size:13px;color:var(--primary);overflow:hidden;}
+        .ticker-inner{display:flex;align-items:center;}
+        .ticker-label{background:var(--accent);color:#fff;padding:3px 14px;font-weight:700;font-size:11px;border-radius:3px;margin-right:18px;white-space:nowrap;flex-shrink:0;letter-spacing:.5px;}
+        .ticker-track{overflow:hidden;flex:1;}
+        .ticker-scroll{display:inline-block;white-space:nowrap;animation:ticker 40s linear infinite;}
+        @keyframes ticker{from{transform:translateX(100vw)}to{transform:translateX(-100%)}}
 
-        a { text-decoration: none; color: inherit; }
+        /* ── HEADER ──────────────────────────────────────────── */
+        .site-header{background:var(--white);padding:14px 0;border-bottom:1px solid var(--border);position:sticky;top:0;z-index:1000;box-shadow:0 2px 20px rgba(10,37,88,.08);}
+        .header-logo{display:flex;align-items:center;gap:14px;}
+        .ashoka-emblem{width:56px;height:56px;animation:emblem-appear 1s ease both;}
+        @keyframes emblem-appear{from{opacity:0;transform:scale(.6) rotate(-15deg)}to{opacity:1;transform:scale(1) rotate(0)}}
+        .header-titles h1{font-family:'Playfair Display',serif;font-size:17px;font-weight:700;color:var(--primary);line-height:1.2;}
+        .header-titles p{font-size:11.5px;color:var(--text-muted);margin-top:2px;}
+        .digital-india-badge{display:flex;align-items:center;gap:8px;padding:6px 14px;background:linear-gradient(135deg,var(--primary),var(--primary-light));border-radius:6px;color:#fff;}
+        .digital-india-badge span{font-size:12px;font-weight:700;}
 
-        /* ── ASHOKA CHAKRA LOADER ── */
-        #page-loader {
-            position: fixed; inset: 0; z-index: 9999;
-            background: var(--primary-dark);
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            transition: opacity 0.6s ease, visibility 0.6s ease;
-        }
-        #page-loader.hidden { opacity: 0; visibility: hidden; }
-        .chakra-loader {
-            width: 80px; height: 80px;
-            animation: chakra-spin 1.2s linear infinite;
-        }
-        .chakra-loader svg { width: 100%; height: 100%; }
-        @keyframes chakra-spin { to { transform: rotate(360deg); } }
-        .loader-text {
-            margin-top: 20px; color: rgba(255,255,255,0.8);
-            font-size: 14px; font-weight: 500; letter-spacing: 2px; text-transform: uppercase;
-            animation: loader-pulse 1.5s ease-in-out infinite;
-        }
-        @keyframes loader-pulse { 0%,100%{opacity:1} 50%{opacity:0.4} }
+        /* ── NAVBAR ──────────────────────────────────────────── */
+        .main-nav{background:var(--primary);position:relative;overflow:hidden;}
+        .main-nav::before{content:'';position:absolute;inset:0;background:url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");}
+        .main-nav .navbar-nav .nav-link{color:rgba(255,255,255,.9)!important;padding:15px 18px;font-weight:500;font-size:14px;position:relative;transition:all .3s;}
+        .main-nav .navbar-nav .nav-link::after{content:'';position:absolute;bottom:0;left:50%;width:0;height:3px;background:var(--accent);transition:all .3s;transform:translateX(-50%);border-radius:2px 2px 0 0;}
+        .main-nav .navbar-nav .nav-link:hover,.main-nav .navbar-nav .nav-link.active{color:#fff!important;background:rgba(255,255,255,.07);}
+        .main-nav .navbar-nav .nav-link:hover::after,.main-nav .navbar-nav .nav-link.active::after{width:80%;}
+        .nav-officer-btn{background:var(--accent)!important;border-radius:5px!important;margin:9px 0!important;padding:7px 18px!important;font-weight:700!important;}
+        .nav-officer-btn:hover{background:#d6741e!important;transform:translateY(-1px);}
+        .nav-officer-btn::after{display:none!important;}
 
-        /* ── TRICOLOR STRIP ── */
-        .tricolor {
-            height: 6px;
-            background: linear-gradient(to right,
-                #FF9933 0%, #FF9933 33.33%,
-                #fff 33.33%, #fff 66.66%,
-                #138808 66.66%, #138808 100%);
-        }
+        /* ── HERO ────────────────────────────────────────────── */
+        .hero{background:linear-gradient(135deg,#061728 0%,var(--primary) 45%,#1a3d7c 100%);color:#fff;padding:80px 0 70px;position:relative;overflow:hidden;min-height:560px;}
+        .hero-mandala{position:absolute;right:-120px;top:50%;transform:translateY(-50%);width:700px;height:700px;opacity:.04;animation:mandala-rotate 60s linear infinite;}
+        @keyframes mandala-rotate{to{transform:translateY(-50%) rotate(360deg)}}
+        .hero-particles{position:absolute;inset:0;overflow:hidden;pointer-events:none;}
+        .particle{position:absolute;border-radius:50%;opacity:0;animation:float-particle 8s ease-in-out infinite;}
+        @keyframes float-particle{0%{opacity:0;transform:translateY(0) scale(1)}20%{opacity:.6}80%{opacity:.3}100%{opacity:0;transform:translateY(-300px) scale(.3)}}
+        .hero-content{position:relative;z-index:2;}
+        .hero-eyebrow{display:inline-flex;align-items:center;gap:8px;background:rgba(255,153,51,.15);border:1px solid rgba(255,153,51,.35);padding:5px 16px;border-radius:30px;font-size:12px;font-weight:600;color:#FFB74D;margin-bottom:20px;animation:fade-up .8s ease both;}
+        .hero-eyebrow .dot{width:7px;height:7px;background:#FFB74D;border-radius:50%;animation:blink 2s infinite;}
+        @keyframes blink{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(.7)}}
+        .hero h2{font-family:'Playfair Display',serif;font-size:50px;font-weight:800;line-height:1.12;margin-bottom:18px;animation:fade-up .8s .15s ease both;}
+        .hero h2 .accent-word{color:var(--accent);}
+        .hero-hindi{font-family:'Noto Sans Devanagari',sans-serif;font-size:15px;opacity:.65;margin-bottom:14px;animation:fade-up .8s .25s ease both;}
+        .hero-desc{font-size:16px;opacity:.88;line-height:1.7;max-width:540px;margin-bottom:32px;animation:fade-up .8s .3s ease both;}
+        .hero-actions{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:42px;animation:fade-up .8s .4s ease both;}
+        .btn-primary-hero{background:var(--accent);color:#fff;border:none;padding:14px 30px;border-radius:7px;font-size:15px;font-weight:700;display:inline-flex;align-items:center;gap:9px;cursor:pointer;transition:all .3s;box-shadow:0 4px 20px rgba(232,132,42,.4);}
+        .btn-primary-hero:hover{background:#d6741e;color:#fff;transform:translateY(-3px);box-shadow:0 10px 30px rgba(232,132,42,.5);}
+        .btn-secondary-hero{background:transparent;color:#fff;border:2px solid rgba(255,255,255,.45);padding:12px 28px;border-radius:7px;font-size:15px;font-weight:600;display:inline-flex;align-items:center;gap:9px;cursor:pointer;transition:all .3s;}
+        .btn-secondary-hero:hover{background:rgba(255,255,255,.1);border-color:#fff;color:#fff;transform:translateY(-3px);}
+        .hero-trust{display:flex;gap:24px;flex-wrap:wrap;animation:fade-up .8s .5s ease both;}
+        .trust-item{display:flex;align-items:center;gap:7px;font-size:13px;opacity:.8;}
+        .trust-item i{color:var(--accent);font-size:14px;}
+        .hero-illustration{animation:fade-up .9s .2s ease both;}
+        @keyframes fade-up{from{opacity:0;transform:translateY(24px)}to{opacity:1;transform:translateY(0)}}
 
-        /* ── TICKER ── */
-        .ticker-bar {
-            background: #e8f0fe;
-            border-bottom: 1px solid #c5d4f5;
-            padding: 8px 0;
-            font-size: 13px; color: var(--primary);
-            overflow: hidden;
-        }
-        .ticker-inner { display: flex; align-items: center; gap: 0; }
-        .ticker-label {
-            background: var(--accent); color: #fff;
-            padding: 3px 14px; font-weight: 700; font-size: 11px;
-            border-radius: 3px; margin-right: 18px; white-space: nowrap; flex-shrink: 0;
-            letter-spacing: 0.5px;
-        }
-        .ticker-track { overflow: hidden; flex: 1; }
-        .ticker-scroll { display: inline-block; white-space: nowrap; animation: ticker 40s linear infinite; }
-        @keyframes ticker { from { transform: translateX(100vw); } to { transform: translateX(-100%); } }
+        /* ── LIVE FEED CARD ──────────────────────────────────── */
+        .gov-card{background:rgba(255,255,255,.07);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,.15);border-radius:16px;padding:28px;}
+        .gov-card-header{display:flex;align-items:center;gap:10px;margin-bottom:18px;}
+        .gov-card-icon{font-size:28px;color:var(--accent);}
+        .gov-card-title{font-size:16px;font-weight:700;}
+        .gov-card-sub{font-size:12px;opacity:.6;}
 
-        /* ── HEADER ── */
-        .site-header {
-            background: var(--white);
-            padding: 14px 0;
-            border-bottom: 1px solid var(--border);
-            position: sticky; top: 0; z-index: 1000;
-            box-shadow: 0 2px 20px rgba(10,37,88,0.08);
-        }
-        .header-logo { display: flex; align-items: center; gap: 14px; }
-        .ashoka-emblem {
-            width: 56px; height: 56px;
-            animation: emblem-appear 1s ease both;
-        }
-        @keyframes emblem-appear { from{opacity:0;transform:scale(0.6) rotate(-15deg)} to{opacity:1;transform:scale(1) rotate(0)} }
-        .header-titles h1 {
-            font-family: 'Playfair Display', serif;
-            font-size: 17px; font-weight: 700;
-            color: var(--primary); line-height: 1.2;
-        }
-        .header-titles p { font-size: 11.5px; color: var(--text-muted); margin-top: 2px; }
-        .header-right { display: flex; align-items: center; gap: 16px; }
-        .digital-india-badge {
-            display: flex; align-items: center; gap: 8px;
-            padding: 6px 14px;
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            border-radius: 6px; color: #fff;
-        }
-        .digital-india-badge img { width: 22px; }
-        .digital-india-badge span { font-size: 12px; font-weight: 700; letter-spacing: 0.5px; }
+        .feed-live-pill{display:inline-flex;align-items:center;gap:6px;background:rgba(76,175,80,.15);border:1px solid rgba(76,175,80,.3);padding:3px 10px;border-radius:20px;font-size:10px;font-weight:700;color:#66bb6a;text-transform:uppercase;letter-spacing:.5px;margin-left:auto;flex-shrink:0;}
+        .feed-live-dot{width:6px;height:6px;background:#4caf50;border-radius:50%;animation:glow-green 2s infinite;}
 
-        /* ── NAVBAR ── */
-        .main-nav {
-            background: var(--primary);
-            position: relative;
-            overflow: hidden;
-        }
-        .main-nav::before {
-            content: '';
-            position: absolute; inset: 0;
-            background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.02'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
-        }
-        .main-nav .navbar-nav .nav-link {
-            color: rgba(255,255,255,0.9) !important;
-            padding: 15px 18px;
-            font-weight: 500; font-size: 14px;
-            position: relative; transition: all 0.3s;
-        }
-        .main-nav .navbar-nav .nav-link::after {
-            content: ''; position: absolute; bottom: 0; left: 50%;
-            width: 0; height: 3px;
-            background: var(--accent);
-            transition: all 0.3s; transform: translateX(-50%);
-            border-radius: 2px 2px 0 0;
-        }
-        .main-nav .navbar-nav .nav-link:hover,
-        .main-nav .navbar-nav .nav-link.active {
-            color: #fff !important;
-            background: rgba(255,255,255,0.07);
-        }
-        .main-nav .navbar-nav .nav-link:hover::after,
-        .main-nav .navbar-nav .nav-link.active::after { width: 80%; }
-        .nav-officer-btn {
-            background: var(--accent) !important;
-            border-radius: 5px !important;
-            margin: 9px 0 !important;
-            padding: 7px 18px !important;
-            font-weight: 700 !important;
-            transition: all 0.3s !important;
-        }
-        .nav-officer-btn:hover { background: #d6741e !important; transform: translateY(-1px); }
-        .nav-officer-btn::after { display: none !important; }
+        .status-list{display:flex;flex-direction:column;gap:10px;min-height:216px;}
 
-        /* ── HERO ── */
-        .hero {
-            background: linear-gradient(135deg, #061728 0%, var(--primary) 45%, #1a3d7c 100%);
-            color: #fff; padding: 80px 0 70px;
-            position: relative; overflow: hidden;
-            min-height: 560px;
-        }
+        /* skeleton feed */
+        .feed-sk-item{display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(255,255,255,.04);border-radius:10px;}
+        .feed-sk-dot{width:10px;height:10px;border-radius:50%;background:rgba(255,255,255,.12);flex-shrink:0;}
+        .feed-sk-lines{flex:1;display:flex;flex-direction:column;gap:7px;}
+        .feed-sk-line{height:10px;border-radius:5px;background:rgba(255,255,255,.1);animation:feed-shimmer 1.4s ease-in-out infinite;}
+        .feed-sk-lg{width:70%}.feed-sk-sm{width:45%}
+        .feed-sk-badge{width:64px;height:20px;border-radius:10px;background:rgba(255,255,255,.1);animation:feed-shimmer 1.4s ease-in-out infinite;}
+        @keyframes feed-shimmer{0%{opacity:.6}50%{opacity:1}100%{opacity:.6}}
 
-        /* Animated mandala background */
-        .hero-mandala {
-            position: absolute; right: -120px; top: 50%;
-            transform: translateY(-50%);
-            width: 700px; height: 700px;
-            opacity: 0.04;
-            animation: mandala-rotate 60s linear infinite;
-        }
-        @keyframes mandala-rotate { to { transform: translateY(-50%) rotate(360deg); } }
+        .status-item{display:flex;align-items:center;gap:12px;padding:12px 16px;background:rgba(255,255,255,.06);border-radius:10px;border:1px solid rgba(255,255,255,.1);animation:slide-in .4s ease both;transition:background .3s;}
+        .status-item:hover{background:rgba(255,255,255,.1);}
+        @keyframes slide-in{from{opacity:0;transform:translateX(16px)}to{opacity:1;transform:translateX(0)}}
+        .status-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+        .status-dot.green {background:#4caf50;animation:glow-green  2s infinite;}
+        .status-dot.orange{background:#ff9800;animation:glow-orange 2s infinite;}
+        .status-dot.blue  {background:#2196f3;animation:glow-blue   2s infinite;}
+        .status-dot.grey  {background:#9e9e9e;}
+        @keyframes glow-green {0%,100%{box-shadow:0 0 4px rgba(76,175,80,.6)}50%{box-shadow:0 0 14px rgba(76,175,80,.9)}}
+        @keyframes glow-orange{0%,100%{box-shadow:0 0 4px rgba(255,152,0,.6)}50%{box-shadow:0 0 14px rgba(255,152,0,.9)}}
+        @keyframes glow-blue  {0%,100%{box-shadow:0 0 4px rgba(33,150,243,.6)}50%{box-shadow:0 0 14px rgba(33,150,243,.9)}}
+        .status-info{flex:1;min-width:0;}
+        .status-id  {font-size:12px;font-weight:700;color:var(--accent);}
+        .status-dept{font-size:11px;opacity:.65;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+        .status-badge{font-size:10px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
+        .badge-resolved {background:rgba(76,175,80,.2); color:#66bb6a;border:1px solid rgba(76,175,80,.3);}
+        .badge-progress {background:rgba(33,150,243,.2);color:#64b5f6;border:1px solid rgba(33,150,243,.3);}
+        .badge-review   {background:rgba(255,152,0,.2); color:#ffa726;border:1px solid rgba(255,152,0,.3);}
+        .badge-submitted{background:rgba(158,158,158,.2);color:#bdbdbd;border:1px solid rgba(158,158,158,.3);}
 
-        /* Floating particles */
-        .hero-particles { position: absolute; inset: 0; overflow: hidden; pointer-events: none; }
-        .particle {
-            position: absolute;
-            width: 4px; height: 4px;
-            background: var(--accent);
-            border-radius: 50%;
-            opacity: 0;
-            animation: float-particle 8s ease-in-out infinite;
-        }
-        @keyframes float-particle {
-            0% { opacity: 0; transform: translateY(0) scale(1); }
-            20% { opacity: 0.6; }
-            80% { opacity: 0.3; }
-            100% { opacity: 0; transform: translateY(-300px) scale(0.3); }
-        }
+        .feed-footer{display:flex;align-items:center;justify-content:space-between;margin-top:16px;padding-top:14px;border-top:1px solid rgba(255,255,255,.12);}
+        .feed-refresh-row{display:flex;align-items:center;gap:8px;}
+        .ring-wrap{position:relative;width:22px;height:22px;}
+        .ring-wrap svg{transform:rotate(-90deg);}
+        .ring-bg  {fill:none;stroke:rgba(255,255,255,.1);stroke-width:2.5;}
+        .ring-fill{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linecap:round;stroke-dasharray:54;stroke-dashoffset:0;transition:stroke-dashoffset .9s linear;}
+        .ring-lbl{font-size:11px;color:rgba(255,255,255,.5);font-weight:600;}
 
-        .hero-content { position: relative; z-index: 2; }
+        .feed-error{text-align:center;padding:28px 10px;opacity:.6;font-size:13px;}
+        .feed-error i{font-size:24px;display:block;margin-bottom:8px;}
 
-        .hero-eyebrow {
-            display: inline-flex; align-items: center; gap: 8px;
-            background: rgba(255,153,51,0.15);
-            border: 1px solid rgba(255,153,51,0.35);
-            padding: 5px 16px; border-radius: 30px;
-            font-size: 12px; font-weight: 600; color: #FFB74D;
-            margin-bottom: 20px;
-            animation: fade-up 0.8s ease both;
-        }
-        .hero-eyebrow .dot { width: 7px; height: 7px; background: #FFB74D; border-radius: 50%; animation: blink 2s infinite; }
-        @keyframes blink { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.4;transform:scale(0.7)} }
+        /* ── STATS BAND ──────────────────────────────────────── */
+        .stats-band{background:var(--primary-dark);color:#fff;border-bottom:3px solid var(--accent);}
+        .live-badge-strip{text-align:center;padding:16px;}
+        .live-badge{display:inline-flex;align-items:center;gap:5px;background:rgba(76,175,80,.15);border:1px solid rgba(76,175,80,.3);padding:3px 10px;border-radius:20px;font-size:10px;color:#66bb6a;font-weight:700;letter-spacing:.5px;text-transform:uppercase;}
+        .live-dot{width:6px;height:6px;background:#4caf50;border-radius:50%;animation:glow-green 2s infinite;}
+        .stats-cells{display:grid;grid-template-columns:repeat(4,1fr);}
+        .stat-cell{padding:30px 20px;text-align:center;border-right:1px solid rgba(255,255,255,.08);position:relative;overflow:hidden;transition:background .3s;}
+        .stat-cell:last-child{border-right:none;}
+        .stat-cell:hover{background:rgba(255,255,255,.04);}
+        .stat-cell::before{content:'';position:absolute;bottom:0;left:50%;transform:translateX(-50%);width:0;height:3px;background:var(--accent);transition:width .4s;}
+        .stat-cell:hover::before{width:80%;}
+        .stat-icon{font-size:22px;color:rgba(255,255,255,.25);margin-bottom:8px;}
+        .stat-num{font-family:'Playfair Display',serif;font-size:40px;font-weight:700;color:var(--accent);line-height:1;margin-bottom:6px;}
+        .stat-lbl{font-size:12px;opacity:.7;font-weight:500;letter-spacing:.5px;text-transform:uppercase;}
 
-        .hero h2 {
-            font-family: 'Playfair Display', serif;
-            font-size: 50px; font-weight: 800;
-            line-height: 1.12; margin-bottom: 18px;
-            animation: fade-up 0.8s 0.15s ease both;
-        }
-        .hero h2 .accent-word { color: var(--accent); }
+        /* ── SECTIONS ────────────────────────────────────────── */
+        .section-head{text-align:center;margin-bottom:52px;}
+        .section-overline{display:inline-block;font-size:12px;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:10px;}
+        .section-head h3{font-family:'Playfair Display',serif;font-size:36px;font-weight:700;color:var(--primary);margin-bottom:10px;}
+        .section-head p{font-size:15px;color:var(--text-muted);max-width:520px;margin:0 auto;}
+        .divider-line{width:56px;height:4px;background:linear-gradient(90deg,var(--accent),var(--green));border-radius:2px;margin:14px auto 0;}
 
-        .hero-hindi {
-            font-family: 'Noto Sans Devanagari', sans-serif;
-            font-size: 15px; opacity: 0.65;
-            margin-bottom: 14px; letter-spacing: 0.3px;
-            animation: fade-up 0.8s 0.25s ease both;
-        }
+        /* ── SERVICES ────────────────────────────────────────── */
+        .services-sec{padding:80px 0;background:var(--bg);}
+        .svc-card{background:#fff;border-radius:14px;padding:32px 26px;height:100%;box-shadow:var(--card-shadow);transition:all .35s;border:1px solid transparent;position:relative;overflow:hidden;}
+        .svc-card::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:linear-gradient(90deg,var(--accent),var(--green));transform:scaleX(0);transform-origin:left;transition:transform .35s;}
+        .svc-card:hover{transform:translateY(-8px);box-shadow:var(--card-shadow-hover);border-color:#e8f0fe;}
+        .svc-card:hover::before{transform:scaleX(1);}
+        .svc-icon-wrap{width:68px;height:68px;border-radius:16px;background:linear-gradient(135deg,#fff3e0,#ffe0b2);display:flex;align-items:center;justify-content:center;font-size:28px;color:var(--accent);margin-bottom:22px;transition:all .35s;}
+        .svc-card:hover .svc-icon-wrap{background:linear-gradient(135deg,var(--accent),#d6741e);color:#fff;transform:scale(1.1) rotate(-5deg);}
+        .svc-card h4{font-size:17px;font-weight:700;color:var(--primary);margin-bottom:10px;}
+        .svc-card p {font-size:13.5px;color:var(--text-muted);line-height:1.65;margin:0;}
+        .svc-arrow{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:700;color:var(--accent);margin-top:16px;opacity:0;transition:opacity .3s,transform .3s;transform:translateX(-8px);}
+        .svc-card:hover .svc-arrow{opacity:1;transform:translateX(0);}
 
-        .hero-desc {
-            font-size: 16px; opacity: 0.88; line-height: 1.7;
-            max-width: 540px; margin-bottom: 32px;
-            animation: fade-up 0.8s 0.3s ease both;
-        }
+        /* ── PROCESS ─────────────────────────────────────────── */
+        .process-sec{padding:80px 0;background:var(--white);}
+        .process-wrap{position:relative;}
+        .process-line{position:absolute;top:38px;left:calc(12.5% + 12px);right:calc(12.5% + 12px);height:2px;background:linear-gradient(90deg,var(--accent),var(--green));z-index:0;}
+        .process-line-fill{height:100%;width:0;background:inherit;animation:line-fill 2s .5s ease-out forwards;}
+        @keyframes line-fill{to{width:100%}}
+        .process-step{text-align:center;position:relative;z-index:1;padding:0 12px;}
+        .step-circle{width:76px;height:76px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#d6741e);display:flex;align-items:center;justify-content:center;font-size:26px;font-weight:800;color:#fff;margin:0 auto 20px;box-shadow:0 6px 24px rgba(232,132,42,.4);font-family:'Playfair Display',serif;transition:all .3s;}
+        .process-step:hover .step-circle{transform:scale(1.1);box-shadow:0 10px 36px rgba(232,132,42,.55);}
+        .process-step h5{font-size:16px;font-weight:700;color:var(--primary);margin-bottom:8px;}
+        .process-step p {font-size:13px;color:var(--text-muted);line-height:1.6;}
+        .step-icon-small{font-size:13px;color:var(--accent);margin-bottom:6px;}
 
-        .hero-actions {
-            display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 42px;
-            animation: fade-up 0.8s 0.4s ease both;
-        }
+        /* ── DEPARTMENTS ─────────────────────────────────────── */
+        .depts-sec{padding:80px 0;background:var(--bg);}
+        .dept-card{display:flex;align-items:center;gap:14px;background:#fff;border-radius:12px;padding:18px 20px;box-shadow:0 2px 12px rgba(10,37,88,.07);transition:all .3s;cursor:pointer;border:1px solid transparent;}
+        .dept-card:hover{transform:translateY(-4px);box-shadow:0 8px 28px rgba(10,37,88,.15);background:linear-gradient(135deg,var(--primary),var(--primary-light));}
+        .dept-card:hover .dept-icon,.dept-card:hover .dept-name,.dept-card:hover .dept-sub{color:#fff!important;}
+        .dept-card:hover .dept-icon{color:var(--accent)!important;}
+        .dept-icon{font-size:24px;color:var(--accent);width:32px;flex-shrink:0;transition:all .3s;}
+        .dept-name{font-size:14px;font-weight:700;color:var(--primary);transition:all .3s;}
+        .dept-sub {font-size:11px;color:var(--text-muted);transition:all .3s;}
 
-        .btn-primary-hero {
-            background: var(--accent);
-            color: #fff; border: none;
-            padding: 14px 30px; border-radius: 7px;
-            font-size: 15px; font-weight: 700;
-            display: inline-flex; align-items: center; gap: 9px;
-            cursor: pointer; transition: all 0.3s;
-            box-shadow: 0 4px 20px rgba(232,132,42,0.4);
-        }
-        .btn-primary-hero:hover {
-            background: #d6741e; color: #fff;
-            transform: translateY(-3px);
-            box-shadow: 0 10px 30px rgba(232,132,42,0.5);
-        }
+        /* ── MAP BAND ────────────────────────────────────────── */
+        .map-band{padding:70px 0;background:linear-gradient(135deg,#061728,var(--primary));color:#fff;overflow:hidden;position:relative;}
+        .map-band::after{content:'';position:absolute;right:-80px;top:50%;transform:translateY(-50%);width:500px;height:500px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='90' stroke='rgba(255,153,51,0.08)' stroke-width='2' fill='none'/%3E%3Ccircle cx='100' cy='100' r='70' stroke='rgba(255,153,51,0.06)' stroke-width='2' fill='none'/%3E%3Ccircle cx='100' cy='100' r='50' stroke='rgba(255,153,51,0.04)' stroke-width='2' fill='none'/%3E%3C/svg%3E") center/contain no-repeat;animation:ring-pulse 4s ease-in-out infinite;}
+        @keyframes ring-pulse{0%,100%{transform:translateY(-50%) scale(1)}50%{transform:translateY(-50%) scale(1.06)}}
+        .map-stat{text-align:center;padding:16px;}
+        .map-stat-icon{font-size:36px;color:var(--accent);margin-bottom:12px;}
+        .map-stat-num{font-family:'Playfair Display',serif;font-size:38px;font-weight:700;color:#fff;margin-bottom:6px;}
+        .map-stat-lbl{font-size:13px;opacity:.7;}
 
-        .btn-secondary-hero {
-            background: transparent; color: #fff;
-            border: 2px solid rgba(255,255,255,0.45);
-            padding: 12px 28px; border-radius: 7px;
-            font-size: 15px; font-weight: 600;
-            display: inline-flex; align-items: center; gap: 9px;
-            cursor: pointer; transition: all 0.3s;
-        }
-        .btn-secondary-hero:hover {
-            background: rgba(255,255,255,0.1);
-            border-color: #fff; color: #fff;
-            transform: translateY(-3px);
-        }
+        /* ── HIGHLIGHTS ──────────────────────────────────────── */
+        .highlights-sec{padding:80px 0;background:#fff;}
+        .highlight-item{display:flex;gap:20px;align-items:flex-start;padding:24px;border-radius:12px;transition:all .3s;}
+        .highlight-item:hover{background:#f8faff;transform:translateX(6px);}
+        .highlight-icon-wrap{width:52px;height:52px;border-radius:12px;background:linear-gradient(135deg,#e8f0fe,#c5d4f5);display:flex;align-items:center;justify-content:center;font-size:22px;color:var(--primary);flex-shrink:0;}
+        .highlight-item h5{font-size:16px;font-weight:700;color:var(--primary);margin-bottom:6px;}
+        .highlight-item p {font-size:13.5px;color:var(--text-muted);line-height:1.65;margin:0;}
+        .feature-visual{background:linear-gradient(135deg,var(--primary),#1a3d7c);border-radius:20px;padding:36px;color:#fff;height:100%;display:flex;flex-direction:column;justify-content:space-between;}
+        .feature-visual h4{font-family:'Playfair Display',serif;font-size:26px;font-weight:700;margin-bottom:10px;}
+        .feature-visual p {font-size:14px;opacity:.75;margin-bottom:28px;line-height:1.65;}
+        .feature-timeline{display:flex;flex-direction:column;gap:14px;}
+        .timeline-row{display:flex;align-items:center;gap:12px;}
+        .timeline-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;}
+        .timeline-text{font-size:12.5px;opacity:.85;}
+        .timeline-time{font-size:11px;opacity:.5;margin-left:auto;white-space:nowrap;}
 
-        .hero-trust {
-            display: flex; gap: 24px; flex-wrap: wrap;
-            animation: fade-up 0.8s 0.5s ease both;
-        }
-        .trust-item { display: flex; align-items: center; gap: 7px; font-size: 13px; opacity: 0.8; }
-        .trust-item i { color: var(--accent); font-size: 14px; }
+        /* ── HELP ────────────────────────────────────────────── */
+        .help-sec{padding:80px 0;background:linear-gradient(135deg,var(--primary),#1a3d7c);color:#fff;}
+        .help-card{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.12);border-radius:14px;padding:32px 24px;text-align:center;transition:all .35s;}
+        .help-card:hover{background:rgba(255,255,255,.15);transform:translateY(-6px);box-shadow:0 16px 40px rgba(0,0,0,.25);}
+        .help-card-icon{width:64px;height:64px;border-radius:50%;background:rgba(255,153,51,.15);border:2px solid rgba(255,153,51,.3);display:flex;align-items:center;justify-content:center;font-size:24px;color:var(--accent);margin:0 auto 18px;transition:all .3s;}
+        .help-card:hover .help-card-icon{background:var(--accent);color:#fff;border-color:var(--accent);}
+        .help-card h5{font-size:17px;font-weight:700;margin-bottom:10px;}
+        .help-card p {font-size:13px;opacity:.8;line-height:1.6;margin:0;}
+        .help-value{font-size:17px;font-weight:700;color:var(--accent);margin-top:10px;}
 
-        /* Hero illustration panel */
-        .hero-illustration {
-            animation: fade-up 0.9s 0.2s ease both;
-        }
+        /* ── FOOTER ──────────────────────────────────────────── */
+        .site-footer{background:#050f1e;color:rgba(255,255,255,.82);padding:56px 0 20px;}
+        .footer-logo{display:flex;align-items:center;gap:12px;margin-bottom:16px;}
+        .footer-logo-text{font-family:'Playfair Display',serif;font-size:16px;font-weight:700;color:#fff;}
+        .footer-desc{font-size:13px;line-height:1.75;opacity:.7;}
+        .footer-head{font-size:14px;font-weight:700;color:var(--accent);margin-bottom:16px;letter-spacing:.5px;text-transform:uppercase;}
+        .footer-links{list-style:none;padding:0;}
+        .footer-links li{margin-bottom:9px;}
+        .footer-links a{font-size:13px;opacity:.75;transition:all .2s;display:inline-flex;align-items:center;gap:7px;}
+        .footer-links a:hover{opacity:1;color:var(--accent);transform:translateX(4px);}
+        .footer-links a i{font-size:10px;}
+        .footer-divider{border-color:rgba(255,255,255,.08);margin:30px 0 20px;}
+        .footer-bottom{font-size:12px;opacity:.5;text-align:center;}
+        .footer-bottom-links{display:flex;gap:20px;justify-content:center;flex-wrap:wrap;margin-top:8px;}
+        .footer-bottom-links a{font-size:12px;opacity:.6;color:inherit;transition:opacity .2s;}
+        .footer-bottom-links a:hover{opacity:1;}
 
-        /* Gov building illustration */
-        .gov-card {
-            background: rgba(255,255,255,0.07);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255,255,255,0.15);
-            border-radius: 16px; padding: 28px;
-        }
-        .gov-card-header {
-            display: flex; align-items: center; gap: 10px;
-            margin-bottom: 22px;
-        }
-        .gov-card-icon { font-size: 28px; color: var(--accent); }
-        .gov-card-title { font-size: 16px; font-weight: 700; }
-        .gov-card-sub { font-size: 12px; opacity: 0.6; }
+        /* ── SCROLL REVEAL ───────────────────────────────────── */
+        .sr{opacity:0;transform:translateY(28px);transition:opacity .65s ease,transform .65s ease;}
+        .sr.visible{opacity:1;transform:translateY(0);}
+        .sr-left{opacity:0;transform:translateX(-28px);transition:opacity .65s ease,transform .65s ease;}
+        .sr-left.visible{opacity:1;transform:translateX(0);}
+        .sr-right{opacity:0;transform:translateX(28px);transition:opacity .65s ease,transform .65s ease;}
+        .sr-right.visible{opacity:1;transform:translateX(0);}
 
-        /* Animated status items */
-        .status-list { display: flex; flex-direction: column; gap: 12px; }
-        .status-item {
-            display: flex; align-items: center; gap: 12px;
-            padding: 12px 16px;
-            background: rgba(255,255,255,0.06);
-            border-radius: 10px; border: 1px solid rgba(255,255,255,0.1);
-            animation: slide-in 0.5s ease both;
-        }
-        .status-item:nth-child(1) { animation-delay: 0.6s; }
-        .status-item:nth-child(2) { animation-delay: 0.75s; }
-        .status-item:nth-child(3) { animation-delay: 0.9s; }
-        .status-item:nth-child(4) { animation-delay: 1.05s; }
-        @keyframes slide-in { from{opacity:0;transform:translateX(20px)} to{opacity:1;transform:translateX(0)} }
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
-        .status-dot.green { background: #4caf50; box-shadow: 0 0 8px rgba(76,175,80,0.6); animation: glow-green 2s ease-in-out infinite; }
-        .status-dot.orange { background: #ff9800; box-shadow: 0 0 8px rgba(255,152,0,0.6); animation: glow-orange 2s ease-in-out infinite; }
-        .status-dot.blue { background: #2196f3; box-shadow: 0 0 8px rgba(33,150,243,0.6); animation: glow-blue 2s ease-in-out infinite; }
-        .status-dot.grey { background: #9e9e9e; }
-        @keyframes glow-green { 0%,100%{box-shadow:0 0 4px rgba(76,175,80,0.6)} 50%{box-shadow:0 0 14px rgba(76,175,80,0.9)} }
-        @keyframes glow-orange { 0%,100%{box-shadow:0 0 4px rgba(255,152,0,0.6)} 50%{box-shadow:0 0 14px rgba(255,152,0,0.9)} }
-        @keyframes glow-blue { 0%,100%{box-shadow:0 0 4px rgba(33,150,243,0.6)} 50%{box-shadow:0 0 14px rgba(33,150,243,0.9)} }
-        .status-info { flex: 1; }
-        .status-id { font-size: 12px; font-weight: 700; color: var(--accent); }
-        .status-dept { font-size: 11px; opacity: 0.65; }
-        .status-badge {
-            font-size: 10px; font-weight: 700;
-            padding: 3px 10px; border-radius: 20px;
-        }
-        .badge-resolved { background: rgba(76,175,80,0.2); color: #66bb6a; border: 1px solid rgba(76,175,80,0.3); }
-        .badge-progress { background: rgba(33,150,243,0.2); color: #64b5f6; border: 1px solid rgba(33,150,243,0.3); }
-        .badge-review { background: rgba(255,152,0,0.2); color: #ffa726; border: 1px solid rgba(255,152,0,0.3); }
-        .badge-submitted { background: rgba(158,158,158,0.2); color: #bdbdbd; border: 1px solid rgba(158,158,158,0.3); }
+        /* ── SCROLL TOP ──────────────────────────────────────── */
+        #scrollTop{position:fixed;bottom:28px;right:28px;z-index:500;width:48px;height:48px;border-radius:50%;background:var(--accent);color:#fff;border:none;font-size:18px;cursor:pointer;display:none;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(232,132,42,.5);transition:all .3s;}
+        #scrollTop:hover{background:#d6741e;transform:translateY(-3px);}
+        #scrollTop.show{display:flex;}
 
-        @keyframes fade-up {
-            from { opacity: 0; transform: translateY(24px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
+        .wave-sep{line-height:0;overflow:hidden;}
+        .wave-sep svg{display:block;width:100%;}
+        .navbar-toggler{border-color:rgba(255,255,255,.3)!important;}
+        .navbar-toggler-icon{filter:invert(1);}
 
-        /* ── STATS BAND ── */
-        .stats-band {
-            background: var(--primary-dark);
-            color: #fff;
-            padding: 0;
-            border-bottom: 3px solid var(--accent);
-        }
-        .stats-band .container { display: grid; grid-template-columns: repeat(4,1fr); }
-        .stat-cell {
-            padding: 30px 20px; text-align: center;
-            border-right: 1px solid rgba(255,255,255,0.08);
-            position: relative; overflow: hidden;
-            transition: background 0.3s;
-        }
-        .stat-cell:last-child { border-right: none; }
-        .stat-cell:hover { background: rgba(255,255,255,0.04); }
-        .stat-cell::before {
-            content: ''; position: absolute;
-            bottom: 0; left: 50%; transform: translateX(-50%);
-            width: 0; height: 3px; background: var(--accent);
-            transition: width 0.4s;
-        }
-        .stat-cell:hover::before { width: 80%; }
-        .stat-icon { font-size: 22px; color: rgba(255,255,255,0.25); margin-bottom: 8px; }
-        .stat-num {
-            font-family: 'Playfair Display', serif;
-            font-size: 40px; font-weight: 700;
-            color: var(--accent); line-height: 1;
-            margin-bottom: 6px;
-        }
-        .stat-lbl { font-size: 12px; opacity: 0.7; font-weight: 500; letter-spacing: 0.5px; text-transform: uppercase; }
-        .live-badge {
-            display: inline-flex; align-items: center; gap: 5px;
-            background: rgba(76,175,80,0.15); border: 1px solid rgba(76,175,80,0.3);
-            padding: 3px 10px; border-radius: 20px;
-            font-size: 10px; color: #66bb6a; font-weight: 700; letter-spacing: 0.5px;
-            text-transform: uppercase; margin-bottom: 20px;
-        }
-        .live-dot { width: 6px; height: 6px; background: #4caf50; border-radius: 50%; animation: glow-green 2s infinite; }
-
-        /* ── SECTIONS COMMON ── */
-        .section-head { text-align: center; margin-bottom: 52px; }
-        .section-overline {
-            display: inline-block;
-            font-size: 12px; font-weight: 700; letter-spacing: 2px;
-            text-transform: uppercase; color: var(--accent);
-            margin-bottom: 10px;
-        }
-        .section-head h3 {
-            font-family: 'Playfair Display', serif;
-            font-size: 36px; font-weight: 700;
-            color: var(--primary); margin-bottom: 10px;
-        }
-        .section-head p { font-size: 15px; color: var(--text-muted); max-width: 520px; margin: 0 auto; }
-        .divider-line {
-            width: 56px; height: 4px;
-            background: linear-gradient(90deg, var(--accent), var(--green));
-            border-radius: 2px; margin: 14px auto 0;
-        }
-
-        /* ── SERVICES ── */
-        .services-sec { padding: 80px 0; background: var(--bg); }
-        .svc-card {
-            background: #fff; border-radius: 14px;
-            padding: 32px 26px; height: 100%;
-            box-shadow: var(--card-shadow);
-            transition: all 0.35s ease;
-            border: 1px solid transparent;
-            position: relative; overflow: hidden;
-        }
-        .svc-card::before {
-            content: ''; position: absolute;
-            top: 0; left: 0; right: 0; height: 4px;
-            background: linear-gradient(90deg, var(--accent), var(--green));
-            transform: scaleX(0); transform-origin: left;
-            transition: transform 0.35s ease;
-        }
-        .svc-card:hover { transform: translateY(-8px); box-shadow: var(--card-shadow-hover); border-color: #e8f0fe; }
-        .svc-card:hover::before { transform: scaleX(1); }
-        .svc-icon-wrap {
-            width: 68px; height: 68px; border-radius: 16px;
-            background: linear-gradient(135deg, #fff3e0, #ffe0b2);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 28px; color: var(--accent);
-            margin-bottom: 22px;
-            transition: all 0.35s;
-        }
-        .svc-card:hover .svc-icon-wrap {
-            background: linear-gradient(135deg, var(--accent), #d6741e);
-            color: #fff; transform: scale(1.1) rotate(-5deg);
-        }
-        .svc-card h4 { font-size: 17px; font-weight: 700; color: var(--primary); margin-bottom: 10px; }
-        .svc-card p  { font-size: 13.5px; color: var(--text-muted); line-height: 1.65; margin: 0; }
-        .svc-arrow {
-            display: inline-flex; align-items: center; gap: 5px;
-            font-size: 13px; font-weight: 700; color: var(--accent);
-            margin-top: 16px; opacity: 0;
-            transition: opacity 0.3s, transform 0.3s;
-            transform: translateX(-8px);
-        }
-        .svc-card:hover .svc-arrow { opacity: 1; transform: translateX(0); }
-
-        /* ── PROCESS ── */
-        .process-sec { padding: 80px 0; background: var(--white); }
-        .process-wrap { position: relative; }
-        .process-line {
-            position: absolute; top: 38px; left: calc(12.5% + 12px); right: calc(12.5% + 12px);
-            height: 2px;
-            background: linear-gradient(90deg, var(--accent) 0%, var(--green) 100%);
-            z-index: 0;
-        }
-        .process-line-fill {
-            height: 100%; width: 0; background: inherit;
-            animation: line-fill 2s 0.5s ease-out forwards;
-        }
-        @keyframes line-fill { to { width: 100%; } }
-        .process-step { text-align: center; position: relative; z-index: 1; padding: 0 12px; }
-        .step-circle {
-            width: 76px; height: 76px; border-radius: 50%;
-            background: linear-gradient(135deg, var(--accent), #d6741e);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 26px; font-weight: 800; color: #fff;
-            margin: 0 auto 20px;
-            box-shadow: 0 6px 24px rgba(232,132,42,0.4);
-            font-family: 'Playfair Display', serif;
-            transition: all 0.3s;
-        }
-        .process-step:hover .step-circle {
-            transform: scale(1.1);
-            box-shadow: 0 10px 36px rgba(232,132,42,0.55);
-        }
-        .process-step h5 { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 8px; }
-        .process-step p  { font-size: 13px; color: var(--text-muted); line-height: 1.6; }
-        .step-icon-small { font-size: 13px; color: var(--accent); margin-bottom: 6px; }
-
-        /* ── DEPARTMENTS ── */
-        .depts-sec { padding: 80px 0; background: var(--bg); }
-        .dept-card {
-            display: flex; align-items: center; gap: 14px;
-            background: #fff; border-radius: 12px;
-            padding: 18px 20px;
-            box-shadow: 0 2px 12px rgba(10,37,88,0.07);
-            transition: all 0.3s; cursor: pointer;
-            border: 1px solid transparent;
-        }
-        .dept-card:hover {
-            transform: translateY(-4px);
-            box-shadow: 0 8px 28px rgba(10,37,88,0.15);
-            background: linear-gradient(135deg, var(--primary), var(--primary-light));
-            border-color: transparent;
-        }
-        .dept-card:hover .dept-icon,
-        .dept-card:hover .dept-name,
-        .dept-card:hover .dept-sub { color: #fff !important; }
-        .dept-card:hover .dept-icon { color: var(--accent) !important; }
-        .dept-icon { font-size: 24px; color: var(--accent); width: 32px; flex-shrink: 0; transition: all 0.3s; }
-        .dept-name { font-size: 14px; font-weight: 700; color: var(--primary); transition: all 0.3s; }
-        .dept-sub  { font-size: 11px; color: var(--text-muted); transition: all 0.3s; }
-
-        /* ── INDIA MAP BAND ── */
-        .map-band {
-            padding: 70px 0;
-            background: linear-gradient(135deg, #061728, var(--primary));
-            color: #fff; overflow: hidden; position: relative;
-        }
-        .map-band::after {
-            content: '';
-            position: absolute; right: -80px; top: 50%; transform: translateY(-50%);
-            width: 500px; height: 500px;
-            background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Ccircle cx='100' cy='100' r='90' stroke='rgba(255,153,51,0.08)' stroke-width='2' fill='none'/%3E%3Ccircle cx='100' cy='100' r='70' stroke='rgba(255,153,51,0.06)' stroke-width='2' fill='none'/%3E%3Ccircle cx='100' cy='100' r='50' stroke='rgba(255,153,51,0.04)' stroke-width='2' fill='none'/%3E%3C/svg%3E") center/contain no-repeat;
-            animation: ring-pulse 4s ease-in-out infinite;
-        }
-        @keyframes ring-pulse { 0%,100%{transform:translateY(-50%) scale(1)} 50%{transform:translateY(-50%) scale(1.06)} }
-        .map-stat { text-align: center; padding: 16px; }
-        .map-stat-icon { font-size: 36px; color: var(--accent); margin-bottom: 12px; }
-        .map-stat-num {
-            font-family: 'Playfair Display', serif;
-            font-size: 38px; font-weight: 700; color: #fff; margin-bottom: 6px;
-        }
-        .map-stat-lbl { font-size: 13px; opacity: 0.7; }
-
-        /* ── HIGHLIGHTS / FEATURES ── */
-        .highlights-sec { padding: 80px 0; background: #fff; }
-        .highlight-item {
-            display: flex; gap: 20px; align-items: flex-start;
-            padding: 24px; border-radius: 12px;
-            transition: all 0.3s;
-        }
-        .highlight-item:hover { background: #f8faff; transform: translateX(6px); }
-        .highlight-icon-wrap {
-            width: 52px; height: 52px; border-radius: 12px;
-            background: linear-gradient(135deg, #e8f0fe, #c5d4f5);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 22px; color: var(--primary);
-            flex-shrink: 0;
-        }
-        .highlight-item h5 { font-size: 16px; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
-        .highlight-item p  { font-size: 13.5px; color: var(--text-muted); line-height: 1.65; margin: 0; }
-        .feature-visual {
-            background: linear-gradient(135deg, var(--primary), #1a3d7c);
-            border-radius: 20px; padding: 36px;
-            color: #fff; height: 100%;
-            display: flex; flex-direction: column; justify-content: space-between;
-        }
-        .feature-visual h4 {
-            font-family: 'Playfair Display', serif;
-            font-size: 26px; font-weight: 700; margin-bottom: 10px;
-        }
-        .feature-visual p { font-size: 14px; opacity: 0.75; margin-bottom: 28px; line-height: 1.65; }
-        .feature-timeline { display: flex; flex-direction: column; gap: 14px; }
-        .timeline-row { display: flex; align-items: center; gap: 12px; }
-        .timeline-dot {
-            width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0;
-        }
-        .timeline-line { width: 2px; height: 20px; background: rgba(255,255,255,0.15); margin-left: 4px; flex-shrink: 0; }
-        .timeline-text { font-size: 12.5px; opacity: 0.85; }
-        .timeline-time { font-size: 11px; opacity: 0.5; margin-left: auto; white-space: nowrap; }
-
-        /* ── HELP SECTION ── */
-        .help-sec {
-            padding: 80px 0;
-            background: linear-gradient(135deg, var(--primary) 0%, #1a3d7c 100%);
-            color: #fff;
-        }
-        .help-card {
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.12);
-            border-radius: 14px; padding: 32px 24px; text-align: center;
-            transition: all 0.35s;
-        }
-        .help-card:hover {
-            background: rgba(255,255,255,0.15);
-            transform: translateY(-6px);
-            box-shadow: 0 16px 40px rgba(0,0,0,0.25);
-        }
-        .help-card-icon {
-            width: 64px; height: 64px; border-radius: 50%;
-            background: rgba(255,153,51,0.15); border: 2px solid rgba(255,153,51,0.3);
-            display: flex; align-items: center; justify-content: center;
-            font-size: 24px; color: var(--accent);
-            margin: 0 auto 18px;
-            transition: all 0.3s;
-        }
-        .help-card:hover .help-card-icon {
-            background: var(--accent); color: #fff;
-            border-color: var(--accent);
-        }
-        .help-card h5 { font-size: 17px; font-weight: 700; margin-bottom: 10px; }
-        .help-card p  { font-size: 13px; opacity: 0.8; line-height: 1.6; margin: 0; }
-        .help-value { font-size: 17px; font-weight: 700; color: var(--accent); margin-top: 10px; }
-
-        /* ── FOOTER ── */
-        .site-footer { background: #050f1e; color: rgba(255,255,255,0.82); padding: 56px 0 20px; }
-        .footer-logo { display: flex; align-items: center; gap: 12px; margin-bottom: 16px; }
-        .footer-logo-text { font-family: 'Playfair Display', serif; font-size: 16px; font-weight: 700; color: #fff; }
-        .footer-desc { font-size: 13px; line-height: 1.75; opacity: 0.7; }
-        .footer-head { font-size: 14px; font-weight: 700; color: var(--accent); margin-bottom: 16px; letter-spacing: 0.5px; text-transform: uppercase; }
-        .footer-links { list-style: none; padding: 0; }
-        .footer-links li { margin-bottom: 9px; }
-        .footer-links a { font-size: 13px; opacity: 0.75; transition: all 0.2s; display: inline-flex; align-items: center; gap: 7px; }
-        .footer-links a:hover { opacity: 1; color: var(--accent); transform: translateX(4px); }
-        .footer-links a i { font-size: 10px; }
-        .footer-divider { border-color: rgba(255,255,255,0.08); margin: 30px 0 20px; }
-        .footer-bottom { font-size: 12px; opacity: 0.5; text-align: center; }
-        .footer-bottom-links { display: flex; gap: 20px; justify-content: center; flex-wrap: wrap; margin-top: 8px; }
-        .footer-bottom-links a { font-size: 12px; opacity: 0.6; color: inherit; transition: opacity 0.2s; }
-        .footer-bottom-links a:hover { opacity: 1; }
-
-        /* ── SCROLL REVEAL ── */
-        .sr { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
-        .sr.visible { opacity: 1; transform: translateY(0); }
-        .sr-left { opacity: 0; transform: translateX(-28px); transition: opacity 0.65s ease, transform 0.65s ease; }
-        .sr-left.visible { opacity: 1; transform: translateX(0); }
-        .sr-right { opacity: 0; transform: translateX(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
-        .sr-right.visible { opacity: 1; transform: translateX(0); }
-
-        /* ── RESPONSIVE ── */
-        @media (max-width: 991px) {
-            .hero h2 { font-size: 36px; }
-            .stats-band .container { grid-template-columns: repeat(2,1fr); }
-            .process-line { display: none; }
-            .hero-illustration { margin-top: 36px; }
-        }
-        @media (max-width: 575px) {
-            .hero h2 { font-size: 28px; }
-            .stats-band .container { grid-template-columns: repeat(2,1fr); }
-            .stat-num { font-size: 30px; }
-        }
-
-        /* ── SCROLL TO TOP ── */
-        #scrollTop {
-            position: fixed; bottom: 28px; right: 28px; z-index: 500;
-            width: 48px; height: 48px; border-radius: 50%;
-            background: var(--accent); color: #fff; border: none;
-            font-size: 18px; cursor: pointer; display: none;
-            align-items: center; justify-content: center;
-            box-shadow: 0 4px 20px rgba(232,132,42,0.5);
-            transition: all 0.3s;
-        }
-        #scrollTop:hover { background: #d6741e; transform: translateY(-3px); }
-        #scrollTop.show { display: flex; }
-
-        /* ── COUNTER ANIMATION ── */
-        @keyframes count-up { from{opacity:0;transform:translateY(10px)} to{opacity:1;transform:translateY(0)} }
-
-        /* ── WAVE SEPARATOR ── */
-        .wave-sep { line-height: 0; overflow: hidden; }
-        .wave-sep svg { display: block; width: 100%; }
-
-        /* Nav mobile */
-        .navbar-toggler { border-color: rgba(255,255,255,0.3) !important; }
-        .navbar-toggler-icon { filter: invert(1); }
+        @media(max-width:991px){.hero h2{font-size:36px;}.stats-cells{grid-template-columns:repeat(2,1fr);}.process-line{display:none;}.hero-illustration{margin-top:36px;}}
+        @media(max-width:575px){.hero h2{font-size:28px;}.stat-num{font-size:30px;}}
     </style>
 </head>
 <body>
@@ -648,47 +288,35 @@
 <!-- PAGE LOADER -->
 <div id="page-loader">
     <div class="chakra-loader">
-        <!-- Ashoka Chakra SVG -->
         <svg viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
             <circle cx="50" cy="50" r="46" stroke="#FF9933" stroke-width="4" fill="none"/>
             <circle cx="50" cy="50" r="8" fill="#138808"/>
-            <!-- 24 spokes -->
             <g stroke="#003580" stroke-width="2">
-                <line x1="50" y1="50" x2="50" y2="6"/>
-                <line x1="50" y1="50" x2="66" y2="9"/>
-                <line x1="50" y1="50" x2="79" y2="21"/>
-                <line x1="50" y1="50" x2="86" y2="34"/>
-                <line x1="50" y1="50" x2="89" y2="50"/>
-                <line x1="50" y1="50" x2="86" y2="66"/>
-                <line x1="50" y1="50" x2="79" y2="79"/>
-                <line x1="50" y1="50" x2="66" y2="91"/>
-                <line x1="50" y1="50" x2="50" y2="94"/>
-                <line x1="50" y1="50" x2="34" y2="91"/>
-                <line x1="50" y1="50" x2="21" y2="79"/>
-                <line x1="50" y1="50" x2="14" y2="66"/>
-                <line x1="50" y1="50" x2="11" y2="50"/>
-                <line x1="50" y1="50" x2="14" y2="34"/>
-                <line x1="50" y1="50" x2="21" y2="21"/>
-                <line x1="50" y1="50" x2="34" y2="9"/>
-                <line x1="50" y1="50" x2="58" y2="7.5"/>
-                <line x1="50" y1="50" x2="73" y2="14"/>
-                <line x1="50" y1="50" x2="83" y2="27"/>
-                <line x1="50" y1="50" x2="88" y2="42"/>
-                <line x1="50" y1="50" x2="88" y2="58"/>
-                <line x1="50" y1="50" x2="83" y2="73"/>
-                <line x1="50" y1="50" x2="73" y2="86"/>
-                <line x1="50" y1="50" x2="58" y2="92.5"/>
+                <line x1="50" y1="50" x2="50" y2="6"/>    <line x1="50" y1="50" x2="66" y2="9"/>
+                <line x1="50" y1="50" x2="79" y2="21"/>   <line x1="50" y1="50" x2="86" y2="34"/>
+                <line x1="50" y1="50" x2="89" y2="50"/>   <line x1="50" y1="50" x2="86" y2="66"/>
+                <line x1="50" y1="50" x2="79" y2="79"/>   <line x1="50" y1="50" x2="66" y2="91"/>
+                <line x1="50" y1="50" x2="50" y2="94"/>   <line x1="50" y1="50" x2="34" y2="91"/>
+                <line x1="50" y1="50" x2="21" y2="79"/>   <line x1="50" y1="50" x2="14" y2="66"/>
+                <line x1="50" y1="50" x2="11" y2="50"/>   <line x1="50" y1="50" x2="14" y2="34"/>
+                <line x1="50" y1="50" x2="21" y2="21"/>   <line x1="50" y1="50" x2="34" y2="9"/>
+                <line x1="50" y1="50" x2="58" y2="7.5"/>  <line x1="50" y1="50" x2="73" y2="14"/>
+                <line x1="50" y1="50" x2="83" y2="27"/>   <line x1="50" y1="50" x2="88" y2="42"/>
+                <line x1="50" y1="50" x2="88" y2="58"/>   <line x1="50" y1="50" x2="83" y2="73"/>
+                <line x1="50" y1="50" x2="73" y2="86"/>   <line x1="50" y1="50" x2="58" y2="92.5"/>
             </g>
             <circle cx="50" cy="50" r="4" fill="#FF9933"/>
         </svg>
     </div>
     <p class="loader-text">Loading Portal…</p>
+    <div class="loader-dots">
+        <div class="loader-dot"></div>
+        <div class="loader-dot"></div>
+        <div class="loader-dot"></div>
+    </div>
 </div>
 
-<!-- SCROLL TO TOP -->
 <button id="scrollTop" title="Back to top"><i class="fas fa-chevron-up"></i></button>
-
-<!-- TRICOLOR -->
 <div class="tricolor"></div>
 
 <!-- TICKER -->
@@ -715,28 +343,21 @@
     <div class="container">
         <div class="d-flex align-items-center justify-content-between">
             <div class="header-logo">
-                <!-- Ashoka Emblem SVG inline -->
                 <svg class="ashoka-emblem" viewBox="0 0 120 140" xmlns="http://www.w3.org/2000/svg">
-                    <ellipse cx="60" cy="50" rx="44" ry="44" fill="#FF9933" opacity="0.15"/>
+                    <ellipse cx="60" cy="50" rx="44" ry="44" fill="#FF9933" opacity=".15"/>
                     <circle cx="60" cy="50" r="38" stroke="#FF9933" stroke-width="3" fill="none"/>
                     <circle cx="60" cy="50" r="10" fill="#003580"/>
                     <g stroke="#003580" stroke-width="1.5">
-                        <line x1="60" y1="50" x2="60" y2="14"/>
-                        <line x1="60" y1="50" x2="79" y2="19"/>
-                        <line x1="60" y1="50" x2="92" y2="31"/>
-                        <line x1="60" y1="50" x2="96" y2="50"/>
-                        <line x1="60" y1="50" x2="92" y2="69"/>
-                        <line x1="60" y1="50" x2="79" y2="81"/>
-                        <line x1="60" y1="50" x2="60" y2="86"/>
-                        <line x1="60" y1="50" x2="41" y2="81"/>
-                        <line x1="60" y1="50" x2="28" y2="69"/>
-                        <line x1="60" y1="50" x2="24" y2="50"/>
-                        <line x1="60" y1="50" x2="28" y2="31"/>
-                        <line x1="60" y1="50" x2="41" y2="19"/>
+                        <line x1="60" y1="50" x2="60" y2="14"/> <line x1="60" y1="50" x2="79" y2="19"/>
+                        <line x1="60" y1="50" x2="92" y2="31"/> <line x1="60" y1="50" x2="96" y2="50"/>
+                        <line x1="60" y1="50" x2="92" y2="69"/> <line x1="60" y1="50" x2="79" y2="81"/>
+                        <line x1="60" y1="50" x2="60" y2="86"/> <line x1="60" y1="50" x2="41" y2="81"/>
+                        <line x1="60" y1="50" x2="28" y2="69"/> <line x1="60" y1="50" x2="24" y2="50"/>
+                        <line x1="60" y1="50" x2="28" y2="31"/> <line x1="60" y1="50" x2="41" y2="19"/>
                     </g>
                     <circle cx="60" cy="50" r="5" fill="#FF9933"/>
                     <rect x="20" y="100" width="80" height="6" rx="3" fill="#FF9933"/>
-                    <rect x="28" y="110" width="64" height="5" rx="2.5" fill="#fff" stroke="#ccc" stroke-width="0.5"/>
+                    <rect x="28" y="110" width="64" height="5" rx="2.5" fill="#fff" stroke="#ccc" stroke-width=".5"/>
                     <rect x="28" y="119" width="64" height="6" rx="3" fill="#138808"/>
                     <text x="60" y="134" text-anchor="middle" font-size="7" fill="#003580" font-family="serif" font-weight="bold">सत्यमेव जयते</text>
                 </svg>
@@ -747,10 +368,10 @@
             </div>
             <div class="header-right d-none d-md-flex">
                 <div class="digital-india-badge">
-                    <i class="fas fa-globe" style="font-size:18px; color:var(--accent);"></i>
+                    <i class="fas fa-globe" style="font-size:18px;color:var(--accent);"></i>
                     <div>
-                        <div style="font-size:13px;font-weight:700;">Digital India</div>
-                        <div style="font-size:10px;opacity:0.75;">डिजिटल इंडिया</div>
+                        <span style="display:block;font-size:13px;font-weight:700;">Digital India</span>
+                        <span style="font-size:10px;opacity:.75;">डिजिटल इंडिया</span>
                     </div>
                 </div>
             </div>
@@ -780,50 +401,29 @@
 
 <!-- HERO -->
 <section class="hero">
-    <!-- Floating particles injected by JS -->
     <div class="hero-particles" id="heroParticles"></div>
-
-    <!-- Mandala BG -->
     <svg class="hero-mandala" viewBox="0 0 500 500" xmlns="http://www.w3.org/2000/svg">
         <g fill="none" stroke="white">
-            <circle cx="250" cy="250" r="240" stroke-width="1"/>
-            <circle cx="250" cy="250" r="200" stroke-width="0.8"/>
-            <circle cx="250" cy="250" r="160" stroke-width="0.6"/>
-            <circle cx="250" cy="250" r="120" stroke-width="0.5"/>
-            <circle cx="250" cy="250" r="80" stroke-width="0.4"/>
-            <!-- decorative lines -->
-            <line x1="250" y1="10" x2="250" y2="490" stroke-width="0.4"/>
-            <line x1="10" y1="250" x2="490" y2="250" stroke-width="0.4"/>
-            <line x1="74" y1="74" x2="426" y2="426" stroke-width="0.4"/>
-            <line x1="426" y1="74" x2="74" y2="426" stroke-width="0.4"/>
-            <!-- lotus petals simplified -->
-            <ellipse cx="250" cy="130" rx="18" ry="40" stroke-width="0.6"/>
-            <ellipse cx="250" cy="370" rx="18" ry="40" stroke-width="0.6"/>
-            <ellipse cx="130" cy="250" rx="40" ry="18" stroke-width="0.6"/>
-            <ellipse cx="370" cy="250" rx="40" ry="18" stroke-width="0.6"/>
+            <circle cx="250" cy="250" r="240" stroke-width="1"/><circle cx="250" cy="250" r="200" stroke-width=".8"/>
+            <circle cx="250" cy="250" r="160" stroke-width=".6"/><circle cx="250" cy="250" r="120" stroke-width=".5"/>
+            <circle cx="250" cy="250" r="80" stroke-width=".4"/>
+            <line x1="250" y1="10" x2="250" y2="490" stroke-width=".4"/><line x1="10" y1="250" x2="490" y2="250" stroke-width=".4"/>
+            <line x1="74" y1="74" x2="426" y2="426" stroke-width=".4"/><line x1="426" y1="74" x2="74" y2="426" stroke-width=".4"/>
+            <ellipse cx="250" cy="130" rx="18" ry="40" stroke-width=".6"/><ellipse cx="250" cy="370" rx="18" ry="40" stroke-width=".6"/>
+            <ellipse cx="130" cy="250" rx="40" ry="18" stroke-width=".6"/><ellipse cx="370" cy="250" rx="40" ry="18" stroke-width=".6"/>
         </g>
     </svg>
 
     <div class="container hero-content">
         <div class="row align-items-center">
             <div class="col-lg-7">
-                <div class="hero-eyebrow">
-                    <span class="dot"></span>
-                    Digital India Initiative — Powered by NIC
-                </div>
-                <h2>
-                    Your Voice Matters,<br>
-                    <span class="accent-word">We Listen &amp; Act</span>
-                </h2>
+                <div class="hero-eyebrow"><span class="dot"></span>Digital India Initiative — Powered by NIC</div>
+                <h2>Your Voice Matters,<br><span class="accent-word">We Listen &amp; Act</span></h2>
                 <p class="hero-hindi">नागरिकों की शिकायतों का शीघ्र और पारदर्शी समाधान — सरकार आपके साथ है।</p>
                 <p class="hero-desc">Empowering every citizen with a transparent, efficient, and accountable grievance resolution system across all government departments in India.</p>
                 <div class="hero-actions">
-                    <a href="register.html" class="btn-primary-hero">
-                        <i class="fas fa-file-alt"></i> Register Complaint
-                    </a>
-                    <a href="track.html" class="btn-secondary-hero">
-                        <i class="fas fa-search"></i> Track Status
-                    </a>
+                    <a href="register.html" class="btn-primary-hero"><i class="fas fa-file-alt"></i> Register Complaint</a>
+                    <a href="track.html" class="btn-secondary-hero"><i class="fas fa-search"></i> Track Status</a>
                 </div>
                 <div class="hero-trust">
                     <span class="trust-item"><i class="fas fa-check-circle"></i> Free of charge</span>
@@ -833,52 +433,40 @@
                     <span class="trust-item"><i class="fas fa-check-circle"></i> 24 × 7 support</span>
                 </div>
             </div>
+
+            <!-- ── LIVE FEED CARD (now AWS-powered) ─────────── -->
             <div class="col-lg-5 hero-illustration">
                 <div class="gov-card">
                     <div class="gov-card-header">
-                        <div class="gov-card-icon"><i class="fas fa-tasks"></i></div>
-                        <div>
+                        <div class="gov-card-icon"><i class="fas fa-satellite-dish"></i></div>
+                        <div style="flex:1;">
                             <div class="gov-card-title">Live Complaint Feed</div>
-                            <div class="gov-card-sub">Real-time updates from across India</div>
+                            <div class="gov-card-sub">Real-time from AWS DynamoDB</div>
                         </div>
+                        <div class="feed-live-pill"><span class="feed-live-dot"></span>Live</div>
                     </div>
+
+                    <!-- Skeleton shown while API loads -->
                     <div class="status-list" id="liveComplaintFeed">
-                        <div class="status-item">
-                            <div class="status-dot green"></div>
-                            <div class="status-info">
-                                <div class="status-id">CMP-2026-084231</div>
-                                <div class="status-dept">Public Works · Delhi</div>
-                            </div>
-                            <span class="status-badge badge-resolved">Resolved</span>
-                        </div>
-                        <div class="status-item">
-                            <div class="status-dot blue"></div>
-                            <div class="status-info">
-                                <div class="status-id">CMP-2026-084198</div>
-                                <div class="status-dept">Water Supply · Mumbai</div>
-                            </div>
-                            <span class="status-badge badge-progress">In Progress</span>
-                        </div>
-                        <div class="status-item">
-                            <div class="status-dot orange"></div>
-                            <div class="status-info">
-                                <div class="status-id">CMP-2026-084150</div>
-                                <div class="status-dept">Electricity · Bengaluru</div>
-                            </div>
-                            <span class="status-badge badge-review">Under Review</span>
-                        </div>
-                        <div class="status-item">
-                            <div class="status-dot grey"></div>
-                            <div class="status-info">
-                                <div class="status-id">CMP-2026-084102</div>
-                                <div class="status-dept">Education · Chennai</div>
-                            </div>
-                            <span class="status-badge badge-submitted">Submitted</span>
-                        </div>
+                        <div class="feed-sk-item"><div class="feed-sk-dot"></div><div class="feed-sk-lines"><div class="feed-sk-line feed-sk-lg"></div><div class="feed-sk-line feed-sk-sm"></div></div><div class="feed-sk-badge"></div></div>
+                        <div class="feed-sk-item"><div class="feed-sk-dot"></div><div class="feed-sk-lines"><div class="feed-sk-line feed-sk-lg"></div><div class="feed-sk-line feed-sk-sm"></div></div><div class="feed-sk-badge"></div></div>
+                        <div class="feed-sk-item"><div class="feed-sk-dot"></div><div class="feed-sk-lines"><div class="feed-sk-line feed-sk-lg"></div><div class="feed-sk-line feed-sk-sm"></div></div><div class="feed-sk-badge"></div></div>
+                        <div class="feed-sk-item"><div class="feed-sk-dot"></div><div class="feed-sk-lines"><div class="feed-sk-line feed-sk-lg"></div><div class="feed-sk-line feed-sk-sm"></div></div><div class="feed-sk-badge"></div></div>
                     </div>
-                    <div style="margin-top:18px;text-align:center;border-top:1px solid rgba(255,255,255,0.12);padding-top:14px;">
+
+                    <!-- Footer: countdown ring + link -->
+                    <div class="feed-footer">
+                        <div class="feed-refresh-row">
+                            <div class="ring-wrap">
+                                <svg width="22" height="22" viewBox="0 0 22 22">
+                                    <circle class="ring-bg"   cx="11" cy="11" r="8.5"/>
+                                    <circle class="ring-fill" id="feedRing" cx="11" cy="11" r="8.5"/>
+                                </svg>
+                            </div>
+                            <span class="ring-lbl" id="feedCountdown">5s</span>
+                        </div>
                         <a href="track.html" style="color:var(--accent);font-size:13px;font-weight:700;">
-                            <i class="fas fa-external-link-alt me-1"></i> Full Tracking Portal →
+                            <i class="fas fa-external-link-alt me-1"></i> Full Tracking →
                         </a>
                     </div>
                 </div>
@@ -888,7 +476,7 @@
 </section>
 
 <!-- WAVE -->
-<div class="wave-sep" style="background: var(--primary-dark);">
+<div class="wave-sep" style="background:var(--primary-dark);">
     <svg viewBox="0 0 1440 48" xmlns="http://www.w3.org/2000/svg">
         <path d="M0,48 C360,0 1080,0 1440,48 L1440,0 L0,0 Z" fill="var(--primary-dark)"/>
     </svg>
@@ -897,40 +485,14 @@
 <!-- STATS BAND -->
 <div class="stats-band">
     <div class="container">
-        <div class="col-12 text-center py-3">
+        <div class="live-badge-strip">
             <span class="live-badge"><span class="live-dot"></span>Live Data — Updated from AWS DynamoDB</span>
         </div>
-        <div class="stat-cell">
-            <div class="stat-icon"><i class="fas fa-file-alt"></i></div>
-            <div class="stat-num" id="statTotal">—</div>
-            <div class="stat-lbl">Total Complaints</div>
-        </div>
-        <div class="stat-cell">
-            <div class="stat-icon"><i class="fas fa-check-double"></i></div>
-            <div class="stat-num" id="statResolved">—</div>
-            <div class="stat-lbl">Resolved Cases</div>
-        </div>
-        <div class="stat-cell">
-            <div class="stat-icon"><i class="fas fa-hourglass-half"></i></div>
-            <div class="stat-num" id="statPending">—</div>
-            <div class="stat-lbl">Pending</div>
-        </div>
-        <div class="stat-cell">
-            <div class="stat-icon"><i class="fas fa-percentage"></i></div>
-            <div class="stat-num" id="statRate">—</div>
-            <div class="stat-lbl">Resolution Rate</div>
-        </div>
-    </div>
-</div>
-<!-- Override grid for live badge row -->
-<style>
-    .stats-band .container { display: block; }
-    .stats-band .stats-grid { display: grid; grid-template-columns: repeat(4,1fr); }
-</style>
-<div style="background:var(--primary-dark); padding-bottom:0;">
-    <div class="container" style="display:block;">
-        <div class="stats-grid">
-            <!-- Already rendered above via the parent container being grid; let's fix this below in JS -->
+        <div class="stats-cells">
+            <div class="stat-cell"><div class="stat-icon"><i class="fas fa-file-alt"></i></div><div class="stat-num" id="statTotal">—</div><div class="stat-lbl">Total Complaints</div></div>
+            <div class="stat-cell"><div class="stat-icon"><i class="fas fa-check-double"></i></div><div class="stat-num" id="statResolved">—</div><div class="stat-lbl">Resolved Cases</div></div>
+            <div class="stat-cell"><div class="stat-icon"><i class="fas fa-hourglass-half"></i></div><div class="stat-num" id="statPending">—</div><div class="stat-lbl">Pending</div></div>
+            <div class="stat-cell"><div class="stat-icon"><i class="fas fa-percentage"></i></div><div class="stat-num" id="statRate">—</div><div class="stat-lbl">Resolution Rate</div></div>
         </div>
     </div>
 </div>
@@ -938,65 +500,14 @@
 <!-- SERVICES -->
 <section class="services-sec">
     <div class="container">
-        <div class="section-head sr">
-            <span class="section-overline">What We Offer</span>
-            <h3>Our Services</h3>
-            <p>Comprehensive complaint management for every citizen of India</p>
-            <div class="divider-line"></div>
-        </div>
+        <div class="section-head sr"><span class="section-overline">What We Offer</span><h3>Our Services</h3><p>Comprehensive complaint management for every citizen of India</p><div class="divider-line"></div></div>
         <div class="row g-4">
-            <div class="col-md-4 col-sm-6 sr">
-                <a href="register.html" style="display:block;height:100%;">
-                <div class="svc-card">
-                    <div class="svc-icon-wrap"><i class="fas fa-edit"></i></div>
-                    <h4>Register Complaint</h4>
-                    <p>Submit grievances online securely with documentation. Receive a unique Complaint ID via SMS and email instantly.</p>
-                    <div class="svc-arrow">Get Started <i class="fas fa-arrow-right"></i></div>
-                </div></a>
-            </div>
-            <div class="col-md-4 col-sm-6 sr">
-                <a href="track.html" style="display:block;height:100%;">
-                <div class="svc-card">
-                    <div class="svc-icon-wrap"><i class="fas fa-chart-line"></i></div>
-                    <h4>Track Progress</h4>
-                    <p>Real-time status tracking with transparent updates at every stage — no login required. Instant visibility.</p>
-                    <div class="svc-arrow">Track Now <i class="fas fa-arrow-right"></i></div>
-                </div></a>
-            </div>
-            <div class="col-md-4 col-sm-6 sr">
-                <div class="svc-card">
-                    <div class="svc-icon-wrap"><i class="fas fa-rocket"></i></div>
-                    <h4>Quick Resolution</h4>
-                    <p>Dedicated officers with automated escalation for overdue or high-priority complaints. 48-hour commitment.</p>
-                    <div class="svc-arrow">Learn More <i class="fas fa-arrow-right"></i></div>
-                </div>
-            </div>
-            <div class="col-md-4 col-sm-6 sr">
-                <div class="svc-card">
-                    <div class="svc-icon-wrap"><i class="fas fa-shield-alt"></i></div>
-                    <h4>Secure &amp; Confidential</h4>
-                    <p>AWS-grade security with Cognito authentication. Your data is encrypted and never shared with unauthorised parties.</p>
-                    <div class="svc-arrow">Security Info <i class="fas fa-arrow-right"></i></div>
-                </div>
-            </div>
-            <div class="col-md-4 col-sm-6 sr">
-                <a href="departments.html" style="display:block;height:100%;">
-                <div class="svc-card">
-                    <div class="svc-icon-wrap"><i class="fas fa-building"></i></div>
-                    <h4>All Departments</h4>
-                    <p>Complaints are auto-routed to the correct department. Browse contact details and working hours for each.</p>
-                    <div class="svc-arrow">View Departments <i class="fas fa-arrow-right"></i></div>
-                </div></a>
-            </div>
-            <div class="col-md-4 col-sm-6 sr">
-                <a href="help.html" style="display:block;height:100%;">
-                <div class="svc-card">
-                    <div class="svc-icon-wrap"><i class="fas fa-headset"></i></div>
-                    <h4>24 × 7 Support</h4>
-                    <p>Round-the-clock helpdesk with a detailed FAQ section. Multilingual support in all 22 scheduled languages.</p>
-                    <div class="svc-arrow">Visit Help Centre <i class="fas fa-arrow-right"></i></div>
-                </div></a>
-            </div>
+            <div class="col-md-4 col-sm-6 sr"><a href="register.html" style="display:block;height:100%;"><div class="svc-card"><div class="svc-icon-wrap"><i class="fas fa-edit"></i></div><h4>Register Complaint</h4><p>Submit grievances online securely with documentation. Receive a unique Complaint ID instantly.</p><div class="svc-arrow">Get Started <i class="fas fa-arrow-right"></i></div></div></a></div>
+            <div class="col-md-4 col-sm-6 sr"><a href="track.html" style="display:block;height:100%;"><div class="svc-card"><div class="svc-icon-wrap"><i class="fas fa-chart-line"></i></div><h4>Track Progress</h4><p>Real-time status tracking with transparent updates at every stage — no login required.</p><div class="svc-arrow">Track Now <i class="fas fa-arrow-right"></i></div></div></a></div>
+            <div class="col-md-4 col-sm-6 sr"><div class="svc-card"><div class="svc-icon-wrap"><i class="fas fa-rocket"></i></div><h4>Quick Resolution</h4><p>Dedicated officers with automated escalation for overdue or high-priority complaints. 48-hour commitment.</p><div class="svc-arrow">Learn More <i class="fas fa-arrow-right"></i></div></div></div>
+            <div class="col-md-4 col-sm-6 sr"><div class="svc-card"><div class="svc-icon-wrap"><i class="fas fa-shield-alt"></i></div><h4>Secure &amp; Confidential</h4><p>AWS-grade security with Cognito authentication. Your data is encrypted and never shared without authorisation.</p><div class="svc-arrow">Security Info <i class="fas fa-arrow-right"></i></div></div></div>
+            <div class="col-md-4 col-sm-6 sr"><a href="departments.html" style="display:block;height:100%;"><div class="svc-card"><div class="svc-icon-wrap"><i class="fas fa-building"></i></div><h4>All Departments</h4><p>Complaints are auto-routed to the correct department. Browse contact details and working hours for each.</p><div class="svc-arrow">View Departments <i class="fas fa-arrow-right"></i></div></div></a></div>
+            <div class="col-md-4 col-sm-6 sr"><a href="help.html" style="display:block;height:100%;"><div class="svc-card"><div class="svc-icon-wrap"><i class="fas fa-headset"></i></div><h4>24 × 7 Support</h4><p>Round-the-clock helpdesk with detailed FAQ. Multilingual support in all 22 scheduled languages.</p><div class="svc-arrow">Visit Help Centre <i class="fas fa-arrow-right"></i></div></div></a></div>
         </div>
     </div>
 </section>
@@ -1004,47 +515,14 @@
 <!-- PROCESS -->
 <section class="process-sec">
     <div class="container">
-        <div class="section-head sr">
-            <span class="section-overline">How It Works</span>
-            <h3>Complaint Resolution Process</h3>
-            <p>A simple, transparent 4-step journey from grievance to resolution</p>
-            <div class="divider-line"></div>
-        </div>
+        <div class="section-head sr"><span class="section-overline">How It Works</span><h3>Complaint Resolution Process</h3><p>A simple, transparent 4-step journey from grievance to resolution</p><div class="divider-line"></div></div>
         <div class="process-wrap">
             <div class="process-line"><div class="process-line-fill"></div></div>
             <div class="row g-0">
-                <div class="col-md-3 sr">
-                    <div class="process-step">
-                        <div class="step-circle">1</div>
-                        <div class="step-icon-small"><i class="fas fa-file-upload"></i></div>
-                        <h5>Submit Complaint</h5>
-                        <p>Register your grievance online with all necessary details. Receive a unique Complaint ID via SMS/email immediately.</p>
-                    </div>
-                </div>
-                <div class="col-md-3 sr">
-                    <div class="process-step">
-                        <div class="step-circle">2</div>
-                        <div class="step-icon-small"><i class="fas fa-user-check"></i></div>
-                        <h5>Review &amp; Assignment</h5>
-                        <p>The portal routes your complaint to the correct department. A dedicated officer is assigned for verification.</p>
-                    </div>
-                </div>
-                <div class="col-md-3 sr">
-                    <div class="process-step">
-                        <div class="step-circle">3</div>
-                        <div class="step-icon-small"><i class="fas fa-cogs"></i></div>
-                        <h5>Action Taken</h5>
-                        <p>The concerned department takes necessary steps. Track every status update in real-time with SMS notifications.</p>
-                    </div>
-                </div>
-                <div class="col-md-3 sr">
-                    <div class="process-step">
-                        <div class="step-circle">4</div>
-                        <div class="step-icon-small"><i class="fas fa-check-double"></i></div>
-                        <h5>Resolution &amp; Closure</h5>
-                        <p>Issue resolved and you are notified. You may reopen the complaint if not satisfied with the resolution.</p>
-                    </div>
-                </div>
+                <div class="col-md-3 sr"><div class="process-step"><div class="step-circle">1</div><div class="step-icon-small"><i class="fas fa-file-upload"></i></div><h5>Submit Complaint</h5><p>Register your grievance online with all necessary details. Receive a unique Complaint ID via SMS/email immediately.</p></div></div>
+                <div class="col-md-3 sr"><div class="process-step"><div class="step-circle">2</div><div class="step-icon-small"><i class="fas fa-user-check"></i></div><h5>Review &amp; Assignment</h5><p>The portal routes your complaint to the correct department. A dedicated officer is assigned for verification.</p></div></div>
+                <div class="col-md-3 sr"><div class="process-step"><div class="step-circle">3</div><div class="step-icon-small"><i class="fas fa-cogs"></i></div><h5>Action Taken</h5><p>The concerned department takes necessary steps. Track every status update in real-time with SMS notifications.</p></div></div>
+                <div class="col-md-3 sr"><div class="process-step"><div class="step-circle">4</div><div class="step-icon-small"><i class="fas fa-check-double"></i></div><h5>Resolution &amp; Closure</h5><p>Issue resolved and you are notified. You may reopen the complaint if not satisfied with the resolution.</p></div></div>
             </div>
         </div>
     </div>
@@ -1053,163 +531,58 @@
 <!-- DEPARTMENTS -->
 <section class="depts-sec">
     <div class="container">
-        <div class="section-head sr">
-            <span class="section-overline">Government Departments</span>
-            <h3>Find Your Department</h3>
-            <p>Your complaint will be automatically routed to the relevant government department</p>
-            <div class="divider-line"></div>
-        </div>
+        <div class="section-head sr"><span class="section-overline">Government Departments</span><h3>Find Your Department</h3><p>Your complaint will be automatically routed to the relevant government department</p><div class="divider-line"></div></div>
         <div class="row g-3 sr">
-            <div class="col-md-3 col-sm-6"><a href="departments.html">
-                <div class="dept-card"><div class="dept-icon"><i class="fas fa-road"></i></div><div><div class="dept-name">Public Works</div><div class="dept-sub">Roads, Infrastructure</div></div></div>
-            </a></div>
-            <div class="col-md-3 col-sm-6"><a href="departments.html">
-                <div class="dept-card"><div class="dept-icon"><i class="fas fa-heartbeat"></i></div><div><div class="dept-name">Health</div><div class="dept-sub">Hospitals, Medical Services</div></div></div>
-            </a></div>
-            <div class="col-md-3 col-sm-6"><a href="departments.html">
-                <div class="dept-card"><div class="dept-icon"><i class="fas fa-graduation-cap"></i></div><div><div class="dept-name">Education</div><div class="dept-sub">Schools, Colleges, Skills</div></div></div>
-            </a></div>
-            <div class="col-md-3 col-sm-6"><a href="departments.html">
-                <div class="dept-card"><div class="dept-icon"><i class="fas fa-shield-alt"></i></div><div><div class="dept-name">Police</div><div class="dept-sub">Law &amp; Order, Safety</div></div></div>
-            </a></div>
-            <div class="col-md-3 col-sm-6"><a href="departments.html">
-                <div class="dept-card"><div class="dept-icon"><i class="fas fa-tint"></i></div><div><div class="dept-name">Water Supply</div><div class="dept-sub">Drinking Water, Sewage</div></div></div>
-            </a></div>
-            <div class="col-md-3 col-sm-6"><a href="departments.html">
-                <div class="dept-card"><div class="dept-icon"><i class="fas fa-bolt"></i></div><div><div class="dept-name">Electricity</div><div class="dept-sub">Power Supply, Billing</div></div></div>
-            </a></div>
-            <div class="col-md-3 col-sm-6"><a href="departments.html">
-                <div class="dept-card"><div class="dept-icon"><i class="fas fa-file-invoice-dollar"></i></div><div><div class="dept-name">Revenue</div><div class="dept-sub">Land, Property, Taxation</div></div></div>
-            </a></div>
-            <div class="col-md-3 col-sm-6"><a href="departments.html">
-                <div class="dept-card"><div class="dept-icon"><i class="fas fa-bus"></i></div><div><div class="dept-name">Transport</div><div class="dept-sub">Vehicles, DL, Registration</div></div></div>
-            </a></div>
+            <div class="col-md-3 col-sm-6"><a href="departments.html"><div class="dept-card"><div class="dept-icon"><i class="fas fa-road"></i></div><div><div class="dept-name">Public Works</div><div class="dept-sub">Roads, Infrastructure</div></div></div></a></div>
+            <div class="col-md-3 col-sm-6"><a href="departments.html"><div class="dept-card"><div class="dept-icon"><i class="fas fa-heartbeat"></i></div><div><div class="dept-name">Health</div><div class="dept-sub">Hospitals, Medical Services</div></div></div></a></div>
+            <div class="col-md-3 col-sm-6"><a href="departments.html"><div class="dept-card"><div class="dept-icon"><i class="fas fa-graduation-cap"></i></div><div><div class="dept-name">Education</div><div class="dept-sub">Schools, Colleges, Skills</div></div></div></a></div>
+            <div class="col-md-3 col-sm-6"><a href="departments.html"><div class="dept-card"><div class="dept-icon"><i class="fas fa-shield-alt"></i></div><div><div class="dept-name">Police</div><div class="dept-sub">Law &amp; Order, Safety</div></div></div></a></div>
+            <div class="col-md-3 col-sm-6"><a href="departments.html"><div class="dept-card"><div class="dept-icon"><i class="fas fa-tint"></i></div><div><div class="dept-name">Water Supply</div><div class="dept-sub">Drinking Water, Sewage</div></div></div></a></div>
+            <div class="col-md-3 col-sm-6"><a href="departments.html"><div class="dept-card"><div class="dept-icon"><i class="fas fa-bolt"></i></div><div><div class="dept-name">Electricity</div><div class="dept-sub">Power Supply, Billing</div></div></div></a></div>
+            <div class="col-md-3 col-sm-6"><a href="departments.html"><div class="dept-card"><div class="dept-icon"><i class="fas fa-file-invoice-dollar"></i></div><div><div class="dept-name">Revenue</div><div class="dept-sub">Land, Property, Taxation</div></div></div></a></div>
+            <div class="col-md-3 col-sm-6"><a href="departments.html"><div class="dept-card"><div class="dept-icon"><i class="fas fa-bus"></i></div><div><div class="dept-name">Transport</div><div class="dept-sub">Vehicles, DL, Registration</div></div></div></a></div>
         </div>
-        <div class="text-center mt-4 sr">
-            <a href="departments.html" class="btn-primary-hero" style="display:inline-flex;">
-                <i class="fas fa-th-large"></i> View All Departments
-            </a>
-        </div>
+        <div class="text-center mt-4 sr"><a href="departments.html" class="btn-primary-hero" style="display:inline-flex;"><i class="fas fa-th-large"></i> View All Departments</a></div>
     </div>
 </section>
 
-<!-- INDIA COVERAGE BAND -->
+<!-- COVERAGE BAND -->
 <section class="map-band">
     <div class="container position-relative">
-        <div class="section-head sr" style="color:#fff;">
-            <span class="section-overline" style="color:var(--accent);">National Coverage</span>
-            <h3 style="color:#fff;">Serving Citizens Across India</h3>
-            <p style="color:rgba(255,255,255,0.65);">Present in every state and union territory</p>
-            <div class="divider-line"></div>
-        </div>
+        <div class="section-head sr" style="color:#fff;"><span class="section-overline" style="color:var(--accent);">National Coverage</span><h3 style="color:#fff;">Serving Citizens Across India</h3><p style="color:rgba(255,255,255,.65);">Present in every state and union territory</p><div class="divider-line"></div></div>
         <div class="row g-4 sr">
-            <div class="col-6 col-md-3">
-                <div class="map-stat">
-                    <div class="map-stat-icon"><i class="fas fa-map-marker-alt"></i></div>
-                    <div class="map-stat-num" data-target="28">0</div>
-                    <div class="map-stat-lbl">States Covered</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="map-stat">
-                    <div class="map-stat-icon"><i class="fas fa-city"></i></div>
-                    <div class="map-stat-num" data-target="748">0</div>
-                    <div class="map-stat-lbl">Districts Online</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="map-stat">
-                    <div class="map-stat-icon"><i class="fas fa-building"></i></div>
-                    <div class="map-stat-num" data-target="28">0</div>
-                    <div class="map-stat-lbl">Departments Onboarded</div>
-                </div>
-            </div>
-            <div class="col-6 col-md-3">
-                <div class="map-stat">
-                    <div class="map-stat-icon"><i class="fas fa-language"></i></div>
-                    <div class="map-stat-num" data-target="22">0</div>
-                    <div class="map-stat-lbl">Languages Supported</div>
-                </div>
-            </div>
+            <div class="col-6 col-md-3"><div class="map-stat"><div class="map-stat-icon"><i class="fas fa-map-marker-alt"></i></div><div class="map-stat-num" data-target="28">0</div><div class="map-stat-lbl">States Covered</div></div></div>
+            <div class="col-6 col-md-3"><div class="map-stat"><div class="map-stat-icon"><i class="fas fa-city"></i></div><div class="map-stat-num" data-target="748">0</div><div class="map-stat-lbl">Districts Online</div></div></div>
+            <div class="col-6 col-md-3"><div class="map-stat"><div class="map-stat-icon"><i class="fas fa-building"></i></div><div class="map-stat-num" data-target="28">0</div><div class="map-stat-lbl">Departments Onboarded</div></div></div>
+            <div class="col-6 col-md-3"><div class="map-stat"><div class="map-stat-icon"><i class="fas fa-language"></i></div><div class="map-stat-num" data-target="22">0</div><div class="map-stat-lbl">Languages Supported</div></div></div>
         </div>
     </div>
 </section>
 
-<!-- FEATURES / HIGHLIGHTS -->
+<!-- HIGHLIGHTS -->
 <section class="highlights-sec">
     <div class="container">
         <div class="row align-items-stretch g-4">
             <div class="col-lg-6 sr-left">
-                <div class="section-head text-start mb-4" style="text-align:left!important;">
-                    <span class="section-overline">Why Choose Us</span>
-                    <h3 style="text-align:left;">Built for Every<br>Indian Citizen</h3>
-                    <div class="divider-line" style="margin-left:0;"></div>
-                </div>
-                <div class="highlight-item">
-                    <div class="highlight-icon-wrap"><i class="fas fa-bolt"></i></div>
-                    <div>
-                        <h5>48-Hour Resolution Commitment</h5>
-                        <p>Urgent complaints are escalated automatically. Officers receive alerts when deadlines approach, ensuring timely action every time.</p>
-                    </div>
-                </div>
-                <div class="highlight-item">
-                    <div class="highlight-icon-wrap"><i class="fas fa-eye"></i></div>
-                    <div>
-                        <h5>Full Transparency at Every Step</h5>
-                        <p>Track your complaint status in real-time. Every action taken by government officers is logged and visible to you.</p>
-                    </div>
-                </div>
-                <div class="highlight-item">
-                    <div class="highlight-icon-wrap"><i class="fas fa-mobile-alt"></i></div>
-                    <div>
-                        <h5>SMS &amp; Multi-Language Updates</h5>
-                        <p>Get instant SMS notifications on your mobile. Portal available in Hindi and 21 other scheduled languages of India.</p>
-                    </div>
-                </div>
-                <div class="highlight-item">
-                    <div class="highlight-icon-wrap"><i class="fas fa-lock"></i></div>
-                    <div>
-                        <h5>AWS-Grade Security</h5>
-                        <p>Your personal data is encrypted using industry-standard protocols. Officer portals are secured via AWS Cognito.</p>
-                    </div>
-                </div>
+                <div class="section-head text-start mb-4" style="text-align:left!important;"><span class="section-overline">Why Choose Us</span><h3 style="text-align:left;">Built for Every<br>Indian Citizen</h3><div class="divider-line" style="margin-left:0;"></div></div>
+                <div class="highlight-item"><div class="highlight-icon-wrap"><i class="fas fa-bolt"></i></div><div><h5>48-Hour Resolution Commitment</h5><p>Urgent complaints are escalated automatically. Officers receive alerts when deadlines approach, ensuring timely action every time.</p></div></div>
+                <div class="highlight-item"><div class="highlight-icon-wrap"><i class="fas fa-eye"></i></div><div><h5>Full Transparency at Every Step</h5><p>Track your complaint status in real-time. Every action taken by government officers is logged and visible to you.</p></div></div>
+                <div class="highlight-item"><div class="highlight-icon-wrap"><i class="fas fa-mobile-alt"></i></div><div><h5>SMS &amp; Multi-Language Updates</h5><p>Get instant SMS notifications on your mobile. Portal available in Hindi and 21 other scheduled languages of India.</p></div></div>
+                <div class="highlight-item"><div class="highlight-icon-wrap"><i class="fas fa-lock"></i></div><div><h5>AWS-Grade Security</h5><p>Your personal data is encrypted using industry-standard protocols. Officer portals are secured via AWS Cognito.</p></div></div>
             </div>
             <div class="col-lg-6 sr-right">
                 <div class="feature-visual">
-                    <div>
-                        <h4>Complaint Resolution<br>Timeline</h4>
-                        <p>See how your grievance moves from submission to resolution — every step tracked in real-time.</p>
-                    </div>
+                    <div><h4>Complaint Resolution Timeline</h4><p>See how your grievance moves from submission to resolution — every step tracked in real-time.</p></div>
                     <div class="feature-timeline">
-                        <div class="timeline-row">
-                            <div class="timeline-dot" style="background:#4caf50;box-shadow:0 0 8px rgba(76,175,80,0.6);"></div>
-                            <div class="timeline-text">Complaint Submitted</div>
-                            <div class="timeline-time">Day 0 — Immediate</div>
-                        </div>
-                        <div class="timeline-row"><div style="width:2px;height:18px;background:rgba(255,255,255,0.15);margin-left:4px;"></div></div>
-                        <div class="timeline-row">
-                            <div class="timeline-dot" style="background:#2196f3;box-shadow:0 0 8px rgba(33,150,243,0.6);"></div>
-                            <div class="timeline-text">Officer Assigned</div>
-                            <div class="timeline-time">Within 4 hours</div>
-                        </div>
-                        <div class="timeline-row"><div style="width:2px;height:18px;background:rgba(255,255,255,0.15);margin-left:4px;"></div></div>
-                        <div class="timeline-row">
-                            <div class="timeline-dot" style="background:#ff9800;box-shadow:0 0 8px rgba(255,152,0,0.6);"></div>
-                            <div class="timeline-text">Field Inspection &amp; Review</div>
-                            <div class="timeline-time">Day 1 – Day 2</div>
-                        </div>
-                        <div class="timeline-row"><div style="width:2px;height:18px;background:rgba(255,255,255,0.15);margin-left:4px;"></div></div>
-                        <div class="timeline-row">
-                            <div class="timeline-dot" style="background:#e91e63;box-shadow:0 0 8px rgba(233,30,99,0.6);"></div>
-                            <div class="timeline-text">Action Taken</div>
-                            <div class="timeline-time">Day 2 – Day 3</div>
-                        </div>
-                        <div class="timeline-row"><div style="width:2px;height:18px;background:rgba(255,255,255,0.15);margin-left:4px;"></div></div>
-                        <div class="timeline-row">
-                            <div class="timeline-dot" style="background:#4caf50;"></div>
-                            <div class="timeline-text" style="font-weight:700;">Resolved &amp; Closed ✓</div>
-                            <div class="timeline-time">Within 48 hours</div>
-                        </div>
+                        <div class="timeline-row"><div class="timeline-dot" style="background:#4caf50;box-shadow:0 0 8px rgba(76,175,80,.6);"></div><div class="timeline-text">Complaint Submitted</div><div class="timeline-time">Day 0 — Immediate</div></div>
+                        <div class="timeline-row"><div style="width:2px;height:18px;background:rgba(255,255,255,.15);margin-left:4px;"></div></div>
+                        <div class="timeline-row"><div class="timeline-dot" style="background:#2196f3;box-shadow:0 0 8px rgba(33,150,243,.6);"></div><div class="timeline-text">Officer Assigned</div><div class="timeline-time">Within 4 hours</div></div>
+                        <div class="timeline-row"><div style="width:2px;height:18px;background:rgba(255,255,255,.15);margin-left:4px;"></div></div>
+                        <div class="timeline-row"><div class="timeline-dot" style="background:#ff9800;box-shadow:0 0 8px rgba(255,152,0,.6);"></div><div class="timeline-text">Field Inspection &amp; Review</div><div class="timeline-time">Day 1 – Day 2</div></div>
+                        <div class="timeline-row"><div style="width:2px;height:18px;background:rgba(255,255,255,.15);margin-left:4px;"></div></div>
+                        <div class="timeline-row"><div class="timeline-dot" style="background:#e91e63;box-shadow:0 0 8px rgba(233,30,99,.6);"></div><div class="timeline-text">Action Taken</div><div class="timeline-time">Day 2 – Day 3</div></div>
+                        <div class="timeline-row"><div style="width:2px;height:18px;background:rgba(255,255,255,.15);margin-left:4px;"></div></div>
+                        <div class="timeline-row"><div class="timeline-dot" style="background:#4caf50;"></div><div class="timeline-text" style="font-weight:700;">Resolved &amp; Closed ✓</div><div class="timeline-time">Within 48 hours</div></div>
                     </div>
                 </div>
             </div>
@@ -1220,46 +593,12 @@
 <!-- HELP -->
 <section class="help-sec">
     <div class="container">
-        <div class="section-head sr" style="color:#fff;">
-            <span class="section-overline" style="color:var(--accent);">Support</span>
-            <h3 style="color:#fff;">Need Help?</h3>
-            <p style="color:rgba(255,255,255,0.65);">Multiple channels to reach us — we're available 24 × 7</p>
-            <div class="divider-line"></div>
-        </div>
+        <div class="section-head sr" style="color:#fff;"><span class="section-overline" style="color:var(--accent);">Support</span><h3 style="color:#fff;">Need Help?</h3><p style="color:rgba(255,255,255,.65);">Multiple channels to reach us — we're available 24 × 7</p><div class="divider-line"></div></div>
         <div class="row g-4 sr">
-            <div class="col-md-3 col-sm-6">
-                <div class="help-card">
-                    <div class="help-card-icon"><i class="fas fa-phone-alt"></i></div>
-                    <h5>Toll-Free Helpline</h5>
-                    <p>Available every day, round the clock for all citizen queries</p>
-                    <div class="help-value">1800-000-XXXX</div>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="help-card">
-                    <div class="help-card-icon"><i class="fas fa-envelope"></i></div>
-                    <h5>Email Support</h5>
-                    <p>Write to us and receive a reply within 24 working hours</p>
-                    <div class="help-value">grievance@gov.in</div>
-                </div>
-            </div>
-            <div class="col-md-3 col-sm-6">
-                <a href="help.html" style="color:inherit;display:block;">
-                <div class="help-card">
-                    <div class="help-card-icon"><i class="fas fa-book-open"></i></div>
-                    <h5>FAQ &amp; Help Centre</h5>
-                    <p>Step-by-step guides, tutorials, and answers for citizens</p>
-                    <div class="help-value" style="font-size:14px;">View Help Centre →</div>
-                </div></a>
-            </div>
-            <div class="col-md-3 col-sm-6">
-                <div class="help-card">
-                    <div class="help-card-icon"><i class="fas fa-clock"></i></div>
-                    <h5>Working Hours</h5>
-                    <p>Office: Mon–Fri 9 AM–6 PM<br>Portal: Always Online 24 × 7</p>
-                    <div class="help-value" style="font-size:14px;color:#4caf50;">● Always Online</div>
-                </div>
-            </div>
+            <div class="col-md-3 col-sm-6"><div class="help-card"><div class="help-card-icon"><i class="fas fa-phone-alt"></i></div><h5>Toll-Free Helpline</h5><p>Available every day, round the clock for all citizen queries</p><div class="help-value">1800-000-XXXX</div></div></div>
+            <div class="col-md-3 col-sm-6"><div class="help-card"><div class="help-card-icon"><i class="fas fa-envelope"></i></div><h5>Email Support</h5><p>Write to us and receive a reply within 24 working hours</p><div class="help-value">grievance@gov.in</div></div></div>
+            <div class="col-md-3 col-sm-6"><a href="help.html" style="color:inherit;display:block;"><div class="help-card"><div class="help-card-icon"><i class="fas fa-book-open"></i></div><h5>FAQ &amp; Help Centre</h5><p>Step-by-step guides, tutorials, and answers for citizens</p><div class="help-value" style="font-size:14px;">View Help Centre →</div></div></a></div>
+            <div class="col-md-3 col-sm-6"><div class="help-card"><div class="help-card-icon"><i class="fas fa-clock"></i></div><h5>Working Hours</h5><p>Office: Mon–Fri 9 AM–6 PM<br>Portal: Always Online 24 × 7</p><div class="help-value" style="font-size:14px;color:#4caf50;">● Always Online</div></div></div>
         </div>
     </div>
 </section>
@@ -1270,104 +609,174 @@
     <div class="container">
         <div class="row mb-4">
             <div class="col-md-4 mb-4">
-                <div class="footer-logo">
-                    <i class="fas fa-landmark" style="font-size:26px;color:var(--accent);"></i>
-                    <span class="footer-logo-text">Grievance Redressal<br>Platform</span>
-                </div>
+                <div class="footer-logo"><i class="fas fa-landmark" style="font-size:26px;color:var(--accent);"></i><span class="footer-logo-text">Grievance Redressal<br>Platform</span></div>
                 <p class="footer-desc">An initiative under the Digital India Programme to provide citizens a transparent and efficient mechanism for addressing grievances with government departments across India.</p>
-                <div style="margin-top:16px;font-size:12px;opacity:0.5;">
-                    <i class="fas fa-shield-alt me-1" style="color:var(--accent);"></i> Secured by AWS &nbsp;·&nbsp;
-                    <i class="fas fa-server me-1" style="color:var(--accent);"></i> Hosted on NIC Cloud
-                </div>
+                <div style="margin-top:16px;font-size:12px;opacity:.5;"><i class="fas fa-shield-alt me-1" style="color:var(--accent);"></i> Secured by AWS &nbsp;·&nbsp; <i class="fas fa-server me-1" style="color:var(--accent);"></i> Hosted on NIC Cloud</div>
             </div>
             <div class="col-md-2 col-sm-6 mb-4">
                 <div class="footer-head">Citizen Services</div>
-                <ul class="footer-links">
-                    <li><a href="register.html"><i class="fas fa-chevron-right"></i>Register Complaint</a></li>
-                    <li><a href="track.html"><i class="fas fa-chevron-right"></i>Track Status</a></li>
-                    <li><a href="departments.html"><i class="fas fa-chevron-right"></i>Departments</a></li>
-                    <li><a href="help.html"><i class="fas fa-chevron-right"></i>Help &amp; FAQ</a></li>
-                    <li><a href="map.html"><i class="fas fa-chevron-right"></i>Complaint Map</a></li>
-                </ul>
+                <ul class="footer-links"><li><a href="register.html"><i class="fas fa-chevron-right"></i>Register Complaint</a></li><li><a href="track.html"><i class="fas fa-chevron-right"></i>Track Status</a></li><li><a href="departments.html"><i class="fas fa-chevron-right"></i>Departments</a></li><li><a href="help.html"><i class="fas fa-chevron-right"></i>Help &amp; FAQ</a></li><li><a href="map.html"><i class="fas fa-chevron-right"></i>Complaint Map</a></li></ul>
             </div>
             <div class="col-md-3 col-sm-6 mb-4">
                 <div class="footer-head">Officer Portal</div>
-                <ul class="footer-links">
-                    <li><a href="login.html"><i class="fas fa-chevron-right"></i>Officer Login</a></li>
-                    <li><a href="dashboard.html"><i class="fas fa-chevron-right"></i>Dashboard</a></li>
-                    <li><a href="analytics.html"><i class="fas fa-chevron-right"></i>Analytics</a></li>
-                    <li><a href="admin-departments.html"><i class="fas fa-chevron-right"></i>Dept Overview</a></li>
-                </ul>
+                <ul class="footer-links"><li><a href="login.html"><i class="fas fa-chevron-right"></i>Officer Login</a></li><li><a href="dashboard.html"><i class="fas fa-chevron-right"></i>Dashboard</a></li><li><a href="analytics.html"><i class="fas fa-chevron-right"></i>Analytics</a></li><li><a href="admin-departments.html"><i class="fas fa-chevron-right"></i>Dept Overview</a></li></ul>
             </div>
             <div class="col-md-3 mb-4">
                 <div class="footer-head">Contact</div>
-                <ul class="footer-links">
-                    <li><i class="fas fa-phone" style="color:var(--accent);"></i>&nbsp; 1800-000-XXXX</li>
-                    <li><i class="fas fa-envelope" style="color:var(--accent);"></i>&nbsp; grievance@gov.in</li>
-                    <li><i class="fas fa-map-marker-alt" style="color:var(--accent);"></i>&nbsp; New Delhi, India</li>
-                    <li><i class="fas fa-clock" style="color:var(--accent);"></i>&nbsp; Mon–Fri: 9 AM – 6 PM</li>
-                </ul>
+                <ul class="footer-links"><li><i class="fas fa-phone" style="color:var(--accent);"></i>&nbsp; 1800-000-XXXX</li><li><i class="fas fa-envelope" style="color:var(--accent);"></i>&nbsp; grievance@gov.in</li><li><i class="fas fa-map-marker-alt" style="color:var(--accent);"></i>&nbsp; New Delhi, India</li><li><i class="fas fa-clock" style="color:var(--accent);"></i>&nbsp; Mon–Fri: 9 AM – 6 PM</li></ul>
             </div>
         </div>
         <hr class="footer-divider">
         <div class="footer-bottom">
             <p>© 2026 Government of India &nbsp;|&nbsp; Digital India Initiative &nbsp;|&nbsp; National Informatics Centre (NIC)</p>
-            <div class="footer-bottom-links">
-                <a href="#">Terms &amp; Conditions</a>
-                <a href="#">Privacy Policy</a>
-                <a href="#">Accessibility</a>
-                <a href="#">Contact Us</a>
-                <a href="#">Sitemap</a>
-                <a href="#">RTI</a>
-            </div>
+            <div class="footer-bottom-links"><a href="#">Terms &amp; Conditions</a><a href="#">Privacy Policy</a><a href="#">Accessibility</a><a href="#">Contact Us</a><a href="#">Sitemap</a><a href="#">RTI</a></div>
         </div>
     </div>
 </footer>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
-// ── PAGE LOADER ─────────────────────────────────────────
+// ── API ENDPOINTS ─────────────────────────────────────────────
+const STATS_URL = 'https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/public/stats';
+const FEED_URL  = 'https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/public/feed';
+
+// ── PAGE LOADER ───────────────────────────────────────────────
 window.addEventListener('load', () => {
-    setTimeout(() => {
-        document.getElementById('page-loader').classList.add('hidden');
-    }, 1400);
+    setTimeout(() => document.getElementById('page-loader').classList.add('hidden'), 1400);
 });
 
-// ── FLOATING PARTICLES ──────────────────────────────────
+// ── FLOATING PARTICLES ────────────────────────────────────────
 (function spawnParticles() {
-    const container = document.getElementById('heroParticles');
-    if (!container) return;
+    const c = document.getElementById('heroParticles');
+    if (!c) return;
     const colors = ['#FF9933','#138808','#fff','#E8842A'];
     for (let i = 0; i < 22; i++) {
         const p = document.createElement('div');
         p.className = 'particle';
-        p.style.cssText = `
-            left:${Math.random()*100}%;
-            top:${Math.random()*100}%;
-            width:${Math.random()*5+3}px;
-            height:${Math.random()*5+3}px;
-            background:${colors[Math.floor(Math.random()*colors.length)]};
-            animation-delay:${Math.random()*8}s;
-            animation-duration:${6+Math.random()*6}s;
-        `;
-        container.appendChild(p);
+        p.style.cssText = `left:${Math.random()*100}%;top:${Math.random()*100}%;width:${Math.random()*5+3}px;height:${Math.random()*5+3}px;background:${colors[Math.floor(Math.random()*colors.length)]};animation-delay:${Math.random()*8}s;animation-duration:${6+Math.random()*6}s;`;
+        c.appendChild(p);
     }
 })();
 
-// ── FIX STATS BAND LAYOUT ───────────────────────────────
-// Move stat cells into the grid
-(function fixStatsBand() {
-    const band = document.querySelector('.stats-band');
-    const container = band.querySelector('.container');
-    // Remove child live badge row from grid
-    const liveBadgeRow = container.querySelector('.col-12');
-    container.style.display = 'block';
-    // Already set in HTML
-})();
+// ── LIVE FEED ─────────────────────────────────────────────────
+const FEED_INTERVAL = 5; // seconds — industry acceptable polling
+const RING_CIRC = 54;    // 2π × 8.5
+let feedCountdownVal = FEED_INTERVAL;
+let feedTimer;
 
-// ── LIVE STATS ──────────────────────────────────────────
-const STATS_URL = "https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/public/stats";
+function getStatusClass(status) {
+    switch (status) {
+        case 'Resolved':     return { dot:'green',  badge:'badge-resolved'  };
+        case 'In Progress':  return { dot:'blue',   badge:'badge-progress'  };
+        case 'Under Review': return { dot:'orange', badge:'badge-review'    };
+        default:             return { dot:'grey',   badge:'badge-submitted' };
+    }
+}
 
+function renderFeedItems(items) {
+    const container = document.getElementById('liveComplaintFeed');
+    if (!container) return;
+    container.innerHTML = '';
+
+    // Newest items at the top (already sorted by API)
+    items.slice(0, 5).forEach((item, i) => {
+        const sc  = getStatusClass(item.status || '');
+        const id  = item.complaintId || item.id || '—';
+        const dept = item.department || 'Unknown Dept';
+        const loc  = item.district || item.state || 'India';
+
+        const div = document.createElement('div');
+        div.className = 'status-item';
+        div.style.animationDelay = (i * 0.07) + 's';
+        div.innerHTML = `
+            <div class="status-dot ${sc.dot}"></div>
+            <div class="status-info">
+                <div class="status-id">${id}</div>
+                <div class="status-dept">${dept} · ${loc}</div>
+            </div>
+            <span class="status-badge ${sc.badge}">${item.status || 'Submitted'}</span>`;
+        container.appendChild(div);
+    });
+}
+
+function showFeedSkeleton() {
+    const c = document.getElementById('liveComplaintFeed');
+    if (!c) return;
+    c.innerHTML = [1,2,3,4].map(()=>`
+        <div class="feed-sk-item">
+            <div class="feed-sk-dot"></div>
+            <div class="feed-sk-lines">
+                <div class="feed-sk-line feed-sk-lg"></div>
+                <div class="feed-sk-line feed-sk-sm"></div>
+            </div>
+            <div class="feed-sk-badge"></div>
+        </div>`).join('');
+}
+
+function showFeedError() {
+    const c = document.getElementById('liveComplaintFeed');
+    if (!c) return;
+    c.innerHTML = `<div class="feed-error">
+        <i class="fas fa-wifi" style="color:rgba(255,255,255,.3);font-size:26px;"></i>
+        <div>Live feed temporarily unavailable</div>
+        <div style="font-size:11px;margin-top:4px;">Will retry automatically in ${FEED_INTERVAL}s</div>
+    </div>`;
+}
+
+async function loadLiveFeed() {
+    try {
+        const res  = await fetch(FEED_URL);
+        if (!res.ok) throw new Error('Status ' + res.status);
+        const raw  = await res.json();
+        // Handle both array and wrapped responses
+        const items = Array.isArray(raw) ? raw : (raw.items || raw.complaints || raw.data || []);
+
+        // Sort newest first by createdAt
+        items.sort((a, b) => {
+            const ta = a.createdAt || a.date || '';
+            const tb = b.createdAt || b.date || '';
+            return tb.localeCompare(ta);
+        });
+
+        if (items.length > 0) {
+            renderFeedItems(items);
+        } else {
+            // No data yet — show friendly empty state
+            showFeedError();
+        }
+    } catch (err) {
+        console.warn('Live feed error:', err.message);
+        showFeedError();
+    }
+}
+
+// Countdown ring — drains from full over FEED_INTERVAL seconds
+function startFeedCountdown() {
+    const ring  = document.getElementById('feedRing');
+    const label = document.getElementById('feedCountdown');
+    feedCountdownVal = FEED_INTERVAL;
+    if (ring)  ring.style.strokeDashoffset = '0';
+    if (label) label.textContent = FEED_INTERVAL + 's';
+
+    clearInterval(feedTimer);
+    feedTimer = setInterval(() => {
+        feedCountdownVal--;
+        if (label) label.textContent = Math.max(feedCountdownVal, 0) + 's';
+        if (ring) {
+            const progress = feedCountdownVal / FEED_INTERVAL;
+            ring.style.strokeDashoffset = String(RING_CIRC - (RING_CIRC * progress));
+        }
+        if (feedCountdownVal <= 0) {
+            clearInterval(feedTimer);
+            loadLiveFeed().then(() => startFeedCountdown());
+        }
+    }, 1000);
+}
+
+// Initial load
+loadLiveFeed().then(() => startFeedCountdown());
+
+// ── STATS ─────────────────────────────────────────────────────
 async function loadStats() {
     try {
         const res  = await fetch(STATS_URL);
@@ -1377,110 +786,62 @@ async function loadStats() {
         const resolved = data.resolved || 0;
         const pending  = data.pending  || 0;
         const rate     = total > 0 ? Math.round((resolved/total)*100) : 0;
-        animateCount('statTotal', total, '');
+        animateCount('statTotal',    total,    '');
         animateCount('statResolved', resolved, '');
-        animateCount('statPending', pending, '');
-        animateCount('statRate', rate, '%');
+        animateCount('statPending',  pending,  '');
+        animateCount('statRate',     rate,     '%');
     } catch {
-        animateCount('statTotal', 1284, '');
+        // Graceful fallback to demo data
+        animateCount('statTotal',    1284, '');
         animateCount('statResolved', 1056, '');
-        animateCount('statPending', 228, '');
-        animateCount('statRate', 82, '%');
+        animateCount('statPending',  228,  '');
+        animateCount('statRate',     82,   '%');
     }
 }
 
 function animateCount(id, target, suffix) {
     const el = document.getElementById(id);
     if (!el) return;
-    let current = 0;
+    let cur = 0;
     const step = Math.max(1, Math.ceil(target/70));
-    const timer = setInterval(() => {
-        current = Math.min(current + step, target);
-        el.textContent = current.toLocaleString('en-IN') + suffix;
-        if (current >= target) clearInterval(timer);
+    const t = setInterval(() => {
+        cur = Math.min(cur+step, target);
+        el.textContent = cur.toLocaleString('en-IN') + suffix;
+        if (cur >= target) clearInterval(t);
     }, 18);
 }
-
 loadStats();
 
-// ── COVERAGE COUNTER ────────────────────────────────────
+// ── COVERAGE COUNTERS ─────────────────────────────────────────
 function animateCoverageNumbers() {
     document.querySelectorAll('.map-stat-num[data-target]').forEach(el => {
         const target = parseInt(el.getAttribute('data-target'));
-        let current = 0;
+        let cur = 0;
         const step = Math.max(1, Math.ceil(target/50));
-        const timer = setInterval(() => {
-            current = Math.min(current + step, target);
-            el.textContent = current;
-            if (current >= target) clearInterval(timer);
+        const t = setInterval(() => {
+            cur = Math.min(cur+step, target);
+            el.textContent = cur;
+            if (cur >= target) clearInterval(t);
         }, 25);
     });
 }
 
-// ── SCROLL REVEAL ────────────────────────────────────────
+// ── SCROLL REVEAL ─────────────────────────────────────────────
 const srObs = new IntersectionObserver((entries) => {
     entries.forEach((entry, i) => {
         if (entry.isIntersecting) {
             setTimeout(() => entry.target.classList.add('visible'), i * 90);
             srObs.unobserve(entry.target);
-            // Trigger coverage counters when map band is visible
-            if (entry.target.closest('.map-band')) {
-                animateCoverageNumbers();
-            }
+            if (entry.target.closest('.map-band')) animateCoverageNumbers();
         }
     });
-}, { threshold: 0.12 });
+}, { threshold:0.12 });
+document.querySelectorAll('.sr,.sr-left,.sr-right').forEach(el => srObs.observe(el));
 
-document.querySelectorAll('.sr, .sr-left, .sr-right').forEach(el => srObs.observe(el));
-
-// ── SCROLL TO TOP ────────────────────────────────────────
+// ── SCROLL TO TOP ─────────────────────────────────────────────
 const scrollBtn = document.getElementById('scrollTop');
-window.addEventListener('scroll', () => {
-    scrollBtn.classList.toggle('show', window.scrollY > 400);
-});
-scrollBtn.addEventListener('click', () => window.scrollTo({ top: 0, behavior: 'smooth' }));
-
-// ── LIVE COMPLAINT FEED ANIMATION ───────────────────────
-const feedData = [
-    { id: 'CMP-2026-084301', dept: 'Electricity · Jaipur', status: 'Resolved', badgeClass: 'badge-resolved', dotClass: 'green' },
-    { id: 'CMP-2026-084289', dept: 'Police · Hyderabad', status: 'In Progress', badgeClass: 'badge-progress', dotClass: 'blue' },
-    { id: 'CMP-2026-084255', dept: 'Health · Pune', status: 'Under Review', badgeClass: 'badge-review', dotClass: 'orange' },
-    { id: 'CMP-2026-084231', dept: 'Public Works · Delhi', status: 'Resolved', badgeClass: 'badge-resolved', dotClass: 'green' },
-    { id: 'CMP-2026-084198', dept: 'Water Supply · Mumbai', status: 'In Progress', badgeClass: 'badge-progress', dotClass: 'blue' },
-    { id: 'CMP-2026-084150', dept: 'Electricity · Bengaluru', status: 'Under Review', badgeClass: 'badge-review', dotClass: 'orange' },
-    { id: 'CMP-2026-084102', dept: 'Education · Chennai', status: 'Submitted', badgeClass: 'badge-submitted', dotClass: 'grey' },
-    { id: 'CMP-2026-084078', dept: 'Revenue · Kolkata', status: 'Resolved', badgeClass: 'badge-resolved', dotClass: 'green' },
-];
-
-let feedIndex = 0;
-
-function rotateFeed() {
-    const feed = document.getElementById('liveComplaintFeed');
-    if (!feed) return;
-    const items = feed.querySelectorAll('.status-item');
-    const oldest = items[0];
-    oldest.style.transition = 'all 0.4s ease';
-    oldest.style.opacity = '0';
-    oldest.style.transform = 'translateX(-20px)';
-    setTimeout(() => {
-        feedIndex = (feedIndex + 1) % feedData.length;
-        const d = feedData[feedIndex];
-        oldest.querySelector('.status-dot').className = `status-dot ${d.dotClass}`;
-        oldest.querySelector('.status-id').textContent = d.id;
-        oldest.querySelector('.status-dept').textContent = d.dept;
-        oldest.querySelector('.status-badge').className = `status-badge ${d.badgeClass}`;
-        oldest.querySelector('.status-badge').textContent = d.status;
-        feed.appendChild(oldest);
-        oldest.style.opacity = '0';
-        oldest.style.transform = 'translateX(20px)';
-        setTimeout(() => {
-            oldest.style.opacity = '1';
-            oldest.style.transform = 'translateX(0)';
-        }, 50);
-    }, 400);
-}
-
-setInterval(rotateFeed, 3000);
+window.addEventListener('scroll', () => scrollBtn.classList.toggle('show', window.scrollY > 400));
+scrollBtn.addEventListener('click', () => window.scrollTo({ top:0, behavior:'smooth' }));
 </script>
 </body>
 </html>

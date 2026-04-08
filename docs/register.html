@@ -1272,7 +1272,18 @@ document.getElementById('complaintForm').addEventListener('submit', async functi
     if (aadhaar.value && !/^[0-9]{12}$/.test(aadhaar.value)) { aadhaar.classList.add('is-invalid'); isValid = false; }
 
     const decl = document.getElementById('declaration');
-    if (!decl.checked) { decl.classList.add('is-invalid'); isValid = false; }
+    if (!decl.checked) {
+    decl.classList.add('is-invalid');
+    isValid = false;
+
+    const feedback = decl.closest('.form-check').querySelector('.invalid-feedback');
+    if (feedback) feedback.style.display = 'flex';
+} else {
+    decl.classList.remove('is-invalid');
+
+    const feedback = decl.closest('.form-check').querySelector('.invalid-feedback');
+    if (feedback) feedback.style.display = 'none';
+}
 
     if (!isValid) { this.querySelector('.is-invalid')?.scrollIntoView({ behavior:'smooth', block:'center' }); return; }
 
@@ -1343,14 +1354,74 @@ function showResultModal(type, complaintId, errMsg) {
 function closeModal()     { document.getElementById('resultModal').classList.remove('show'); window.location.href = 'index.html'; }
 function trackComplaint() { window.location.href = 'track.html'; }
 
-// ── REAL-TIME VALIDATION ──────────────────────────────────────────────────
+// ── FIX INVALID FEEDBACK ISSUE ─────────────────────────────────────────
 document.querySelectorAll('input, select, textarea').forEach(el => {
-    el.addEventListener('blur', function() {
-        if (this.hasAttribute('required') && !this.value) this.classList.add('is-invalid');
-        else this.classList.remove('is-invalid');
+
+    el.addEventListener('input', function () {
+
+        let isValid = true;
+
+        // Required check
+        if (this.hasAttribute('required') && this.value.trim() === '') {
+            isValid = false;
+        }
+
+        // Pattern check
+        if (this.pattern && this.value) {
+            const regex = new RegExp(this.pattern);
+            if (!regex.test(this.value)) isValid = false;
+        }
+
+        // Email check
+        if (this.type === "email" && this.value) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailRegex.test(this.value)) isValid = false;
+        }
+
+        // ✅ APPLY FINAL STATE
+        if (isValid) {
+            this.classList.remove('is-invalid');
+            this.classList.add('is-valid');
+
+            // 🔥 IMPORTANT: Hide error message manually
+            const feedback = this.parentElement.nextElementSibling || this.nextElementSibling;
+            if (feedback && feedback.classList.contains('invalid-feedback')) {
+                feedback.style.display = 'none';
+            }
+
+        } else {
+            this.classList.remove('is-valid');
+            this.classList.add('is-invalid');
+
+            // Show error
+            const feedback = this.parentElement.nextElementSibling || this.nextElementSibling;
+            if (feedback && feedback.classList.contains('invalid-feedback')) {
+                feedback.style.display = 'flex';
+            }
+        }
     });
-    el.addEventListener('input', function() {
-        if (this.classList.contains('is-invalid') && this.value) this.classList.remove('is-invalid');
+    // ── DECLARATION FIX ─────────────────────────────────────────
+const declaration = document.getElementById('declaration');
+
+declaration.addEventListener('change', function () {
+    if (this.checked) {
+        this.classList.remove('is-invalid');
+
+        // hide error message
+        const feedback = this.closest('.form-check').querySelector('.invalid-feedback');
+        if (feedback) feedback.style.display = 'none';
+    }
+});
+
+    el.addEventListener('blur', function () {
+        if (this.hasAttribute('required') && this.value.trim() === '') {
+            this.classList.add('is-invalid');
+
+            const feedback = this.parentElement.nextElementSibling || this.nextElementSibling;
+            if (feedback && feedback.classList.contains('invalid-feedback')) {
+                feedback.style.display = 'flex';
+            }
+        }
     });
 });
 </script>
