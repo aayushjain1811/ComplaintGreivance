@@ -776,26 +776,27 @@ function startFeedCountdown() {
 // Initial load
 loadLiveFeed().then(() => startFeedCountdown());
 
-// ── STATS ─────────────────────────────────────────────────────
 async function loadStats() {
     try {
         const res  = await fetch(STATS_URL);
         if (!res.ok) throw new Error(res.status);
+
         const data = await res.json();
-        const totalComplaints    = data.total    || 0;
+        console.log("API DATA:", data);
+
+        const total    = data.totalComplaints || 0;
         const resolved = data.resolved || 0;
-        const pending  = data.pending  || 0;
-        const rate     = total > 0 ? Math.round((resolved/total)*100) : 0;
-        animateCount('statTotal',    total,    '');
+        const pending  = data.pending || 0;
+
+        const rate = total > 0 ? Math.round((resolved / total) * 100) : 0;
+
+        animateCount('statTotal', total, '');
         animateCount('statResolved', resolved, '');
-        animateCount('statPending',  pending,  '');
-        animateCount('statRate',     rate,     '%');
-    } catch {
-        // Graceful fallback to demo data
-        animateCount('statTotal',    1284, '');
-        animateCount('statResolved', 1056, '');
-        animateCount('statPending',  228,  '');
-        animateCount('statRate',     82,   '%');
+        animateCount('statPending', pending, '');
+        animateCount('statRate', rate, '%');
+
+    } catch (err) {
+        console.error("Stats error:", err);
     }
 }
 
