@@ -782,7 +782,7 @@ async function loadStats() {
         const res  = await fetch(STATS_URL);
         if (!res.ok) throw new Error(res.status);
         const data = await res.json();
-        const total    = data.total    || 0;
+        const totalComplaints    = data.total    || 0;
         const resolved = data.resolved || 0;
         const pending  = data.pending  || 0;
         const rate     = total > 0 ? Math.round((resolved/total)*100) : 0;
