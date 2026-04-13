@@ -763,16 +763,20 @@ function renderTable(){
    VIEW MODAL — Steps 3 & 4 integrated
 ══════════════════════════════════════ */
 function openView(id){
-    const c=find(id);if(!c)return;
-    activeId=id;
+    const c = find(id);
+    if(!c) return;
 
-    // Debug helper (Step 3 debug note)
+    activeId = id;
+
+    // ✅ FIX: DEFINE HERE
+    const lat = c.latitude || (c.location && c.location.lat);
+    const lng = c.longitude || (c.location && c.location.lng);
+
     console.log('[Map] latitude:', lat, '| longitude:', lng);
 
-    // Step 4 — Location Link field (rendered as HTML in the grid)
     const locationLinkHtml = (lat && lng)
-        ? `<a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank" style="color:var(--accent);font-weight:700;font-size:13px;text-decoration:none;display:inline-flex;align-items:center;gap:5px"><i class="fas fa-map-marker-alt"></i> Open Map</a>`
-        : '<span style="color:var(--muted);font-size:12px">Not available</span>';
+        ? `<a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank">Open Map</a>`
+        : 'Not available';
 
     const fields=[
         ['Complaint ID',c.id||c.complaintId||'—'],
