@@ -1062,6 +1062,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+
+    
 // ── API ──────────────────────────────────────────────────────────────────
 const API_URL     = 'https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/complaints';
 const SUGGEST_API = 'https://irloh481tl.execute-api.ap-south-1.amazonaws.com/prod/suggest-department';
@@ -1251,8 +1253,29 @@ document.getElementById('resetBtn').addEventListener('click', () => {
 // ── FORM SUBMIT ───────────────────────────────────────────────────────────
 document.getElementById('complaintForm').addEventListener('submit', async function(e) {
     e.preventDefault();
+    document.getElementById('complaintForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+
     let isValid = true;
-    this.querySelectorAll('input, select, textarea').forEach(el => el.classList.remove('is-invalid'));
+
+    const fields = this.querySelectorAll('input, textarea, select');
+
+    fields.forEach(field => {
+        if (!field.checkValidity()) {
+            field.classList.add('is-invalid');
+            field.classList.remove('is-valid');
+            isValid = false;
+        } else {
+            field.classList.remove('is-invalid');
+            field.classList.add('is-valid');
+        }
+    });
+
+    if (!isValid) return;
+
+    // continue submit (API call etc.)
+    console.log("Form valid ✅");
+    });
 
     const check = (id, fn) => {
         const el = document.getElementById(id);
@@ -1424,6 +1447,25 @@ declaration.addEventListener('change', function () {
         }
     });
 });
+
+// FIX: Remove error when user types/selects
+document.querySelectorAll('#complaintForm input, #complaintForm textarea, #complaintForm select')
+.forEach(field => {
+    field.addEventListener('input', () => {
+        if (field.checkValidity()) {
+            field.classList.remove('is-invalid');
+            field.classList.add('is-valid');
+        }
+    });
+
+    field.addEventListener('change', () => {
+        if (field.checkValidity()) {
+            field.classList.remove('is-invalid');
+            field.classList.add('is-valid');
+        }
+    });
+});
+
 </script>
 </body>
 </html>
