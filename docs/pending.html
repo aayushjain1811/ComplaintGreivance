@@ -767,11 +767,11 @@ function openView(id){
     activeId=id;
 
     // Debug helper (Step 3 debug note)
-    console.log('[Map] latitude:', c.latitude, '| longitude:', c.longitude);
+    console.log('[Map] latitude:', lat, '| longitude:', lng);
 
     // Step 4 — Location Link field (rendered as HTML in the grid)
-    const locationLinkHtml = (c.latitude && c.longitude)
-        ? `<a href="https://www.google.com/maps?q=${c.latitude},${c.longitude}" target="_blank" style="color:var(--accent);font-weight:700;font-size:13px;text-decoration:none;display:inline-flex;align-items:center;gap:5px"><i class="fas fa-map-marker-alt"></i> Open Map</a>`
+    const locationLinkHtml = (lat && lng)
+        ? `<a href="https://www.google.com/maps?q=${lat},${lng}" target="_blank" style="color:var(--accent);font-weight:700;font-size:13px;text-decoration:none;display:inline-flex;align-items:center;gap:5px"><i class="fas fa-map-marker-alt"></i> Open Map</a>`
         : '<span style="color:var(--muted);font-size:12px">Not available</span>';
 
     const fields=[
@@ -804,20 +804,20 @@ function openView(id){
     const mapCoords  = document.getElementById('mapCoords');
     const mapLink    = document.getElementById('mapOpenLink');
 
-    if (c.latitude && c.longitude) {
+    if (lat && lng) {
         // Show map, hide fallback
         mapWrapper.style.display = 'block';
         mapNoLoc.style.display   = 'none';
         mapMeta.style.display    = 'flex';
 
         // Embed Google Maps at the pinned location
-        mapFrame.src = `https://maps.google.com/maps?q=${c.latitude},${c.longitude}&z=15&output=embed`;
+        mapFrame.src = `https://maps.google.com/maps?q=${lat},${lng}&z=15&output=embed`;
 
         // Coordinates display
-        mapCoords.textContent = `${parseFloat(c.latitude).toFixed(5)}, ${parseFloat(c.longitude).toFixed(5)}`;
+        mapCoords.textContent = `${parseFloat(lat).toFixed(5)}, ${parseFloat(lng).toFixed(5)}`;
 
         // Clickable Open Maps link (Step 4)
-        mapLink.href = `https://www.google.com/maps?q=${c.latitude},${c.longitude}`;
+        mapLink.href = `https://www.google.com/maps?q=${lat},${lng}`;
     } else {
         // Hide map, show fallback
         mapWrapper.style.display = 'none';
@@ -905,7 +905,7 @@ async function saveAssign(){
 function exportCSV(){
     if(!visible.length){toast('Nothing to export','warning');return}
     const h=['ID','Name','Mobile','Department','Category','Priority','Status','Age(days)','Escalated','Latitude','Longitude'];
-    const rows=visible.map(c=>{const d=getDays(c);return[c.id||c.complaintId||'',c.name||'',c.mobile||'',c.department||'',c.category||'',c.priority||'',c.status||'',d,d>=3?'Yes':'No',c.latitude||'',c.longitude||''].map(v=>`"${v}"`).join(',')});
+    const rows=visible.map(c=>{const d=getDays(c);return[c.id||c.complaintId||'',c.name||'',c.mobile||'',c.department||'',c.category||'',c.priority||'',c.status||'',d,d>=3?'Yes':'No',lat||'',lng||''].map(v=>`"${v}"`).join(',')});
     const a=document.createElement('a');
     a.href=URL.createObjectURL(new Blob([[h.join(','),...rows].join('\n')],{type:'text/csv'}));
     a.download=`pending_${new Date().toISOString().slice(0,10)}.csv`;a.click();
