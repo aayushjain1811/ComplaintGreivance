@@ -243,6 +243,17 @@
     .di span{font-size:13.5px;color:var(--text);font-weight:500}
     .desc-box{background:var(--bg);border-radius:10px;padding:14px;font-size:13.5px;line-height:1.7;color:var(--muted);border-left:4px solid var(--accent)}
 
+    /* ── MAP CONTAINER (STEP 2) ─────────── */
+    #mapContainer{margin-top:18px}
+    #mapContainer label{font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:8px}
+    .map-wrapper{position:relative;border-radius:12px;overflow:hidden;border:1.5px solid var(--border);box-shadow:0 4px 16px rgba(10,37,88,.1)}
+    #mapFrame{display:block;width:100%;height:220px;border:0}
+    .map-no-location{display:none;align-items:center;justify-content:center;gap:10px;padding:32px;background:var(--bg);border-radius:12px;border:1.5px dashed var(--border);color:var(--muted);font-size:13px}
+    .map-no-location i{font-size:22px;opacity:.4}
+    .map-open-link{display:inline-flex;align-items:center;gap:6px;margin-top:8px;font-size:12px;font-weight:700;color:var(--primary);text-decoration:none;padding:5px 12px;border-radius:7px;border:1.5px solid var(--border);background:#fff;transition:all .2s}
+    .map-open-link:hover{background:var(--primary);color:#fff;border-color:var(--primary)}
+    .map-coords{font-size:11px;color:var(--muted);margin-top:6px;font-family:'DM Mono',monospace}
+
     /* status modal */
     .status-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:18px}
     @media(max-width:400px){.status-grid{grid-template-columns:1fr}}
@@ -452,14 +463,51 @@
     </div>
 </main>
 
-<!-- VIEW MODAL -->
+<!-- VIEW MODAL — with integrated map (Steps 2, 3, 4) -->
 <div class="moverlay" id="viewM">
     <div class="mbox md">
         <div class="mhdr"><h5><i class="fas fa-file-alt" style="margin-right:9px;opacity:.8"></i>Complaint Details</h5><button class="mclose" onclick="closeM('viewM')">&times;</button></div>
         <div class="mbody">
             <div class="dgrid" id="vGrid"></div>
+
+            <!-- Description -->
             <label style="font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:8px">Description</label>
             <div class="desc-box" id="vDesc">—</div>
+
+            <!-- ══ STEP 2: Map UI ══ -->
+            <div id="mapContainer" style="margin-top:18px;">
+                <label style="font-size:10.5px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.5px;display:block;margin-bottom:8px">
+                    <i class="fas fa-map-marker-alt" style="margin-right:5px;color:var(--accent)"></i>Location
+                </label>
+
+                <!-- Map iframe (shown when coordinates exist) -->
+                <div class="map-wrapper" id="mapWrapper">
+                    <iframe
+                        id="mapFrame"
+                        width="100%"
+                        height="220"
+                        style="border:0;border-radius:10px;"
+                        loading="lazy"
+                        allowfullscreen>
+                    </iframe>
+                </div>
+
+                <!-- Fallback (shown when no coordinates) -->
+                <div class="map-no-location" id="mapNoLocation">
+                    <i class="fas fa-map-marker-slash"></i>
+                    <span>No location data available for this complaint</span>
+                </div>
+
+                <!-- Coordinates display + Open in Google Maps link (Step 4) -->
+                <div id="mapMeta" style="display:none;margin-top:8px;display:none;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+                    <span class="map-coords" id="mapCoords"></span>
+                    <a id="mapOpenLink" href="#" target="_blank" class="map-open-link">
+                        <i class="fas fa-external-link-alt"></i> Open in Google Maps
+                    </a>
+                </div>
+            </div>
+            <!-- ══ End Map UI ══ -->
+
         </div>
         <div class="mfoot">
             <button class="btn-t btn-sec" onclick="closeM('viewM')">Close</button>
@@ -566,22 +614,22 @@ const FALLBACK_OFFICERS=[
     {id:'OFF006',name:'Meena Joshi',dept:'Water Supply',load:0},
 ];
 
-/* DEMO PENDING */
+/* DEMO PENDING — includes lat/lng for testing Step 3 */
 const DEMO=[
-    {id:'CMP-001',name:'Rajesh Kumar',mobile:'98XX01',department:'Public Works',category:'Roads',priority:'High',status:'Under Review',createdAt:new Date(Date.now()-4*864e5).toISOString(),description:'Large pothole near Sector 12.'},
-    {id:'CMP-002',name:'Priya Sharma',mobile:'98XX02',department:'Water Supply',category:'Water',priority:'Critical',status:'In Progress',createdAt:new Date(Date.now()-5*864e5).toISOString(),description:'No water supply for 3 days.'},
+    {id:'CMP-001',name:'Rajesh Kumar',mobile:'98XX01',department:'Public Works',category:'Roads',priority:'High',status:'Under Review',createdAt:new Date(Date.now()-4*864e5).toISOString(),description:'Large pothole near Sector 12.',latitude:28.6139,longitude:77.2090},
+    {id:'CMP-002',name:'Priya Sharma',mobile:'98XX02',department:'Water Supply',category:'Water',priority:'Critical',status:'In Progress',createdAt:new Date(Date.now()-5*864e5).toISOString(),description:'No water supply for 3 days.',latitude:19.0760,longitude:72.8777},
     {id:'CMP-003',name:'Arun Singh',mobile:'98XX03',department:'Electricity',category:'Power',priority:'Medium',status:'Submitted',createdAt:new Date(Date.now()-1*864e5).toISOString(),description:'Power cuts lasting 4-6 hours daily.'},
-    {id:'CMP-004',name:'Mohammad Irfan',mobile:'98XX05',department:'Education',category:'Infrastructure',priority:'High',status:'In Progress',createdAt:new Date(Date.now()-6*864e5).toISOString(),description:'School roof leaking during monsoon.'},
+    {id:'CMP-004',name:'Mohammad Irfan',mobile:'98XX05',department:'Education',category:'Infrastructure',priority:'High',status:'In Progress',createdAt:new Date(Date.now()-6*864e5).toISOString(),description:'School roof leaking during monsoon.',latitude:12.9716,longitude:77.5946},
     {id:'CMP-005',name:'Kavita Nair',mobile:'98XX06',department:'Sanitation',category:'Garbage',priority:'Medium',status:'Submitted',createdAt:new Date(Date.now()-2*864e5).toISOString(),description:'Garbage not collected for a week.'},
-    {id:'CMP-006',name:'Geeta Patel',mobile:'98XX08',department:'Transport',category:'Bus',priority:'Medium',status:'Under Review',createdAt:new Date(Date.now()-3*864e5).toISOString(),description:'Bus route 42 cancelled without notice.'},
+    {id:'CMP-006',name:'Geeta Patel',mobile:'98XX08',department:'Transport',category:'Bus',priority:'Medium',status:'Under Review',createdAt:new Date(Date.now()-3*864e5).toISOString(),description:'Bus route 42 cancelled without notice.',latitude:23.0225,longitude:72.5714},
     {id:'CMP-007',name:'Ravi Joshi',mobile:'98XX09',department:'Police',category:'Safety',priority:'High',status:'Submitted',createdAt:new Date(Date.now()-4*864e5).toISOString(),description:'Street lights non-functional on Main Road.'},
-    {id:'CMP-008',name:'Anita Mehta',mobile:'98XX10',department:'Public Works',category:'Drainage',priority:'Critical',status:'In Progress',createdAt:new Date(Date.now()-8*864e5).toISOString(),description:'Drainage overflow near district hospital.'},
+    {id:'CMP-008',name:'Anita Mehta',mobile:'98XX10',department:'Public Works',category:'Drainage',priority:'Critical',status:'In Progress',createdAt:new Date(Date.now()-8*864e5).toISOString(),description:'Drainage overflow near district hospital.',latitude:22.5726,longitude:88.3639},
     {id:'CMP-009',name:'Mohan Das',mobile:'98XX13',department:'Social Welfare',category:'Benefits',priority:'High',status:'Submitted',createdAt:new Date(Date.now()-7*864e5).toISOString(),description:'Pension not received for 3 months.'},
-    {id:'CMP-010',name:'Lalita Singh',mobile:'98XX14',department:'Health',category:'Hospital',priority:'High',status:'Under Review',createdAt:new Date(Date.now()-9*864e5).toISOString(),description:'Doctor absent from PHC for 2 weeks.'},
+    {id:'CMP-010',name:'Lalita Singh',mobile:'98XX14',department:'Health',category:'Hospital',priority:'High',status:'Under Review',createdAt:new Date(Date.now()-9*864e5).toISOString(),description:'Doctor absent from PHC for 2 weeks.',latitude:26.8467,longitude:80.9462},
 ];
 
 /* STATE */
-let allPending=[],visible=[],activeId=null,selStatus=null,selOfficer=null,officersCache=[];
+let allPending=[],visible=[],activeId=null,selStatus=null,selOfficer=null;
 
 /* ROLE FILTER */
 function roleFilter(list){
@@ -711,14 +759,73 @@ function renderTable(){
     });
 }
 
-/* VIEW MODAL */
+/* ══════════════════════════════════════
+   VIEW MODAL — Steps 3 & 4 integrated
+══════════════════════════════════════ */
 function openView(id){
     const c=find(id);if(!c)return;
     activeId=id;
-    const fields=[['Complaint ID',c.id||c.complaintId||'—'],['Name',c.name||'—'],['Mobile',c.mobile||'—'],['Email',c.email||'—'],['State',c.state||'—'],['District',c.district||'—'],['Department',c.department||'—'],['Category',c.category||'—'],['Priority',c.priority||'Medium'],['Status',c.status||'Submitted'],['Submitted',c.createdAt?new Date(c.createdAt).toLocaleString('en-IN'):'—'],['Assigned To',c.assignedTo||'Unassigned']];
-    document.getElementById('vGrid').innerHTML=fields.map(([l,v])=>`<div class="di"><label>${l}</label><span>${v}</span></div>`).join('');
+
+    // Debug helper (Step 3 debug note)
+    console.log('[Map] latitude:', c.latitude, '| longitude:', c.longitude);
+
+    // Step 4 — Location Link field (rendered as HTML in the grid)
+    const locationLinkHtml = (c.latitude && c.longitude)
+        ? `<a href="https://www.google.com/maps?q=${c.latitude},${c.longitude}" target="_blank" style="color:var(--accent);font-weight:700;font-size:13px;text-decoration:none;display:inline-flex;align-items:center;gap:5px"><i class="fas fa-map-marker-alt"></i> Open Map</a>`
+        : '<span style="color:var(--muted);font-size:12px">Not available</span>';
+
+    const fields=[
+        ['Complaint ID',c.id||c.complaintId||'—'],
+        ['Name',c.name||'—'],
+        ['Mobile',c.mobile||'—'],
+        ['Email',c.email||'—'],
+        ['State',c.state||'—'],
+        ['District',c.district||'—'],
+        ['Department',c.department||'—'],
+        ['Category',c.category||'—'],
+        ['Priority',c.priority||'Medium'],
+        ['Status',c.status||'Submitted'],
+        ['Submitted',c.createdAt?new Date(c.createdAt).toLocaleString('en-IN'):'—'],
+        ['Assigned To',c.assignedTo||'Unassigned']
+    ];
+
+    // Build grid — last item uses innerHTML for the link
+    document.getElementById('vGrid').innerHTML=fields.map(([l,v])=>`<div class="di"><label>${l}</label><span>${v}</span></div>`).join('')
+        + `<div class="di"><label>Location Link</label><span>${locationLinkHtml}</span></div>`;
+
     document.getElementById('vDesc').textContent=c.description||c.subject||'No description.';
     document.getElementById('vToStatus').onclick=()=>{closeM('viewM');openStatus(id)};
+
+    // ══ STEP 3: Set map iframe src ══
+    const mapFrame   = document.getElementById('mapFrame');
+    const mapWrapper = document.getElementById('mapWrapper');
+    const mapNoLoc   = document.getElementById('mapNoLocation');
+    const mapMeta    = document.getElementById('mapMeta');
+    const mapCoords  = document.getElementById('mapCoords');
+    const mapLink    = document.getElementById('mapOpenLink');
+
+    if (c.latitude && c.longitude) {
+        // Show map, hide fallback
+        mapWrapper.style.display = 'block';
+        mapNoLoc.style.display   = 'none';
+        mapMeta.style.display    = 'flex';
+
+        // Embed Google Maps at the pinned location
+        mapFrame.src = `https://maps.google.com/maps?q=${c.latitude},${c.longitude}&z=15&output=embed`;
+
+        // Coordinates display
+        mapCoords.textContent = `${parseFloat(c.latitude).toFixed(5)}, ${parseFloat(c.longitude).toFixed(5)}`;
+
+        // Clickable Open Maps link (Step 4)
+        mapLink.href = `https://www.google.com/maps?q=${c.latitude},${c.longitude}`;
+    } else {
+        // Hide map, show fallback
+        mapWrapper.style.display = 'none';
+        mapNoLoc.style.display   = 'flex';
+        mapMeta.style.display    = 'none';
+        mapFrame.src             = '';   // clear any previous map
+    }
+
     openM('viewM');
 }
 
@@ -752,7 +859,6 @@ async function quickResolve(id){
 }
 
 /* ASSIGN MODAL */
-let officersCache2=[];
 async function openAssign(id){
     if(level<2){toast('Assignment requires Senior Officer access','warning');return}
     activeId=id;selOfficer=null;
@@ -760,6 +866,7 @@ async function openAssign(id){
     const listEl=document.getElementById('offList');
     listEl.innerHTML='<div style="text-align:center;padding:24px;color:var(--muted)"><div class="spin-r" style="margin:0 auto 10px"></div>Loading officers…</div>';
     openM('assignM');
+    let officersCache2=[];
     try{
         const res=await fetch(OFFICERS_API,{headers:AH});
         if(!res.ok) throw new Error();
@@ -797,8 +904,8 @@ async function saveAssign(){
 /* EXPORT */
 function exportCSV(){
     if(!visible.length){toast('Nothing to export','warning');return}
-    const h=['ID','Name','Mobile','Department','Category','Priority','Status','Age(days)','Escalated'];
-    const rows=visible.map(c=>{const d=getDays(c);return[c.id||c.complaintId||'',c.name||'',c.mobile||'',c.department||'',c.category||'',c.priority||'',c.status||'',d,d>=3?'Yes':'No'].map(v=>`"${v}"`).join(',')});
+    const h=['ID','Name','Mobile','Department','Category','Priority','Status','Age(days)','Escalated','Latitude','Longitude'];
+    const rows=visible.map(c=>{const d=getDays(c);return[c.id||c.complaintId||'',c.name||'',c.mobile||'',c.department||'',c.category||'',c.priority||'',c.status||'',d,d>=3?'Yes':'No',c.latitude||'',c.longitude||''].map(v=>`"${v}"`).join(',')});
     const a=document.createElement('a');
     a.href=URL.createObjectURL(new Blob([[h.join(','),...rows].join('\n')],{type:'text/csv'}));
     a.download=`pending_${new Date().toISOString().slice(0,10)}.csv`;a.click();
