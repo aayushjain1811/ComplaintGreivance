@@ -782,7 +782,17 @@ function markerColor(c) {
     if (c.status === 'Resolved' || c.status === 'Closed') return COLOR.Resolved;
     return COLOR[c.priority] || COLOR.Medium;
 }
-
+function getLatLng(c) {
+    // New records: { location: { lat, lng } }
+    if (c.location && c.location.lat != null) {
+        return { lat: c.location.lat, lng: c.location.lng };
+    }
+    // Old records: flat { latitude, longitude }
+    if (c.latitude != null && c.longitude != null) {
+        return { lat: parseFloat(c.latitude), lng: parseFloat(c.longitude) };
+    }
+    return null;
+}
 // ── Load Data ─────────────────────────────────────────────────────────────
 async function loadComplaints() {
     try {
